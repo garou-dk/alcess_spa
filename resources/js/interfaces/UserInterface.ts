@@ -1,0 +1,5 @@
+interface UserInterface {
+
+}
+
+export { UserInterface };
