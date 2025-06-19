@@ -13,6 +13,4 @@ Route::middleware(['guest-only'])
         Route::post('login', [AuthController::class, 'authenticate']);
     });
 
-
-// Global Access
 Route::get('check', [AuthController::class, 'checkAuth']);

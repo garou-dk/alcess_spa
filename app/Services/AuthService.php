@@ -26,7 +26,7 @@ class AuthService
     }
 
     public function getAuth() {
-        abort_unless(Auth::guard('web')->check(), 401, 'Unauthorized');
+        abort_unless(Auth::guard('web')->check(), 401, 'Unauthorized'.'-'.Auth::guard('web')->check());
 
         $user = Auth::user()->load(['role']);
 
