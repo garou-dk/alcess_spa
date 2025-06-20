@@ -18,7 +18,7 @@
 interface Props {
     tag: "label" | "span";
     labelName: string;
-    id: string;
+    id?: string;
     errors: string[];
     addClass?: string;
 }

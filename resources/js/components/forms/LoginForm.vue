@@ -41,8 +41,10 @@
                 type="submit"
                 label="Login"
                 :loading="authService.request.loading"
+                fluid
             />
         </div>
+        <slot name="footer" />
     </form>
 </template>
 <script setup lang="ts">

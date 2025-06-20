@@ -10,7 +10,10 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware(['guest-only'])
     ->group(function () {
-        Route::post('login', [AuthController::class, 'authenticate']);
+        Route::post('login', [AuthController::class, 'authenticateCustomer']);
+        Route::prefix('admin')->group(function () {
+            Route::post('login', [AuthController::class, 'authenticateAdmin']);
+        });
     });
 
 Route::get('check', [AuthController::class, 'checkAuth']);

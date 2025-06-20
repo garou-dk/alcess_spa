@@ -11,8 +11,21 @@ class AuthController extends Controller
 {
     public function __construct(public AuthService $service) {}
 
-    public function authenticate(LoginRequest $request) {
-        $data = $request->validated();
+    public function authenticateCustomer(LoginRequest $request) {
+        $data = $request->validated() + [
+            'role_id' => 2,
+        ];
+        $result = $this->service->loginUser($data);
+
+        return ApiResponse::success()
+            ->data($result)
+            ->response();
+    }
+
+    public function authenticateAdmin(LoginRequest $request) {
+        $data = $request->validated() + [
+            'role_id' => 1,
+        ];
         $result = $this->service->loginUser($data);
 
         return ApiResponse::success()
