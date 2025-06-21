@@ -68,7 +68,7 @@ export default function useAxiosUtil<Input, Output>() {
         }
     };
 
-    const post = async (url: string, data: Input, useApi : boolean = true) => {
+    const post = async (url: string, data: Input, useApi: boolean = true) => {
         request.loading = true;
         const settings = {
             url: useApi ? "/api/" + url : url,
@@ -239,6 +239,6 @@ export default function useAxiosUtil<Input, Output>() {
         deleteRequest,
         patchFormData,
         getFile,
-        axios
+        axios,
     };
 }

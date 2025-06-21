@@ -17,6 +17,7 @@ class GuestMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         abort_if(Auth::check(), Response::HTTP_FORBIDDEN, 'Access denied');
+
         return $next($request);
     }
 }

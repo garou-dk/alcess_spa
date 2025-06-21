@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    public function loginUser(array $data) {
+    public function loginUser(array $data)
+    {
         $user = User::query()
             ->where([
                 'email' => $data['email'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ])
             ->first();
-        
+
         abort_if(empty($user), 401, 'Invalid credentials');
 
         abort_unless(Hash::check($data['password'], $user->password), 401, 'Invalid credentials');
@@ -28,7 +29,8 @@ class AuthService
         return $authData;
     }
 
-    public function getAuth() {
+    public function getAuth()
+    {
         abort_unless(Auth::guard('web')->check(), 401, 'Unauthorized'.'-'.Auth::guard('web')->check());
 
         $user = Auth::user()->load(['role']);
@@ -36,11 +38,12 @@ class AuthService
         return $user;
     }
 
-    public function logoutUser() {
+    public function logoutUser()
+    {
         if (Auth::guard('web')->check()) {
             Auth::guard('web')->logout();
         }
-        
+
         return true;
     }
 }

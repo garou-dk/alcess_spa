@@ -2,17 +2,23 @@
     <div>
         <header class="bg-sky-800">
             <nav class="p-2">
-                <Toolbar style="background-color: transparent; border: none;">
+                <Toolbar style="background-color: transparent; border: none">
                     <template #start>
                         <RouterLink :to="{ name: 'home' }">
                             <div class="flex">
                                 <div class="px-2">
-                                    <div class="bg-white rounded-full">
-                                        <img :src="Icon" class="w-16 h-16" alt="Store Icon">
+                                    <div class="rounded-full bg-white">
+                                        <img
+                                            :src="Icon"
+                                            class="h-16 w-16"
+                                            alt="Store Icon"
+                                        />
                                     </div>
                                 </div>
                                 <div class="flex items-center px-2">
-                                    <h1 class="text-3xl font-bold text-white">{{ appName }}</h1>
+                                    <h1 class="text-3xl font-bold text-white">
+                                        {{ appName }}
+                                    </h1>
                                 </div>
                             </div>
                         </RouterLink>
@@ -24,7 +30,7 @@
                                     <InputGroupAddon>
                                         <i class="pi pi-search" />
                                     </InputGroupAddon>
-                                    <InputText 
+                                    <InputText
                                         v-model="form.search"
                                         :invalid="errors.search.length > 0"
                                         placeholder="Search product"
@@ -41,10 +47,13 @@
                             <div v-if="!Page.user" class="px-2">
                                 <button
                                     type="button"
-                                    class="text-white cursor-pointer"
+                                    class="cursor-pointer text-white"
                                     @click="openLoginForm()"
                                 >
-                                    <i class="pi pi-user" style="font-size: 1.5rem;" />
+                                    <i
+                                        class="pi pi-user"
+                                        style="font-size: 1.5rem"
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -52,20 +61,26 @@
                 </Toolbar>
             </nav>
         </header>
-        <Dialog v-model:visible="loginFormVisible" modal header="Login" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog
+            v-model:visible="loginFormVisible"
+            modal
+            header="Login"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
             <LoginForm>
                 <template #footer>
                     <div class="flex">
-                        <div class="p-2 w-1/2">
+                        <div class="w-1/2 p-2">
                             <Button
                                 type="button"
                                 variant="link"
                                 label="Forgot password?"
-                                class="text-black! p-0!"
+                                class="p-0! text-black!"
                                 pt:label:class="font-normal!"
                             />
                         </div>
-                        <div class="p-2 w-1/2 flex flex-col">
+                        <div class="flex w-1/2 flex-col p-2">
                             <span class="text-end">Don't have an account?</span>
                             <div class="flex justify-end">
                                 <Button
@@ -82,10 +97,16 @@
                 </template>
             </LoginForm>
         </Dialog>
-        <Dialog v-model:visible="registerFormVisible" modal header="Register" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog
+            v-model:visible="registerFormVisible"
+            modal
+            header="Register"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
             <RegisterForm>
                 <template #footer>
-                    <div class="p-2 flex justify-center">
+                    <div class="flex justify-center p-2">
                         <span>Already have an account?</span>
                         &nbsp;
                         <Button
@@ -103,30 +124,33 @@
     </div>
 </template>
 <script setup lang="ts">
-import Icon from '@/../img/logo.png';
-import LoginForm from '@/components/forms/LoginForm.vue';
-import RegisterForm from '@/components/forms/RegisterForm.vue';
-import { SearchErrorInterface, SearchProductInterface } from '@/interfaces/SearchProductInterface';
-import Page from '@/stores/Page';
-import { reactive, ref } from 'vue';
+import Icon from "@/../img/logo.png";
+import LoginForm from "@/components/forms/LoginForm.vue";
+import RegisterForm from "@/components/forms/RegisterForm.vue";
+import {
+    SearchErrorInterface,
+    SearchProductInterface,
+} from "@/interfaces/SearchProductInterface";
+import Page from "@/stores/Page";
+import { reactive, ref } from "vue";
 
 const appName = import.meta.env.VITE_APP_NAME;
 const loginFormVisible = ref<boolean>(false);
 const registerFormVisible = ref<boolean>(false);
-const form : SearchProductInterface = reactive({
+const form: SearchProductInterface = reactive({
     search: null,
 });
-const errors : SearchErrorInterface = reactive({
+const errors: SearchErrorInterface = reactive({
     search: [],
 });
 
 const openLoginForm = () => {
     registerFormVisible.value = false;
     loginFormVisible.value = true;
-}
+};
 
 const openRegisterForm = () => {
     loginFormVisible.value = false;
     registerFormVisible.value = true;
-}
+};
 </script>

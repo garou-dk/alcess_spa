@@ -11,7 +11,8 @@ use Ramsey\Uuid\Uuid;
 
 class MailerService
 {
-    public function sendEmailVerification(User $user) {
+    public function sendEmailVerification(User $user)
+    {
         $uuid = Uuid::uuid4()->toString();
 
         $expiration = now()->addDay();
@@ -19,7 +20,7 @@ class MailerService
         Cache::put("user-info-verification-{$user->user_id}", [
             'user_id' => $user->user_id,
             'tries' => 1,
-            'uuid' => $uuid
+            'uuid' => $uuid,
         ], $expiration);
 
         Cache::put("user-send-verification-{$uuid}", [
@@ -30,12 +31,12 @@ class MailerService
             'verify-email',
             $expiration,
             [
-                'uuid' => $uuid
+                'uuid' => $uuid,
             ]
         );
 
-        $link = url('verify') . '?' . http_build_query([
-            'link' => urlencode($url)
+        $link = url('verify').'?'.http_build_query([
+            'link' => urlencode($url),
         ]);
 
         $formattedDate = $expiration->format('F j, Y, \a\t h:i A');

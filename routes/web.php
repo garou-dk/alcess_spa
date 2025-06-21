@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('welcome'))->name('index');
+Route::get('/', fn () => view('welcome'))->name('index');
 
 Route::view('/{any}', 'welcome')->where('any', '.*');

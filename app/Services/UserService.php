@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\URL;
-use Ramsey\Uuid\Uuid;
 
 class UserService
 {
-    public function createUser(array $data) {
+    public function createUser(array $data)
+    {
         $user = User::query()
             ->create([
                 'full_name' => $data['full_name'],
@@ -25,7 +24,8 @@ class UserService
         return $user;
     }
 
-    public function verifyEmail(array $data) {
+    public function verifyEmail(array $data)
+    {
         if (Cache::has("user-send-verification-{$data['uuid']}")) {
             $info = Cache::get("user-send-verification-{$data['uuid']}");
 

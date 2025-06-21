@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -26,7 +25,7 @@ class CategorySeeder extends Seeder
                 'category_slug' => Str::slug('PC'),
                 'category_image' => null,
                 'editable' => false,
-            ]
+            ],
         ];
 
         foreach ($categories as $key => $value) {

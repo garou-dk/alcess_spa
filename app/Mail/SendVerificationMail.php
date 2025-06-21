@@ -5,10 +5,10 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Address;
 
 class SendVerificationMail extends Mailable implements ShouldQueue
 {
@@ -17,10 +17,7 @@ class SendVerificationMail extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      */
-    public function __construct(public string $email, public string $link, public string $expiration)
-    {
-        
-    }
+    public function __construct(public string $email, public string $link, public string $expiration) {}
 
     /**
      * Get the message envelope.

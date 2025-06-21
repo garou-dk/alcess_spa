@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\LoginRequest;
 use App\Services\AuthService;
-use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
     public function __construct(public AuthService $service) {}
 
-    public function authenticateCustomer(LoginRequest $request) {
+    public function authenticateCustomer(LoginRequest $request)
+    {
         $data = $request->validated() + [
             'role_id' => 2,
         ];
@@ -22,7 +22,8 @@ class AuthController extends Controller
             ->response();
     }
 
-    public function authenticateAdmin(LoginRequest $request) {
+    public function authenticateAdmin(LoginRequest $request)
+    {
         $data = $request->validated() + [
             'role_id' => 1,
         ];
@@ -33,7 +34,8 @@ class AuthController extends Controller
             ->response();
     }
 
-    public function checkAuth() {
+    public function checkAuth()
+    {
         $result = $this->service->getAuth();
 
         return ApiResponse::success()

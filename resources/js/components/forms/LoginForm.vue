@@ -7,7 +7,7 @@
                 labelName="Email"
                 tag="label"
             >
-                <InputText 
+                <InputText
                     type="email"
                     v-model="form.email"
                     :invalid="errors.email.length > 0"
@@ -25,18 +25,18 @@
                 labelName="Password"
                 tag="label"
             >
-                <Password 
+                <Password
                     v-model="form.password"
                     :invalid="errors.password.length > 0"
                     placeholder="Password"
-                    fluid                    
+                    fluid
                     :feedback="false"
                     :toggleMask="true"
                     input-id="password"
                 />
             </InputForm>
         </div>
-        <div class="p-2 flex justify-center">
+        <div class="flex justify-center p-2">
             <Button
                 type="submit"
                 label="Login"
@@ -48,67 +48,65 @@
     </form>
 </template>
 <script setup lang="ts">
-import { LoginFormErrorInterface, LoginFormInterface } from '@/interfaces/LoginFormInterface';
-import useAxiosUtil from '@/utils/AxiosUtil';
-import { reactive } from 'vue';
-import { useToast } from 'vue-toastification';
+import {
+    LoginFormErrorInterface,
+    LoginFormInterface,
+} from "@/interfaces/LoginFormInterface";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { reactive } from "vue";
+import { useToast } from "vue-toastification";
 
 const toast = useToast();
-const authService = useAxiosUtil<LoginFormInterface, Object>();
-const form : LoginFormInterface = reactive({
+const authService = useAxiosUtil<LoginFormInterface, object>();
+const form: LoginFormInterface = reactive({
     email: null,
-    password: null
+    password: null,
 });
-const errors : LoginFormErrorInterface = reactive({
+const errors: LoginFormErrorInterface = reactive({
     email: [],
-    password: []
+    password: [],
 });
 
 const clearErrors = () => {
-    Object.keys(errors).forEach(key => {
+    Object.keys(errors).forEach((key) => {
         errors[key] = [];
     });
-}
+};
 
 const validate = () => {
     clearErrors();
     if (!form.email) {
-        errors.email.push('Email is required');
+        errors.email.push("Email is required");
     }
     if (!form.password) {
-        errors.password.push('Password is required');
+        errors.password.push("Password is required");
     }
 
-    const hasErrors = [
-        errors.email.length > 0,
-        errors.password.length > 0
-    ];
-
-    console.log(hasErrors);
-    
+    const hasErrors = [errors.email.length > 0, errors.password.length > 0];
 
     return hasErrors.includes(true) ? false : form;
-}
+};
 
-const handleSubmit = async() => {
+const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        await authService.post('login', data).then(() => {
-            if (authService.request.status === 200 && authService.request.data) {
-                console.log(authService.request.data);
-            }
-            else {
-                toast.error(authService.request.message ?? 'Please try again.');
+        await authService.post("login", data).then(() => {
+            if (
+                authService.request.status === 200 &&
+                authService.request.data
+            ) {
+                // console.log(authService.request.data);
+            } else {
+                toast.error(authService.request.message ?? "Please try again.");
                 if (authService.request.errors) {
-                    Object.keys(authService.request.errors).forEach(key => {
+                    Object.keys(authService.request.errors).forEach((key) => {
                         errors[key] = authService.request.errors[key];
                     });
                 }
             }
         });
+    } else {
+        toast.error("Please fill in the required fields.");
     }
-    else {
-        toast.error('Please fill in the required fields.');
-    }
-}
+};
 </script>

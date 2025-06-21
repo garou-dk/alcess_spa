@@ -16,56 +16,59 @@ const router = createRouter({
             name: "home",
             component: HomeView,
             meta: {
-                access: [null]
-            }
+                access: [null],
+            },
         },
         {
             path: "/verify",
             name: "verify",
             component: EmailVerificationView,
             meta: {
-                access: [null]
-            }
-        }
-    ]
+                access: [null],
+            },
+        },
+    ],
 });
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     if (!Page.loaded) {
-        await authService.get("check", null).then(() => {
-            if (authService.request.status === 200 && authService.request.data) {
-                Page.user = authService.request.data;
-            }
-            else {
-                Page.user = null;
-            }
-        }).finally(() => {
-            Page.loaded = true;
-        });
+        await authService
+            .get("check", null)
+            .then(() => {
+                if (
+                    authService.request.status === 200 &&
+                    authService.request.data
+                ) {
+                    Page.user = authService.request.data;
+                } else {
+                    Page.user = null;
+                }
+            })
+            .finally(() => {
+                Page.loaded = true;
+            });
     }
     if (Page.user) {
         if (
-            Array.isArray(to.meta.access) && 
+            Array.isArray(to.meta.access) &&
             to.meta.access.includes(Page.user.role.role_name)
         ) {
             next();
-        }
-        else {
+        } else {
             // To-do: Add more role redirection
-            if (getStoreCustomers().includes(Page.user.role.role_name as RoleEnum)) {
-                next({ name: 'home' });
+            if (
+                getStoreCustomers().includes(
+                    Page.user.role.role_name as RoleEnum,
+                )
+            ) {
+                next({ name: "home" });
             }
         }
-    }
-    else {
-        if (
-            Array.isArray(to.meta.access) && 
-            to.meta.access.includes(null)
-        ) {
+    } else {
+        if (Array.isArray(to.meta.access) && to.meta.access.includes(null)) {
             next();
-        }
-        else {
-            next({ name: 'home' })
+        } else {
+            next({ name: "home" });
         }
     }
 });
