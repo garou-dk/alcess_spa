@@ -68,18 +68,19 @@ export default function useAxiosUtil<Input, Output>() {
         }
     };
 
-    const post = async (url: string, data: Input) => {
+    const post = async (url: string, data: Input, useApi : boolean = true) => {
         request.loading = true;
-        await getCsrfCookie();
-        await axios({
-            url: "/api/" + url,
+        const settings = {
+            url: useApi ? "/api/" + url : url,
             method: "POST",
             data: data,
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
             },
-        })
+        };
+        await getCsrfCookie();
+        await axios(settings)
             .then((response) => {
                 setResult(response);
             })
@@ -88,6 +89,7 @@ export default function useAxiosUtil<Input, Output>() {
             })
             .finally(() => {
                 request.loading = false;
+                axios.defaults.baseURL = import.meta.env.APP_URL;
             });
     };
 
@@ -237,5 +239,6 @@ export default function useAxiosUtil<Input, Output>() {
         deleteRequest,
         patchFormData,
         getFile,
+        axios
     };
 }

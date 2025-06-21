@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/pages/HomeView.vue";
 import Page from "@/stores/Page";
-import useAxiosUtil from "./utils/AxiosUtil";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import EmailVerificationView from "@/pages/EmailVerificationView.vue";
+import { UserInterface } from "@/interfaces/UserInterface";
+import { getStoreCustomers, RoleEnum } from "./enums/RoleEnum";
 
-const authService = useAxiosUtil<null, Object>();
+const authService = useAxiosUtil<null, UserInterface>();
 
 const router = createRouter({
     history: createWebHistory(),
@@ -11,7 +14,18 @@ const router = createRouter({
         {
             path: "/",
             name: "home",
-            component: HomeView
+            component: HomeView,
+            meta: {
+                access: [null]
+            }
+        },
+        {
+            path: "/verify",
+            name: "verify",
+            component: EmailVerificationView,
+            meta: {
+                access: [null]
+            }
         }
     ]
 });
@@ -29,7 +43,31 @@ router.beforeEach(async(to, from, next) => {
             Page.loaded = true;
         });
     }
-    next();
+    if (Page.user) {
+        if (
+            Array.isArray(to.meta.access) && 
+            to.meta.access.includes(Page.user.role.role_name)
+        ) {
+            next();
+        }
+        else {
+            // To-do: Add more role redirection
+            if (getStoreCustomers().includes(Page.user.role.role_name as RoleEnum)) {
+                next({ name: 'home' });
+            }
+        }
+    }
+    else {
+        if (
+            Array.isArray(to.meta.access) && 
+            to.meta.access.includes(null)
+        ) {
+            next();
+        }
+        else {
+            next({ name: 'home' })
+        }
+    }
 });
 
 export default router;

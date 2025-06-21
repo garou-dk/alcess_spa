@@ -105,6 +105,7 @@
                 type="submit"
                 label="Sign Up"
                 fluid
+                :loading="registerService.request.loading"
             />
         </div>
         <slot name="footer" />
@@ -112,7 +113,13 @@
 </template>
 <script setup lang="ts">
 import { RegisterFormErrorInterface, RegisterFormInterface } from '@/interfaces/RegisterFormInterface';
+import { UserInterface } from '@/interfaces/UserInterface';
+import useAxiosUtil from '@/utils/AxiosUtil';
 import { computed, reactive, ref } from 'vue';
+import { useToast } from 'vue-toastification';
+
+const registerService = useAxiosUtil<RegisterFormInterface, UserInterface>();
+const toast = useToast();
 
 const strongRegex = ref(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/);
 const mediumRegex = ref(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/);
@@ -145,6 +152,13 @@ const clearErrors = () => {
     errors.password_confirmation = [];
 }
 
+const clearForm = () => {
+    form.full_name = null;
+    form.email = null;
+    form.password = null;
+    form.password_confirmation = null;
+}
+
 const validate = () => {
     clearErrors();
     if (!form.full_name) {
@@ -172,5 +186,21 @@ const validate = () => {
 
 const handleSubmit = async() => {
     const data = validate();
+    if (data) {
+        await registerService.post('register', data).then(() => {
+            if (registerService.request.status === 200 && registerService.request.data) {
+                clearForm();
+                toast.success(registerService.request.message);
+            }
+            else {
+                toast.error(registerService.request.message ?? 'Please try again.');
+                if (registerService.request.errors) {
+                    Object.keys(registerService.request.errors).forEach(key => {
+                        errors[key] = registerService.request.errors[key];
+                    });
+                }
+            }
+        });
+    }
 }
 </script>
