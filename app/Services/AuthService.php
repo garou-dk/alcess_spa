@@ -21,6 +21,12 @@ class AuthService
 
         abort_unless(Hash::check($data['password'], $user->password), 401, 'Invalid credentials');
 
+        if (! $user->hasVerifiedEmail()) {
+            $mailer = new MailerService;
+            $mailer->sendEmailVerification($user);
+            abort(401, 'We sent you an email to verify your account. Please check your email inbox or spam folder.');
+        }
+
         Auth::guard('web')
             ->login($user);
 
@@ -31,7 +37,7 @@ class AuthService
 
     public function getAuth()
     {
-        abort_unless(Auth::guard('web')->check(), 401, 'Unauthorized'.'-'.Auth::guard('web')->check());
+        abort_unless(Auth::check(), 401, 'Unauthorized');
 
         $user = Auth::user()->load(['role']);
 
@@ -40,8 +46,8 @@ class AuthService
 
     public function logoutUser()
     {
-        if (Auth::guard('web')->check()) {
-            Auth::guard('web')->logout();
+        if (Auth::check()) {
+            Auth::logout();
         }
 
         return true;

@@ -38,6 +38,7 @@
                     <Button type="button" label="Home" raised />
                 </RouterLink>
                 <Button
+                    v-if="submitService.request.status !== 200"
                     type="button"
                     label="Retry"
                     icon="pi pi-refresh"

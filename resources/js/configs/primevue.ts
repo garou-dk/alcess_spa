@@ -25,6 +25,16 @@ const config = {
             darkModeSelector: false,
         },
     },
+    pt: {
+        Dialog: {
+            header: {
+                class: "bg-sky-800! text-white! rounded-t-[9px]! border-x-1! border-sky-800! shadow-[0_0_0_1px_#075985]!",
+            },
+            root: {
+                class: "border-1! border-[rgba(0,0,0,0.4)]! pt-0!",
+            },
+        },
+    },
 };
 
 export default {

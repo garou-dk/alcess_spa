@@ -2,12 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('check', [AuthController::class, 'checkAuth']);
+});
 
 Route::middleware(['guest-only'])
     ->group(function () {
@@ -18,5 +17,3 @@ Route::middleware(['guest-only'])
         });
         Route::post('verify/{uuid}', [UserController::class, 'verifyEmail'])->middleware('signed')->name('verify-email');
     });
-
-Route::get('check', [AuthController::class, 'checkAuth']);

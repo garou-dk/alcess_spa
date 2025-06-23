@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function authenticateCustomer(LoginRequest $request)
     {
         $data = $request->validated() + [
-            'role_id' => 2,
+            'role_id' => 3,
         ];
         $result = $this->service->loginUser($data);
 
