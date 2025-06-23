@@ -98,21 +98,27 @@ const validate = () => {
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        await authService.post(props.admin ? "admin/login" : "login", data).then(() => {
-            if (
-                authService.request.status === 200 &&
-                authService.request.data
-            ) {
-                Page.user = authService.request.data;
-            } else {
-                toast.error(authService.request.message ?? "Please try again.");
-                if (authService.request.errors) {
-                    Object.keys(authService.request.errors).forEach((key) => {
-                        errors[key] = authService.request.errors[key];
-                    });
+        await authService
+            .post(props.admin ? "admin/login" : "login", data)
+            .then(() => {
+                if (
+                    authService.request.status === 200 &&
+                    authService.request.data
+                ) {
+                    Page.user = authService.request.data;
+                } else {
+                    toast.error(
+                        authService.request.message ?? "Please try again.",
+                    );
+                    if (authService.request.errors) {
+                        Object.keys(authService.request.errors).forEach(
+                            (key) => {
+                                errors[key] = authService.request.errors[key];
+                            },
+                        );
+                    }
                 }
-            }
-        });
+            });
     } else {
         toast.error("Please fill in the required fields.");
     }

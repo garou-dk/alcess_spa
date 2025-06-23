@@ -32,7 +32,7 @@ const router = createRouter({
                         access: [null],
                     },
                 },
-            ]
+            ],
         },
         {
             path: "/verify",

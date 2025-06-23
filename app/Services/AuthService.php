@@ -13,8 +13,8 @@ class AuthService
         $user = User::query()
             ->where([
                 'email' => $data['email'],
-                'role_id' => $data['role_id'],
             ])
+            ->whereIn('role_id', $data['role_id'])
             ->first();
 
         abort_if(empty($user), 401, 'Invalid credentials');

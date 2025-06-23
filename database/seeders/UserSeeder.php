@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
                 'password' => 'Admin@123',
                 'role_id' => Role::query()->where('role_name', 'Admin')->valueOrFail('role_id'),
                 'image' => null,
+                'email_verified_at' => now(),
             ],
         ];
 
