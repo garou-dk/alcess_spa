@@ -4,7 +4,8 @@ import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import EmailVerificationView from "@/pages/EmailVerificationView.vue";
 import { UserInterface } from "@/interfaces/UserInterface";
-import { getStoreCustomers, RoleEnum } from "./enums/RoleEnum";
+import { getStoreCustomers, RoleEnum } from "@/enums/RoleEnum";
+import AdminLoginView from "@/pages/AdminLoginView.vue";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -18,6 +19,20 @@ const router = createRouter({
             meta: {
                 access: [null],
             },
+        },
+        {
+            path: "/admin",
+            redirect: { name: "admin.login" },
+            children: [
+                {
+                    path: "login",
+                    name: "admin.login",
+                    component: AdminLoginView,
+                    meta: {
+                        access: [null],
+                    },
+                },
+            ]
         },
         {
             path: "/verify",

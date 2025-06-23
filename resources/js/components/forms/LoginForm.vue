@@ -42,6 +42,7 @@
                 label="Login"
                 :loading="authService.request.loading"
                 fluid
+                pt:root:class="bg-sky-800! rounded-3xl!"
             />
         </div>
         <slot name="footer" />
@@ -52,12 +53,19 @@ import {
     LoginFormErrorInterface,
     LoginFormInterface,
 } from "@/interfaces/LoginFormInterface";
+import { UserInterface } from "@/interfaces/UserInterface";
+import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { reactive } from "vue";
 import { useToast } from "vue-toastification";
 
+interface Props {
+    admin?: boolean;
+}
+
+const props = defineProps<Props>();
 const toast = useToast();
-const authService = useAxiosUtil<LoginFormInterface, object>();
+const authService = useAxiosUtil<LoginFormInterface, UserInterface>();
 const form: LoginFormInterface = reactive({
     email: null,
     password: null,
@@ -90,12 +98,12 @@ const validate = () => {
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        await authService.post("login", data).then(() => {
+        await authService.post(props.admin ? "admin/login" : "login", data).then(() => {
             if (
                 authService.request.status === 200 &&
                 authService.request.data
             ) {
-                // console.log(authService.request.data);
+                Page.user = authService.request.data;
             } else {
                 toast.error(authService.request.message ?? "Please try again.");
                 if (authService.request.errors) {
