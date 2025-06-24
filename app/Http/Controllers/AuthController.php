@@ -42,4 +42,12 @@ class AuthController extends Controller
             ->data($result)
             ->response();
     }
+
+    public function logoutUser() {
+        $result = $this->service->logoutUser();
+
+        return ApiResponse::success()
+            ->data($result)
+            ->response();
+    }
 }

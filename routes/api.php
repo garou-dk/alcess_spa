@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
+    Route::post('logout', [AuthController::class, 'logoutUser']);
+
 });
 
 Route::middleware(['guest-only'])

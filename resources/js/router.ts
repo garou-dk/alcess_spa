@@ -7,6 +7,7 @@ import { UserInterface } from "@/interfaces/UserInterface";
 import { getStoreCustomers, getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
 import AdminLoginView from "@/pages/AdminLoginView.vue";
 import AdminIndex from "@/pages/AdminIndex.vue";
+import DashboardRoute from "@/routes/DashboardRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -19,6 +20,8 @@ const router = createRouter({
             component: HomeView,
             meta: {
                 access: getStoreCustomers(),
+                pageName: "Home",
+                pageSubName: "Home",
             },
         },
         {
@@ -31,15 +34,23 @@ const router = createRouter({
                     component: AdminLoginView,
                     meta: {
                         access: [null],
+                        pageName: "Administrator Login",
+                        pageSubName: "Administrator Login",
                     },
                 },
                 {
                     path: "app",
                     name: "admin.app",
                     component: AdminIndex,
+                    redirect: { name: "admin.dashboard.index" },
                     meta: {
                         access: getStoreRoles(),
+                        pageName: "App",
+                        pageSubName: "App",
                     },
+                    children: [
+                        { ...DashboardRoute },
+                    ]
                 }
             ],
         },

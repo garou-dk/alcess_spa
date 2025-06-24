@@ -26,26 +26,11 @@
             icon="pi pi-book"
             label="Inventory"
         />
-        <SideBarAccordion
+        <SideBarButton
+            to=""
             icon="pi pi-users"
             label="Users"
-        >
-            <SideBarButton
-                to=""
-                icon="pi pi-user"
-                label="Admin"
-            />
-            <SideBarButton
-                to=""
-                icon="pi pi-user"
-                label="Staff"
-            />
-            <SideBarButton
-                to=""
-                icon="pi pi-user"
-                label="Customer"
-            />
-        </SideBarAccordion>
+        />
         <SideBarAccordion
             icon="pi pi-cog"
             label="Settings"

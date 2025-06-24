@@ -18,11 +18,16 @@
         </Drawer>
         <div class="grow bg-gray-100">
             <AdminNavBar />
+            <AdminNavInfo />
+            <div class="p-5">
+                <RouterView />
+            </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import AdminNavBar from '@/components/admin/AdminNavBar.vue';
+import AdminNavInfo from '@/components/admin/AdminNavInfo.vue';
 import AdminSideBar from '@/components/admin/AdminSideBar.vue';
 import { onMounted, provide, ref } from 'vue';
 

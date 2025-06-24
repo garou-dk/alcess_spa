@@ -39,15 +39,17 @@ class AuthService
     {
         abort_unless(Auth::check(), 401, 'Unauthorized');
 
-        $user = Auth::user()->load(['role']);
+        $user = Auth::guard('web')->user()->load(['role']);
 
         return $user;
     }
 
     public function logoutUser()
     {
-        if (Auth::check()) {
-            Auth::logout();
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+            session()->flush();
+            session()->regenerate();
         }
 
         return true;

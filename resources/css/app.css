@@ -58,4 +58,8 @@
     .shadow-bottom-float {
         box-shadow: 4px 4px 4px 0px rgba(134, 134, 134, 0.75);
     }
+    
+    .shadow-bottom {
+        box-shadow: 0px 4px 4px 0px rgba(134, 134, 134, 0.75);
+    }
 }
