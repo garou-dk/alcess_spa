@@ -49,6 +49,7 @@
     </form>
 </template>
 <script setup lang="ts">
+import { getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
 import {
     LoginFormErrorInterface,
     LoginFormInterface,
@@ -57,12 +58,14 @@ import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { reactive } from "vue";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
 interface Props {
     admin?: boolean;
 }
 
+const router = useRouter();
 const props = defineProps<Props>();
 const toast = useToast();
 const authService = useAxiosUtil<LoginFormInterface, UserInterface>();
@@ -106,6 +109,9 @@ const handleSubmit = async () => {
                     authService.request.data
                 ) {
                     Page.user = authService.request.data;
+                    if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
+                        router.push({ name: "admin.app" });
+                    }
                 } else {
                     toast.error(
                         authService.request.message ?? "Please try again.",

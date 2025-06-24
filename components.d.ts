@@ -10,9 +10,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    Drawer: typeof import('primevue/drawer')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    OverlayBadge: typeof import('primevue/overlaybadge')['default']
     Password: typeof import('primevue/password')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

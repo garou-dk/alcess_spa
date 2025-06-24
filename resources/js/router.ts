@@ -4,8 +4,9 @@ import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import EmailVerificationView from "@/pages/EmailVerificationView.vue";
 import { UserInterface } from "@/interfaces/UserInterface";
-import { getStoreCustomers, RoleEnum } from "@/enums/RoleEnum";
+import { getStoreCustomers, getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
 import AdminLoginView from "@/pages/AdminLoginView.vue";
+import AdminIndex from "@/pages/AdminIndex.vue";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -17,7 +18,7 @@ const router = createRouter({
             name: "home",
             component: HomeView,
             meta: {
-                access: [null],
+                access: getStoreCustomers(),
             },
         },
         {
@@ -32,6 +33,14 @@ const router = createRouter({
                         access: [null],
                     },
                 },
+                {
+                    path: "app",
+                    name: "admin.app",
+                    component: AdminIndex,
+                    meta: {
+                        access: getStoreRoles(),
+                    },
+                }
             ],
         },
         {
