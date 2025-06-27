@@ -1,35 +1,39 @@
 <template>
     <header>
-        <nav class="relative shadow-bottom-float z-20 bg-white p-5 flex">
+        <nav class="shadow-bottom-float relative z-20 flex bg-white p-5">
             <div class="grow">
-                <Button type="button" variant="link" raised icon="pi pi-bars" class="text-2xl text-gray-500!"
-                    @click="sideBar = !sideBar" />
+                <Button
+                    type="button"
+                    variant="link"
+                    raised
+                    icon="pi pi-bars"
+                    class="text-2xl text-gray-500!"
+                    @click="sideBar = !sideBar"
+                />
             </div>
-            <div class="flex items-center justify-end grow px-2 gap-3">
+            <div class="flex grow items-center justify-end gap-3 px-2">
                 <div>
                     <OverlayBadge
                         :value="0"
                         pt:pcBadge:root:class="bg-sky-800! text-white"
                     >
-                        <Button 
+                        <Button
                             type="button"
                             @click="openNotification"
                             icon="pi pi-bell"
                             class="bg-sky-800! text-white"
                         />
                     </OverlayBadge>
-                    <Popover 
-                        ref="notificationElement" 
+                    <Popover
+                        ref="notificationElement"
                         :dismissable="true"
-                        class="inline-flex mr-5"
+                        class="mr-5 inline-flex"
                     >
-                        <div>
-                            Notifications
-                        </div>
+                        <div>Notifications</div>
                     </Popover>
                 </div>
                 <div>
-                    <button 
+                    <button
                         type="button"
                         class="cursor-pointer"
                         @click="openAvatar"
@@ -48,10 +52,10 @@
                             class="bg-sky-800! text-white!"
                         />
                     </button>
-                    <Popover 
-                        ref="avatarElement" 
+                    <Popover
+                        ref="avatarElement"
                         :dismissable="true"
-                        class="inline-flex mr-5"
+                        class="mr-5 inline-flex"
                     >
                         <div>
                             <LogoutButton />
@@ -63,12 +67,12 @@
     </header>
 </template>
 <script setup lang="ts">
-import Page from '@/stores/Page';
-import { Popover } from 'primevue';
-import { inject, ref } from 'vue';
-import LogoutButton from '@/components/LogoutButton.vue';
+import Page from "@/stores/Page";
+import { Popover } from "primevue";
+import { inject, ref } from "vue";
+import LogoutButton from "@/components/LogoutButton.vue";
 
-const sideBar = inject('sideBar');
+const sideBar = inject("sideBar");
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
 const avatarElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -76,11 +80,11 @@ const openNotification = (event: Event) => {
     if (notificationElement.value) {
         notificationElement.value.toggle(event);
     }
-}
+};
 
 const openAvatar = (event: Event) => {
     if (avatarElement.value) {
         avatarElement.value.toggle(event);
     }
-}
+};
 </script>

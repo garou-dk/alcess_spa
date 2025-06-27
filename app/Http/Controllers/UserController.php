@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\FetchUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
 
@@ -34,6 +35,25 @@ class UserController extends Controller
         return ApiResponse::success()
             ->data($result)
             ->message('Verification link has been sent to your email')
+            ->response();
+    }
+
+    public function createUser(UserRequest $request)
+    {
+        $result = $this->service->createUser($request->validated());
+
+        return ApiResponse::success()
+            ->data($result)
+            ->message('User created successfully')
+            ->response();
+    }
+
+    public function index(FetchUserRequest $request)
+    {
+        $data = $request->validated();
+
+        return ApiResponse::success()
+            ->data($this->service->fetchUserPaginate($data))
             ->response();
     }
 }

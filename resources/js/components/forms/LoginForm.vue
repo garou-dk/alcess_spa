@@ -109,7 +109,11 @@ const handleSubmit = async () => {
                     authService.request.data
                 ) {
                     Page.user = authService.request.data;
-                    if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
+                    if (
+                        getStoreRoles().includes(
+                            Page.user.role.role_name as RoleEnum,
+                        )
+                    ) {
                         router.push({ name: "admin.app" });
                     }
                 } else {

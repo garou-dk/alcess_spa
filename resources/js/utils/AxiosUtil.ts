@@ -93,7 +93,7 @@ export default function useAxiosUtil<Input, Output>() {
             });
     };
 
-    const get = async (url: string, query: Input) => {
+    const get = async (url: string, query?: Input) => {
         request.loading = true;
         await getCsrfCookie();
         await axios({

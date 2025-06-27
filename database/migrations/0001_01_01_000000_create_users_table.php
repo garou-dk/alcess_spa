@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('role_id')->constrained('roles', 'role_id');
             $table->string('image')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->softDeletesDatetime();
             $table->rememberToken();
             $table->timestamps();

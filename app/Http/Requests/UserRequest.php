@@ -35,6 +35,7 @@ class UserRequest extends FormRequest
                 Rule::requiredIf($requireRole),
                 'exists:roles,role_id',
             ],
+            'image' => ['bail', 'nullable', 'file', 'mimetypes:image/jpeg,image/png', 'max:2048'],
         ];
     }
 }

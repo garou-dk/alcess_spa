@@ -2,23 +2,30 @@
 
 namespace App\Services;
 
+use App\Enums\FileDirectoryEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 class UserService
 {
-    public function createUser(array $data)
+    public function createUser(array $data): User
     {
-        $user = User::query()
-            ->create([
-                'full_name' => $data['full_name'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-                'role_id' => $data['role_id'] ?? 3,
-            ]);
+        $user = new User;
+        $user->full_name = $data['full_name'];
+        $user->email = $data['email'];
+        $user->password = $data['password'];
+        $user->role_id = $data['role_id'] ?? 3;
+
+        if (isset($data['image'])) {
+            $manageService = new ManageFileService;
+            $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value);
+
+            $user->image = $result['file_name'];
+        }
+
+        $user->save();
 
         $mailer = new MailerService;
-
         $mailer->sendEmailVerification($user);
 
         return $user;
@@ -43,5 +50,21 @@ class UserService
         }
 
         return false;
+    }
+
+    public function fetchUserPaginate(array $data)
+    {
+        $user = User::query();
+        $user->with(['role']);
+
+        if (! empty($data['search']) && ! blank($data['search'])) {
+            $user->whereLike('full_name', "%{$data['search']}%");
+        }
+        if (isset($data['status'])) {
+            $user->where('is_active', $data['status']);
+        }
+        $user->where('role_id', $data['role_id']);
+
+        return $user->paginate($data['limit'] ?? 5);
     }
 }
