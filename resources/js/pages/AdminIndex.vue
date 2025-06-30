@@ -13,7 +13,7 @@
         <Drawer v-if="mobileMode" v-model:visible="sideBar">
             <AdminSideBar />
         </Drawer>
-        <div class="grow bg-gray-100">
+        <div class="grow bg-gray-100 h-full overflow-auto">
             <AdminNavBar />
             <AdminNavInfo />
             <div class="p-5">

@@ -1,5 +1,5 @@
 <template>
-    <header>
+    <header class="sticky top-0 z-10">
         <nav class="shadow-bottom-float relative z-20 flex bg-white p-5">
             <div class="grow">
                 <Button
