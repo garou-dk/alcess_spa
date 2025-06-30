@@ -67,4 +67,16 @@ class UserService
 
         return $user->paginate($data['limit'] ?? 5);
     }
+
+    public function changeName(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        $user->full_name = $data['full_name'];
+        $user->save();
+
+        return $user;
+    }
 }

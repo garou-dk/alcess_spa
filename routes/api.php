@@ -17,6 +17,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('users')->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'createUser');
+                    Route::patch('/change-name/{id}', 'changeName');
                     // Route::get('/{id}', 'fetchUser');
                     // Route::post('/', 'createUser');
                     // Route::put('/{id}', 'updateUser');

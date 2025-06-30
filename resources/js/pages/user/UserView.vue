@@ -127,8 +127,12 @@
                         </template>
                     </Column>
                     <Column header="Action">
-                        <template #body>
-                            <Button type="button" icon="pi pi-pencil" />
+                        <template #body="{ data }">
+                            <Button
+                                type="button"
+                                @click="openEditElement($event, data)"
+                                icon="pi pi-pencil"
+                            />
                         </template>
                     </Column>
                     <template #empty>
@@ -182,9 +186,35 @@
         >
             <UserForm @cb="load" />
         </Dialog>
+        <Dialog
+            v-model:visible="showChangeNameForm"
+            modal
+            header="Change name"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <ChangeNameForm
+                v-if="selectedUser"
+                @cb="load"
+                :data="selectedUser"
+            />
+        </Dialog>
+        <Popover ref="editElement" :dismissable="true" class="mr-5 inline-flex">
+            <div v-if="selectedUser">
+                <button
+                    type="button"
+                    @click="showChangeNameForm = true"
+                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
+                >
+                    <i class="pi pi-clipboard" />
+                    Change Name
+                </button>
+            </div>
+        </Popover>
     </div>
 </template>
 <script setup lang="ts">
+import ChangeNameForm from "@/components/forms/ChangeNameForm.vue";
 import UserForm from "@/components/forms/UserForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
@@ -195,6 +225,7 @@ import {
 import { useRoleStore } from "@/stores/RoleState";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import UrlUtil from "@/utils/UrlUtil";
+import { Popover } from "primevue";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useToast } from "vue-toastification";
 
@@ -205,11 +236,21 @@ const loadService = useAxiosUtil<
 >();
 const roleStore = useRoleStore();
 const showUserForm = ref<boolean>(false);
+const editElement = ref<null | InstanceType<typeof Popover>>();
+const selectedUser = ref<UserInterface | null>(null);
+const showChangeNameForm = ref<boolean>(false);
 
 const statuses = [
     { label: "Active", value: 1 },
     { label: "Inactive", value: 0 },
 ];
+
+const openEditElement = (event: Event, value: UserInterface) => {
+    if (editElement.value) {
+        editElement.value.toggle(event);
+        selectedUser.value = value;
+    }
+};
 
 const form: UserSearchInterface = reactive({
     search: null,
