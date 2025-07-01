@@ -132,4 +132,18 @@ class UserService
 
         return $user;
     }
+
+    public function changeStatus(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        abort_if(empty($user), 404, 'User not found');
+
+        $user->is_active = $data['is_active'];
+        $user->save();
+
+        return $user;
+    }
 }

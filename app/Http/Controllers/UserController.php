@@ -7,6 +7,7 @@ use App\Http\Requests\ChangeNameRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ChangeProfileRequest;
 use App\Http\Requests\ChangeRoleRequest;
+use App\Http\Requests\ChangeUserStatusRequest;
 use App\Http\Requests\FetchUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
@@ -106,6 +107,18 @@ class UserController extends Controller
         return ApiResponse::success()
             ->data($this->service->changeRole($data))
             ->message('Role changed successfully')
+            ->response();
+    }
+
+    public function changeStatus(string $id, ChangeUserStatusRequest $request)
+    {
+        $data = $request->validated() + [
+            'user_id' => $id,
+        ];
+
+        return ApiResponse::success()
+            ->data($this->service->changeStatus($data))
+            ->message('Status changed successfully')
             ->response();
     }
 }

@@ -11,7 +11,7 @@ interface UserInterface {
     email_verified_at: string;
     role_id: number;
     image: string | null;
-    is_active: boolean;
+    is_active: number;
     role: RoleInterface;
 }
 

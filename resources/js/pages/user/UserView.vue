@@ -56,6 +56,7 @@
                                 option-value="value"
                                 label-id="status"
                                 placeholder="Select Status"
+                                show-clear
                             />
                         </InputForm>
                     </div>
@@ -244,7 +245,10 @@
             <div v-if="selectedUser">
                 <button
                     type="button"
-                    @click="showChangeNameForm = true"
+                    @click="
+                        showChangeNameForm = true;
+                        editElement.hide();
+                    "
                     class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-clipboard" />
@@ -252,7 +256,10 @@
                 </button>
                 <button
                     type="button"
-                    @click="showChangePasswordForm = true"
+                    @click="
+                        showChangePasswordForm = true;
+                        editElement.hide();
+                    "
                     class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-lock" />
@@ -260,7 +267,10 @@
                 </button>
                 <button
                     type="button"
-                    @click="showChangeProfileForm = true"
+                    @click="
+                        showChangeProfileForm = true;
+                        editElement.hide();
+                    "
                     class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-image" />
@@ -268,12 +278,20 @@
                 </button>
                 <button
                     type="button"
-                    @click="showChangeRoleForm = true"
+                    @click="
+                        showChangeRoleForm = true;
+                        editElement.hide();
+                    "
                     class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-users" />
                     Change Role
                 </button>
+                <ChangeUserStatusForm
+                    v-if="selectedUser"
+                    @cb="changeStatusFormCb"
+                    :data="selectedUser"
+                />
             </div>
         </Popover>
     </div>
@@ -283,6 +301,7 @@ import ChangeNameForm from "@/components/forms/ChangeNameForm.vue";
 import ChangePasswordForm from "@/components/forms/ChangePasswordForm.vue";
 import ChangeProfileForm from "@/components/forms/ChangeProfileForm.vue";
 import ChangeRoleForm from "@/components/forms/ChangeRoleForm.vue";
+import ChangeUserStatusForm from "@/components/forms/ChangeUserStatusForm.vue";
 import UserForm from "@/components/forms/UserForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
@@ -448,6 +467,11 @@ const changeProfileFormCb = () => {
 
 const changeRoleFormCb = () => {
     showChangeRoleForm.value = false;
+    load();
+};
+
+const changeStatusFormCb = () => {
+    editElement.value.hide();
     load();
 };
 
