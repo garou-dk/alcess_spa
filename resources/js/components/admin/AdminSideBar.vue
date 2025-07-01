@@ -20,8 +20,6 @@
             label="Users"
         />
         <SideBarAccordion icon="pi pi-cog" label="Settings">
-            <SideBarButton to="" icon="pi pi-id-card" label="Profile" />
-            <SideBarButton to="" icon="pi pi-key" label="Password" />
             <SideBarButton to="" icon="pi pi-unit-ruler" label="Units" />
             <SideBarButton to="" icon="pi pi pi-tag" label="Categories" />
         </SideBarAccordion>
