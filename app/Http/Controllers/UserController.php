@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\ChangeNameRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ChangeProfileRequest;
+use App\Http\Requests\ChangeRoleRequest;
 use App\Http\Requests\FetchUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
@@ -93,6 +94,18 @@ class UserController extends Controller
         return ApiResponse::success()
             ->data($this->service->changeProfile($data))
             ->message('Profile updated successfully')
+            ->response();
+    }
+
+    public function changeRole(string $id, ChangeRoleRequest $request)
+    {
+        $data = $request->validated() + [
+            'user_id' => $id,
+        ];
+
+        return ApiResponse::success()
+            ->data($this->service->changeRole($data))
+            ->message('Role changed successfully')
             ->response();
     }
 }

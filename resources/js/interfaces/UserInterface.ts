@@ -9,7 +9,7 @@ interface UserInterface {
     full_name: string;
     email: string;
     email_verified_at: string;
-    role_id: string;
+    role_id: number;
     image: string | null;
     is_active: boolean;
     role: RoleInterface;

@@ -118,4 +118,18 @@ class UserService
 
         return $user;
     }
+
+    public function changeRole(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        abort_if(empty($user), 404, 'User not found');
+
+        $user->role_id = $data['role_id'];
+        $user->save();
+
+        return $user;
+    }
 }

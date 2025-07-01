@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
     Route::post('logout', [AuthController::class, 'logoutUser']);
     Route::prefix('admin')->group(function () {
-        Route::middleware(['role:'.RoleEnum::ADMIN->value.','.RoleEnum::STAFF->value])->group(function () {
+        Route::middleware(['role:'.RoleEnum::ADMIN->value.'-'.RoleEnum::STAFF->value])->group(function () {
             Route::get('roles', [RoleController::class, 'index']);
             Route::controller(UserController::class)
                 ->prefix('users')->group(function () {
@@ -20,6 +20,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/change-name/{id}', 'changeName');
                     Route::patch('/change-password/{id}', 'changePassword');
                     Route::patch('/change-profile/{id}', 'changeProfile');
+                    Route::patch('/change-role/{id}', 'changeRole');
                     // Route::get('/{id}', 'fetchUser');
                     // Route::post('/', 'createUser');
                     // Route::put('/{id}', 'updateUser');

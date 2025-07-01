@@ -227,6 +227,19 @@
                 :data="selectedUser"
             />
         </Dialog>
+        <Dialog
+            v-model:visible="showChangeRoleForm"
+            modal
+            header="Change Role"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <ChangeRoleForm
+                v-if="selectedUser"
+                @cb="changeRoleFormCb"
+                :data="selectedUser"
+            />
+        </Dialog>
         <Popover ref="editElement" :dismissable="true" class="mr-5 inline-flex">
             <div v-if="selectedUser">
                 <button
@@ -253,6 +266,14 @@
                     <i class="pi pi-image" />
                     Change Profile
                 </button>
+                <button
+                    type="button"
+                    @click="showChangeRoleForm = true"
+                    class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
+                >
+                    <i class="pi pi-users" />
+                    Change Role
+                </button>
             </div>
         </Popover>
     </div>
@@ -261,6 +282,7 @@
 import ChangeNameForm from "@/components/forms/ChangeNameForm.vue";
 import ChangePasswordForm from "@/components/forms/ChangePasswordForm.vue";
 import ChangeProfileForm from "@/components/forms/ChangeProfileForm.vue";
+import ChangeRoleForm from "@/components/forms/ChangeRoleForm.vue";
 import UserForm from "@/components/forms/UserForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
@@ -287,6 +309,7 @@ const selectedUser = ref<UserInterface | null>(null);
 const showChangeNameForm = ref<boolean>(false);
 const showChangePasswordForm = ref<boolean>(false);
 const showChangeProfileForm = ref<boolean>(false);
+const showChangeRoleForm = ref<boolean>(false);
 
 const statuses = [
     { label: "Active", value: 1 },
@@ -420,6 +443,11 @@ const changePasswordFormCb = () => {
 
 const changeProfileFormCb = () => {
     showChangeProfileForm.value = false;
+    load();
+};
+
+const changeRoleFormCb = () => {
+    showChangeRoleForm.value = false;
     load();
 };
 

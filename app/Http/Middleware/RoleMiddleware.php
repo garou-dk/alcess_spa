@@ -16,7 +16,7 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $roles): Response
     {
-        $hasAccess = explode(',', $roles);
+        $hasAccess = explode('-', $roles);
         abort_unless(
             in_array(Auth::guard('web')->user()->role->role_name, $hasAccess),
             Response::HTTP_FORBIDDEN,
