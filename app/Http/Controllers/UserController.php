@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Http\Requests\ChangeNameRequest;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\FetchUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
@@ -67,6 +68,17 @@ class UserController extends Controller
         return ApiResponse::success()
             ->data($this->service->changeName($data))
             ->message('Name changed successfully')
+            ->response();
+    }
+
+    public function changePassword(string $id, ChangePasswordRequest $request) {
+        $data = $request->validated() + [
+            'user_id' => $id,
+        ];
+
+        return ApiResponse::success()
+            ->data($this->service->changePassword($data))
+            ->message('Password changed successfully')
             ->response();
     }
 }

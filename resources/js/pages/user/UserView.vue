@@ -199,15 +199,36 @@
                 :data="selectedUser"
             />
         </Dialog>
+        <Dialog
+            v-model:visible="showChangePasswordForm"
+            modal
+            header="Change Password"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <ChangePasswordForm
+                v-if="selectedUser"
+                @cb="load"
+                :data="selectedUser"
+            />
+        </Dialog>
         <Popover ref="editElement" :dismissable="true" class="mr-5 inline-flex">
             <div v-if="selectedUser">
                 <button
                     type="button"
                     @click="showChangeNameForm = true"
-                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
+                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300 w-full"
                 >
                     <i class="pi pi-clipboard" />
                     Change Name
+                </button>
+                <button
+                    type="button"
+                    @click="showChangePasswordForm = true"
+                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300 w-full"
+                >
+                    <i class="pi pi-lock" />
+                    Change Password
                 </button>
             </div>
         </Popover>
@@ -215,6 +236,7 @@
 </template>
 <script setup lang="ts">
 import ChangeNameForm from "@/components/forms/ChangeNameForm.vue";
+import ChangePasswordForm from "@/components/forms/ChangePasswordForm.vue";
 import UserForm from "@/components/forms/UserForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
@@ -239,6 +261,7 @@ const showUserForm = ref<boolean>(false);
 const editElement = ref<null | InstanceType<typeof Popover>>();
 const selectedUser = ref<UserInterface | null>(null);
 const showChangeNameForm = ref<boolean>(false);
+const showChangePasswordForm = ref<boolean>(false);
 
 const statuses = [
     { label: "Active", value: 1 },

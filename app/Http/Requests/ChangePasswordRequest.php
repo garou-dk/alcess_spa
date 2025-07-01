@@ -3,10 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-class UserRequest extends FormRequest
+class ChangePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,19 +22,8 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $requireRole = in_array($this->user()?->role_id, [1, 2]);
-
         return [
-            'full_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols(), 'confirmed'],
-            'role_id' => [
-                'bail',
-                Rule::excludeIf(! $requireRole),
-                Rule::requiredIf($requireRole),
-                'exists:roles,role_id',
-            ],
-            'image' => ['bail', 'nullable', 'file', 'mimetypes:image/jpeg,image/png', 'max:2048'],
         ];
     }
 }

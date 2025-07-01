@@ -79,4 +79,15 @@ class UserService
 
         return $user;
     }
+
+    public function changePassword(array $data) {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        $user->password = $data['password'];
+        $user->save();
+
+        return $user;
+    }
 }
