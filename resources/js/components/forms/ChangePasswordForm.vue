@@ -107,7 +107,10 @@
     </form>
 </template>
 <script setup lang="ts">
-import { ChangePasswordFormErrorInterface, ChangePasswordFormInterface } from "@/interfaces/ChangePasswordFormInterface";
+import {
+    ChangePasswordFormErrorInterface,
+    ChangePasswordFormInterface,
+} from "@/interfaces/ChangePasswordFormInterface";
 import { UserInterface } from "@/interfaces/UserInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { computed, reactive, ref } from "vue";

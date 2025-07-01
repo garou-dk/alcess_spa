@@ -1,7 +1,6 @@
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
 import { definePreset } from "@primeuix/themes";
-import { content } from "@primeuix/themes/aura/accordion";
 
 const config = {
     theme: {
@@ -35,8 +34,8 @@ const config = {
                 class: "border-1! border-[rgba(0,0,0,0.4)]! pt-0!",
             },
             content: {
-                class: "pt-2!"
-            }
+                class: "pt-2!",
+            },
         },
     },
 };

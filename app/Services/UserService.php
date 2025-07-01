@@ -80,7 +80,8 @@ class UserService
         return $user;
     }
 
-    public function changePassword(array $data) {
+    public function changePassword(array $data)
+    {
         $user = User::query()
             ->where('user_id', $data['user_id'])
             ->first();

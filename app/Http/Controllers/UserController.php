@@ -71,7 +71,8 @@ class UserController extends Controller
             ->response();
     }
 
-    public function changePassword(string $id, ChangePasswordRequest $request) {
+    public function changePassword(string $id, ChangePasswordRequest $request)
+    {
         $data = $request->validated() + [
             'user_id' => $id,
         ];

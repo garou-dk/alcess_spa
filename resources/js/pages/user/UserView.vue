@@ -217,7 +217,7 @@
                 <button
                     type="button"
                     @click="showChangeNameForm = true"
-                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300 w-full"
+                    class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-clipboard" />
                     Change Name
@@ -225,7 +225,7 @@
                 <button
                     type="button"
                     @click="showChangePasswordForm = true"
-                    class="flex cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300 w-full"
+                    class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
                 >
                     <i class="pi pi-lock" />
                     Change Password
