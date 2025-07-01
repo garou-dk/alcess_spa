@@ -40,7 +40,11 @@
                     >
                         <Avatar
                             v-if="Page.user && Page.user.image"
-                            :image="Page.user.image"
+                            :image="
+                                UrlUtil.getBaseApiUrl(
+                                    `profile/${Page.user.image}`,
+                                )
+                            "
                             size="large"
                             shape="circle"
                         />
@@ -71,6 +75,7 @@ import Page from "@/stores/Page";
 import { Popover } from "primevue";
 import { inject, ref } from "vue";
 import LogoutButton from "@/components/LogoutButton.vue";
+import UrlUtil from "@/utils/UrlUtil";
 
 const sideBar = inject("sideBar");
 const notificationElement = ref<null | InstanceType<typeof Popover>>();

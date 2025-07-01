@@ -74,6 +74,8 @@ class UserService
             ->where('user_id', $data['user_id'])
             ->first();
 
+        abort_if(empty($user), 404, 'User not found');
+
         $user->full_name = $data['full_name'];
         $user->save();
 
@@ -86,8 +88,33 @@ class UserService
             ->where('user_id', $data['user_id'])
             ->first();
 
+        abort_if(empty($user), 404, 'User not found');
+
         $user->password = $data['password'];
         $user->save();
+
+        return $user;
+    }
+
+    public function changeProfile(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        abort_if(empty($user), 404, 'User not found');
+
+        $oldImage = $user->image;
+        $manageService = new ManageFileService;
+        $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value);
+
+        $user->image = $result['file_name'];
+
+        $saved = $user->save();
+
+        if ($saved && $oldImage) {
+            $manageService->removeFile(FileDirectoryEnum::PROFILE_IMAGE->value, $oldImage);
+        }
 
         return $user;
     }

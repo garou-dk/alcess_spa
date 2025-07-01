@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::post('/', 'createUser');
                     Route::patch('/change-name/{id}', 'changeName');
                     Route::patch('/change-password/{id}', 'changePassword');
+                    Route::patch('/change-profile/{id}', 'changeProfile');
                     // Route::get('/{id}', 'fetchUser');
                     // Route::post('/', 'createUser');
                     // Route::put('/{id}', 'updateUser');

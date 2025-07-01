@@ -195,6 +195,8 @@ const handleSubmit = async () => {
                     }
                 }
             });
+    } else {
+        toast.error("Please fill in the required fields.");
     }
 };
 </script>

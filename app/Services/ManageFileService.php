@@ -44,4 +44,15 @@ class ManageFileService
 
         return Storage::disk('local')->path($fullPath);
     }
+
+    public function removeFile(string $directory, string $fileName)
+    {
+        $filePath = "{$directory}/{$fileName}";
+
+        if (Storage::disk('local')->exists($filePath)) {
+            return Storage::disk('local')->delete($filePath);
+        }
+
+        return false;
+    }
 }

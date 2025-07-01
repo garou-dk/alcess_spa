@@ -87,6 +87,7 @@
                         loadService.request.loading ||
                         roleStore.roles.length === 0
                     "
+                    columnResizeMode="expand"
                 >
                     <Column field="full_name" header="Name">
                         <template #body="{ data }">
@@ -99,13 +100,14 @@
                                             `profile/${data.image}`,
                                         )
                                     "
+                                    class="aspect-square!"
                                 />
                                 <Avatar
                                     v-else
                                     shape="circle"
                                     :label="data.full_name[0]"
                                 />
-                                <div class="ml-2">
+                                <div class="ml-2 shrink">
                                     {{ data.full_name }}
                                 </div>
                             </div>
@@ -195,7 +197,7 @@
         >
             <ChangeNameForm
                 v-if="selectedUser"
-                @cb="load"
+                @cb="changeNameFormCb"
                 :data="selectedUser"
             />
         </Dialog>
@@ -208,7 +210,20 @@
         >
             <ChangePasswordForm
                 v-if="selectedUser"
-                @cb="load"
+                @cb="changePasswordFormCb"
+                :data="selectedUser"
+            />
+        </Dialog>
+        <Dialog
+            v-model:visible="showChangeProfileForm"
+            modal
+            header="Change Profile Image"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <ChangeProfileForm
+                v-if="selectedUser"
+                @cb="changeProfileFormCb"
                 :data="selectedUser"
             />
         </Dialog>
@@ -230,6 +245,14 @@
                     <i class="pi pi-lock" />
                     Change Password
                 </button>
+                <button
+                    type="button"
+                    @click="showChangeProfileForm = true"
+                    class="flex w-full cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-gray-300"
+                >
+                    <i class="pi pi-image" />
+                    Change Profile
+                </button>
             </div>
         </Popover>
     </div>
@@ -237,6 +260,7 @@
 <script setup lang="ts">
 import ChangeNameForm from "@/components/forms/ChangeNameForm.vue";
 import ChangePasswordForm from "@/components/forms/ChangePasswordForm.vue";
+import ChangeProfileForm from "@/components/forms/ChangeProfileForm.vue";
 import UserForm from "@/components/forms/UserForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
@@ -262,6 +286,7 @@ const editElement = ref<null | InstanceType<typeof Popover>>();
 const selectedUser = ref<UserInterface | null>(null);
 const showChangeNameForm = ref<boolean>(false);
 const showChangePasswordForm = ref<boolean>(false);
+const showChangeProfileForm = ref<boolean>(false);
 
 const statuses = [
     { label: "Active", value: 1 },
@@ -381,6 +406,21 @@ const initState = async () => {
     await loadRoles();
     form.role_id = roleStore.roles[0].role_id;
     await load();
+};
+
+const changeNameFormCb = () => {
+    showChangeNameForm.value = false;
+    load();
+};
+
+const changePasswordFormCb = () => {
+    showChangePasswordForm.value = false;
+    load();
+};
+
+const changeProfileFormCb = () => {
+    showChangeProfileForm.value = false;
+    load();
 };
 
 watch(
