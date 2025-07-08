@@ -19,8 +19,16 @@
             icon="pi pi-users"
             label="Users"
         />
-        <SideBarAccordion icon="pi pi-cog" label="Settings">
-            <SideBarButton to="" icon="pi pi-unit-ruler" label="Units" />
+        <SideBarAccordion
+            icon="pi pi-cog"
+            label="Settings"
+            :active="['admin.unit.index'].includes(route.name as string)"
+        >
+            <SideBarButton
+                to="admin.unit.index"
+                icon="pi pi-unit-ruler"
+                label="Units"
+            />
             <SideBarButton to="" icon="pi pi pi-tag" label="Categories" />
         </SideBarAccordion>
         <SideBarButton to="" icon="pi pi-chart-bar" label="Reports" />
@@ -30,4 +38,7 @@
 import Logo from "@/../img/logo.png";
 import SideBarButton from "@/components/SideBarButton.vue";
 import SideBarAccordion from "@/components/SideBarAccordion.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 </script>

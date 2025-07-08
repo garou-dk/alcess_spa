@@ -4,6 +4,7 @@ use App\Enums\RoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     // Route::post('/', 'createUser');
                     // Route::put('/{id}', 'updateUser');
                     // Route::delete('/{id}', 'deleteUser');
+                });
+
+            Route::controller(UnitController::class)
+                ->prefix('units')
+                ->group(function () {
+                    Route::get('/', 'fetchAll');
+                    Route::post('/', 'store');
+                    Route::patch('/{id}', 'update');
+                    Route::delete('/{id}', 'destroy');
+                    Route::patch('/recover/{id}', 'recover');
                 });
         });
     });

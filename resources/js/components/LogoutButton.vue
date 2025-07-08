@@ -19,10 +19,10 @@ const router = useRouter();
 
 const logoutUser = async () => {
     await logoutService.post("logout", null).then(() => {
+        const role = Page.user.role.role_name as RoleEnum;
+        Page.user = null;
         if (logoutService.request.status === 200) {
-            if (
-                getStoreRoles().includes(Page.user.role.role_name as RoleEnum)
-            ) {
+            if (getStoreRoles().includes(role)) {
                 router.push({ name: "admin.login" });
             } else {
                 router.push({ name: "home" });
