@@ -10,12 +10,12 @@ use Ramsey\Uuid\Uuid;
 
 class ManageFileService
 {
-    public function saveFile(UploadedFile $file, string $directory)
+    public function saveFile(UploadedFile $file, string $directory, string $access = 'local')
     {
         $extension = $file->extension();
         $fileName = Uuid::uuid4()->toString().'.'.$extension;
 
-        $filePath = Storage::putFileAs($directory, $file, $fileName);
+        $filePath = Storage::disk($access)->putFileAs($directory, $file, $fileName);
 
         abort_unless($filePath, 500, 'Failed to save file');
 

@@ -2,11 +2,14 @@
 
 use App\Enums\RoleEnum;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('categories', [CategoryController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
@@ -23,10 +26,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/change-profile/{id}', 'changeProfile');
                     Route::patch('/change-role/{id}', 'changeRole');
                     Route::patch('/change-status/{id}', 'changeStatus');
-                    // Route::get('/{id}', 'fetchUser');
-                    // Route::post('/', 'createUser');
-                    // Route::put('/{id}', 'updateUser');
-                    // Route::delete('/{id}', 'deleteUser');
                 });
 
             Route::controller(UnitController::class)
@@ -37,6 +36,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/{id}', 'update');
                     Route::delete('/{id}', 'destroy');
                     Route::patch('/recover/{id}', 'recover');
+                });
+
+            Route::controller(CategoryController::class)
+                ->prefix('categories')
+                ->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::delete('/{id}', 'destroy');
+                    Route::patch('/update-name/{id}', 'updateCategoryName');
+                    Route::patch('/recover/{id}', 'restore');
+                    Route::patch('/update-image/{id}', 'updateCategoryImage');
                 });
         });
     });

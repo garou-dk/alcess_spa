@@ -29,7 +29,11 @@
                 icon="pi pi-unit-ruler"
                 label="Units"
             />
-            <SideBarButton to="" icon="pi pi pi-tag" label="Categories" />
+            <SideBarButton
+                to="admin.category.index"
+                icon="pi pi pi-tag"
+                label="Categories"
+            />
         </SideBarAccordion>
         <SideBarButton to="" icon="pi pi-chart-bar" label="Reports" />
     </div>

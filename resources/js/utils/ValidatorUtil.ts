@@ -11,6 +11,16 @@ class ValidatorUtil {
         const regex = /^09\d{9}$/;
         return regex.test(value);
     }
+
+    public static isValidImageFormat(file: File): boolean {
+        const allowedFormats = ["image/jpeg", "image/jpg", "image/png"];
+        return allowedFormats.includes(file.type);
+    }
+
+    public static isValidImageSize(file: File): boolean {
+        const maxFileSize = 2 * 1024 * 1024;
+        return file.size <= maxFileSize;
+    }
 }
 
 export default ValidatorUtil;

@@ -10,6 +10,7 @@ import AdminIndex from "@/pages/AdminIndex.vue";
 import DashboardRoute from "@/routes/DashboardRoute";
 import UserRoute from "@/routes/UserRoute";
 import UnitRoute from "@/routes/UnitRoute";
+import CategoryRoute from "@/routes/CategoryRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -54,6 +55,7 @@ const router = createRouter({
                         { ...DashboardRoute },
                         { ...UserRoute },
                         { ...UnitRoute },
+                        { ...CategoryRoute },
                     ],
                 },
             ],
