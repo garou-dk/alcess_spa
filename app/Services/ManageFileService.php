@@ -45,12 +45,12 @@ class ManageFileService
         return Storage::disk('local')->path($fullPath);
     }
 
-    public function removeFile(string $directory, string $fileName)
+    public function removeFile(string $directory, string $fileName, string $access = 'local')
     {
         $filePath = "{$directory}/{$fileName}";
 
-        if (Storage::disk('local')->exists($filePath)) {
-            return Storage::disk('local')->delete($filePath);
+        if (Storage::disk($access)->exists($filePath)) {
+            return Storage::disk($access)->delete($filePath);
         }
 
         return false;

@@ -14,15 +14,16 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id('product_id');
             $table->string('product_name')->unique();
-            $table->text('description');
+            $table->longText('description');
             $table->foreignId('category_id')->constrained('categories', 'category_id');
             $table->foreignId('unit_id')->constrained('units', 'unit_id');
-            $table->string('product_image');
+            $table->string('product_image')->nullable();
             $table->double('product_price');
             $table->unsignedInteger('product_quantity');
             $table->unsignedInteger('low_stock_threshold');
             $table->boolean('is_active');
             $table->string('sku')->nullable()->unique();
+            $table->boolean('available_online');
             $table->softDeletesDatetime();
             $table->timestamps();
         });

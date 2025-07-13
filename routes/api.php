@@ -3,8 +3,11 @@
 use App\Enums\RoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FeaturedImageController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +50,34 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/update-name/{id}', 'updateCategoryName');
                     Route::patch('/recover/{id}', 'restore');
                     Route::patch('/update-image/{id}', 'updateCategoryImage');
+                });
+
+            Route::controller(ProductController::class)
+                ->prefix('products')
+                ->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::delete('/{id}', 'destroy');
+                    Route::patch('/{id}', 'update');
+                    Route::patch('/update-image/{id}', 'changeImage');
+                    Route::patch('/change-status/{id}', 'changeStatus');
+                });
+
+            Route::controller(SpecificationController::class)
+                ->prefix('specifications')
+                ->group(function () {
+                    Route::get('/{id}', 'index');
+                    Route::post('/', 'store');
+                    Route::delete('/{id}', 'destroy');
+                    Route::patch('/{id}', 'update');
+                });
+
+            Route::controller(FeaturedImageController::class)
+                ->prefix('featured-images')
+                ->group(function () {
+                    Route::get('/{id}', 'index');
+                    Route::post('/', 'store');
+                    Route::delete('/{id}', 'destroy');
                 });
         });
     });

@@ -13,7 +13,7 @@
         />
         <SideBarButton to="" icon="pi pi-shopping-cart" label="Order" />
         <SideBarButton to="" icon="pi pi-my-pos" label="Sales" />
-        <SideBarButton to="" icon="pi pi-book" label="Inventory" />
+        <SideBarButton to="admin.product.index" icon="pi pi-book" label="Inventory" />
         <SideBarButton
             to="admin.users.index"
             icon="pi pi-users"

@@ -22,5 +22,26 @@ class Product extends Model
         'low_stock_threshold',
         'is_active',
         'sku',
+        'available_online',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id', 'unit_id');
+    }
+
+    public function specifications()
+    {
+        return $this->hasMany(Specification::class, 'product_id', 'product_id');
+    }
+
+    public function featuredImages()
+    {
+        return $this->hasMany(FeaturedImage::class, 'product_id', 'product_id');
+    }
 }
