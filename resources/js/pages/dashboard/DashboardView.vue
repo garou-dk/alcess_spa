@@ -197,7 +197,7 @@ const chartOptions = ref({
 const series2 = ref([
     {
         name: 'Sales',
-        data: [120, 150, 100, 180, 200, 130, 90]
+        data: [26668, 33335, 22223, 40001, 44446, 28890, 20001]
     }
 ]);
 const chartOptions2 = ref({
@@ -237,10 +237,11 @@ const chartOptions2 = ref({
     },
     tooltip: {
         y: {
-            formatter: (val) => `$${val}`
+            formatter: (val) => `₱${val}`
         }
     }
 });
+
 
 const users: {
     full_name: string;
