@@ -88,7 +88,11 @@
                 />
             </div>
             <div v-else-if="page === 'featured-image'" class="w-full">
-                
+                <FeaturedImageList
+                    v-if="selectedItem !== null"
+                    :data="selectedItem"
+                    @cb="productInfoCb"
+                />
             </div>
         </BoxShadow>
     </div>
@@ -100,6 +104,7 @@ import AddProductForm from '@/components/forms/AddProductForm.vue';
 import EditProductForm from '@/components/forms/EditProductForm.vue';
 import UpdateProductImageForm from '@/components/forms/UpdateProductImageForm.vue';
 import ProductSpecificationList from '@/components/forms/ProductSpecificationList.vue';
+import FeaturedImageList from '@/components/forms/FeaturedImageList.vue';
 
 interface Props {
     data: ProductInterface | null;

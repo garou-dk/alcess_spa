@@ -10,7 +10,7 @@ class ProductService
     public function index(array $data)
     {
         $products = Product::query();
-        $products->with(['category', 'unit', 'specifications']);
+        $products->with(['category', 'unit', 'specifications', 'featuredImages']);
 
         if (isset($data['category_id'])) {
             $products->where('category_id', $data['category_id']);

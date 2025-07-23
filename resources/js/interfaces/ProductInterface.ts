@@ -5,6 +5,7 @@ import {
 import { UnitInterface } from "@/interfaces/UnitInterface";
 import { CategoryInterface } from "@/interfaces/CategoryInterface";
 import { ProductSpecificationInterface } from "@/interfaces/ProductSpecificationInterface";
+import { FeaturedImageInterface } from "@/interfaces/FeaturedImageInterface";
 
 interface ProductSearchInterface extends SearchInterface {
     category_id: number | null;
@@ -39,6 +40,7 @@ interface ProductInterface {
     unit: UnitInterface;
     category: CategoryInterface;
     specifications: ProductSpecificationInterface[];
+    featured_images: FeaturedImageInterface[];
 }
 
 interface AddProductFormInterface {

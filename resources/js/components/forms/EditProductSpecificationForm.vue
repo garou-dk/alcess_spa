@@ -38,12 +38,16 @@
                 </InputForm>
             </div>
             <div class="p-2 flex flex-wrap gap-2 max-lg:justify-center max-lg:w-full">
-                <Button
+                <div
                     v-if="props.isSelected"
-                    type="submit"
-                    icon="pi pi-save"
-                    :loading="submitService.request.loading"
-                />
+                    class="flex items-end"
+                >
+                    <Button
+                        type="submit"
+                        icon="pi pi-save"
+                        :loading="submitService.request.loading"
+                    />
+                </div>
                 <div v-else class="flex items-end">
                     <slot name="select" />
                 </div>
