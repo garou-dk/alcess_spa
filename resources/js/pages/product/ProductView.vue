@@ -13,7 +13,7 @@
                 <BoxShadow>
                     <div class="p-4 text-2xl font-bold">
                         <h1 class="mb-4 text-gray-500">Nearly Out of Stock</h1>
-                        <p class="ps-2 text-yellow-500">0</p>
+                        <LowStockResult />
                     </div>
                 </BoxShadow>
             </div>
@@ -21,7 +21,7 @@
                 <BoxShadow>
                     <div class="p-4 text-2xl font-bold">
                         <h1 class="mb-4 text-gray-500">Active Product</h1>
-                        <p class="ps-2 text-pink-500">0</p>
+                        <ActiveProductCount />
                     </div>
                 </BoxShadow>
             </div>
@@ -29,7 +29,7 @@
                 <BoxShadow>
                     <div class="p-4 text-2xl font-bold">
                         <h1 class="mb-4 text-gray-500">Out of Stock</h1>
-                        <p class="ps-2 text-red-500">0</p>
+                        <OutOfStockCount />
                     </div>
                 </BoxShadow>
             </div>
@@ -131,6 +131,9 @@
 </template>
 <script setup lang="ts">
 import ProductForm from '@/components/forms/ProductForm.vue';
+import ActiveProductCount from '@/components/result/ActiveProductCount.vue';
+import LowStockResult from '@/components/result/LowStockResult.vue';
+import OutOfStockCount from '@/components/result/OutOfStockCount.vue';
 import DataTableInterface from '@/interfaces/DataTableInterface';
 import { ProductInterface, ProductSearchErrorInterface, ProductSearchInterface } from '@/interfaces/ProductInterface';
 import { useCategoryStore } from '@/stores/CategoryState';

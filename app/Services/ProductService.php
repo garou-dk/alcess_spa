@@ -135,4 +135,40 @@ class ProductService
 
         return $product;
     }
+
+    public function countLowStock() {
+        $result = Product::query()
+            ->whereColumn('product_quantity', '<=', 'low_stock_threshold')
+            ->count();
+
+        $data = [
+            'result' => $result
+        ]; 
+
+        return $data;
+    }
+
+    public function activeProductCount() {
+        $result = Product::query()
+            ->where('is_active', true)
+            ->count();
+
+        $data = [
+            'result' => $result
+        ]; 
+
+        return $data;
+    }
+
+    public function outOfStockCount() {
+        $result = Product::query()
+            ->where('product_quantity',0)
+            ->count();
+
+        $data = [
+            'result' => $result
+        ]; 
+
+        return $data;
+    }    
 }

@@ -79,6 +79,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::post('/', 'store');
                     Route::delete('/{id}', 'destroy');
                 });
+
+            Route::prefix('results')
+                ->group(function () {
+                    Route::get('low-stock', [ProductController::class, 'countLowStock']);
+                    Route::get('active-product', [ProductController::class, 'activeProductCount']);
+                    Route::get('out-of-stock', [ProductController::class, 'outOfStockCount']);
+                });
         });
     });
 

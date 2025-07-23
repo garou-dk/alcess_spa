@@ -66,4 +66,22 @@ class ProductController extends Controller
             ->message('Status changed successfully')
             ->response();
     }
+
+    public function countLowStock() {
+        return ApiResponse::success()
+            ->data($this->service->countLowStock())
+            ->response();
+    }
+
+    public function activeProductCount() {
+        return ApiResponse::success()
+            ->data($this->service->activeProductCount())
+            ->response();
+    }
+
+    public function outOfStockCount() {
+        return ApiResponse::success()
+            ->data($this->service->outOfStockCount())
+            ->response();
+    }
 }
