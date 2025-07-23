@@ -5,7 +5,7 @@
                 <BoxShadow>
                     <div class="p-4 text-2xl font-bold">
                         <h1 class="mb-4 text-gray-500">Total Product</h1>
-                        <p class="ps-2 text-green-500">0</p>
+                        <p class="ps-2 text-green-500">{{ paginate.total }}</p>
                     </div>
                 </BoxShadow>
             </div>
