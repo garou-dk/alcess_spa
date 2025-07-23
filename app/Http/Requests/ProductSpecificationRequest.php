@@ -23,7 +23,6 @@ class ProductSpecificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required', 'integer', Rule::exists('products', 'product_id')],
             'specification_name' => ['required', 'string', 'max:255'],
             'specification_value' => ['required', 'string', 'max:255'],
         ];

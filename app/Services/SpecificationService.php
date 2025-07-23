@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Product;
 use App\Models\Specification;
 
 class SpecificationService
@@ -15,13 +16,21 @@ class SpecificationService
 
     public function store(array $data)
     {
+        $product = Product::query()
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        abort_if(empty($product), 404, 'Product not found');
+
         $specification = new Specification;
         $specification->product_id = $data['product_id'];
         $specification->specification_name = $data['specification_name'];
         $specification->specification_value = $data['specification_value'];
         $specification->save();
 
-        return $specification;
+        $product->load(['specifications', 'featuredImages']);
+
+        return $product;
     }
 
     public function update(array $data)
@@ -30,13 +39,20 @@ class SpecificationService
             ->where('specification_id', $data['specification_id'])
             ->first();
 
+        $product = Product::query()
+            ->where('product_id', $specification->product_id)
+            ->first();
+
         abort_if(empty($specification), 404, 'Specification not found');
+        abort_if(empty($product), 404, 'Product not found');
 
         $specification->specification_name = $data['specification_name'];
         $specification->specification_value = $data['specification_value'];
         $specification->save();
 
-        return $specification;
+        $product->load(['specifications', 'featuredImages']);
+
+        return $product;
     }
 
     public function remove(array $data)
@@ -45,8 +61,17 @@ class SpecificationService
             ->where('specification_id', $data['specification_id'])
             ->first();
 
-        abort_if(empty($specification), 404, 'Specification not found');
+        $product = Product::query()
+            ->where('product_id', $specification->product_id)
+            ->first();
 
-        return $specification->delete();
+        abort_if(empty($specification), 404, 'Specification not found');
+        abort_if(empty($product), 404, 'Product not found');
+
+        $specification->delete();
+
+        $product->load(['specifications', 'featuredImages']);
+
+        return $product;
     }
 }

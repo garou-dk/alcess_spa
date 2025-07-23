@@ -40,10 +40,6 @@ class ProductService
     public function store(array $data)
     {
         $product = new Product;
-        $manageFileService = new ManageFileService;
-
-        $result = $manageFileService->saveFile($data['product_image'], FileDirectoryEnum::PRODUCT_IMAGE->value, 'public');
-        $product->product_image = $result['file_name'];
         $product->product_name = $data['product_name'];
         $product->description = $data['description'];
         $product->category_id = $data['category_id'];
@@ -52,8 +48,14 @@ class ProductService
         $product->product_quantity = $data['product_quantity'];
         $product->low_stock_threshold = $data['low_stock_threshold'];
         $product->is_active = $data['is_active'];
+        $product->sku = $data['sku'] ?? null;
         $product->available_online = $data['available_online'];
         $product->save();
+
+        $product = $product->toArray();
+
+        $product['specifications'] = [];
+        $product['featured_images'] = [];
 
         return $product;
     }
@@ -77,6 +79,8 @@ class ProductService
         $product->available_online = $data['available_online'];
         $product->save();
 
+        $product->load(['specifications', 'featuredImages']);
+
         return $product;
     }
 
@@ -96,7 +100,11 @@ class ProductService
         $product->product_image = $result['file_name'];
         $product->save();
 
-        $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $oldImage, 'public');
+        if ($oldImage) {
+            $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $oldImage);
+        }
+        
+        $product->load(['specifications', 'featuredImages']);
 
         return $product;
     }
@@ -122,6 +130,8 @@ class ProductService
 
         $product->is_active = $data['is_active'];
         $product->save();
+
+        $product->load(['specifications', 'featuredImages']);
 
         return $product;
     }

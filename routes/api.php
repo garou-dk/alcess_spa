@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('specifications')
                 ->group(function () {
                     Route::get('/{id}', 'index');
-                    Route::post('/', 'store');
+                    Route::post('/{id}', 'store');
                     Route::delete('/{id}', 'destroy');
                     Route::patch('/{id}', 'update');
                 });

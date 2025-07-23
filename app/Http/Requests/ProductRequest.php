@@ -23,7 +23,11 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_name' => ['required', 'string', 'max:255'],
+            'product_name' => ['required', 'string', 'max:255', Rule::unique('products', 'product_name')
+                ->when($this->method() === 'PATCH', function ($query) {
+                    $query->ignore($this->id, 'product_id');
+                }),
+            ],
             'description' => ['required', 'string', 'max:4294967295'],
             'category_id' => ['required', 'integer', Rule::exists('categories', 'category_id')],
             'unit_id' => ['required', 'integer', Rule::exists('units', 'unit_id')],

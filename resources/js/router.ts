@@ -11,6 +11,7 @@ import DashboardRoute from "@/routes/DashboardRoute";
 import UserRoute from "@/routes/UserRoute";
 import UnitRoute from "@/routes/UnitRoute";
 import CategoryRoute from "@/routes/CategoryRoute";
+import ProductRoute from "@/routes/ProductRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -56,6 +57,7 @@ const router = createRouter({
                         { ...UserRoute },
                         { ...UnitRoute },
                         { ...CategoryRoute },
+                        { ...ProductRoute },
                     ],
                 },
             ],

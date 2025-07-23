@@ -18,9 +18,9 @@ class SpecificationController extends Controller
             ->response();
     }
 
-    public function store(ProductSpecificationRequest $request)
+    public function store(string $id, ProductSpecificationRequest $request)
     {
-        $data = $request->validated();
+        $data = $request->validated() + ['product_id' => $id];
 
         return ApiResponse::success()
             ->data($this->service->store($data))
