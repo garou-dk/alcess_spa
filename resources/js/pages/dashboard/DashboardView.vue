@@ -237,11 +237,10 @@ const chartOptions2 = ref({
     },
     tooltip: {
         y: {
-            formatter: (val) => `₱${val}`
+            formatter: (val) => `₱${val.toLocaleString('en-PH')}`
         }
     }
 });
-
 
 const users: {
     full_name: string;
