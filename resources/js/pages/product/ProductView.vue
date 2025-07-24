@@ -88,7 +88,10 @@
                 <Column field="product_price" header="Price" />
                 <Column header="Actions">
                     <template #body="{ data }">
-                        <Button icon="pi pi-pencil" rounded @click="editProduct(data)" />
+                        <div class="flex gap-2">
+                            <Button icon="pi pi-pencil" rounded @click="editProduct(data)" />
+                            <Button v-if="data.sku" icon="pi pi-barcode" rounded @click="showSku(data.sku)" />
+                        </div>
                     </template>
                 </Column>
                 <template #empty>
@@ -127,6 +130,25 @@
                 @cb="load"
             />
         </Dialog>
+        <Dialog
+            v-model:visible="showProductSku.visible"
+            modal
+            header="Barcode/SKU"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <div ref="skuPrintable" class="flex items-center justify-center">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <Vue3Barcode 
+                        v-if="showProductSku.sku"
+                        :value="showProductSku.sku"
+                    />
+                </div>
+            </div>
+            <div class="flex items-center justify-center">
+                <Button icon="pi pi-print" label="Print" @click="printSku()" />
+            </div>
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -145,12 +167,20 @@ import { useToast } from 'vue-toastification';
 const categoryState = useCategoryStore();
 const loadService = useAxiosUtil<ProductSearchInterface, DataTableInterface<ProductInterface>>();
 const toast = useToast();
+const skuPrintable = ref<HTMLElement>();
 const showProductDialog : { 
     visible: boolean;
     selectedItem: ProductInterface | null;
 } = reactive({
     visible: false,
     selectedItem: null,
+});
+const showProductSku : { 
+    visible: boolean;
+    sku: string | null;
+} = reactive({
+    visible: false,
+    sku: null,
 });
 
 const form: ProductSearchInterface = reactive({
@@ -181,6 +211,25 @@ const paginate: DataTableInterface<ProductInterface> = reactive({
     total: 0,
     last_page: 0,
 });
+
+const showSku = (value: string) => {
+    showProductSku.sku = value;
+    showProductSku.visible = true;
+}
+
+const printSku = () => {
+    const printable = skuPrintable.value;
+    console.log(printable);
+    
+    if (printable) {
+        const w = window.open('');
+        if (w) {
+            w.document.body.innerHTML = printable.innerHTML;
+            w.print();
+            w.close();
+        }
+    }
+}
 
 const addProduct = () => {
     showProductDialog.selectedItem = null;
