@@ -1,6 +1,6 @@
 <template>
     <form @submit.prevent="handleSubmit">
-        <div class="p-2 mb-2">
+        <div class="mb-2 p-2">
             <InputForm
                 :errors="errors.product_image"
                 id="product_image"
@@ -16,10 +16,21 @@
                     accept="image/png, image/jpeg, image/jpg"
                     @change="onFileSelect"
                 />
-                <div v-if="!form.product_image && !result.dataURL && props.data.product_image" class="flex justify-center mb-2">
+                <div
+                    v-if="
+                        !form.product_image &&
+                        !result.dataURL &&
+                        props.data.product_image
+                    "
+                    class="mb-2 flex justify-center"
+                >
                     <Image
-                        :src="UrlUtil.getBaseAppUrl(`storage/images/product/${props.data.product_image}`)"
-                        class="w-64 h-64 object-cover rounded border border-gray-300 flex justify-center"
+                        :src="
+                            UrlUtil.getBaseAppUrl(
+                                `storage/images/product/${props.data.product_image}`,
+                            )
+                        "
+                        class="flex h-64 w-64 justify-center rounded border border-gray-300 object-cover"
                     />
                 </div>
                 <button
@@ -37,7 +48,7 @@
                     <div class="flex justify-center">
                         <img
                             :src="result.dataURL"
-                            class="w-64 h-64 object-cover rounded border border-gray-300"
+                            class="h-64 w-64 rounded border border-gray-300 object-cover"
                             alt="User Image"
                         />
                     </div>
@@ -107,20 +118,24 @@
     </form>
 </template>
 <script setup lang="ts">
-import { ProductInterface, UpdateProductImageFormErrorInterface, UpdateProductImageFormInterface } from '@/interfaces/ProductInterface';
-import useAxiosUtil from '@/utils/AxiosUtil';
-import UrlUtil from '@/utils/UrlUtil';
-import { reactive, ref } from 'vue';
-import { useToast } from 'vue-toastification';
+import {
+    ProductInterface,
+    UpdateProductImageFormErrorInterface,
+    UpdateProductImageFormInterface,
+} from "@/interfaces/ProductInterface";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import UrlUtil from "@/utils/UrlUtil";
+import { reactive, ref } from "vue";
+import { useToast } from "vue-toastification";
 import VuePictureCropper, { cropper } from "vue-picture-cropper";
 
 interface Props {
     data: ProductInterface;
 }
 
-const submitService = useAxiosUtil<FormData, any>();
+const submitService = useAxiosUtil<FormData, unknown>();
 const toast = useToast();
-const emit = defineEmits(['cb']);
+const emit = defineEmits(["cb"]);
 const props = defineProps<Props>();
 const img = ref<string>("");
 const result: {
@@ -133,11 +148,11 @@ const result: {
 const uploadInput = ref<HTMLInputElement | null>(null);
 const showCropperModal = ref<boolean>(false);
 
-const form : UpdateProductImageFormInterface = reactive({
+const form: UpdateProductImageFormInterface = reactive({
     product_image: null,
 });
 
-const errors : UpdateProductImageFormErrorInterface = reactive({
+const errors: UpdateProductImageFormErrorInterface = reactive({
     product_image: [],
 });
 
@@ -196,10 +211,9 @@ const validate = () => {
     clearErrors();
     let data = new FormData();
     if (!form.product_image) {
-        errors.product_image.push('Product image is required.');
-    }
-    else {
-        data.append('product_image', form.product_image);
+        errors.product_image.push("Product image is required.");
+    } else {
+        data.append("product_image", form.product_image);
     }
 
     const isValid = [errors.product_image.length > 0];
@@ -209,21 +223,31 @@ const validate = () => {
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        await submitService.patchFormData(`admin/products/update-image/${props.data.product_id}`, data).then(() => {
-            if (submitService.request.status === 200 && submitService.request.data) {
-                toast.success(submitService.request.message);
-                emit('cb', submitService.request.data);
-                clearForm();
-            } else {
-                toast.error(submitService.request.message ?? 'Please try again');
-                if (submitService.request.errors) {
-                    errors.product_image = submitService.request.errors.product_image || [];
+        await submitService
+            .patchFormData(
+                `admin/products/update-image/${props.data.product_id}`,
+                data,
+            )
+            .then(() => {
+                if (
+                    submitService.request.status === 200 &&
+                    submitService.request.data
+                ) {
+                    toast.success(submitService.request.message);
+                    emit("cb", submitService.request.data);
+                    clearForm();
+                } else {
+                    toast.error(
+                        submitService.request.message ?? "Please try again",
+                    );
+                    if (submitService.request.errors) {
+                        errors.product_image =
+                            submitService.request.errors.product_image || [];
+                    }
                 }
-            }
-        });
-    }
-    else {
-        toast.error('Please fill in all required fields and try again.');
+            });
+    } else {
+        toast.error("Please fill in all required fields and try again.");
     }
 };
 </script>

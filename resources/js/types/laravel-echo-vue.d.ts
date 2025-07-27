@@ -1,1 +1,1 @@
-declare module '@laravel/echo-vue';
+declare module "@laravel/echo-vue";

@@ -67,7 +67,7 @@ class ProductService
         ProductEvent::dispatch($product);
         ProductCountEvent::dispatch($this->countAllProduct()['result']);
         ProductLowStockCountEvent::dispatch($this->countLowStock()['result']);
-        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);  
+        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);
         ProductActiveCountEvent::dispatch($this->activeProductCount()['result']);
 
         return $product;
@@ -98,7 +98,7 @@ class ProductService
         ProductEvent::dispatch($product->toArray());
         ProductCountEvent::dispatch($this->countAllProduct()['result']);
         ProductLowStockCountEvent::dispatch($this->countLowStock()['result']);
-        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);  
+        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);
         ProductActiveCountEvent::dispatch($this->activeProductCount()['result']);
 
         return $product;
@@ -123,7 +123,7 @@ class ProductService
         if ($oldImage) {
             $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $oldImage);
         }
-        
+
         $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         return $product;
@@ -156,50 +156,54 @@ class ProductService
         return $product;
     }
 
-    public function countAllProduct() {
+    public function countAllProduct()
+    {
         $result = Product::query()
             ->count();
 
         $data = [
-            'result' => $result
-        ]; 
+            'result' => $result,
+        ];
 
         return $data;
     }
 
-    public function countLowStock() {
+    public function countLowStock()
+    {
         $result = Product::query()
             ->whereColumn('product_quantity', '<=', 'low_stock_threshold')
             ->count();
 
         $data = [
-            'result' => $result
-        ]; 
+            'result' => $result,
+        ];
 
         return $data;
     }
 
-    public function activeProductCount() {
+    public function activeProductCount()
+    {
         $result = Product::query()
             ->where('is_active', true)
             ->count();
 
         $data = [
-            'result' => $result
-        ]; 
+            'result' => $result,
+        ];
 
         return $data;
     }
 
-    public function outOfStockCount() {
+    public function outOfStockCount()
+    {
         $result = Product::query()
-            ->where('product_quantity',0)
+            ->where('product_quantity', 0)
             ->count();
 
         $data = [
-            'result' => $result
-        ]; 
+            'result' => $result,
+        ];
 
         return $data;
-    }    
+    }
 }

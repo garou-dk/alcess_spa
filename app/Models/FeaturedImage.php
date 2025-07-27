@@ -11,6 +11,6 @@ class FeaturedImage extends Model
     public $fillable = [
         'product_id',
         'featured_image',
-        'thumbnail'
+        'thumbnail',
     ];
 }

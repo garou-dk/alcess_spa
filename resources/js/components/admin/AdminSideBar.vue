@@ -2,7 +2,11 @@
     <div class="h-full overflow-auto pb-2">
         <div class="flex items-center justify-center gap-2 p-5">
             <div class="rounded-full">
-                <img :src="Logo" alt="Store Icon" class="h-16 w-16 object-contain" />
+                <img
+                    :src="Logo"
+                    alt="Store Icon"
+                    class="h-16 w-16 object-contain"
+                />
             </div>
             <h1 class="text-3xl font-bold text-sky-800 select-none">ALCESS</h1>
         </div>
@@ -13,7 +17,11 @@
         />
         <SideBarButton to="" icon="pi pi-shopping-cart" label="Order" />
         <SideBarButton to="" icon="pi pi-my-pos" label="Sales" />
-        <SideBarButton to="admin.product.index" icon="pi pi-book" label="Inventory" />
+        <SideBarButton
+            to="admin.product.index"
+            icon="pi pi-book"
+            label="Inventory"
+        />
         <SideBarButton
             to="admin.users.index"
             icon="pi pi-users"

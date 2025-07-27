@@ -35,32 +35,44 @@
             </InputForm>
         </div>
         <div class="flex justify-center p-2">
-            <Button :loading="submitService.request.loading" type="submit" label="Save" icon="pi pi-save" class="primary-bg" />
+            <Button
+                :loading="submitService.request.loading"
+                type="submit"
+                label="Save"
+                icon="pi pi-save"
+                class="primary-bg"
+            />
         </div>
     </form>
 </template>
 <script setup lang="ts">
-import { ProductInterface } from '@/interfaces/ProductInterface';
-import { ProductSpecificationFormErrorInterface, ProductSpecificationFormInterface } from '@/interfaces/ProductSpecificationInterface';
-import useAxiosUtil from '@/utils/AxiosUtil';
-import { reactive } from 'vue';
-import { useToast } from 'vue-toastification';
+import { ProductInterface } from "@/interfaces/ProductInterface";
+import {
+    ProductSpecificationFormErrorInterface,
+    ProductSpecificationFormInterface,
+} from "@/interfaces/ProductSpecificationInterface";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { reactive } from "vue";
+import { useToast } from "vue-toastification";
 
 interface Props {
     data: ProductInterface;
 }
 
-const emit = defineEmits(['cb']);
+const emit = defineEmits(["cb"]);
 const toast = useToast();
-const submitService = useAxiosUtil<ProductSpecificationFormInterface, ProductInterface>();
+const submitService = useAxiosUtil<
+    ProductSpecificationFormInterface,
+    ProductInterface
+>();
 const props = defineProps<Props>();
 
-const form : ProductSpecificationFormInterface = reactive({
+const form: ProductSpecificationFormInterface = reactive({
     specification_name: null,
     specification_value: null,
 });
 
-const errors : ProductSpecificationFormErrorInterface = reactive({
+const errors: ProductSpecificationFormErrorInterface = reactive({
     specification_name: [],
     specification_value: [],
 });
@@ -72,7 +84,7 @@ const clearErrors = () => {
 
 const validate = () => {
     clearErrors();
-    
+
     if (!form.specification_name) {
         errors.specification_name.push("Specification name is required.");
     }
@@ -85,33 +97,37 @@ const validate = () => {
         errors.specification_value.length > 0,
     ];
 
-    return !hasErrors.includes(true) 
-        ? form
-        : false;
+    return !hasErrors.includes(true) ? form : false;
 };
 
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        await submitService.post(`admin/specifications/${props.data.product_id}`, data)
+        await submitService
+            .post(`admin/specifications/${props.data.product_id}`, data)
             .then(() => {
-                if (submitService.request.status === 200 && submitService.request.data) {
+                if (
+                    submitService.request.status === 200 &&
+                    submitService.request.data
+                ) {
                     toast.success("Specification added successfully.");
-                    emit('cb', submitService.request.data);
-                }
-                else {
-                    toast.error(submitService.request.message || "An error occurred while adding the specification.");
+                    emit("cb", submitService.request.data);
+                } else {
+                    toast.error(
+                        submitService.request.message ||
+                            "An error occurred while adding the specification.",
+                    );
                     if (submitService.request.errors) {
-                        Object.keys(submitService.request.errors).forEach((key) => {
-                            errors[key] = submitService.request.errors[key];
-                        });
+                        Object.keys(submitService.request.errors).forEach(
+                            (key) => {
+                                errors[key] = submitService.request.errors[key];
+                            },
+                        );
                     }
                 }
             });
-    }
-    else {
+    } else {
         toast.error("Please fill in the required fields.");
     }
 };
-
 </script>

@@ -1,12 +1,12 @@
 <template>
     <div>
         <BoxShadow class="mb-4">
-            <div class="flex justify-center flex-wrap w-full">
+            <div class="flex w-full flex-wrap justify-center">
                 <div class="p-2">
-                    <button 
+                    <button
                         type="button"
-                        class="p-2 cursor-pointer rounded hover:bg-gray-200"
-                        :class="{'bg-gray-200': page === 'information'}"
+                        class="cursor-pointer rounded p-2 hover:bg-gray-200"
+                        :class="{ 'bg-gray-200': page === 'information' }"
                         @click="page = 'information'"
                     >
                         <i class="pi pi-file"></i>
@@ -14,12 +14,12 @@
                     </button>
                 </div>
                 <div class="p-2">
-                    <button 
+                    <button
                         type="button"
-                        class="p-2 cursor-pointer rounded"
+                        class="cursor-pointer rounded p-2"
                         :class="{
                             'bg-gray-200 hover:bg-gray-200': page === 'image',
-                            'opacity-70': selectedItem === null
+                            'opacity-70': selectedItem === null,
                         }"
                         :disabled="selectedItem === null"
                         @click="page = 'image'"
@@ -29,12 +29,13 @@
                     </button>
                 </div>
                 <div class="p-2">
-                    <button 
+                    <button
                         type="button"
-                        class="p-2 cursor-pointer rounded"
+                        class="cursor-pointer rounded p-2"
                         :class="{
-                            'bg-gray-200 hover:bg-gray-200': page === 'specification',
-                            'opacity-70': selectedItem === null
+                            'bg-gray-200 hover:bg-gray-200':
+                                page === 'specification',
+                            'opacity-70': selectedItem === null,
                         }"
                         :disabled="selectedItem === null"
                         @click="page = 'specification'"
@@ -44,12 +45,13 @@
                     </button>
                 </div>
                 <div class="p-2">
-                    <button 
+                    <button
                         type="button"
-                        class="p-2 cursor-pointer rounded"
+                        class="cursor-pointer rounded p-2"
                         :class="{
-                            'bg-gray-200 hover:bg-gray-200': page === 'featured-image',
-                            'opacity-70': selectedItem === null
+                            'bg-gray-200 hover:bg-gray-200':
+                                page === 'featured-image',
+                            'opacity-70': selectedItem === null,
                         }"
                         :disabled="selectedItem === null"
                         @click="page = 'featured-image'"
@@ -98,13 +100,13 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ProductInterface } from '@/interfaces/ProductInterface';
-import { onMounted, ref } from 'vue';
-import AddProductForm from '@/components/forms/AddProductForm.vue';
-import EditProductForm from '@/components/forms/EditProductForm.vue';
-import UpdateProductImageForm from '@/components/forms/UpdateProductImageForm.vue';
-import ProductSpecificationList from '@/components/forms/ProductSpecificationList.vue';
-import FeaturedImageList from '@/components/forms/FeaturedImageList.vue';
+import { ProductInterface } from "@/interfaces/ProductInterface";
+import { onMounted, ref } from "vue";
+import AddProductForm from "@/components/forms/AddProductForm.vue";
+import EditProductForm from "@/components/forms/EditProductForm.vue";
+import UpdateProductImageForm from "@/components/forms/UpdateProductImageForm.vue";
+import ProductSpecificationList from "@/components/forms/ProductSpecificationList.vue";
+import FeaturedImageList from "@/components/forms/FeaturedImageList.vue";
 
 interface Props {
     data: ProductInterface | null;
@@ -112,12 +114,14 @@ interface Props {
 
 const props = defineProps<Props>();
 const selectedItem = ref<ProductInterface | null>(props.data);
-const emit = defineEmits(['cb']);
-const page = ref<'information' | 'image' | 'specification' | 'featured-image'>('information');
+const emit = defineEmits(["cb"]);
+const page = ref<"information" | "image" | "specification" | "featured-image">(
+    "information",
+);
 
 const productInfoCb = (data: ProductInterface) => {
     selectedItem.value = data;
-    emit('cb');
+    emit("cb");
 };
 
 onMounted(() => {

@@ -8,15 +8,18 @@ import PageLoader from "@/components/PageLoader.vue";
 import VueApexCharts from "vue3-apexcharts";
 import BoxShadow from "@/components/BoxShadow.vue";
 import { createPinia } from "pinia";
-import { configureEcho } from '@laravel/echo-vue';
+import { configureEcho } from "@laravel/echo-vue";
 
 configureEcho({
-    broadcaster: 'pusher',
-    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+    broadcaster: "pusher",
+    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
     wsPort: import.meta.env.VITE_PUSHER_PORT,
-    enabledTransports: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https' ? ['ws', 'wss'] : ['ws'],
+    enabledTransports:
+        (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https"
+            ? ["ws", "wss"]
+            : ["ws"],
 });
-import Vue3Barcode from 'vue3-barcode';
+import Vue3Barcode from "vue3-barcode";
 
 const pinia = createPinia();
 

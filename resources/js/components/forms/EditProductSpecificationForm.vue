@@ -1,5 +1,8 @@
 <template>
-    <form class="border p-2 rounded border-gray-500" @submit.prevent="handleSubmit()">
+    <form
+        class="rounded border border-gray-500 p-2"
+        @submit.prevent="handleSubmit()"
+    >
         <div class="flex flex-wrap">
             <div class="p-2 max-lg:w-full lg:grow">
                 <InputForm
@@ -37,11 +40,10 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 flex flex-wrap gap-2 max-lg:justify-center max-lg:w-full">
-                <div
-                    v-if="props.isSelected"
-                    class="flex items-end"
-                >
+            <div
+                class="flex flex-wrap gap-2 p-2 max-lg:w-full max-lg:justify-center"
+            >
+                <div v-if="props.isSelected" class="flex items-end">
                     <Button
                         type="submit"
                         icon="pi pi-save"
@@ -52,19 +54,26 @@
                     <slot name="select" />
                 </div>
                 <div class="flex items-end">
-                    <DeleteProductSpecification :data="props.data" @cb="deleteEmit" />
+                    <DeleteProductSpecification
+                        :data="props.data"
+                        @cb="deleteEmit"
+                    />
                 </div>
             </div>
         </div>
     </form>
 </template>
 <script setup lang="ts">
-import { ProductInterface } from '@/interfaces/ProductInterface';
-import { ProductSpecificationFormErrorInterface, ProductSpecificationFormInterface, ProductSpecificationInterface } from '@/interfaces/ProductSpecificationInterface';
-import useAxiosUtil from '@/utils/AxiosUtil';
-import { inject, onMounted, reactive, Ref } from 'vue';
-import { useToast } from 'vue-toastification';
-import DeleteProductSpecification from '@/components/forms/DeleteProductSpecification.vue';
+import { ProductInterface } from "@/interfaces/ProductInterface";
+import {
+    ProductSpecificationFormErrorInterface,
+    ProductSpecificationFormInterface,
+    ProductSpecificationInterface,
+} from "@/interfaces/ProductSpecificationInterface";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { inject, onMounted, reactive, Ref } from "vue";
+import { useToast } from "vue-toastification";
+import DeleteProductSpecification from "@/components/forms/DeleteProductSpecification.vue";
 
 interface Props {
     data: ProductSpecificationInterface;
@@ -72,17 +81,22 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits(['cb']);
+const emit = defineEmits(["cb"]);
 const toast = useToast();
-const submitService = useAxiosUtil<ProductSpecificationFormInterface, ProductInterface>();
-const selectedProductSpecification = inject<Ref<ProductSpecificationInterface | null>>('selectedProductSpecification');
+const submitService = useAxiosUtil<
+    ProductSpecificationFormInterface,
+    ProductInterface
+>();
+const selectedProductSpecification = inject<
+    Ref<ProductSpecificationInterface | null>
+>("selectedProductSpecification");
 
-const form : ProductSpecificationFormInterface = reactive({
+const form: ProductSpecificationFormInterface = reactive({
     specification_name: props.data.specification_name,
-    specification_value: props.data.specification_value, 
+    specification_value: props.data.specification_value,
 });
 
-const errors : ProductSpecificationFormErrorInterface = reactive({
+const errors: ProductSpecificationFormErrorInterface = reactive({
     specification_name: [],
     specification_value: [],
 });
@@ -93,12 +107,12 @@ const clearErrors = () => {
 };
 
 const deleteEmit = (data: ProductInterface) => {
-    emit('cb', data);
-}
+    emit("cb", data);
+};
 
 const validate = () => {
     clearErrors();
-    
+
     if (!form.specification_name) {
         errors.specification_name.push("Specification name is required.");
     }
@@ -111,9 +125,7 @@ const validate = () => {
         errors.specification_value.length > 0,
     ];
 
-    return !hasErrors.includes(true) 
-        ? form
-        : false;
+    return !hasErrors.includes(true) ? form : false;
 };
 
 const initState = () => {
@@ -125,34 +137,43 @@ const initState = () => {
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
-        if (props.data.specification_name !== form.specification_name || props.data.specification_value !== form.specification_value) {
-            await submitService.patch(`admin/specifications/${props.data.specification_id}`, data).then(() => {
-                if (
-                    submitService.request.status === 200 &&
-                    submitService.request.data
-                ) {
-                    toast.success(submitService.request.message);
-                    emit("cb", submitService.request.data);
-                } else {
-                    toast.error(
-                        submitService.request.message ?? "Please try again",
-                    );
-                    if (submitService.request.errors) {
-                        Object.keys(submitService.request.errors).forEach((key) => {
-                            errors[key] = submitService.request.errors[key];
-                        });
+        if (
+            props.data.specification_name !== form.specification_name ||
+            props.data.specification_value !== form.specification_value
+        ) {
+            await submitService
+                .patch(
+                    `admin/specifications/${props.data.specification_id}`,
+                    data,
+                )
+                .then(() => {
+                    if (
+                        submitService.request.status === 200 &&
+                        submitService.request.data
+                    ) {
+                        toast.success(submitService.request.message);
+                        emit("cb", submitService.request.data);
+                    } else {
+                        toast.error(
+                            submitService.request.message ?? "Please try again",
+                        );
+                        if (submitService.request.errors) {
+                            Object.keys(submitService.request.errors).forEach(
+                                (key) => {
+                                    errors[key] =
+                                        submitService.request.errors[key];
+                                },
+                            );
+                        }
                     }
-                }
-            });
-        }
-        else {
+                });
+        } else {
             selectedProductSpecification.value = null;
         }
-    }
-    else {
+    } else {
         toast.error("Please fill in the required fields.");
     }
-}
+};
 
 onMounted(() => {
     initState();

@@ -12,5 +12,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('product', function (User $user) {
     $authService = new AuthService;
     $user = $authService->getAuth();
+
     return in_array($user->role->role_name, RoleEnum::storeUsers());
 });

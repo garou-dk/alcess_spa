@@ -23,6 +23,16 @@ export default defineConfig([
         languageOptions: { parserOptions: { parser: tseslint.parser } },
     },
     eslintConfigPrettier,
-    { ignores: ["node_modules", "vendor", "resources/js/interfaces"] },
+    {
+        ignores: [
+            "node_modules",
+            "vendor",
+            "resources/js/interfaces",
+            "storage",
+            "resources/js/types",
+            "stubs",
+            "public",
+        ],
+    },
     { rules: { "no-console": "warn", semi: ["error", "always"] } },
 ]);

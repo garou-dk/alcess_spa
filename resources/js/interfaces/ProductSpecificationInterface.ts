@@ -19,4 +19,4 @@ export {
     ProductSpecificationInterface,
     ProductSpecificationFormInterface,
     ProductSpecificationFormErrorInterface,
-}
+};

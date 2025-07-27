@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="handleSubmit()" class="p-4">
         <div class="flex flex-wrap">
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.product_name"
                     tag="label"
@@ -18,7 +18,7 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.category_id"
                     tag="span"
@@ -34,12 +34,14 @@
                         :invalid="errors.category_id.length > 0"
                         option-label="category_name"
                         option-value="category_id"
-                        :loading="categoryState.loadCategoryService.request.loading"
+                        :loading="
+                            categoryState.loadCategoryService.request.loading
+                        "
                         filter
                     />
                 </InputForm>
             </div>
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.unit_id"
                     tag="span"
@@ -78,7 +80,7 @@
             </InputForm>
         </div>
         <div class="flex flex-wrap">
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.product_price"
                     tag="label"
@@ -96,7 +98,7 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.product_quantity"
                     tag="label"
@@ -112,7 +114,7 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 lg:w-1/3 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/3">
                 <InputForm
                     :errors="errors.low_stock_threshold"
                     tag="label"
@@ -148,7 +150,7 @@
             </InputForm>
         </div>
         <div class="flex flex-wrap">
-            <div class="p-2 lg:w-1/2 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/2">
                 <InputForm
                     :errors="errors.is_active"
                     tag="span"
@@ -160,7 +162,7 @@
                         label-id="is_active"
                         :options="[
                             { label: 'Active', value: 1 },
-                            { label: 'Inactive', value: 0 }
+                            { label: 'Inactive', value: 0 },
                         ]"
                         placeholder="Select Status"
                         fluid
@@ -170,7 +172,7 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 lg:w-1/2 max-lg:w-full">
+            <div class="p-2 max-lg:w-full lg:w-1/2">
                 <InputForm
                     :errors="errors.available_online"
                     tag="span"
@@ -182,7 +184,7 @@
                         label-id="available_online"
                         :options="[
                             { label: 'Yes', value: 1 },
-                            { label: 'No', value: 0 }
+                            { label: 'No', value: 0 },
                         ]"
                         placeholder="Select Availability"
                         fluid
@@ -193,7 +195,7 @@
                 </InputForm>
             </div>
         </div>
-        <div class="p-2 flex justify-center">
+        <div class="flex justify-center p-2">
             <Button
                 type="submit"
                 label="Save"
@@ -205,20 +207,24 @@
     </form>
 </template>
 <script setup lang="ts">
-import { AddProductFormErrorInterface, AddProductFormInterface } from '@/interfaces/ProductInterface';
-import { useCategoryStore } from '@/stores/CategoryState';
-import { useUnitStore } from '@/stores/UnitState';
-import useAxiosUtil from '@/utils/AxiosUtil';
-import { reactive } from 'vue';
-import { useToast } from 'vue-toastification';
+import {
+    AddProductFormErrorInterface,
+    AddProductFormInterface,
+    ProductInterface,
+} from "@/interfaces/ProductInterface";
+import { useCategoryStore } from "@/stores/CategoryState";
+import { useUnitStore } from "@/stores/UnitState";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { reactive } from "vue";
+import { useToast } from "vue-toastification";
 
 const toast = useToast();
-const emit = defineEmits(['cb']);
-const submitService = useAxiosUtil<AddProductFormInterface, any>();
+const emit = defineEmits(["cb"]);
+const submitService = useAxiosUtil<AddProductFormInterface, ProductInterface>();
 const categoryState = useCategoryStore();
 const unitState = useUnitStore();
 
-const form : AddProductFormInterface = reactive({
+const form: AddProductFormInterface = reactive({
     product_name: null,
     description: null,
     category_id: null,
@@ -231,7 +237,7 @@ const form : AddProductFormInterface = reactive({
     available_online: null,
 });
 
-const errors : AddProductFormErrorInterface = reactive({
+const errors: AddProductFormErrorInterface = reactive({
     product_name: [],
     description: [],
     category_id: [],
@@ -259,33 +265,33 @@ const clearError = () => {
 
 const validate = () => {
     clearError();
-    
+
     if (!form.product_name) {
-        errors.product_name.push('Product name is required.');
+        errors.product_name.push("Product name is required.");
     }
     if (!form.description) {
-        errors.description.push('Description is required.');
+        errors.description.push("Description is required.");
     }
     if (!form.category_id) {
-        errors.category_id.push('Category is required.');
+        errors.category_id.push("Category is required.");
     }
     if (!form.unit_id) {
-        errors.unit_id.push('Unit is required.');
+        errors.unit_id.push("Unit is required.");
     }
     if (!form.product_price) {
-        errors.product_price.push('Product price is required.');
+        errors.product_price.push("Product price is required.");
     }
     if (!form.product_quantity) {
-        errors.product_quantity.push('Product quantity is required.');
+        errors.product_quantity.push("Product quantity is required.");
     }
     if (!form.low_stock_threshold) {
-        errors.low_stock_threshold.push('Low stock threshold is required.');
+        errors.low_stock_threshold.push("Low stock threshold is required.");
     }
     if (form.is_active === null) {
-        errors.is_active.push('Product status is required.');
+        errors.is_active.push("Product status is required.");
     }
     if (form.available_online === null) {
-        errors.available_online.push('Availability is required.');
+        errors.available_online.push("Availability is required.");
     }
 
     const hasErrors = [
@@ -298,11 +304,11 @@ const validate = () => {
         errors.low_stock_threshold.length > 0,
         errors.is_active.length > 0,
         errors.sku.length > 0,
-        errors.available_online.length > 0
+        errors.available_online.length > 0,
     ];
 
     return hasErrors.includes(true) ? false : form;
-}
+};
 
 const handleSubmit = async () => {
     const data = validate();
@@ -326,7 +332,7 @@ const handleSubmit = async () => {
             }
         });
     } else {
-        toast.error('Please fill in all required fields.');
+        toast.error("Please fill in all required fields.");
     }
 };
 </script>

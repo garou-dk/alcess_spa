@@ -59,31 +59,34 @@ class ManageFileService
         return false;
     }
 
-    public function fileExtension(UploadedFile $file) {
+    public function fileExtension(UploadedFile $file)
+    {
         return $file->extension();
     }
 
-    public function createVideoThumbnail(string $filePath) {
-        $thumbnailName = Uuid::uuid4()->toString() . '.png';
+    public function createVideoThumbnail(string $filePath)
+    {
+        $thumbnailName = Uuid::uuid4()->toString().'.png';
         VideoThumbnail::createThumbnail(
-            $filePath, 
-            storage_path('app/public/' . FileDirectoryEnum::THUMBNAIL_IMAGE), 
+            $filePath,
+            storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE),
             $thumbnailName,
-            1, 
-            128, 
+            1,
+            128,
             128
         );
 
         return $thumbnailName;
     }
 
-    public function createImageThumbnail(string $filePath) {
-        $thumbnailName = Uuid::uuid4()->toString(). '.png';
-        $manager = new ImageManager(new Driver());
+    public function createImageThumbnail(string $filePath)
+    {
+        $thumbnailName = Uuid::uuid4()->toString().'.png';
+        $manager = new ImageManager(new Driver);
 
         $image = $manager->read($filePath);
         $image->scale(width: 128, height: 128);
-        $image->toPng()->save(storage_path('app/public/' . FileDirectoryEnum::THUMBNAIL_IMAGE . '/' . $thumbnailName));
+        $image->toPng()->save(storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE.'/'.$thumbnailName));
 
         return $thumbnailName;
     }

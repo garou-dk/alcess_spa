@@ -67,19 +67,22 @@ class ProductController extends Controller
             ->response();
     }
 
-    public function countLowStock() {
+    public function countLowStock()
+    {
         return ApiResponse::success()
             ->data($this->service->countLowStock())
             ->response();
     }
 
-    public function activeProductCount() {
+    public function activeProductCount()
+    {
         return ApiResponse::success()
             ->data($this->service->activeProductCount())
             ->response();
     }
 
-    public function outOfStockCount() {
+    public function outOfStockCount()
+    {
         return ApiResponse::success()
             ->data($this->service->outOfStockCount())
             ->response();

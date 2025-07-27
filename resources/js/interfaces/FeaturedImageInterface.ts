@@ -12,4 +12,8 @@ interface FeaturedImageFormErrorInterface {
     featured_image: string[];
 }
 
-export { FeaturedImageInterface, FeaturedImageFormInterface, FeaturedImageFormErrorInterface };
+export {
+    FeaturedImageInterface,
+    FeaturedImageFormInterface,
+    FeaturedImageFormErrorInterface,
+};

@@ -22,8 +22,13 @@ class ValidatorUtil {
         return file.size <= maxFileSize;
     }
 
-    public static isImageOrMp4 (file: File): string | false {
-        const allowedFormats = ["image/jpeg", "image/jpg", "image/png", "video/mp4"];
+    public static isImageOrMp4(file: File): string | false {
+        const allowedFormats = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "video/mp4",
+        ];
         return allowedFormats.includes(file.type) ? file.type : false;
     }
 
