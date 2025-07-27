@@ -322,7 +322,10 @@ const { leave } = useEcho('product', ['.product.update'], (value: ProductInterfa
 });
 
 useEcho('product', ['.product.count'], (value: { count: number }) => {
-    paginate.total = value.count;
+    if (paginate.total != value.count) {
+        paginate.total = value.count;
+        load();
+    }
 });
 
 onMounted(() => {
