@@ -76,7 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('featured-images')
                 ->group(function () {
                     Route::get('/{id}', 'index');
-                    Route::post('/', 'store');
+                    Route::post('/{id}', 'store');
                     Route::delete('/{id}', 'destroy');
                 });
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('featured_image_id');
             $table->foreignId('product_id')->constrained('products', 'product_id');
             $table->string('featured_image');
+            $table->string('thumbnail');
             $table->timestamps();
         });
     }

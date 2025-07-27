@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
+use App\Events\ProductEvent;
 use App\Models\Product;
 
 class ProductService
@@ -52,10 +53,14 @@ class ProductService
         $product->available_online = $data['available_online'];
         $product->save();
 
+        $product->load(['category', 'unit']);
+
         $product = $product->toArray();
 
         $product['specifications'] = [];
         $product['featured_images'] = [];
+
+        ProductEvent::dispatch($product);
 
         return $product;
     }
@@ -76,10 +81,13 @@ class ProductService
         $product->product_quantity = $data['product_quantity'];
         $product->low_stock_threshold = $data['low_stock_threshold'];
         $product->is_active = $data['is_active'];
+        $product->sku = $data['sku'] ?? null;
         $product->available_online = $data['available_online'];
         $product->save();
 
-        $product->load(['specifications', 'featuredImages']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
+
+        ProductEvent::dispatch($product->toArray());
 
         return $product;
     }
@@ -104,7 +112,7 @@ class ProductService
             $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $oldImage);
         }
         
-        $product->load(['specifications', 'featuredImages']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         return $product;
     }
@@ -131,7 +139,7 @@ class ProductService
         $product->is_active = $data['is_active'];
         $product->save();
 
-        $product->load(['specifications', 'featuredImages']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         return $product;
     }

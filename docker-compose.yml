@@ -3,3 +3,17 @@ services:
         image: redis
         ports:
             - 6379:6379
+    soketi:
+        image: quay.io/soketi/soketi:1.4-16-debian
+        ports:
+            - 6001:6001
+        volumes:
+            - ./soketi.json:/etc/soketi/soketi.json
+        command: ["soketi", "start", "--config=/etc/soketi/soketi.json"]
+        restart: unless-stopped
+networks:
+    default:
+        driver: bridge
+volumes:
+    dbdata:
+        driver: local

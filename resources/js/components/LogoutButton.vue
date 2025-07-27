@@ -12,6 +12,7 @@
 import { getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
+import { useEcho } from "@laravel/echo-vue";
 import { useRouter } from "vue-router";
 
 const logoutService = useAxiosUtil();

@@ -21,6 +21,16 @@ class ValidatorUtil {
         const maxFileSize = 2 * 1024 * 1024;
         return file.size <= maxFileSize;
     }
+
+    public static isImageOrMp4 (file: File): string | false {
+        const allowedFormats = ["image/jpeg", "image/jpg", "image/png", "video/mp4"];
+        return allowedFormats.includes(file.type) ? file.type : false;
+    }
+
+    public static checkSizeValidation(file: File, size: number): boolean {
+        const maxFileSize = size * 1024 * 1024;
+        return file.size <= maxFileSize;
+    }
 }
 
 export default ValidatorUtil;

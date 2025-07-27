@@ -6,6 +6,9 @@ use App\Enums\FileDirectoryEnum;
 use App\Enums\RoleEnum;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Pawlox\VideoThumbnail\Facade\VideoThumbnail;
 use Ramsey\Uuid\Uuid;
 
 class ManageFileService
@@ -54,5 +57,34 @@ class ManageFileService
         }
 
         return false;
+    }
+
+    public function fileExtension(UploadedFile $file) {
+        return $file->extension();
+    }
+
+    public function createVideoThumbnail(string $filePath) {
+        $thumbnailName = Uuid::uuid4()->toString() . '.png';
+        VideoThumbnail::createThumbnail(
+            $filePath, 
+            storage_path('app/public/' . FileDirectoryEnum::THUMBNAIL_IMAGE), 
+            $thumbnailName,
+            1, 
+            128, 
+            128
+        );
+
+        return $thumbnailName;
+    }
+
+    public function createImageThumbnail(string $filePath) {
+        $thumbnailName = Uuid::uuid4()->toString(). '.png';
+        $manager = new ImageManager(new Driver());
+
+        $image = $manager->read($filePath);
+        $image->scale(width: 128, height: 128);
+        $image->toPng()->save(storage_path('app/public/' . FileDirectoryEnum::THUMBNAIL_IMAGE . '/' . $thumbnailName));
+
+        return $thumbnailName;
     }
 }

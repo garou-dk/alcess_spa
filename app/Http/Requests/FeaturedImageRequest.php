@@ -23,8 +23,7 @@ class FeaturedImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required', 'integer', Rule::exists('products', 'product_id')],
-            'featured_image' => ['required', 'file', 'mimetypes:image/jpeg,image/png', 'max:2048'],
+            'featured_image' => ['required', 'file', 'mimetypes:image/jpeg,image/png,video/mp4', 'max:20480'],
         ];
     }
 }

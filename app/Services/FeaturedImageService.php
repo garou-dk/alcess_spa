@@ -4,6 +4,10 @@ namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
 use App\Models\FeaturedImage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Pawlox\VideoThumbnail\Facade\VideoThumbnail;
+use Ramsey\Uuid\Uuid;
 
 class FeaturedImageService
 {
@@ -16,16 +20,30 @@ class FeaturedImageService
 
     public function store(array $data)
     {
+        $product = Product::query()
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        abort_if(empty($product), 404, 'Product not found');
+
         $featuredImage = new FeaturedImage;
 
         $manageFileService = new ManageFileService;
         $result = $manageFileService->saveFile($data['featured_image'], FileDirectoryEnum::PRODUCT_IMAGE->value, 'public');
+        $extension = $manageFileService->fileExtension($data['featured_image']);
+        
+        $featuredImage->thumbnail = match ($extension) {
+            'mp4' => $manageFileService->createVideoThumbnail($result['file_path']),
+            default => $manageFileService->createImageThumbnail($result['file_path']),
+        };
 
         $featuredImage->featured_image = $result['file_name'];
         $featuredImage->product_id = $data['product_id'];
         $featuredImage->save();
 
-        return $featuredImage;
+        $product->load(['specifications', 'featuredImages']);
+
+        return $product;
     }
 
     public function remove(array $data)

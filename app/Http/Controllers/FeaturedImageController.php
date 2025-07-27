@@ -17,9 +17,9 @@ class FeaturedImageController extends Controller
             ->response();
     }
 
-    public function store(FeaturedImageRequest $request)
+    public function store(string $id, FeaturedImageRequest $request)
     {
-        $data = $request->validated();
+        $data = $request->validated() + ['product_id' => $id];
 
         return ApiResponse::success()
             ->data($this->service->store($data))

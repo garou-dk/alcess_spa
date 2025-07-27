@@ -161,8 +161,9 @@ import { ProductInterface, ProductSearchErrorInterface, ProductSearchInterface }
 import { useCategoryStore } from '@/stores/CategoryState';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import UrlUtil from '@/utils/UrlUtil';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useEcho } from "@laravel/echo-vue";
 
 const categoryState = useCategoryStore();
 const loadService = useAxiosUtil<ProductSearchInterface, DataTableInterface<ProductInterface>>();
@@ -182,6 +183,7 @@ const showProductSku : {
     visible: false,
     sku: null,
 });
+
 
 const form: ProductSearchInterface = reactive({
     search: null,
@@ -219,7 +221,6 @@ const showSku = (value: string) => {
 
 const printSku = () => {
     const printable = skuPrintable.value;
-    console.log(printable);
     
     if (printable) {
         const w = window.open('');
@@ -307,7 +308,19 @@ const decrementPage = () => {
     }
 };
 
+const { leaveChannel } = useEcho('product', ['.product.update'], (value: ProductInterface) => {
+    const index = paginate.data.findIndex((item) => item.product_id === value.product_id);
+
+    if (index !== -1) {
+        paginate.data[index] = value;
+    }
+});
+
 onMounted(() => {
     load();
+});
+
+onUnmounted(() => {
+    leaveChannel();
 });
 </script>

@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { ProductInterface } from '@/interfaces/ProductInterface';
-import FeaturedImageForm from './FeaturedImageForm.vue';
+import FeaturedImageForm from '@/components/forms/FeaturedImageForm.vue';
 
 interface Props {
     data: ProductInterface;
