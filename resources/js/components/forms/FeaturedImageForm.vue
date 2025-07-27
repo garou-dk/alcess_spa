@@ -122,6 +122,13 @@ const onFileSelect = (e: Event) => {
         toast.error(
             "Invalid file type, please select a jpeg, jpg, png or mp4 file",
         );
+        uploadInput.value.value = "";
+        return;
+    }
+    const validSize = ValidatorUtil.checkSizeValidation(file, 20);
+    if (!validSize) {
+        toast.error("File size must be less than 20MB");
+        uploadInput.value.value = "";
         return;
     }
 
@@ -152,6 +159,7 @@ const getCropResult = async () => {
     result.blobURL = URL.createObjectURL(blob);
     form.featured_image = file;
     showCropperModal.value = false;
+    handleSubmit();
 };
 
 const resetForm = () => {

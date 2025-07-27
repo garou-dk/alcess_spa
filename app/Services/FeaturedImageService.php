@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
+use App\Events\ProductEvent;
 use App\Models\FeaturedImage;
+use App\Models\Product;
 
 class FeaturedImageService
 {
@@ -37,7 +39,9 @@ class FeaturedImageService
         $featuredImage->product_id = $data['product_id'];
         $featuredImage->save();
 
-        $product->load(['specifications', 'featuredImages']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
+
+        ProductEvent::dispatch($product->toArray());
 
         return $product;
     }

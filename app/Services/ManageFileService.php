@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
 use App\Enums\RoleEnum;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFMpeg;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -64,12 +66,29 @@ class ManageFileService
         return $file->extension();
     }
 
+    public function checkOrCreateFolderDirectory(string $path) {
+
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+    }
+
     public function createVideoThumbnail(string $filePath)
     {
+        $thumbnailDirectory = storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value);
+        $this->checkOrCreateFolderDirectory($thumbnailDirectory);
         $thumbnailName = Uuid::uuid4()->toString().'.png';
+
+        
+
+        // $ffmpeg = FFMpeg::create();
+        // $video = $ffmpeg->open($filePath);
+        // $video->frame(TimeCode::fromSeconds(10))
+        //     ->save(storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value). '/' . $thumbnailName);
+
         VideoThumbnail::createThumbnail(
-            $filePath,
-            storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE),
+            storage_path("app/public/{$filePath}"),
+            storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value),
             $thumbnailName,
             1,
             128,
@@ -81,12 +100,15 @@ class ManageFileService
 
     public function createImageThumbnail(string $filePath)
     {
+        $thumbnailDirectory = storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value);
+        $this->checkOrCreateFolderDirectory($thumbnailDirectory);
+        
         $thumbnailName = Uuid::uuid4()->toString().'.png';
         $manager = new ImageManager(new Driver);
 
-        $image = $manager->read($filePath);
+        $image = $manager->read(storage_path("app/public/{$filePath}"));
         $image->scale(width: 128, height: 128);
-        $image->toPng()->save(storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE.'/'.$thumbnailName));
+        $image->toPng()->save(storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value.'/'.$thumbnailName));
 
         return $thumbnailName;
     }

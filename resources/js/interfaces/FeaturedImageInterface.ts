@@ -2,6 +2,7 @@ interface FeaturedImageInterface {
     featured_image_id: number;
     product_id: number;
     featured_image: string;
+    thumbnail: string;
 }
 
 interface FeaturedImageFormInterface {
