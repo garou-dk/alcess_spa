@@ -3,6 +3,7 @@
 </template>
 <script setup lang="ts">
 import useAxiosUtil from '@/utils/AxiosUtil';
+import { useEcho } from '@laravel/echo-vue';
 import { onMounted, ref } from 'vue';
 
 const loadService = useAxiosUtil<null, { result: number }>();
@@ -16,6 +17,10 @@ const load = async () => {
         }
     });
 }
+
+useEcho('product', ['.product.active.count'], (value: { count: number }) => {
+    result.value = value.count;
+});
 
 onMounted(() => {
     load();

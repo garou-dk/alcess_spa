@@ -85,7 +85,11 @@
                 </Column>
                 <Column field="category.category_name" header="Category" />
                 <Column field="product_quantity" header="Stock" />
-                <Column field="product_price" header="Price" />
+                <Column field="product_price" header="Price">
+                    <template #body="{ data }">
+                        {{ CurrencyUtil.formatCurrency(data.product_price) }}
+                    </template>
+                </Column>
                 <Column header="Actions">
                     <template #body="{ data }">
                         <div class="flex gap-2">
@@ -164,6 +168,7 @@ import UrlUtil from '@/utils/UrlUtil';
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useEcho } from "@laravel/echo-vue";
+import CurrencyUtil from '@/utils/CurrencyUtil';
 
 const categoryState = useCategoryStore();
 const loadService = useAxiosUtil<ProductSearchInterface, DataTableInterface<ProductInterface>>();
@@ -308,7 +313,7 @@ const decrementPage = () => {
     }
 };
 
-const { leaveChannel } = useEcho('product', ['.product.update'], (value: ProductInterface) => {
+const { leave } = useEcho('product', ['.product.update'], (value: ProductInterface) => {
     const index = paginate.data.findIndex((item) => item.product_id === value.product_id);
 
     if (index !== -1) {
@@ -316,11 +321,15 @@ const { leaveChannel } = useEcho('product', ['.product.update'], (value: Product
     }
 });
 
+useEcho('product', ['.product.count'], (value: { count: number }) => {
+    paginate.total = value.count;
+});
+
 onMounted(() => {
     load();
 });
 
 onUnmounted(() => {
-    leaveChannel();
+    leave();
 });
 </script>

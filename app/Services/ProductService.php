@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
+use App\Events\ProductActiveCountEvent;
+use App\Events\ProductCountEvent;
 use App\Events\ProductEvent;
+use App\Events\ProductLowStockCountEvent;
+use App\Events\ProductOutStockCountEvent;
 use App\Models\Product;
 
 class ProductService
@@ -61,6 +65,10 @@ class ProductService
         $product['featured_images'] = [];
 
         ProductEvent::dispatch($product);
+        ProductCountEvent::dispatch($this->countAllProduct()['result']);
+        ProductLowStockCountEvent::dispatch($this->countLowStock()['result']);
+        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);  
+        ProductActiveCountEvent::dispatch($this->activeProductCount()['result']);
 
         return $product;
     }
@@ -88,6 +96,10 @@ class ProductService
         $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         ProductEvent::dispatch($product->toArray());
+        ProductCountEvent::dispatch($this->countAllProduct()['result']);
+        ProductLowStockCountEvent::dispatch($this->countLowStock()['result']);
+        ProductOutStockCountEvent::dispatch($this->outOfStockCount()['result']);  
+        ProductActiveCountEvent::dispatch($this->activeProductCount()['result']);
 
         return $product;
     }
@@ -142,6 +154,17 @@ class ProductService
         $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         return $product;
+    }
+
+    public function countAllProduct() {
+        $result = Product::query()
+            ->count();
+
+        $data = [
+            'result' => $result
+        ]; 
+
+        return $data;
     }
 
     public function countLowStock() {
