@@ -4,7 +4,13 @@
             <div class="flex space-x-4 p-4 w-full">
                 <div class="grow">
                     <InputForm :errors="[]" id="sales-report" label-name="Sales Report" tag="label">
-                        <Select id="sales-report" placeholder="Select Sales Report" show-clear class="w-full select"
+                        <Select
+                        :options="[
+                            { label: 'Inventory Report', value: 'inventory' },
+                            { label: 'Delivery Report', value: 'sales' },
+                            { label: 'List of Customers', value: 'order' }
+                        ]"
+                        id="sales-report" placeholder="Select Sales Report" show-clear class="w-full select"
                             fluid />
                     </InputForm>
                 </div>
