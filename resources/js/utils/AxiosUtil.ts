@@ -8,6 +8,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 axios.defaults.baseURL = import.meta.env.APP_URL;
+axios.defaults.timeout = 60000;
 
 export default function useAxiosUtil<Input, Output>() {
     const request: RequestInterface<Output> = reactive({
