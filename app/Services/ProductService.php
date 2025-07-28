@@ -12,6 +12,17 @@ use App\Models\Product;
 
 class ProductService
 {
+    public function bestSelling() {
+        $products = Product::query()
+            ->where('is_active', true)
+            ->where('available_online', true)
+            ->whereNot('product_quantity', 0)
+            ->take(5)
+            ->get();
+
+        return $products;
+    }
+
     public function index(array $data)
     {
         $products = Product::query();

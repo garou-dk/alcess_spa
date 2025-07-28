@@ -12,6 +12,12 @@ class ProductController extends Controller
 {
     public function __construct(public ProductService $service) {}
 
+    public function bestSelling()  {
+        return ApiResponse::success()
+            ->data($this->service->bestSelling())
+            ->response();
+    }
+
     public function index(SearchProductRequest $request)
     {
         $data = $request->validated();
