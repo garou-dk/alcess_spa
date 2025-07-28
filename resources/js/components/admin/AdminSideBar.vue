@@ -43,7 +43,7 @@
                 label="Categories"
             />
         </SideBarAccordion>
-        <SideBarButton to="" icon="pi pi-chart-bar" label="Reports" />
+        <SideBarButton to="admin.report.index" icon="pi pi-chart-bar" label="Reports" />
     </div>
 </template>
 <script setup lang="ts">
