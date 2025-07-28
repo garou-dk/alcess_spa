@@ -15,7 +15,7 @@
             icon="pi pi-objects-column"
             label="Dashboard"
         />
-        <SideBarButton to="" icon="pi pi-shopping-cart" label="Order" />
+        <SideBarButton to="admin.order.index" icon="pi pi-shopping-cart" label="Order" />
         <SideBarButton to="" icon="pi pi-my-pos" label="Sales" />
         <SideBarButton
             to="admin.product.index"
