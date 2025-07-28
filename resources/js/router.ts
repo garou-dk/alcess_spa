@@ -13,6 +13,7 @@ import UnitRoute from "@/routes/UnitRoute";
 import CategoryRoute from "@/routes/CategoryRoute";
 import ProductRoute from "@/routes/ProductRoute";
 import OrderRoute from "@/routes/OrderRoute";
+import PosRoute from "@/routes/PosRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -60,6 +61,7 @@ const router = createRouter({
                         { ...CategoryRoute },
                         { ...ProductRoute },
                         { ...OrderRoute },
+                        { ...PosRoute },
                     ],
                 },
             ],
