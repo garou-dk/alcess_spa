@@ -171,7 +171,7 @@
             <div class="p-2 max-lg:w-full lg:w-1/2">
                 <BoxShadow>
                     <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-600">Low Stock</p>
+                        <p class="p-3 font-semibold text-gray-600">Nearly out of stock</p>
                         <DataTable
                             class="w-full"
                             :value="paginate.data"

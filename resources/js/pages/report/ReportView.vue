@@ -3,7 +3,7 @@
         <BoxShadow class="mb-3">
             <div class="flex space-x-4 p-4 w-full">
                 <div class="grow">
-                    <InputForm :errors="[]" id="sales-report" label-name="Sales Report" tag="label">
+                    <InputForm :errors="[]" id="sales-report" label-name="Report" tag="label">
                         <Select
                             v-model="selectedReport"
                         :options="[
