@@ -15,3 +15,7 @@ Broadcast::channel('product', function (User $user) {
 
     return in_array($user->role->role_name, RoleEnum::storeUsers());
 });
+
+Broadcast::channel('cart.{id}', function ($user, $id) {
+    return (int) $user->user_id === (int) $id;
+});

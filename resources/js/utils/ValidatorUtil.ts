@@ -36,6 +36,21 @@ class ValidatorUtil {
         const maxFileSize = size * 1024 * 1024;
         return file.size <= maxFileSize;
     }
+
+    public static getFileType(fileName: string): (string | null) {
+        const parts = fileName.split('.');
+
+        const extension = parts.length > 1 ? parts.pop()?.toLowerCase() : null;
+        
+        const fileTypes: Record<string, string> = {
+            'jpg': 'image',
+            'jpeg': 'image',
+            'png': 'image',
+            'mp4': 'video',
+        };
+
+        return extension && fileTypes[extension] ? fileTypes[extension] : null;
+    }
 }
 
 export default ValidatorUtil;

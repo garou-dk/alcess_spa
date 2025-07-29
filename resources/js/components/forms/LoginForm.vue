@@ -116,6 +116,9 @@ const handleSubmit = async () => {
                     ) {
                         router.push({ name: "admin.app" });
                     }
+                    else {
+                        router.push({ name: "customer.home.index" });
+                    }
                 } else {
                     toast.error(
                         authService.request.message ?? "Please try again.",

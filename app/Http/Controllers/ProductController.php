@@ -93,4 +93,10 @@ class ProductController extends Controller
             ->data($this->service->outOfStockCount())
             ->response();
     }
+
+    public function fetchAvailableProduct(string $id) {
+        return ApiResponse::success()
+            ->data($this->service->fetchAvailableProduct(['product_id' => $id]))
+            ->response();
+    }
 }

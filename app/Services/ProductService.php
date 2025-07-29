@@ -217,4 +217,18 @@ class ProductService
 
         return $data;
     }
+
+    public function fetchAvailableProduct(array $data) {
+        $product = Product::query()
+            ->with(['category', 'unit', 'specifications', 'featuredImages'])
+            ->where('available_online', true)
+            ->where('is_active', true)
+            ->whereNot('product_quantity', 0)
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        abort_if(empty($product), 404, 'Product not found');
+
+        return $product;
+    }
 }

@@ -2,6 +2,7 @@
 
 use App\Enums\RoleEnum;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeaturedImageController;
 use App\Http\Controllers\FileController;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('categories', [CategoryController::class, 'index']);
 
 Route::get('best-selling', [ProductController::class, 'bestSelling']);
+
+Route::get('find-product/{id}', [ProductController::class, 'fetchAvailableProduct']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
@@ -90,6 +93,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 });
         });
     });
+    
+    Route::prefix('customer')
+        ->middleware(['role:'.RoleEnum::CUSTOMER->value])
+        ->group(function () {
+            Route::controller(CartController::class)
+                ->prefix('carts')
+                ->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::delete('/{id}', 'remove');
+                    Route::get('/count', 'cartCount');
+                });
+        });
 
     Route::controller(FileController::class)
         ->group(function () {

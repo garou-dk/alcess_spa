@@ -15,6 +15,10 @@ import ProductRoute from "@/routes/ProductRoute";
 import OrderRoute from "@/routes/OrderRoute";
 import PosRoute from "@/routes/PosRoute";
 import ReportRoute from "@/routes/ReportRoute";
+import CustomerIndex from "@/pages/CustomerIndex.vue";
+import HomeRoute from "@/routes/HomeRoute";
+import ProductInfoRoute from "@/routes/ProductInfoRoute";
+import CartRoute from "@/routes/CartRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -26,7 +30,7 @@ const router = createRouter({
             name: "home",
             component: HomeView,
             meta: {
-                access: getStoreCustomers(),
+                access: [null],
                 pageName: "Home",
                 pageSubName: "Home",
             },
@@ -65,8 +69,24 @@ const router = createRouter({
                         { ...PosRoute },
                         { ...ReportRoute },
                     ],
-                },
+                }
             ],
+        },
+        {
+            path: "/customer",
+            name: "customer.app",
+            component: CustomerIndex,
+            redirect: { name: "customer.home.index" },
+            meta: {
+                access: [RoleEnum.CUSTOMER],
+                pageName: "Customer",
+                pageSubName: "Customer",
+            },
+            children: [
+                { ...HomeRoute },
+                { ...ProductInfoRoute },
+                { ...CartRoute },
+            ]
         },
         {
             path: "/verify",
@@ -102,6 +122,7 @@ router.beforeEach(async (to, from, next) => {
             Array.isArray(to.meta.access) &&
             to.meta.access.includes(Page.user.role.role_name)
         ) {
+            console.log("User has access, proceeding to route");
             next();
         } else {
             // To-do: Add more role redirection
@@ -110,10 +131,12 @@ router.beforeEach(async (to, from, next) => {
                     Page.user.role.role_name as RoleEnum,
                 )
             ) {
-                next({ name: "home" });
+                next({ name: "customer.home.index" });
             }
         }
     } else {
+        console.log("User not logged in, checking access for unauthenticated users");
+        
         if (Array.isArray(to.meta.access) && to.meta.access.includes(null)) {
             next();
         } else {
