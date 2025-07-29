@@ -1,7 +1,10 @@
+import { ProductInterface } from "@/interfaces/ProductInterface";
+
 interface CartInterface {
     cart_id: number;
     product_id: number;
     quantity: number;
+    product: ProductInterface;
 }
 
 interface CartFormInterface {

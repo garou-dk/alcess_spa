@@ -1,4 +1,4 @@
-import { getStoreRoles } from "@/enums/RoleEnum";
+import { RoleEnum } from "@/enums/RoleEnum";
 import CartView from "@/pages/cart/CartView.vue";
 import { RouteRecordRaw } from "vue-router";
 
@@ -12,7 +12,7 @@ const route: RouteRecordRaw = {
             name: "customer.cart.index",
             component: CartView,
             meta: {
-                access: getStoreRoles(),
+                access: [RoleEnum.CUSTOMER],
                 pageName: "Cart",
                 pageSubName: "Manage your selected items here.",
             },

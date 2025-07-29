@@ -3,7 +3,7 @@
         :value="count"
         pt:pcBadge:root:class="bg-sky-800! text-white"
     >
-        <RouterLink :to="{ name: '' }">
+        <RouterLink :to="{ name: 'customer.cart.index' }">
             <Button
             type="button"
             icon="pi pi-shopping-cart"
