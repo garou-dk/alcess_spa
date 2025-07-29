@@ -9,7 +9,8 @@
                         :options="[
                             { label: 'Inventory Report', value: 'inventory' },
                             { label: 'Delivery Report', value: 'delivery' },
-                            { label: 'List of Customers', value: 'order' }
+                            { label: 'List of Customers', value: 'order' },
+                            { label: 'Sales Report', value: 'sales' },
                         ]"
                         id="sales-report" placeholder="Select Sales Report" option-label="label"
                         option-value="value"
@@ -34,6 +35,7 @@
                 <InventoryReport v-if="selectedReport === 'inventory'" />
                 <DeliveryReport v-else-if="selectedReport === 'delivery'" />
                 <CustomerListReport v-else-if="selectedReport === 'order'" />
+                <SalesReport v-else-if="selectedReport === 'sales'" />
             </div>
         </BoxShadow>
 
@@ -49,6 +51,7 @@
 import CustomerListReport from '@/components/reports/CustomerListReport.vue';
 import DeliveryReport from '@/components/reports/DeliveryReport.vue';
 import InventoryReport from '@/components/reports/InventoryReport.vue';
+import SalesReport from '@/components/reports/SalesReport.vue';
 import { ref } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 
