@@ -8,7 +8,11 @@
                             <div class="flex">
                                 <div class="px-2">
                                     <div class="rounded-full bg-white">
-                                        <img :src="Icon" class="h-16 w-16" alt="Store Icon" />
+                                        <img
+                                            :src="Icon"
+                                            class="h-16 w-16"
+                                            alt="Store Icon"
+                                        />
                                     </div>
                                 </div>
                                 <div class="flex items-center px-2">
@@ -26,8 +30,14 @@
                                     <InputGroupAddon>
                                         <i class="pi pi-search" />
                                     </InputGroupAddon>
-                                    <InputText v-model="form.search" :invalid="errors.search.length > 0"
-                                        placeholder="Search product" fluid name="search" autocomplete="off" />
+                                    <InputText
+                                        v-model="form.search"
+                                        :invalid="errors.search.length > 0"
+                                        placeholder="Search product"
+                                        fluid
+                                        name="search"
+                                        autocomplete="off"
+                                    />
                                 </InputGroup>
                             </form>
                         </div>
@@ -35,8 +45,15 @@
                     <template #end>
                         <div class="flex">
                             <div v-if="!Page.user" class="px-2">
-                                <button type="button" class="cursor-pointer text-white" @click="openLoginForm()">
-                                    <i class="pi pi-user" style="font-size: 1.5rem" />
+                                <button
+                                    type="button"
+                                    class="cursor-pointer text-white"
+                                    @click="openLoginForm()"
+                                >
+                                    <i
+                                        class="pi pi-user"
+                                        style="font-size: 1.5rem"
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -45,41 +62,82 @@
             </nav>
         </header>
         <div>
-            <div class="w-full mb-2">
-                <img :src="HeroBg" class="w-full h-full" />
+            <div class="mb-2 w-full">
+                <img :src="HeroBg" class="h-full w-full" />
             </div>
             <div class="p-2">
                 <h1 class="p-2 text-2xl font-semibold">Categories</h1>
                 <div class="flex flex-wrap p-2">
-                    <div v-for="(category, index) in CategoryStore.categories" :key="index" class="p-2">
+                    <div
+                        v-for="(category, index) in CategoryStore.categories"
+                        :key="index"
+                        class="p-2"
+                    >
                         <button
-                            class="rounded-full p-2 flex items-center justify-center gap-2 primary-bg cursor-pointer">
-                            <img v-if="category.category_image"
-                                :src="UrlUtil.getBaseAppUrl(`storage/images/category/${category.category_image}`)"
-                                :alt="category.category_image" class="w-8 h-8 mr-2" />
-                            <Avatar :label="category.category_name[0]" shape="circle" />
+                            class="primary-bg flex cursor-pointer items-center justify-center gap-2 rounded-full p-2"
+                        >
+                            <img
+                                v-if="category.category_image"
+                                :src="
+                                    UrlUtil.getBaseAppUrl(
+                                        `storage/images/category/${category.category_image}`,
+                                    )
+                                "
+                                :alt="category.category_image"
+                                class="mr-2 h-8 w-8"
+                            />
+                            <Avatar
+                                :label="category.category_name[0]"
+                                shape="circle"
+                            />
                             <span>{{ category.category_name }}</span>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="p-4">
-                <h1 class="text-2xl font-semibold mb-4">Best Selling Products</h1>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <div v-for="(product, index) in products" :key="index" class="p-2">
+                <h1 class="mb-4 text-2xl font-semibold">
+                    Best Selling Products
+                </h1>
+                <div
+                    class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                >
+                    <div
+                        v-for="(product, index) in products"
+                        :key="index"
+                        class="p-2"
+                    >
                         <div
-                            class="max-w-xs rounded-lg shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300">
+                            class="max-w-xs overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
+                        >
                             <div class="flex justify-center">
-                                <img v-if="product.product_image" class="w-48 h-48 object-cover"
-                                    :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
-                                    :alt="product.product_name" />
-                                <div v-else class="flex items-center justify-center p-4 w-48 h-48">
+                                <img
+                                    v-if="product.product_image"
+                                    class="h-48 w-48 object-cover"
+                                    :src="
+                                        UrlUtil.getBaseAppUrl(
+                                            `storage/images/product/${product.product_image}`,
+                                        )
+                                    "
+                                    :alt="product.product_name"
+                                />
+                                <div
+                                    v-else
+                                    class="flex h-48 w-48 items-center justify-center p-4"
+                                >
                                     <i class="pi pi-camera text-2xl" />
                                 </div>
                             </div>
                             <div class="p-4">
-                                <h3 class="text-lg font-semibold text-gray-800">{{ product.product_name }}</h3>
-                                <p class="text-gray-600 mt-1">{{ CurrencyUtil.formatCurrency(product.product_price) }}
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    {{ product.product_name }}
+                                </h3>
+                                <p class="mt-1 text-gray-600">
+                                    {{
+                                        CurrencyUtil.formatCurrency(
+                                            product.product_price,
+                                        )
+                                    }}
                                 </p>
                             </div>
                         </div>
@@ -87,35 +145,62 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="loginFormVisible" modal header="Login" :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog
+            v-model:visible="loginFormVisible"
+            modal
+            header="Login"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
             <LoginForm>
                 <template #footer>
                     <div class="flex">
                         <div class="w-1/2 p-2">
-                            <Button type="button" variant="link" label="Forgot password?" class="p-0! text-black!"
-                                pt:label:class="font-normal!" />
+                            <Button
+                                type="button"
+                                variant="link"
+                                label="Forgot password?"
+                                class="p-0! text-black!"
+                                pt:label:class="font-normal!"
+                            />
                         </div>
                         <div class="flex w-1/2 flex-col p-2">
                             <span class="text-end">Don't have an account?</span>
                             <div class="flex justify-end">
-                                <Button type="button" variant="link" label="Register" class="p-0!"
-                                    pt:label:class="font-normal!" @click="openRegisterForm()" />
+                                <Button
+                                    type="button"
+                                    variant="link"
+                                    label="Register"
+                                    class="p-0!"
+                                    pt:label:class="font-normal!"
+                                    @click="openRegisterForm()"
+                                />
                             </div>
                         </div>
                     </div>
                 </template>
             </LoginForm>
         </Dialog>
-        <Dialog v-model:visible="registerFormVisible" modal header="Register" :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog
+            v-model:visible="registerFormVisible"
+            modal
+            header="Register"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
             <RegisterForm>
                 <template #footer>
                     <div class="flex justify-center p-2">
                         <span>Already have an account?</span>
                         &nbsp;
-                        <Button type="button" variant="link" label="Login" class="p-0!" pt:label:class="font-normal!"
-                            @click="openLoginForm()" />
+                        <Button
+                            type="button"
+                            variant="link"
+                            label="Login"
+                            class="p-0!"
+                            pt:label:class="font-normal!"
+                            @click="openLoginForm()"
+                        />
                     </div>
                 </template>
             </RegisterForm>
@@ -164,10 +249,13 @@ const openRegisterForm = () => {
 
 const loadBestSellingProducts = async () => {
     await loadBestSellingService.get("best-selling").then(() => {
-        if (loadBestSellingService.request.status === 200 && loadBestSellingService.request.data) {
+        if (
+            loadBestSellingService.request.status === 200 &&
+            loadBestSellingService.request.data
+        ) {
             products.value = loadBestSellingService.request.data;
         }
-    })
+    });
 };
 
 onMounted(() => {

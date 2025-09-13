@@ -12,7 +12,8 @@ use App\Models\Product;
 
 class ProductService
 {
-    public function bestSelling() {
+    public function bestSelling()
+    {
         $products = Product::query()
             ->where('is_active', true)
             ->where('available_online', true)
@@ -218,7 +219,8 @@ class ProductService
         return $data;
     }
 
-    public function fetchAvailableProduct(array $data) {
+    public function fetchAvailableProduct(array $data)
+    {
         $product = Product::query()
             ->with(['category', 'unit', 'specifications', 'featuredImages'])
             ->where('available_online', true)

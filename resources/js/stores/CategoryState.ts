@@ -12,15 +12,18 @@ export const useCategoryStore = defineStore("category", () => {
 
     // Functions
     const fetchCategories = async () => {
-        const useAdminLink = Page.user && Page.user.role.role_name === RoleEnum.ADMIN;
-        await loadCategoryService.get(useAdminLink ? "admin/categories" : "categories").then(() => {
-            if (
-                loadCategoryService.request.status === 200 &&
-                loadCategoryService.request.data
-            ) {
-                categories.value = loadCategoryService.request.data;
-            }
-        });
+        const useAdminLink =
+            Page.user && Page.user.role.role_name === RoleEnum.ADMIN;
+        await loadCategoryService
+            .get(useAdminLink ? "admin/categories" : "categories")
+            .then(() => {
+                if (
+                    loadCategoryService.request.status === 200 &&
+                    loadCategoryService.request.data
+                ) {
+                    categories.value = loadCategoryService.request.data;
+                }
+            });
     };
 
     return {

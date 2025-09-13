@@ -1,4 +1,4 @@
-import { getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
+import { RoleEnum } from "@/enums/RoleEnum";
 import HomeIndexView from "@/pages/home/HomeIndexView.vue";
 import { RouteRecordRaw } from "vue-router";
 

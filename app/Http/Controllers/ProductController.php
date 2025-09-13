@@ -12,7 +12,8 @@ class ProductController extends Controller
 {
     public function __construct(public ProductService $service) {}
 
-    public function bestSelling()  {
+    public function bestSelling()
+    {
         return ApiResponse::success()
             ->data($this->service->bestSelling())
             ->response();
@@ -94,7 +95,8 @@ class ProductController extends Controller
             ->response();
     }
 
-    public function fetchAvailableProduct(string $id) {
+    public function fetchAvailableProduct(string $id)
+    {
         return ApiResponse::success()
             ->data($this->service->fetchAvailableProduct(['product_id' => $id]))
             ->response();

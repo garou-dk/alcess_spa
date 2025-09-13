@@ -15,7 +15,11 @@
             icon="pi pi-objects-column"
             label="Dashboard"
         />
-        <SideBarButton to="admin.order.index" icon="pi pi-shopping-cart" label="Order" />
+        <SideBarButton
+            to="admin.order.index"
+            icon="pi pi-shopping-cart"
+            label="Order"
+        />
         <SideBarButton to="admin.pos.index" icon="pi pi-my-pos" label="Sales" />
         <SideBarButton
             to="admin.product.index"
@@ -43,7 +47,11 @@
                 label="Categories"
             />
         </SideBarAccordion>
-        <SideBarButton to="admin.report.index" icon="pi pi-chart-bar" label="Reports" />
+        <SideBarButton
+            to="admin.report.index"
+            icon="pi pi-chart-bar"
+            label="Reports"
+        />
     </div>
 </template>
 <script setup lang="ts">

@@ -69,7 +69,7 @@ const router = createRouter({
                         { ...PosRoute },
                         { ...ReportRoute },
                     ],
-                }
+                },
             ],
         },
         {
@@ -86,7 +86,7 @@ const router = createRouter({
                 { ...HomeRoute },
                 { ...ProductInfoRoute },
                 { ...CartRoute },
-            ]
+            ],
         },
         {
             path: "/verify",
@@ -122,7 +122,7 @@ router.beforeEach(async (to, from, next) => {
             Array.isArray(to.meta.access) &&
             to.meta.access.includes(Page.user.role.role_name)
         ) {
-            console.log("User has access, proceeding to route");
+            // console.log("User has access, proceeding to route");
             next();
         } else {
             // To-do: Add more role redirection
@@ -135,8 +135,8 @@ router.beforeEach(async (to, from, next) => {
             }
         }
     } else {
-        console.log("User not logged in, checking access for unauthenticated users");
-        
+        // console.log("User not logged in, checking access for unauthenticated users");
+
         if (Array.isArray(to.meta.access) && to.meta.access.includes(null)) {
             next();
         } else {

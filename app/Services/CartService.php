@@ -8,8 +8,9 @@ use App\Models\Product;
 
 class CartService
 {
-    public function index() {
-        $authService = new AuthService();
+    public function index()
+    {
+        $authService = new AuthService;
         $user = $authService->getAuth();
         $carts = Cart::query()
             ->select('carts.*')
@@ -24,8 +25,9 @@ class CartService
         return $carts;
     }
 
-    public function addCart(array $data) {
-        $authService = new AuthService();
+    public function addCart(array $data)
+    {
+        $authService = new AuthService;
         $user = $authService->getAuth();
 
         $this->checkProductAvailable($data['product_id']);
@@ -36,11 +38,11 @@ class CartService
             ->first();
 
         $balance = Product::query()
-                ->where('product_id', $data['product_id'])
-                ->value('product_quantity');
+            ->where('product_id', $data['product_id'])
+            ->value('product_quantity');
 
         if (empty($cart)) {
-            
+
             abort_if(
                 $balance < $data['quantity'],
                 422,
@@ -50,8 +52,7 @@ class CartService
             $cart->user_id = $user->user_id;
             $cart->product_id = $data['product_id'];
             $cart->quantity = $data['quantity'];
-        }
-        else {
+        } else {
             $total = $cart->quantity + $data['quantity'];
             abort_if(
                 $balance < $total,
@@ -68,8 +69,9 @@ class CartService
         return $cart;
     }
 
-    public function removeCart(array $data) {
-        $authService = new AuthService();
+    public function removeCart(array $data)
+    {
+        $authService = new AuthService;
         $user = $authService->getAuth();
 
         $cart = Cart::query()
@@ -77,7 +79,7 @@ class CartService
             ->where('product_id', $data['product_id'])
             ->first();
 
-        if (!empty($cart)) {
+        if (! empty($cart)) {
             $cart->delete();
         }
 
@@ -86,8 +88,9 @@ class CartService
         return $cart;
     }
 
-    public function removeMultipleItems(array $data) {
-        $authService = new AuthService();
+    public function removeMultipleItems(array $data)
+    {
+        $authService = new AuthService;
         $user = $authService->getAuth();
 
         $carts = Cart::query()
@@ -107,15 +110,18 @@ class CartService
         return $carts;
     }
 
-    public function cartCount() {
-        $authService = new AuthService();
+    public function cartCount()
+    {
+        $authService = new AuthService;
         $user = $authService->getAuth();
+
         return Cart::query()
             ->where('user_id', $user->user_id)
             ->count();
     }
 
-    public function checkProductAvailable($product_id) {
+    public function checkProductAvailable($product_id)
+    {
         $found = Product::query()
             ->where('product_id', $product_id)
             ->where('product_quantity', '>', 0)

@@ -115,8 +115,7 @@ const handleSubmit = async () => {
                         )
                     ) {
                         router.push({ name: "admin.app" });
-                    }
-                    else {
+                    } else {
                         router.push({ name: "customer.home.index" });
                     }
                 } else {

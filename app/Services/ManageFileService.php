@@ -66,9 +66,10 @@ class ManageFileService
         return $file->extension();
     }
 
-    public function checkOrCreateFolderDirectory(string $path) {
+    public function checkOrCreateFolderDirectory(string $path)
+    {
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             mkdir($path, 0755, true);
         }
     }
@@ -78,8 +79,6 @@ class ManageFileService
         $thumbnailDirectory = storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value);
         $this->checkOrCreateFolderDirectory($thumbnailDirectory);
         $thumbnailName = Uuid::uuid4()->toString().'.png';
-
-        
 
         // $ffmpeg = FFMpeg::create();
         // $video = $ffmpeg->open($filePath);
@@ -102,7 +101,7 @@ class ManageFileService
     {
         $thumbnailDirectory = storage_path('app/public/'.FileDirectoryEnum::THUMBNAIL_IMAGE->value);
         $this->checkOrCreateFolderDirectory($thumbnailDirectory);
-        
+
         $thumbnailName = Uuid::uuid4()->toString().'.png';
         $manager = new ImageManager(new Driver);
 

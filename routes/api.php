@@ -93,7 +93,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 });
         });
     });
-    
+
     Route::prefix('customer')
         ->middleware(['role:'.RoleEnum::CUSTOMER->value])
         ->group(function () {

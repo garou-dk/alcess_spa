@@ -19,7 +19,9 @@ watch(
     () => Page.user,
     () => {
         if (Page.user) {
-            if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
+            if (
+                getStoreRoles().includes(Page.user.role.role_name as RoleEnum)
+            ) {
                 unitState.fetchUnits();
                 roleState.fetchRoles();
             }

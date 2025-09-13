@@ -20,7 +20,7 @@ const route: RouteRecordRaw = {
                 pageName: "Product Info",
                 pageSubName: "Product Info",
             },
-        }
+        },
     ],
 };
 

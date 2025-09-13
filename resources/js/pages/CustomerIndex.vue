@@ -8,7 +8,11 @@
                             <div class="flex">
                                 <div class="px-2">
                                     <div class="rounded-full bg-white">
-                                        <img :src="Icon" class="h-16 w-16" alt="Store Icon" />
+                                        <img
+                                            :src="Icon"
+                                            class="h-16 w-16"
+                                            alt="Store Icon"
+                                        />
                                     </div>
                                 </div>
                                 <div class="flex items-center px-2">
@@ -26,8 +30,14 @@
                                     <InputGroupAddon>
                                         <i class="pi pi-search" />
                                     </InputGroupAddon>
-                                    <InputText v-model="form.search" :invalid="errors.search.length > 0"
-                                        placeholder="Search product" fluid name="search" autocomplete="off" />
+                                    <InputText
+                                        v-model="form.search"
+                                        :invalid="errors.search.length > 0"
+                                        placeholder="Search product"
+                                        fluid
+                                        name="search"
+                                        autocomplete="off"
+                                    />
                                 </InputGroup>
                             </form>
                         </div>
@@ -38,15 +48,36 @@
                                 <CartButton />
                             </div>
                             <div>
-                                <button type="button" class="cursor-pointer" @click="openAvatar">
-                                    <Avatar v-if="Page.user && Page.user.image" :image="UrlUtil.getBaseApiUrl(
-                                        `profile/${Page.user.image}`,
-                                    )
-                                        " size="large" shape="circle" />
-                                    <Avatar v-else :label="Page.user && Page.user.full_name[0]" size="large"
-                                        shape="circle" class="bg-white! text-black!" />
+                                <button
+                                    type="button"
+                                    class="cursor-pointer"
+                                    @click="openAvatar"
+                                >
+                                    <Avatar
+                                        v-if="Page.user && Page.user.image"
+                                        :image="
+                                            UrlUtil.getBaseApiUrl(
+                                                `profile/${Page.user.image}`,
+                                            )
+                                        "
+                                        size="large"
+                                        shape="circle"
+                                    />
+                                    <Avatar
+                                        v-else
+                                        :label="
+                                            Page.user && Page.user.full_name[0]
+                                        "
+                                        size="large"
+                                        shape="circle"
+                                        class="bg-white! text-black!"
+                                    />
                                 </button>
-                                <Popover ref="avatarElement" :dismissable="true" class="mr-5 inline-flex">
+                                <Popover
+                                    ref="avatarElement"
+                                    :dismissable="true"
+                                    class="mr-5 inline-flex"
+                                >
                                     <div>
                                         <LogoutButton />
                                     </div>
