@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Http\Requests\CartRequest;
+use App\Http\Requests\RemoveMultipleCartRequest;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 
@@ -33,6 +34,13 @@ class CartController extends Controller
     public function cartCount() {
         return ApiResponse::success()
             ->data($this->service->cartCount())
+            ->response();
+    }
+
+    public function removeMultiple(RemoveMultipleCartRequest $request) {
+        return ApiResponse::success()
+            ->data($this->service->removeMultipleItems($request->validated()))
+            ->message('Selected items removed from cart successfully.')
             ->response();
     }
 }

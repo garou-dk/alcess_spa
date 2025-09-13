@@ -72,3 +72,8 @@
         background-color: #0068a0 !important;
     }
 }
+
+.p-inputnumber-custom .p-inputtext {
+    width: 50px;
+    text-align: center;
+}

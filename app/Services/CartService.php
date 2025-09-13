@@ -86,6 +86,27 @@ class CartService
         return $cart;
     }
 
+    public function removeMultipleItems(array $data) {
+        $authService = new AuthService();
+        $user = $authService->getAuth();
+
+        $carts = Cart::query()
+            ->where('user_id', $user->user_id)
+            ->whereIn('cart_id', $data['cart_ids'])
+            ->get();
+
+        if ($carts->isNotEmpty()) {
+            Cart::query()
+                ->where('user_id', $user->user_id)
+                ->whereIn('cart_id', $data['cart_ids'])
+                ->delete();
+        }
+
+        CartCountEvent::dispatch($this->cartCount(), $user->user_id);
+
+        return $carts;
+    }
+
     public function cartCount() {
         $authService = new AuthService();
         $user = $authService->getAuth();

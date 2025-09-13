@@ -9,18 +9,31 @@
                             <Checkbox v-model="form.carts[index].checked" binary />
                         </div>
                         <div class="p-2 flex items-center justify-center">
-                            <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${cart.product.product_image}`)"
-                            :alt="cart.product.product_name" class="w-36 h-36">
+                            <div v-if="cart.product.product_image" class="w-24 h-24">
+                                <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${cart.product.product_image}`)"
+                                :alt="cart.product.product_name" >
+                            </div>
+                            <div v-else class="w-24 h-24 flex items-center justify-center bg-gray-200">
+                                <i class="pi pi-camera text-4xl text-gray-400"></i>
+                            </div>
                         </div>
                         <div class="p-2 grow">
                             <h2 class="text-lg mb-2">{{ cart.product.product_name }}</h2>
                             <p class="ps-2 font-semibold mb-2">{{ CurrencyUtil.formatCurrency(cart.product.product_price) }}</p>
                             <div class="flex flex-col">
                                 <span class="text-sm ps-2">Available: {{ cart.product.product_quantity }}</span>
-                                <div class="ps-2">
-                                    <InputNumber v-model="form.carts[index].quantity" :min="1" :max="cart.product.product_quantity"
-                                    :invalid="form.carts[index].quantity <= 0 || form.carts[index].quantity > cart.product.product_quantity"
-                                    class="w-24" />
+                                <div class="ps-2 max-w-full">
+                                    <InputGroup class="w-[140px]!">
+                                        <Button type="button" icon="pi pi-minus" severity="secondary" @click="removeQuantity(index)" />
+                                        <InputNumber size="small" v-model="form.carts[index].quantity" :min="1" :max="cart.product.product_quantity"
+                                        :invalid="form.carts[index].quantity <= 0 || form.carts[index].quantity > cart.product.product_quantity"
+                                        :pt="{
+                                            root: {
+                                                class: 'p-inputnumber-custom'
+                                            }
+                                        }" />
+                                        <Button type="button" icon="pi pi-plus" severity="secondary" @click="addQuantity(index, cart.product.product_quantity)" />
+                                    </InputGroup>
                                 </div>
                             </div>
                         </div>
@@ -38,8 +51,9 @@
                         <p class="text-lg font-semibold">Order Summary</p>
                         <p>Total: <span id="total" class="font-semibold">{{ subTotal() }}</span></p>
                     </div>
-                    <div class="flex justify-end">
-                        <Button label="Checkout" icon="pi pi-shopping-cart" class="primary-bg" />
+                    <div class="flex justify-end gap-2">
+                        <Button :disabled="form.carts.filter(cart => cart.checked).length === 0" type="button" label="Remove" icon="pi pi-trash" severity="danger" @click="removeSelected()" />
+                        <Button :disabled="form.carts.filter(cart => cart.checked).length === 0" type="button" label="Checkout" icon="pi pi-shopping-cart" class="primary-bg" />
                     </div>
                 </div>
             </form>
@@ -55,6 +69,7 @@ import { onMounted, reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const loadService = useAxiosUtil<null, CartInterface[]>();
+const removeService = useAxiosUtil<{ cart_ids: number[] }, null>();
 const carts = ref<CartInterface[]>([]);
 const toast = useToast();
 const form : {
@@ -68,8 +83,6 @@ const form : {
 });
 
 const subTotal = () => {
-    console.log(form.carts);
-    
     let total = 0;
     form.carts.forEach(cart => {
         if (cart.checked) {
@@ -101,6 +114,29 @@ const load = async () => {
             toast.error(loadService.request.message ?? 'Failed to load carts');
         }
     });
+}
+
+const addQuantity = (index: number, max: number) => {
+    if (form.carts[index].quantity < max) {
+        form.carts[index].quantity += 1;
+    }
+}
+
+const removeQuantity = (index: number) => {
+    if (form.carts[index].quantity > 1) {
+        form.carts[index].quantity -= 1;
+    }
+}
+
+const removeSelected = async () => {
+    const cart_ids = form.carts.filter(cart => cart.checked).map(cart => cart.cart_id);
+    if (cart_ids.length === 0) {
+        toast.warning('Please select at least one item to remove');
+        return;
+    }
+    form.carts = form.carts.filter(cart => !cart.checked);
+    carts.value = carts.value.filter(cart => !cart_ids.includes(cart.cart_id));
+    await removeService.deleteRequest("customer/carts/remove/multiple", { cart_ids });
 }
 
 onMounted(() => {

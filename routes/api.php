@@ -102,8 +102,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'store');
-                    Route::delete('/{id}', 'remove');
                     Route::get('/count', 'cartCount');
+                    Route::delete('/remove/multiple', 'removeMultiple');
+                    Route::delete('/{id}', 'remove');
                 });
         });
 
