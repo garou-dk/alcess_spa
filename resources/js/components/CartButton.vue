@@ -7,7 +7,7 @@
                 class="bg-white!"
                 :class="{
                     'text-sky-800!': count > 0,
-                    'text-black!': count === 0,
+                    'text-black!': !count,
                 }"
             />
         </RouterLink>

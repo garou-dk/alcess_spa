@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\DeepSearchProductRequest;
 use App\Http\Requests\ProductImageRequest;
 use App\Http\Requests\ProductRequest;
 use App\Http\Requests\SearchProductRequest;
@@ -99,6 +100,13 @@ class ProductController extends Controller
     {
         return ApiResponse::success()
             ->data($this->service->fetchAvailableProduct(['product_id' => $id]))
+            ->response();
+    }
+
+    public function searchProduct(DeepSearchProductRequest $request)
+    {
+        return ApiResponse::success()
+            ->data($this->service->searchProduct($request->validated()))
             ->response();
     }
 }

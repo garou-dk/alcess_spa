@@ -4,6 +4,8 @@
             type="submit"
             label="Logout"
             class="bg-sky-800! text-white"
+            icon="pi pi-sign-out"
+            fluid
             :loading="logoutService.request.loading"
         />
     </form>

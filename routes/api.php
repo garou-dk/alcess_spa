@@ -19,6 +19,12 @@ Route::get('best-selling', [ProductController::class, 'bestSelling']);
 
 Route::get('find-product/{id}', [ProductController::class, 'fetchAvailableProduct']);
 
+Route::controller(ProductController::class)
+    ->prefix('products')
+    ->group(function () {
+        Route::get('/', 'searchProduct');
+    });
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
     Route::post('logout', [AuthController::class, 'logoutUser']);

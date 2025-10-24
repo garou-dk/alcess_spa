@@ -66,7 +66,9 @@
                 <img :src="HeroBg" class="h-full w-full" />
             </div>
             <div class="p-2">
-                <h1 class="p-2 text-2xl font-semibold">Categories</h1>
+                <h1 class="mb-4 text-2xl font-semibold bg-white p-5 rounded border-b-4 border-blue-900 text-center">
+                    Categories
+                </h1>
                 <div class="flex flex-wrap p-2">
                     <div
                         v-for="(category, index) in CategoryStore.categories"
@@ -74,33 +76,45 @@
                         class="p-2"
                     >
                         <button
-                            class="primary-bg flex cursor-pointer items-center justify-center gap-2 rounded-full p-2"
+                            class="primary-bg flex cursor-pointer items-center gap-2 rounded-full p-2 min-w-36 border-4 border-white"
                         >
-                            <img
+                            <div
                                 v-if="category.category_image"
-                                :src="
-                                    UrlUtil.getBaseAppUrl(
-                                        `storage/images/category/${category.category_image}`,
-                                    )
-                                "
-                                :alt="category.category_image"
-                                class="mr-2 h-8 w-8"
-                            />
-                            <Avatar
-                                :label="category.category_name[0]"
-                                shape="circle"
-                            />
-                            <span>{{ category.category_name }}</span>
+                                class="flex items-center justify-center rounded-full bg-white p-2"
+                            >
+                                <img
+                                    :src="
+                                        UrlUtil.getBaseAppUrl(
+                                            `storage/images/category/${category.category_image}`,
+                                        )
+                                    "
+                                    :alt="category.category_image"
+                                    class="h-8 w-8"
+                                />
+                            </div>
+                            <div
+                                v-else
+                                class="flex items-center justify-center rounded-full bg-white p-2"
+                            >
+                                <Avatar
+                                    :label="category.category_name[0]"
+                                    shape="circle"
+                                />
+                            </div>
+                            
+                            <div class="grow">
+                                <span>{{ category.category_name }}</span>
+                            </div>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="p-4">
-                <h1 class="mb-4 text-2xl font-semibold">
+                <h1 class="mb-4 text-2xl font-semibold bg-white p-5 rounded border-b-4 border-blue-900 text-center">
                     Best Selling Products
                 </h1>
                 <div
-                    class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                    class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
                 >
                     <div
                         v-for="(product, index) in products"
@@ -139,6 +153,19 @@
                                         )
                                     }}
                                 </p>
+                            </div>
+                            <div class="mb-5 flex justify-center">
+                                <RouterLink
+                                    :to="{
+                                        name: 'customer.product-info.index',
+                                        params: { id: product.product_id },
+                                    }"
+                                >
+                                    <Button
+                                        label="View Details"
+                                        class="primary-bg"
+                                    />
+                                </RouterLink>
                             </div>
                         </div>
                     </div>

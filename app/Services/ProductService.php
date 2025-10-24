@@ -8,6 +8,7 @@ use App\Events\ProductCountEvent;
 use App\Events\ProductEvent;
 use App\Events\ProductLowStockCountEvent;
 use App\Events\ProductOutStockCountEvent;
+use App\Models\Category;
 use App\Models\Product;
 
 class ProductService
@@ -232,5 +233,42 @@ class ProductService
         abort_if(empty($product), 404, 'Product not found');
 
         return $product;
+    }
+
+    public function searchProduct(array $data) {
+        $category = $data['category_id'] ?? null;
+        if ($category) {
+            $category = Category::query()
+                ->where('category_id', $data['category_id'])
+                ->where('is_active', true)
+                ->first();
+
+            abort_if(empty($category), 404, 'Category not found');
+        }
+
+        $products = Product::query();
+        if ($category) {
+            $products->where('category_id', $data['category_id']);
+        }
+        $products->where('available_online', true)
+            ->where('is_active', true)
+            ->whereNot('product_quantity', 0);
+
+        if (!empty($data['search'])) {
+            $products->whereLike('product_name', "%{$data['search']}%");
+        }
+
+        if (!empty($data['sort_by'])) {
+            match ($data['sort_by']) {
+                'price_asc' => $products->orderBy('product_price', 'asc'),
+                'price_desc' => $products->orderBy('product_price', 'desc'),
+                default => $products->orderBy('product_name', 'asc'),
+            };
+        }
+        else {
+            $products->orderBy('product_name', 'asc');
+        }
+
+        return $products->paginate($data['limit'] ?? 5);
     }
 }

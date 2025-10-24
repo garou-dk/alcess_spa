@@ -145,6 +145,7 @@
                                 {{ product.unit.unit_name }}/s
                             </p>
                             <InputForm
+                                v-if="Page.user != null"
                                 :errors="[]"
                                 id="quantity"
                                 label-name=""
@@ -161,7 +162,7 @@
                                 />
                             </InputForm>
                         </div>
-                        <div class="mt-5 mb-2 flex w-full justify-center">
+                        <div v-if="Page.user != null" class="mt-5 mb-2 flex w-full justify-center">
                             <Button
                                 type="submit"
                                 :loading="submitService.request.loading"
@@ -358,6 +359,7 @@
 <script setup lang="ts">
 import { CartFormInterface } from "@/interfaces/CartInterface";
 import { ProductInterface } from "@/interfaces/ProductInterface";
+import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import UrlUtil from "@/utils/UrlUtil";
