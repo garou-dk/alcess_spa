@@ -85,6 +85,7 @@
                                                 class="bg-sky-800! text-white"
                                                 label="Address"
                                                 icon="pi pi-map-marker"
+                                                @click="openAddressForm()"
                                             />
                                         </div>
                                         <div>
@@ -175,6 +176,15 @@
                 </template>
             </RegisterForm>
         </Dialog>
+        <Dialog
+            v-model:visible="addressForm"
+            modal
+            header="Address"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <AddressForm />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -191,6 +201,7 @@ import LogoutButton from "@/components/LogoutButton.vue";
 import CartButton from "@/components/CartButton.vue";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import LoginForm from "@/components/forms/LoginForm.vue";
+import AddressForm from "@/components/forms/AddressForm.vue";
 
 const appName = import.meta.env.VITE_APP_NAME;
 const form: SearchProductInterface = reactive({
@@ -202,6 +213,7 @@ const errors: SearchErrorInterface = reactive({
 const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const loginFormVisible = ref<boolean>(false);
 const registerFormVisible = ref<boolean>(false);
+const addressForm = ref<boolean>(false);
 
 const openAvatar = (event: Event) => {
     if (avatarElement.value) {
@@ -211,11 +223,20 @@ const openAvatar = (event: Event) => {
 
 const openRegisterForm = () => {
     loginFormVisible.value = false;
+    addressForm.value = false;
     registerFormVisible.value = true;
 };
 
 const openLoginForm = () => {
     registerFormVisible.value = false;
+    addressForm.value = false;
     loginFormVisible.value = true;
+};
+
+const openAddressForm = () => {
+    loginFormVisible.value = false;
+    registerFormVisible.value = false;
+    addressForm.value = true;
+    avatarElement.value?.hide();
 };
 </script>

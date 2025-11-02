@@ -1,12 +1,18 @@
 <?php
 
 use App\Enums\RoleEnum;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeaturedImageController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\IslandGroupController;
+use App\Http\Controllers\MunicityController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\UnitController;
@@ -18,6 +24,16 @@ Route::get('categories', [CategoryController::class, 'index']);
 Route::get('best-selling', [ProductController::class, 'bestSelling']);
 
 Route::get('find-product/{id}', [ProductController::class, 'fetchAvailableProduct']);
+
+Route::get('island-groups', [IslandGroupController::class, 'index']);
+
+Route::get('regions/{id}', [RegionController::class, 'index']);
+
+Route::get('provinces/{id}', [ProvinceController::class, 'index']);
+
+Route::get('municities/{id}', [MunicityController::class, 'index']);
+
+Route::get('barangays/{id}', [BarangayController::class, 'index']);
 
 Route::controller(ProductController::class)
     ->prefix('products')
@@ -112,6 +128,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::delete('/remove/multiple', 'removeMultiple');
                     Route::delete('/{id}', 'remove');
                 });
+
+            Route::controller(AddressController::class)
+                ->prefix('addresses')
+                ->group(function () {
+                    Route::get('/{id}', 'find');
+                    Route::post('/', 'save');
+                });
         });
 
     Route::controller(FileController::class)
@@ -119,6 +142,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('profile/{image}', 'fetchProfile');
         });
 });
+
+
 
 Route::middleware(['guest-only'])
     ->group(function () {
