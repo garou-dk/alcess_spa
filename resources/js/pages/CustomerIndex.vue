@@ -83,6 +83,16 @@
                                             <Button
                                                 type="button"
                                                 class="bg-sky-800! text-white"
+                                                label="Orders"
+                                                icon="pi pi-truck"
+                                                fluid
+                                                @click="goToOrder()"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Button
+                                                type="button"
+                                                class="bg-sky-800! text-white"
                                                 label="Address"
                                                 icon="pi pi-map-marker"
                                                 @click="openAddressForm()"
@@ -202,6 +212,7 @@ import CartButton from "@/components/CartButton.vue";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import AddressForm from "@/components/forms/AddressForm.vue";
+import { useRouter } from "vue-router";
 
 const appName = import.meta.env.VITE_APP_NAME;
 const form: SearchProductInterface = reactive({
@@ -214,6 +225,7 @@ const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const loginFormVisible = ref<boolean>(false);
 const registerFormVisible = ref<boolean>(false);
 const addressForm = ref<boolean>(false);
+const router = useRouter();
 
 const openAvatar = (event: Event) => {
     if (avatarElement.value) {
@@ -239,4 +251,12 @@ const openAddressForm = () => {
     addressForm.value = true;
     avatarElement.value?.hide();
 };
+
+const goToOrder = () => {
+    loginFormVisible.value = false;
+    registerFormVisible.value = false;
+    addressForm.value = false;
+    router.push({ name: "customer-order" });
+    avatarElement.value?.hide();
+}
 </script>

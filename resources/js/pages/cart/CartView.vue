@@ -142,15 +142,31 @@
                             label="Checkout"
                             icon="pi pi-shopping-cart"
                             class="primary-bg"
+                            @click="checkoutItems()"
                         />
                     </div>
                 </div>
             </form>
         </div>
+        <Dialog
+            v-model:visible="showCheckout"
+            modal
+            header="Checkout"
+            :style="{ width: '75vw' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        >
+            <CheckoutForm
+                v-if="selectedItems.length > 0"
+                :products="selectedItems"
+                @cb="load"
+            />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
+import CheckoutForm from "@/components/forms/CheckoutForm.vue";
 import { CartInterface } from "@/interfaces/CartInterface";
+import { ProductInterface } from "@/interfaces/ProductInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import UrlUtil from "@/utils/UrlUtil";
@@ -170,6 +186,28 @@ const form: {
 } = reactive({
     carts: [],
 });
+
+const showCheckout = ref<boolean>(false);
+const selectedItems = ref<{
+    product: ProductInterface,
+    quantity: number
+}[]>([]);
+
+const checkoutItems = () => {
+    selectedItems.value = [];
+    form.carts.forEach((cart) => {
+        if (cart.checked) {
+            const find = carts.value.find((c) => c.cart_id === cart.cart_id);
+            if (find) {
+                selectedItems.value.push({
+                    product: find.product,
+                    quantity: cart.quantity,
+                });
+            }
+        }
+    });
+    showCheckout.value = true;
+}
 
 const subTotal = () => {
     let total = 0;

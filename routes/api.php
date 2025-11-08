@@ -10,6 +10,7 @@ use App\Http\Controllers\FeaturedImageController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\IslandGroupController;
 use App\Http\Controllers\MunicityController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\RegionController;
@@ -134,6 +135,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('/{id}', 'find');
                     Route::post('/', 'save');
+                });
+
+            Route::controller(OrderController::class)
+                ->prefix('orders')
+                ->group(function () {
+                    Route::post('/', 'orderProducts');
+                    Route::get('/{id}', 'getOrder');
+                    Route::get('/', 'getCustomerOrders');
                 });
         });
 

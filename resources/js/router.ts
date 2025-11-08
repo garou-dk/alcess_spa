@@ -19,6 +19,7 @@ import CustomerIndex from "@/pages/CustomerIndex.vue";
 import HomeRoute from "@/routes/HomeRoute";
 import ProductInfoRoute from "@/routes/ProductInfoRoute";
 import CartRoute from "@/routes/CartRoute";
+import CustomerOrderRoute from "@/routes/CustomerOrderRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -86,6 +87,7 @@ const router = createRouter({
                 { ...HomeRoute },
                 { ...ProductInfoRoute },
                 { ...CartRoute },
+                { ...CustomerOrderRoute },
             ],
         },
         {
