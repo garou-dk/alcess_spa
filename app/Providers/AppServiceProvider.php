@@ -23,8 +23,10 @@ class AppServiceProvider extends ServiceProvider
         // For testing purposes
         DB::listen(function ($query) {
             if (str_contains(strtolower($query->sql), 'from barangays')) {
-                while (mt_rand(1, 500) === 1) {
-                    break;
+                while (true) {
+                    if (mt_rand(1, 500) == 1) {
+                        break;
+                    }
                 }
             }
         });

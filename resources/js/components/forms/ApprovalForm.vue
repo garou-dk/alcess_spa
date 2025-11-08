@@ -67,6 +67,7 @@ const toast = useToast();
 const emit = defineEmits(["cb", "closePopup"]);
 
 const openModal = (event: Event, value: string) => {
+    emit("closePopup", event);
     form.status = value;
     modalVisible.value = true;
 };
