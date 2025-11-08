@@ -79,4 +79,10 @@ class OrderService
             ->where('user_id', $data['user_id'])
             ->get();
     }
+
+    public function getAllOrders() {
+        return Order::query()
+            ->with(['productOrders.product', 'user'])
+            ->get();
+    }
 }

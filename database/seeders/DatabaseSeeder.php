@@ -25,6 +25,11 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             CategorySeeder::class,
             UserSeeder::class,
+            IslandGroupSeeder::class,
+            RegionSeeder::class,
+            ProvinceSeeder::class,
+            MunicitySeeder::class,
+            BarangaySeeder::class,
         ]);
     }
 }

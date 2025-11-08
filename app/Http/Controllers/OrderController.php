@@ -41,4 +41,10 @@ class OrderController extends Controller
             ->data($this->service->getCustomerOrders(['user_id' => $user->user_id]))
             ->response();
     }
+
+    public function getAllOrders() {
+        return ApiResponse::success()
+            ->data($this->service->getAllOrders())
+            ->response();
+    }
 }

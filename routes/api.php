@@ -114,6 +114,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('active-product', [ProductController::class, 'activeProductCount']);
                     Route::get('out-of-stock', [ProductController::class, 'outOfStockCount']);
                 });
+
+            Route::controller(OrderController::class)
+                ->prefix('orders')
+                ->group(function () {
+                    Route::get('/', 'getAllOrders');
+                });
         });
     });
 
