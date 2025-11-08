@@ -158,7 +158,7 @@
                         <i class="pi pi-eye" /> View Products
                     </button>
                 </div>
-                <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="" />
+                <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="closePopup($event)" />
             </div>
         </Popover>
     </div>
