@@ -31,6 +31,7 @@ return new class extends Migration
                 'Released',
                 'Cancelled',
                 'Refunded',
+                'Rejected',
             ])->default('Pending');
             $table->enum('payment_method', [
                 'Cash on Delivery',

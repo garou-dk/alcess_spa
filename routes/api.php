@@ -119,6 +119,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('orders')
                 ->group(function () {
                     Route::get('/', 'getAllOrders');
+                    Route::patch('/approval/{id}', 'approveOrDecline');
                 });
         });
     });

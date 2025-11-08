@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\ApproveDeclineRequest;
 use App\Http\Requests\OrderRequest;
 use App\Services\AuthService;
 use App\Services\OrderService;
@@ -45,6 +46,17 @@ class OrderController extends Controller
     public function getAllOrders() {
         return ApiResponse::success()
             ->data($this->service->getAllOrders())
+            ->response();
+    }
+
+    public function approveOrDecline(string $id, ApproveDeclineRequest $request) {
+        $data = $request->validated() + ['order_id' => $id];
+
+        $result = $this->service->approveOrDecline($data);
+        
+        return ApiResponse::success()
+            ->data($result)
+            ->message('Order status changed successfully')
             ->response();
     }
 }

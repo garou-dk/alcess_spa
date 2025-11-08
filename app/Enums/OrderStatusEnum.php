@@ -13,6 +13,7 @@ enum OrderStatusEnum : string
     case RELEASED = 'Released';
     case CANCELLED = 'Cancelled';
     case REFUNDED = 'Refunded';
+    case REJECTED = 'Rejected';
 
     public static function all(): array
     {
@@ -26,6 +27,7 @@ enum OrderStatusEnum : string
             self::RELEASED->value,
             self::CANCELLED->value,
             self::REFUNDED->value,
+            self::REJECTED->value,
         ];
     }
 }

@@ -158,22 +158,7 @@
                         <i class="pi pi-eye" /> View Products
                     </button>
                 </div>
-                <div v-if="['Pending'].includes(selectedOrder.status)">
-                    <button
-                        type="button"
-                        class="hover:bg-green-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
-                    >
-                        <i class="pi pi-thumbs-up" /> Approve
-                    </button>
-                </div>
-                <div v-if="['Pending'].includes(selectedOrder.status)">
-                    <button
-                        type="button"
-                        class="hover:bg-red-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
-                    >
-                        <i class="pi pi-thumbs-down" /> Decline
-                    </button>
-                </div>
+                <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="" />
             </div>
         </Popover>
     </div>
@@ -189,6 +174,7 @@ import { useToast } from "vue-toastification";
 import DateUtil from "@/utils/DateUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { FilterMatchMode } from '@primevue/core/api';
+import ApprovalForm from "@/components/forms/ApprovalForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -234,8 +220,6 @@ const load = async () => {
     await loadService.get("admin/orders").then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
             data.value = loadService.request.data;
-
-            
         } else {
             toast.error(loadService.request.message ?? "Failed to load orders");
         }
@@ -244,6 +228,15 @@ const load = async () => {
 
 const selectOrder = (event: Event, order: IOrder) => {
     selectedOrder.value = order;
+    editElement.value.toggle(event);
+}
+
+const setNewOrder = (value: IOrder) => {
+    selectedOrder.value = value;
+    load();
+}
+
+const closePopup = (event: Event) => {
     editElement.value.toggle(event);
 }
 

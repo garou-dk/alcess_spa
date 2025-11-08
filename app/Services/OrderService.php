@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Models\Address;
 use App\Models\Order;
@@ -84,5 +85,28 @@ class OrderService
         return Order::query()
             ->with(['productOrders.product', 'user'])
             ->get();
+    }
+
+    public function approveOrDecline(array $data) {
+        $order = Order::query();
+
+        if ($data['user_id']) {
+            $order = $order->where('user_id', $data['user_id']);
+        }
+
+        $order = $order->where('order_id', $data['order_id'])->first();
+
+        abort_if(empty($order), 404, 'Order not found.');
+
+        abort_if($order->status != OrderStatusEnum::PENDING->value, 400, 'Order is not pending.');
+
+        $order->status = $data['status'];
+        $order->save();
+
+        $order->refresh();
+
+        $order->load(['productOrders.product', 'user']);
+
+        return $order;
     }
 }

@@ -19,6 +19,9 @@ class BarangaySeeder extends Seeder
         $response = $http->get('https://psgc.gitlab.io/api/barangays/');
         $result = $response->getBody()->getContents();
         $barangays = json_decode($result, true);
+        foreach ($barangays as $key => $value) {
+            $barangays[] = $value;
+        }
 
         foreach ($barangays as $barangay) {
             $municity = Municity::where('municity_code', $barangay['municipalityCode'])->first();
