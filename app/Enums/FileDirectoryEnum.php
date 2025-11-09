@@ -10,4 +10,5 @@ enum FileDirectoryEnum: string
     case THUMBNAIL_IMAGE = 'images/thumbnail';
     case FEATURED_IMAGE = 'images/featured';
     case FEATURED_VIDEO = 'videos/featured';
+    case PAYMENT_PROOF = 'images/payment-proof';
 }

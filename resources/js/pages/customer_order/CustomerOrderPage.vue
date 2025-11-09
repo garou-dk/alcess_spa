@@ -61,12 +61,43 @@
                                     <p>{{ item.status }}</p>
                                 </div>
                             </div>
+                            <div v-if="item.order_type === 'Delivery'" class="p-2">
+                                <div>
+                                    <p class="font-semibold">Address</p>
+                                </div>
+                                <div>
+                                    <p>{{ showCompleteAddress(item) }}</p>
+                                </div>
+                            </div>
                         </div>
                         <DataTable
                             :value="item.product_orders"
                             show-gridlines
                             class="mt-2"
                         >
+                            <template #header>
+                                <div class="flex justify-end gap-2">
+                                    <Button
+                                        v-if="item.status === 'Pending' || item.status === 'Confirmed'"
+                                        label="Cancel Order"
+                                        severity="danger"
+                                        @click="cancelOrder(item)"
+                                        type="button"
+                                    />
+                                    <Button
+                                        v-if="item.status === 'Pending'"
+                                        label="Please wait for the confirmation"
+                                        :disabled="true"
+                                        type="button"
+                                    />
+                                    <Button
+                                        v-if="item.status === 'Confirmed' && item.payment_method === 'Online Payment'"
+                                        label="Set Payment"
+                                        @click="openPaymentModal(item)"
+                                        type="button"
+                                    />
+                                </div>
+                            </template>
                             <Column field="product.product_name" header="Product Name">
                                 <template #body="{ data }">
                                     <div class="flex items-center">
@@ -105,9 +136,14 @@
                             </Column>
                             <template #footer>
                                 <div class="flex justify-end">
-                                    <p class="font-semibold">
-                                        Total: {{ CurrencyUtil.formatCurrency(item.product_orders.reduce((total, item) => total + item.price * item.quantity, 0)) }}
-                                    </p>
+                                    <div>
+                                        <p v-if="item.order_type === 'Delivery'" class="font-semibold">
+                                            Delivery Fee: {{ item.shipping_fee !== null ? CurrencyUtil.formatCurrency(item.shipping_fee) : 'TBD' }}
+                                        </p>
+                                        <p class="font-semibold">
+                                            Total: {{ CurrencyUtil.formatCurrency(item.product_orders.reduce((total, item) => total + item.price * item.quantity, 0) + item.shipping_fee) }}
+                                        </p>
+                                    </div>
                                 </div>
                             </template>
                         </DataTable>
@@ -123,9 +159,39 @@
                 </div>
             </template>
         </DataView>
+        <Dialog
+            v-model:visible="cancelModal.visible"
+            header="Cancel Order"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <CancelOrderForm
+                v-if="cancelModal.order"
+                :order="cancelModal.order"
+                @cb="cancelCb"
+                @close-popup="closeCancelModal"
+            />
+        </Dialog>
+        <Dialog
+            v-model:visible="paymentModal.visible"
+            header="Pay Order"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <PaymentForm
+                v-if="paymentModal.order"
+                :order="paymentModal.order"
+                @cb="paymentModalCb"
+                @close-popup="closePaymentModal"
+            />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
+import CancelOrderForm from '@/components/forms/CancelOrderForm.vue';
+import PaymentForm from '@/components/forms/PaymentForm.vue';
 import { IOrder } from '@/interfaces/IOrder';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import CurrencyUtil from '@/utils/CurrencyUtil';
@@ -173,6 +239,21 @@ const navs = ref<{
         icon: 'pi pi-star',
         active: false
     },
+    {
+        label: 'Cancelled',
+        icon: 'pi pi-times',
+        active: false
+    },
+    {
+        label: 'Rejected',
+        icon: 'pi pi-ban',
+        active: false
+    },
+    {
+        label: 'Completed',
+        icon: 'pi pi-check',
+        active: false
+    },
 ]);
 
 const orderStatus = (value: string) => {
@@ -185,14 +266,32 @@ const orderStatus = (value: string) => {
         Delivered: 'bg-green-600',
         Released: 'bg-blue-600',
         Cancelled: 'bg-red-200',
-        Refunded: 'bg-red-600',
+        Refunded: 'bg-red-300',
+        Rejected: 'bg-red-300',
     }[value];
 }
+
+const cancelModal = ref<{
+    visible: boolean;
+    order: IOrder | null;
+}>({
+    visible: false,
+    order: null,
+});
+
+const paymentModal = ref<{
+    visible: boolean;
+    order: IOrder | null;
+}>({
+    visible: false,
+    order: null,
+});
 
 const load = async () => {
     await loadService.get("customer/orders").then(() => {
         if (loadService.request.status == 200 && loadService.request.data) {
             data.value = loadService.request.data;
+            filtered.value = loadService.request.data;
             setNav(0);
         }
         else {
@@ -219,6 +318,40 @@ watch(navs.value,
         }
     },
 );
+
+const cancelOrder = (item: IOrder) => {
+    cancelModal.value.order = item;
+    cancelModal.value.visible = true;
+}
+
+const cancelCb = () => {
+    cancelModal.value.visible = false;
+    load();
+}
+
+const closeCancelModal = () => {
+    cancelModal.value.order = null;
+    cancelModal.value.visible = false;
+}
+
+const showCompleteAddress = (value: IOrder) => {
+    return `${value.other_details}, ${value.barangay.barangay_name}, ${value.barangay.municity.municity_name}, ${value.barangay.municity.province.province_name}, ${value.barangay.municity.province.region.region_name}, ${value.barangay.municity.province.region.island_group.island_group_name}, ${value.postal_code}`
+}
+
+const openPaymentModal = (item: IOrder) => {
+    paymentModal.value.order = item;
+    paymentModal.value.visible = true;
+}
+
+const closePaymentModal = () => {
+    paymentModal.value.order = null;
+    paymentModal.value.visible = false;
+}
+
+const paymentModalCb = () => {
+    paymentModal.value.visible = false;
+    load();
+}
 
 onMounted(() => {
     load();

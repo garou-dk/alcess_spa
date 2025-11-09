@@ -120,6 +120,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('/', 'getAllOrders');
                     Route::patch('/approval/{id}', 'approveOrDecline');
+                    Route::patch('/cancel/{id}', 'cancelOrder');
                 });
         });
     });
@@ -150,6 +151,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::post('/', 'orderProducts');
                     Route::get('/{id}', 'getOrder');
                     Route::get('/', 'getCustomerOrders');
+                    Route::patch('/cancel/{id}', 'cancelOrder');
+                    Route::patch('/set-payment/{id}', 'setPayment');
                 });
         });
 

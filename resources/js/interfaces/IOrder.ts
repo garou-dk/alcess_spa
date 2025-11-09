@@ -1,3 +1,6 @@
+import { IBarangay } from "./IBarangay";
+import IProductOrder from "./IProductOrder";
+
 interface IOrder {
     order_id: number;
     order_public_id: string;
@@ -20,6 +23,9 @@ interface IOrder {
     tracking_number: string;
     created_at: string;
     updated_at: string;
+    product_orders: IProductOrder[];
+    barangay: IBarangay;
+    postal_code: string;
 }
 
 export type { IOrder };

@@ -29,7 +29,11 @@ class Order extends Model
         'payment_method',
         'bank_name',
         'transaction_number',
-        'order_public_id'
+        'order_public_id',
+        'postal_code',
+        'proof_of_payment',
+        'remarks',
+        'date_payment_processed'
     ];
 
     public function productOrders() {
@@ -38,5 +42,9 @@ class Order extends Model
 
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    public function barangay() {
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'barangay_id');
     }
 }

@@ -20,6 +20,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('barangays', 'barangay_id');
             $table->string('other_details')->nullable();
+            $table->string('postal_code')->nullable();
             $table->string('contact_number');
             $table->enum('status', [
                 'Pending',
@@ -40,6 +41,7 @@ return new class extends Migration
             ]);
             $table->string('bank_name')->nullable();
             $table->string('transaction_number')->nullable();
+            $table->dateTime('date_payment_processed')->nullable();
             $table->dateTime('date_paid_confirmed')->nullable();
             $table->date('estimated_delivery_date_start')->nullable();
             $table->date('estimated_delivery_date_end')->nullable();
@@ -48,6 +50,8 @@ return new class extends Migration
             $table->double('total_amount')->nullable();
             $table->string('delivery_courier')->nullable();
             $table->string('tracking_number')->nullable();
+            $table->string('proof_of_payment')->nullable();
+            $table->string('remarks')->nullable();
             $table->softDeletesDatetime();
             $table->timestamps();
         });

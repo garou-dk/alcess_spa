@@ -158,9 +158,35 @@
                         <i class="pi pi-eye" /> View Products
                     </button>
                 </div>
-                <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="closePopup($event)" />
+                <div>
+                    <button
+                        type="button"
+                        class="hover:bg-green-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
+                        @click="setApproval($event, 'Confirmed')"
+                    >
+                        <i class="pi pi-thumbs-up" /> Approve
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="hover:bg-red-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
+                        @click="setApproval($event, 'Rejected')"
+                    >
+                        <i class="pi pi-thumbs-down" /> Decline
+                    </button>
+                </div>
             </div>
         </Popover>
+        <Dialog
+            v-model:visible="approvalVisible.visible"
+            header="Change Status"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="closePopup()" :status="approvalVisible.status" />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -178,6 +204,10 @@ import ApprovalForm from "@/components/forms/ApprovalForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
+const approvalVisible = ref<{ visible: boolean, status: string | null }>({
+    visible: false,
+    status: null
+});
 const selectedOrder = ref<IOrder | null>(null);
 
 const toast = useToast();
@@ -205,6 +235,7 @@ const orderStatuses = ref<{
     { label: 'Released', value: 'Released' },
     { label: 'Cancelled', value: 'Cancelled' },
     { label: 'Refunded', value: 'Refunded' },
+    { label: 'Rejected', value: 'Rejected' },
 ]);
 
 const orderTypes = ref<{
@@ -233,11 +264,19 @@ const selectOrder = (event: Event, order: IOrder) => {
 
 const setNewOrder = (value: IOrder) => {
     selectedOrder.value = value;
+    approvalVisible.value.status = null;
+    approvalVisible.value.visible = false;
     load();
 }
 
-const closePopup = (event: Event) => {
+const setApproval = (event: Event, status: string) => {
     editElement.value.toggle(event);
+    approvalVisible.value.status = status;
+    approvalVisible.value.visible = true;
+}
+
+const closePopup = () => {
+    approvalVisible.value.visible = false;
 }
 
 onMounted(() => {

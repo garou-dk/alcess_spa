@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\ApproveDeclineRequest;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\SetPaymentRequest;
 use App\Services\AuthService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
@@ -57,6 +58,27 @@ class OrderController extends Controller
         return ApiResponse::success()
             ->data($result)
             ->message('Order status changed successfully')
+            ->response();
+    }
+
+    public function cancelOrder(string $id) {
+        $data = ['order_id' => $id];
+
+        return ApiResponse::success()
+            ->data($this->service->cancelOrder($data))
+            ->message('Order cancelled successfully')
+            ->response();
+    }
+
+    public function setPayment(string $id, SetPaymentRequest $request) {
+        $authService = new AuthService();
+        $user = $authService->getAuth();
+
+        $data = $request->validated() + ['user_id' => $user->user_id, 'order_id' => $id];
+
+        return ApiResponse::success()
+            ->data($this->service->setPayment($data))
+            ->message('Thank you for your payment. Order placed successfully. Please wait for the store to confirm the payment.')
             ->response();
     }
 }

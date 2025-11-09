@@ -1,47 +1,38 @@
 <template>
-    <div>
-        <div>
-            <button
-                type="button"
-                class="hover:bg-green-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
-                @click="openModal($event, 'Confirmed')"
+    <form @submit.prevent="handleSubmit()">
+        <p>Are you sure you want to change the status to <b>{{ form.status }}</b>?</p>
+        <div class="my-2">
+            <InputForm
+                :errors="errors.shipping_fee"
+                id="shipping_fee"
+                labelName="Shipping Fee*"
+                tag="span"
             >
-                <i class="pi pi-thumbs-up" /> Approve
-            </button>
-        </div>
-        <div>
-            <button
-                type="button"
-                class="hover:bg-red-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
-                @click="openModal($event, 'Rejected')"
-            >
-                <i class="pi pi-thumbs-down" /> Decline
-            </button>
-        </div>
-        <Dialog
-            v-model:visible="modalVisible"
-            header="Change Status"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            modal
-        >
-            <p>Are you sure you want to change the status to <b>{{ form.status }}</b>?</p>
-            <template #footer>
-                <Button
-                    label="No"
-                    icon="pi pi-times"
-                    class="p-button-text"
-                    @click="modalVisible = false"
+                <InputNumber
+                    type="number"
+                    v-model="form.shipping_fee"
+                    :invalid="errors.shipping_fee.length > 0"
+                    placeholder="Shipping Fee"
+                    fluid
+                    id="shipping_fee"
+                    autocomplete="off"
+                    :min="0"
+                    currency="PHP"
+                    mode="currency"
                 />
-                <Button
-                    label="Yes"
-                    icon="pi pi-check"
-                    class="primary-bg"
-                    @click="handleSubmit()"
-                />
-            </template>
-        </Dialog>
-    </div>
+            </InputForm>
+        </div>
+        <div class="flex justify-center">
+            <div class="flex">
+                <div class="p-2">
+                    <Button label="No" @click="closeModal" type="button" severity="danger" />
+                </div>
+                <div class="p-2">
+                    <Button label="Yes" type="submit" severity="success" :loading="submitService.request.loading" />
+                </div>
+            </div>
+        </div>
+    </form>
 </template>
 <script setup lang="ts">
 import { IOrder } from '@/interfaces/IOrder';
@@ -51,37 +42,65 @@ import { useToast } from 'vue-toastification';
 
 interface Props {
     data: IOrder;
+    status: string | null;
 }
 
 interface IForm {
     status: string | null;
+    shipping_fee: number | null;
 }
 
-const modalVisible = ref<boolean>(false);
+interface IFormError {
+    status: string[];
+    shipping_fee: string[];
+}
+
 const props = defineProps<Props>();
 const submitService = useAxiosUtil<IForm, IOrder>();
 const form = reactive<IForm>({
-    status: null,
+    status: props.status,
+    shipping_fee: null
 });
+const errors = reactive<IFormError>({
+    status: [],
+    shipping_fee: []
+})
 const toast = useToast();
 const emit = defineEmits(["cb", "closePopup"]);
 
-const openModal = (event: Event, value: string) => {
-    emit("closePopup", event);
-    form.status = value;
-    modalVisible.value = true;
-};
+const validate = () => {
+    if (props.data.order_type === 'Delivery' && form.shipping_fee === null) {
+        errors.shipping_fee.push("Shipping fee is required.");
+    }
+    if (form.status === null) {
+        errors.status.push("Status is required.");
+    }
+
+    const hasErrors = [errors.shipping_fee.length > 0, errors.status.length > 0];
+    return hasErrors.includes(true) ? false : form;
+}
 
 const handleSubmit = async () => {
-    await submitService.patch(`admin/orders/approval/${props.data.order_id}`, form).then(() => {
-        if (submitService.request.status === 200 && submitService.request.data) {
-            toast.success(submitService.request.message);
-            emit("cb", submitService.request.data);
-            modalVisible.value = false;
+    if (validate()) {
+        if (props.data.order_type !== 'Delivery') {
+            form.shipping_fee = 0;
         }
-        else {
-            toast.error(submitService.request.message ?? "Please try again.");
-        }
-    });
+        await submitService.patch(`admin/orders/approval/${props.data.order_id}`, form).then(() => {
+            if (submitService.request.status === 200 && submitService.request.data) {
+                toast.success(submitService.request.message);
+                emit("cb", submitService.request.data);
+            }
+            else {
+                toast.error(submitService.request.message ?? "Please try again.");
+            }
+        });
+    }
+    else {
+        toast.error("Please fill in the required fields.");
+    }
+}
+
+const closeModal = () => {
+    emit("closePopup");
 }
 </script>

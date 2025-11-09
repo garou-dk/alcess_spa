@@ -2,12 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\OrderStatusEnum;
-use App\Enums\OrderTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class ApproveDeclineRequest extends FormRequest
+class SetPaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +22,9 @@ class ApproveDeclineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'string', 'max:255', Rule::in([OrderStatusEnum::CONFIRMED->value, OrderStatusEnum::REJECTED->value])],
-            'shipping_fee' => ['required', 'numeric', 'min:0'],
+            'payment_proof' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/jpg', 'max:10048'],
+            'bank_name' => ['required', 'string', 'max:255'],
+            'transaction_number' => ['required', 'string', 'max:255'],
         ];
     }
 }
