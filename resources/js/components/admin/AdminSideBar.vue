@@ -46,6 +46,11 @@
                 icon="pi pi pi-tag"
                 label="Categories"
             />
+            <SideBarButton
+                to="admin.setting.index"
+                icon="pi pi pi-cog"
+                label="Settings"
+            />
         </SideBarAccordion>
         <SideBarButton
             to="admin.report.index"

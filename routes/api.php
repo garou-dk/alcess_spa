@@ -2,6 +2,7 @@
 
 use App\Enums\RoleEnum;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AppConfigurationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\CartController;
@@ -121,6 +122,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('/', 'getAllOrders');
                     Route::patch('/approval/{id}', 'approveOrDecline');
                     Route::patch('/cancel/{id}', 'cancelOrder');
+                });
+
+            Route::controller(AppConfigurationController::class)
+                ->prefix('app-configurations')
+                ->group(function () {
+                    Route::get('/online-bank', 'getOnlineBank');
                 });
         });
     });

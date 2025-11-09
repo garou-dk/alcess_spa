@@ -111,4 +111,12 @@ class ManageFileService
 
         return $thumbnailName;
     }
+    
+    public function getConfigurationImage(array $data) {
+        $fullPath = FileDirectoryEnum::CONFIGURATION_IMAGE->value.'/'.$data['value'];
+        
+        abort_unless(Storage::disk('local')->exists($fullPath), 404, 'File not found');
+        
+        return Storage::disk('local')->path($fullPath);
+    }
 }
