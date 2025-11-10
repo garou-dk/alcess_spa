@@ -55,16 +55,6 @@
                         <Select v-model="filters.order_type.value" :options="orderTypes" option-label="label" option-value="value" placeholder="Select Order Type" />
                     </InputForm>
                 </div>
-                <!-- <div class="p-2">
-                    <InputForm
-                        :errors="[]"
-                        id="limit"
-                        label-name="Limit"
-                        tag="label"
-                    >
-                        <Select placeholder="Select Status" />
-                    </InputForm>
-                </div> -->
                 <div class="flex items-end p-2">
                     <Button
                         label="Filter"

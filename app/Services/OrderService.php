@@ -235,4 +235,21 @@ class OrderService
 
         return $order;
     }
+
+    public function markAsReceived(array $data) {
+        $order = Order::query()
+            ->where('order_id', $data['order_id'])
+            ->first();
+
+        abort_if(empty($order), 404, 'Order not found!');
+
+        $order->status = OrderStatusEnum::DELIVERED->value;
+        $order->customer_received_date = now();
+
+        $order->save();
+
+        $order->refresh();
+
+        return $order;
+    }
 }

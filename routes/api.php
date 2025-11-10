@@ -171,6 +171,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('/', 'getCustomerOrders');
                     Route::patch('/cancel/{id}', 'cancelOrder');
                     Route::patch('/set-payment/{id}', 'setPayment');
+                    Route::patch('/mark-delivered/{id}', 'markAsReceived');
                 });
         });
 

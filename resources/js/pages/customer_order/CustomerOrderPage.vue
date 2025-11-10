@@ -69,6 +69,30 @@
                                     <p>{{ showCompleteAddress(item) }}</p>
                                 </div>
                             </div>
+                            <div v-if="item.delivery_courier" class="p-2">
+                                <div>
+                                    <p class="font-semibold">Delivery Courier</p>
+                                </div>
+                                <div>
+                                    <p>{{ item.delivery_courier }}</p>
+                                </div>
+                            </div>
+                            <div v-if="item.tracking_number" class="p-2">
+                                <div>
+                                    <p class="font-semibold">Tracking Number</p>
+                                </div>
+                                <div>
+                                    <p>{{ item.tracking_number }}</p>
+                                </div>
+                            </div>
+                             <div v-if="item.estimated_delivery_date_start && item.estimated_delivery_date_end" class="p-2">
+                                <div>
+                                    <p class="font-semibold">Estimated Delivery Date</p>
+                                </div>
+                                <div>
+                                    <p>{{ DateUtil.formatToMonthDayYear(item.estimated_delivery_date_start) }} - {{ DateUtil.formatToMonthDayYear(item.estimated_delivery_date_end) }}</p>
+                                </div>
+                            </div>
                         </div>
                         <DataTable
                             :value="item.product_orders"
@@ -95,6 +119,11 @@
                                         label="Set Payment"
                                         @click="openPaymentModal(item)"
                                         type="button"
+                                    />
+                                    <MarkAsDelivered
+                                        v-if="item.status === 'Shipped'"
+                                        :data="item"
+                                        @cb="load"
                                     />
                                 </div>
                             </template>
@@ -191,6 +220,7 @@
 </template>
 <script setup lang="ts">
 import CancelOrderForm from '@/components/forms/CancelOrderForm.vue';
+import MarkAsDelivered from '@/components/forms/MarkAsDelivered.vue';
 import PaymentForm from '@/components/forms/PaymentForm.vue';
 import { IOrder } from '@/interfaces/IOrder';
 import useAxiosUtil from '@/utils/AxiosUtil';
@@ -263,8 +293,8 @@ const orderStatus = (value: string) => {
         Processing: 'bg-blue-200',
         Shipped: 'bg-purple-200',
         "For delivery": 'bg-orange-200',
-        Delivered: 'bg-green-600',
-        Released: 'bg-blue-600',
+        Delivered: 'bg-green-300',
+        Released: 'bg-blue-300',
         Cancelled: 'bg-red-200',
         Refunded: 'bg-red-300',
         Rejected: 'bg-red-300',

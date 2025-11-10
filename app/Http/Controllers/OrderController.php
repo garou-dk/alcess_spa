@@ -105,4 +105,12 @@ class OrderController extends Controller
             ->message('Order set to shipped successfully!')
             ->response();
     }
+
+    public function markAsReceived(string $id) {
+        $data = ['order_id'=> $id];
+        return ApiResponse::success()
+            ->data($this->service->markAsReceived($data))
+            ->message('Order marked as delivered successfully!')
+            ->response();
+    }
 }
