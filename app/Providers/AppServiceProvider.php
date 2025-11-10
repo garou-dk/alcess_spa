@@ -21,14 +21,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // For testing purposes
-        DB::listen(function ($query) {
-            if (str_contains(strtolower($query->sql), 'from barangays')) {
-                while (true) {
-                    if (mt_rand(1, 500) == 1) {
-                        break;
-                    }
-                }
-            }
-        });
+        // DB::listen(function ($query) {
+        //     if (str_contains(strtolower($query->sql), 'from barangays')) {
+        //         while (true) {
+        //             if (mt_rand(1, 500) == 1) {
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // });
     }
 }

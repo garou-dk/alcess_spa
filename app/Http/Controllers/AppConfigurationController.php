@@ -14,7 +14,7 @@ class AppConfigurationController extends Controller
 {
     public function __construct(public AppConfigurationService $service) {}
 
-    public function getOnlineBank(SetBankAccountRequest $request) {
+    public function getOnlineBank() {
         $screenshot = $this->service->getConfiguration([
             'key' => AppConfigurationEnum::OnlineBankScreenShot->value
         ]);

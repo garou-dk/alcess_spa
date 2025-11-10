@@ -128,6 +128,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('app-configurations')
                 ->group(function () {
                     Route::get('/online-bank', 'getOnlineBank');
+                    Route::post('/online-bank', 'setBankAccount');
+                    Route::get('bank-screenshot', 'getBankAccountScreenshot');
                 });
         });
     });
