@@ -215,4 +215,24 @@ class OrderService
 
         return $order;
     }
+
+    public function setToShipped(array $data) {
+        $order = Order::query()
+            ->where('order_id', $data['order_id'])
+            ->first();
+
+        abort_if(empty($order), 404, 'Order not found!');
+
+        $order->status = OrderStatusEnum::SHIPPED->value;
+        $order->estimated_delivery_date_start = $data['estimated_delivery_date_start'];
+        $order->estimated_delivery_date_end = $data['estimated_delivery_date_end'];
+        $order->delivery_courier = $data['delivery_courier'];
+        $order->tracking_number = $data['tracking_number'];
+
+        $order->save();
+
+        $order->refresh();
+
+        return $order;
+    }
 }

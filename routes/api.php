@@ -124,6 +124,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/cancel/{id}', 'cancelOrder');
                     Route::get('/payment-image/{id}', 'fetchPaymentImage');
                     Route::patch('/confirm-payment/{id}', 'confirmPayment');
+                    Route::patch('/for-delivery/{id}', 'setToShipped');
                 });
 
             Route::controller(AppConfigurationController::class)

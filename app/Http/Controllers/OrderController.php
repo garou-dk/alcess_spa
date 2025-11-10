@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\ApproveDeclineRequest;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\SetOrderToDelivery;
 use App\Http\Requests\SetPaymentRequest;
 use App\Services\AuthService;
 use App\Services\OrderService;
@@ -94,6 +95,14 @@ class OrderController extends Controller
         return ApiResponse::success()
             ->data($this->service->confirmPayment($data))
             ->message('Payment confirmed successfully!')
+            ->response();
+    }
+
+    public function setToShipped(string $id, SetOrderToDelivery $request) {
+        $data = ['order_id'=> $id] + $request->validated();
+        return ApiResponse::success()
+            ->data($this->service->setToShipped($data))
+            ->message('Order set to shipped successfully!')
             ->response();
     }
 }

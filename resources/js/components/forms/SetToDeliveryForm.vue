@@ -1,0 +1,197 @@
+<template>
+    <div>
+        <form @submit.prevent="handleSubmit()">
+            <div class="p-2">
+                <InputForm
+                    :errors="errors.delivery_courier"
+                    id="delivery_courier"
+                    label-name="Delivery Courier*"
+                    tag="label"
+                >
+                    <InputText
+                        v-model="form.delivery_courier"
+                        id="delivery_courier"
+                        type="text"
+                        placeholder="Enter delivery courier"
+                        fluid
+                        :invalid="errors.delivery_courier.length > 0"
+                    />
+                </InputForm>
+            </div>
+            <div class="p-2">
+                <InputForm
+                    :errors="errors.tracking_number"
+                    id="tracking_number"
+                    label-name="Tracking Number*"
+                    tag="label"
+                >
+                    <InputText
+                        v-model="form.tracking_number"
+                        id="tracking_number"
+                        type="text"
+                        placeholder="Enter tracking number"
+                        fluid
+                        :invalid="errors.tracking_number.length > 0"
+                    />
+                </InputForm>
+            </div>
+            <div class="p-2">
+                <InputForm
+                    :errors="errors.estimated_delivery_date_start"
+                    id="estimated_delivery_date_start"
+                    label-name="Estimated Delivery Date Start*"
+                    tag="label"
+                >
+                    <DatePicker
+                        v-model="estimated_delivery_date_start"
+                        input-id="estimated_delivery_date_start"
+                        :invalid="errors.estimated_delivery_date_start.length > 0"
+                        placeholder="Estimated Delivery Date Start"
+                        :min-date="new Date()"
+                    />
+                </InputForm>
+            </div>
+            <div class="p-2">
+                <InputForm
+                    :errors="errors.estimated_delivery_date_end"
+                    id="estimated_delivery_date_end"
+                    label-name="Estimated Delivery Date End*"
+                    tag="label"
+                >
+                    <DatePicker
+                        v-model="estimated_delivery_date_end"
+                        input-id="estimated_delivery_date_end"
+                        :invalid="errors.estimated_delivery_date_end.length > 0"
+                        placeholder="Estimated Delivery Date End"
+                        :min-date="new Date()"
+                    />
+                </InputForm>
+            </div>
+            <div class="p-2 flex justify-center">
+                <Button
+                    type="submit"
+                    label="Save"
+                    icon="pi pi-save"
+                    class="primary-bg"
+                    :loading="submitService.request.loading"
+                />
+            </div>
+        </form>
+    </div>
+</template>
+<script setup lang="ts">
+import { IOrder } from '@/interfaces/IOrder';
+import useAxiosUtil from '@/utils/AxiosUtil';
+import DateUtil from '@/utils/DateUtil';
+import { reactive, ref, watch } from 'vue';
+import { useToast } from 'vue-toastification';
+
+interface Props {
+    order: IOrder;
+}
+
+interface IForm {
+    delivery_courier: string | null;
+    tracking_number: string | null;
+    estimated_delivery_date_start: string | null;
+    estimated_delivery_date_end: string | null;
+}
+
+interface IFormError {
+    delivery_courier: string[];
+    tracking_number: string[];
+    estimated_delivery_date_start: string[];
+    estimated_delivery_date_end: string[];
+}
+
+const props = defineProps<Props>();
+
+const form : IForm = reactive({
+    delivery_courier: null,
+    tracking_number: null,
+    estimated_delivery_date_start: null,
+    estimated_delivery_date_end: null
+});
+
+const errors = reactive<IFormError>({
+    delivery_courier: [],
+    tracking_number: [],
+    estimated_delivery_date_start: [],
+    estimated_delivery_date_end: []
+});
+
+const estimated_delivery_date_start = ref<Date | null>(null);
+
+watch(estimated_delivery_date_start, () => {
+    if (estimated_delivery_date_start.value) {
+        form.estimated_delivery_date_start = DateUtil.formatYYYYMMDD(estimated_delivery_date_start.value);
+    }
+    else {
+        form.estimated_delivery_date_start = null;
+    }
+});
+
+const estimated_delivery_date_end = ref<Date | null>(null);
+
+watch(estimated_delivery_date_end, () => {
+    if (estimated_delivery_date_end.value) {
+        form.estimated_delivery_date_end = DateUtil.formatYYYYMMDD(estimated_delivery_date_end.value);
+    }
+    else {
+        form.estimated_delivery_date_end = null;
+    }
+});
+
+const submitService = useAxiosUtil<IForm, IOrder>();
+
+const emit = defineEmits(["cb", "closePopup"]);
+const toast = useToast();
+
+const clearErrors = () => {
+    errors.delivery_courier = [];
+    errors.tracking_number = [];
+    errors.estimated_delivery_date_start = [];
+    errors.estimated_delivery_date_end = [];
+};
+
+const validate = () => {
+    clearErrors();
+    if (!form.delivery_courier) {
+        errors.delivery_courier.push("Delivery courier is required");
+    }
+    if (!form.tracking_number) {
+        errors.tracking_number.push("Tracking number is required");
+    }
+    if (!form.estimated_delivery_date_start) {
+        errors.estimated_delivery_date_start.push("Estimated delivery date start is required");
+    }
+    if (!form.estimated_delivery_date_end) {
+        errors.estimated_delivery_date_end.push("Estimated delivery date end is required");
+    }
+    if (form.estimated_delivery_date_start && form.estimated_delivery_date_end) {
+        if (form.estimated_delivery_date_start > form.estimated_delivery_date_end) {
+            errors.estimated_delivery_date_end.push("Estimated delivery date end must be greater than estimated delivery date start");
+        }
+    }
+    const hasErrors = [errors.delivery_courier.length > 0, errors.tracking_number.length > 0, errors.estimated_delivery_date_start.length > 0, errors.estimated_delivery_date_end.length > 0];
+    return hasErrors.includes(true) ? false : form;
+};
+
+const handleSubmit = async () => {
+    if (validate()) {
+        await submitService.patch(`admin/orders/for-delivery/${props.order.order_id}`, form).then(() => {
+            if (submitService.request.status === 200 && submitService.request.data) {
+                toast.success(submitService.request.message);
+                emit("cb", submitService.request.data);
+            }
+            else {
+                toast.error(submitService.request.message ?? "Please try again.");
+            }
+        });
+    }
+    else {
+        toast.error("Please fill in the required fields.");
+    }
+}
+
+</script>

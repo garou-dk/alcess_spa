@@ -176,6 +176,15 @@
                         <i class="pi pi-eye" /> View Payment
                     </button>
                 </div>
+                <div v-if="selectedOrder.order_type === 'Delivery' && selectedOrder.status === 'Processing'">
+                    <button
+                        type="button"
+                        class="hover:bg-blue-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
+                        @click="showDelivery($event)"
+                    >
+                        <i class="pi pi-truck" /> Set to Delivery
+                    </button>
+                </div>
             </div>
         </Popover>
         <Dialog
@@ -197,13 +206,13 @@
             <ViewOrderForm :data="viewOrderModal.order" />
         </Dialog>
         <Dialog
-            v-model:visible="viewPaymentModal.visible"
-            header="Payment Details"
-            :style="{ width: '90%' }"
+            v-model:visible="viewDeliveryModal.visible"
+            header="Set to Delivery Status"
+            :style="{ width: '28rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
             modal
         >
-            <ViewPaymentForm :data="viewPaymentModal.order" @cb="confirmOrderCb" />
+            <SetToDeliveryForm :order="viewDeliveryModal.order" @cb="confirmDeliveryCb" />
         </Dialog>
     </div>
 </template>
@@ -221,6 +230,7 @@ import { FilterMatchMode } from '@primevue/core/api';
 import ApprovalForm from "@/components/forms/ApprovalForm.vue";
 import ViewOrderForm from "@/components/forms/ViewOrderForm.vue";
 import ViewPaymentForm from "@/components/forms/ViewPaymentForm.vue";
+import SetToDeliveryForm from "@/components/forms/SetToDeliveryForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -330,6 +340,25 @@ const showOrderPayment = (event: Event) => {
 const confirmOrderCb = () => {
     load();
     viewPaymentModal.visible = false;
+}
+
+const viewDeliveryModal : {
+    visible: boolean;
+    order: IOrder | null
+} = reactive({
+    visible: false,
+    order: null
+});
+
+const showDelivery = (event: Event) => {
+    viewDeliveryModal.order = selectedOrder.value;
+    viewDeliveryModal.visible = true;
+    editElement.value.toggle(event);
+}
+
+const confirmDeliveryCb = () => {
+    load();
+    viewDeliveryModal.visible = false;
 }
 
 onMounted(() => {
