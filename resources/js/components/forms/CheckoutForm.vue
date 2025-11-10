@@ -152,7 +152,6 @@ interface Props {
 const router = useRouter();
 
 const orderTypes = ref<string[]>([
-    'Pickup',
     'Delivery'
 ]);
 
