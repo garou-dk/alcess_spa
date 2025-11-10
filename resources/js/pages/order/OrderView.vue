@@ -48,16 +48,6 @@
                 <div class="p-2">
                     <InputForm
                         :errors="[]"
-                        id="status"
-                        label-name="Status"
-                        tag="label"
-                    >
-                        <Select v-model="filters.status.value" :options="orderStatuses" option-label="label" option-value="value" placeholder="Select Status" />
-                    </InputForm>
-                </div>
-                <div class="p-2">
-                    <InputForm
-                        :errors="[]"
                         id="order_type"
                         label-name="Order Type"
                         tag="label"
@@ -177,6 +167,15 @@
                         <i class="pi pi-thumbs-down" /> Decline
                     </button>
                 </div>
+                <div v-if="selectedOrder.status === 'Processing' && selectedOrder.payment_method === 'Online Payment'">
+                    <button
+                        type="button"
+                        class="hover:bg-blue-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
+                        @click="showOrderPayment($event)"
+                    >
+                        <i class="pi pi-eye" /> View Payment
+                    </button>
+                </div>
             </div>
         </Popover>
         <Dialog
@@ -197,6 +196,15 @@
         >
             <ViewOrderForm :data="viewOrderModal.order" />
         </Dialog>
+        <Dialog
+            v-model:visible="viewPaymentModal.visible"
+            header="Payment Details"
+            :style="{ width: '90%' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <ViewPaymentForm :data="viewPaymentModal.order" />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -212,6 +220,7 @@ import CurrencyUtil from "@/utils/CurrencyUtil";
 import { FilterMatchMode } from '@primevue/core/api';
 import ApprovalForm from "@/components/forms/ApprovalForm.vue";
 import ViewOrderForm from "@/components/forms/ViewOrderForm.vue";
+import ViewPaymentForm from "@/components/forms/ViewPaymentForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -301,6 +310,20 @@ const viewOrderModal : {
 const showOrder = (event: Event) => {
     viewOrderModal.order = selectedOrder.value;
     viewOrderModal.visible = true;
+    editElement.value.toggle(event);
+}
+
+const viewPaymentModal : {
+    visible: boolean;
+    order: IOrder | null
+} = reactive({
+    visible: false,
+    order: null
+});
+
+const showOrderPayment = (event: Event) => {
+    viewPaymentModal.order = selectedOrder.value;
+    viewPaymentModal.visible = true;
     editElement.value.toggle(event);
 }
 

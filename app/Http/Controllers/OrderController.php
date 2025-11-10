@@ -81,4 +81,11 @@ class OrderController extends Controller
             ->message('Thank you for your payment. Order placed successfully. Please wait for the store to confirm the payment.')
             ->response();
     }
+
+    public function fetchPaymentImage(string $id) {
+        $data = ['order_id' => $id];
+
+        return ApiResponse::success()
+            ->showFile($this->service->fetchPaymentImage($data));
+    }
 }

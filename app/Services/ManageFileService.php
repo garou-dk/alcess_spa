@@ -119,4 +119,12 @@ class ManageFileService
         
         return Storage::disk('local')->path($fullPath);
     }
+
+    public function getPaymentImage(array $data) {
+        $fullPath = FileDirectoryEnum::PAYMENT_PROOF->value.'/'.$data['value'];
+        
+        abort_unless(Storage::disk('local')->exists($fullPath), 404, 'File not found');
+        
+        return Storage::disk('local')->path($fullPath);
+    }
 }

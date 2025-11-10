@@ -175,4 +175,21 @@ class OrderService
 
         return $order;
     }
+
+    public function fetchPaymentImage(array $data) {
+        $order = Order::query()
+            ->where('order_id', $data['order_id'])
+            ->first();
+
+        abort_if(empty($order), 404, 'Order not found!');
+        abort_if(empty($order->proof_of_payment), 404, 'No proof of payment found');
+
+        $fileService = new ManageFileService();
+
+        $image = $fileService->getPaymentImage([
+            'value' => $order->proof_of_payment
+        ]);
+
+        return $image;
+    }
 }
