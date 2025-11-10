@@ -51,6 +51,30 @@
                             <p>{{ showCompleteAddress(props.data) }}</p>
                         </div>
                     </div>
+                    <div v-if="props.data.delivery_courier" class="p-2">
+                        <div>
+                            <p class="font-semibold">Delivery Courier</p>
+                        </div>
+                        <div>
+                            <p>{{ props.data.delivery_courier }}</p>
+                        </div>
+                    </div>
+                    <div v-if="props.data.tracking_number" class="p-2">
+                        <div>
+                            <p class="font-semibold">Tracking Number</p>
+                        </div>
+                        <div>
+                            <p>{{ props.data.tracking_number }}</p>
+                        </div>
+                    </div>
+                        <div v-if="props.data.estimated_delivery_date_start && props.data.estimated_delivery_date_end" class="p-2">
+                        <div>
+                            <p class="font-semibold">Estimated Delivery Date</p>
+                        </div>
+                        <div>
+                            <p>{{ DateUtil.formatToMonthDayYear(props.data.estimated_delivery_date_start) }} - {{ DateUtil.formatToMonthDayYear(props.data.estimated_delivery_date_end) }}</p>
+                        </div>
+                    </div>
                 </div>
                 <DataTable
                     :value="props.data.product_orders"

@@ -203,7 +203,7 @@ class OrderService
 
         abort_if($order->payment_method == PaymentMethodEnum::OnlinePayment->value && $order->status != OrderStatusEnum::PROCESSING->value, 400, 'Order is not processing.');
 
-        abort_if($order->payment_method == PaymentMethodEnum::CashOnDelivery->value && $order->status != OrderStatusEnum::PENDING->value, 400, 'Order is not pending.');
+        abort_if($order->payment_method == PaymentMethodEnum::CashOnDelivery->value && $order->status != OrderStatusEnum::SHIPPED->value, 400, 'Order is not pending.');
     
         abort_unless(empty($order->date_paid_confirmed), 422, 'This order is already been paid.');
 

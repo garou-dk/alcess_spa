@@ -69,6 +69,14 @@
                                     <p>{{ showCompleteAddress(item) }}</p>
                                 </div>
                             </div>
+                            <div v-if="item.payment_method" class="p-2">
+                                <div>
+                                    <p class="font-semibold">Payment Method</p>
+                                </div>
+                                <div>
+                                    <p>{{ item.payment_method }}</p>
+                                </div>
+                            </div>
                             <div v-if="item.delivery_courier" class="p-2">
                                 <div>
                                     <p class="font-semibold">Delivery Courier</p>
@@ -85,7 +93,7 @@
                                     <p>{{ item.tracking_number }}</p>
                                 </div>
                             </div>
-                             <div v-if="item.estimated_delivery_date_start && item.estimated_delivery_date_end" class="p-2">
+                            <div v-if="item.estimated_delivery_date_start && item.estimated_delivery_date_end" class="p-2">
                                 <div>
                                     <p class="font-semibold">Estimated Delivery Date</p>
                                 </div>

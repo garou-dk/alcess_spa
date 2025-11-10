@@ -166,7 +166,14 @@
                         <i class="pi pi-eye" /> View Payment
                     </button>
                 </div>
-                <div v-if="selectedOrder.order_type === 'Delivery' && selectedOrder.status === 'Processing'">
+                <div v-if="selectedOrder.payment_method === 'Cash on Delivery' && selectedOrder.status === 'Shipped'">
+                    <MarkPaidForm :data="selectedOrder" @cb="setNewOrder" />
+                </div>
+                <div v-if="(
+                    selectedOrder.order_type === 'Delivery' && selectedOrder.status === 'Processing' && selectedOrder.date_paid_confirmed
+                ) || (
+                    selectedOrder.payment_method === 'Cash on Delivery' && selectedOrder.order_type === 'Delivery' && selectedOrder.status === 'Processing'
+                )">
                     <button
                         type="button"
                         class="hover:bg-blue-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
@@ -204,6 +211,15 @@
         >
             <SetToDeliveryForm :order="viewDeliveryModal.order" @cb="confirmDeliveryCb" />
         </Dialog>
+        <Dialog
+            v-model:visible="viewPaymentModal.visible"
+            header="View Payment Details"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <ViewPaymentForm :data="viewPaymentModal.order" @cb="markPaidCb" />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -221,6 +237,7 @@ import ApprovalForm from "@/components/forms/ApprovalForm.vue";
 import ViewOrderForm from "@/components/forms/ViewOrderForm.vue";
 import ViewPaymentForm from "@/components/forms/ViewPaymentForm.vue";
 import SetToDeliveryForm from "@/components/forms/SetToDeliveryForm.vue";
+import MarkPaidForm from "@/components/forms/MarkPaidForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -349,6 +366,16 @@ const showDelivery = (event: Event) => {
 const confirmDeliveryCb = () => {
     load();
     viewDeliveryModal.visible = false;
+}
+
+const confirmPaymentCb = () => {
+    load();
+    viewPaymentModal.visible = false;
+}
+
+const markPaidCb = (event: Event) => {
+    editElement.value.toggle(event);
+    load();
 }
 
 onMounted(() => {
