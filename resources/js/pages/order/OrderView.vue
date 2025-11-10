@@ -154,11 +154,12 @@
                     <button
                         type="button"
                         class="hover:bg-gray-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
+                        @click="showOrder($event)"
                     >
                         <i class="pi pi-eye" /> View Products
                     </button>
                 </div>
-                <div>
+                <div v-if="selectedOrder.status === 'Pending'">
                     <button
                         type="button"
                         class="hover:bg-green-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
@@ -167,7 +168,7 @@
                         <i class="pi pi-thumbs-up" /> Approve
                     </button>
                 </div>
-                <div>
+                <div v-if="selectedOrder.status === 'Pending'">
                     <button
                         type="button"
                         class="hover:bg-red-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
@@ -187,13 +188,22 @@
         >
             <ApprovalForm :data="selectedOrder" @cb="setNewOrder" @close-popup="closePopup()" :status="approvalVisible.status" />
         </Dialog>
+        <Dialog
+            v-model:visible="viewOrderModal.visible"
+            header="Order Details"
+            :style="{ width: '90%' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <ViewOrderForm :data="viewOrderModal.order" />
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
 import GCashIcon from "@/../img/gcash.png";
 import CashIcon from "@/../img/cash.png";
 import { Button, Popover } from "primevue";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { IOrder } from "@/interfaces/IOrder";
 import { useToast } from "vue-toastification";
@@ -201,6 +211,7 @@ import DateUtil from "@/utils/DateUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { FilterMatchMode } from '@primevue/core/api';
 import ApprovalForm from "@/components/forms/ApprovalForm.vue";
+import ViewOrderForm from "@/components/forms/ViewOrderForm.vue";
 
 const editElement = ref<null | InstanceType<typeof Popover>>();
 
@@ -277,6 +288,20 @@ const setApproval = (event: Event, status: string) => {
 
 const closePopup = () => {
     approvalVisible.value.visible = false;
+}
+
+const viewOrderModal : {
+    visible: boolean;
+    order: IOrder | null
+} = reactive({
+    visible: false,
+    order: null
+});
+
+const showOrder = (event: Event) => {
+    viewOrderModal.order = selectedOrder.value;
+    viewOrderModal.visible = true;
+    editElement.value.toggle(event);
 }
 
 onMounted(() => {

@@ -162,7 +162,7 @@ class OrderService
         $result = $fileService->saveFile($data['payment_proof'], FileDirectoryEnum::PAYMENT_PROOF->value);
 
         $order->status = OrderStatusEnum::PROCESSING->value;
-        $order->payment_proof = $result['file_name'];
+        $order->proof_of_payment = $result['file_name'];
         $order->bank_name = $data['bank_name'];
         $order->transaction_number = $data['transaction_number'];
         $order->date_payment_processed = now();

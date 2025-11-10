@@ -137,6 +137,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('customer')
         ->middleware(['role:'.RoleEnum::CUSTOMER->value])
         ->group(function () {
+            Route::controller(AppConfigurationController::class)
+                ->group(function () {
+                    Route::get('owner-online-bank', 'getOnlineBank');
+                    Route::get('bank-screenshot', 'getBankAccountScreenshot');
+                });
+
             Route::controller(CartController::class)
                 ->prefix('carts')
                 ->group(function () {
