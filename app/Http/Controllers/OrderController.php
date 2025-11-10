@@ -113,4 +113,12 @@ class OrderController extends Controller
             ->message('Order marked as delivered successfully!')
             ->response();
     }
+
+    public function cashOnDeliveryConfirm(string $id) {
+        $data = ['order_id'=> $id];
+        return ApiResponse::success()
+            ->data($this->service->cashOnDeliveryConfirm($data))
+            ->message('Order has been finalized successfully!')
+            ->response();
+    }
 }

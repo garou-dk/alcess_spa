@@ -16,6 +16,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
@@ -134,6 +135,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::post('/online-bank', 'setBankAccount');
                     Route::get('bank-screenshot', 'getBankAccountScreenshot');
                 });
+
+            Route::controller(SaleController::class)
+                ->prefix('sales')
+                ->group(function () {
+                    Route::post('record', 'recordSales');
+                });
         });
     });
 
@@ -172,6 +179,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/cancel/{id}', 'cancelOrder');
                     Route::patch('/set-payment/{id}', 'setPayment');
                     Route::patch('/mark-delivered/{id}', 'markAsReceived');
+                    Route::patch('confirm-cash-delivery/{id}', 'cashOnDeliveryConfirm');
                 });
         });
 

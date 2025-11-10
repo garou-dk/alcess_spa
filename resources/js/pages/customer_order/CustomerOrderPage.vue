@@ -125,6 +125,9 @@
                                         :data="item"
                                         @cb="load"
                                     />
+                                    <div v-if="item.order_type === 'Delivery' && item.status === 'Confirmed' && item.payment_method === 'Cash on Delivery'">
+                                        <ConfirmCashDeliveryPrice :order="item" @cb="load" />
+                                    </div>
                                 </div>
                             </template>
                             <Column field="product.product_name" header="Product Name">
@@ -220,6 +223,7 @@
 </template>
 <script setup lang="ts">
 import CancelOrderForm from '@/components/forms/CancelOrderForm.vue';
+import ConfirmCashDeliveryPrice from '@/components/forms/ConfirmCashDeliveryPrice.vue';
 import MarkAsDelivered from '@/components/forms/MarkAsDelivered.vue';
 import PaymentForm from '@/components/forms/PaymentForm.vue';
 import { IOrder } from '@/interfaces/IOrder';

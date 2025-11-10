@@ -217,23 +217,35 @@ class OrderService
     }
 
     public function setToShipped(array $data) {
-        $order = Order::query()
-            ->where('order_id', $data['order_id'])
-            ->first();
+        return DB::transaction(function () use ($data) {
+            $order = Order::query()
+                ->with(['productOrders.product'])
+                ->where('order_id', $data['order_id'])
+                ->first();
 
-        abort_if(empty($order), 404, 'Order not found!');
+            abort_if(empty($order), 404, 'Order not found!');
 
-        $order->status = OrderStatusEnum::SHIPPED->value;
-        $order->estimated_delivery_date_start = $data['estimated_delivery_date_start'];
-        $order->estimated_delivery_date_end = $data['estimated_delivery_date_end'];
-        $order->delivery_courier = $data['delivery_courier'];
-        $order->tracking_number = $data['tracking_number'];
+            $order->status = OrderStatusEnum::SHIPPED->value;
+            $order->estimated_delivery_date_start = $data['estimated_delivery_date_start'];
+            $order->estimated_delivery_date_end = $data['estimated_delivery_date_end'];
+            $order->delivery_courier = $data['delivery_courier'];
+            $order->tracking_number = $data['tracking_number'];
 
-        $order->save();
+            $order->save();
 
-        $order->refresh();
+            $order->refresh();
 
-        return $order;
+            foreach ($order->productOrders as $key => $value) {
+                $product = Product::query()
+                    ->where('product_id', $value->product_id)
+                    ->first();
+
+                $product->product_quantity = $product->product_quantity - $value->quantity;
+                $product->save();
+            };
+
+            return $order;
+        });
     }
 
     public function markAsReceived(array $data) {
@@ -245,6 +257,24 @@ class OrderService
 
         $order->status = OrderStatusEnum::DELIVERED->value;
         $order->customer_received_date = now();
+
+        $order->save();
+
+        $order->refresh();
+
+        return $order;
+    }
+
+    public function cashOnDeliveryConfirm(array $data) {
+        $order = Order::query()
+            ->where('order_id', $data['order_id'])
+            ->first();
+
+        abort_if(empty($order), 404, 'Order not found!');
+        abort_if($order->status != OrderStatusEnum::CONFIRMED->value, 400, 'Order is not confirmed.');
+        abort_if($order->payment_method != PaymentMethodEnum::CashOnDelivery->value, 400, 'Order is not cash on delivery.');
+
+        $order->status = OrderStatusEnum::PROCESSING->value;
 
         $order->save();
 

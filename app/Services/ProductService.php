@@ -271,4 +271,16 @@ class ProductService
 
         return $products->paginate($data['limit'] ?? 5);
     }
+
+    public function searchBySku(array $data) {
+        $products = Product::query()
+            ->where('sku', $data['sku'])
+            ->where('is_active', true)
+            ->where('product_quantity', '>', 0)
+            ->first();
+
+        abort_if(empty($products), 404, 'Product not found or status is inactive!');
+
+        return $products;
+    }
 }
