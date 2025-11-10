@@ -88,4 +88,12 @@ class OrderController extends Controller
         return ApiResponse::success()
             ->showFile($this->service->fetchPaymentImage($data));
     }
+
+    public function confirmPayment(string $id) {
+        $data = ['order_id' => $id];
+        return ApiResponse::success()
+            ->data($this->service->confirmPayment($data))
+            ->message('Payment confirmed successfully!')
+            ->response();
+    }
 }

@@ -26,6 +26,7 @@ interface IOrder {
     product_orders: IProductOrder[];
     barangay: IBarangay;
     postal_code: string;
+    date_payment_processed: string | null;
 }
 
 export type { IOrder };

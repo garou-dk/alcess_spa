@@ -167,7 +167,7 @@
                         <i class="pi pi-thumbs-down" /> Decline
                     </button>
                 </div>
-                <div v-if="selectedOrder.status === 'Processing' && selectedOrder.payment_method === 'Online Payment'">
+                <div v-if="selectedOrder.payment_method === 'Online Payment' && selectedOrder.date_payment_processed">
                     <button
                         type="button"
                         class="hover:bg-blue-200 hover:cursor-pointer p-2 w-full text-start flex items-center gap-2"
@@ -203,7 +203,7 @@
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
             modal
         >
-            <ViewPaymentForm :data="viewPaymentModal.order" />
+            <ViewPaymentForm :data="viewPaymentModal.order" @cb="confirmOrderCb" />
         </Dialog>
     </div>
 </template>
@@ -325,6 +325,11 @@ const showOrderPayment = (event: Event) => {
     viewPaymentModal.order = selectedOrder.value;
     viewPaymentModal.visible = true;
     editElement.value.toggle(event);
+}
+
+const confirmOrderCb = () => {
+    load();
+    viewPaymentModal.visible = false;
 }
 
 onMounted(() => {

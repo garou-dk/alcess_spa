@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\FileDirectoryEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
+use App\Enums\PaymentMethodEnum;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\Product;
@@ -191,5 +192,27 @@ class OrderService
         ]);
 
         return $image;
+    }
+
+    public function confirmPayment(array $data) {
+        $order = Order::query()
+            ->where('order_id', $data['order_id'])
+            ->first();
+
+        abort_if(empty($order), 404, 'Order not found!');
+
+        abort_if($order->payment_method == PaymentMethodEnum::OnlinePayment->value && $order->status != OrderStatusEnum::PROCESSING->value, 400, 'Order is not processing.');
+
+        abort_if($order->payment_method == PaymentMethodEnum::CashOnDelivery->value && $order->status != OrderStatusEnum::PENDING->value, 400, 'Order is not pending.');
+    
+        abort_unless(empty($order->date_paid_confirmed), 422, 'This order is already been paid.');
+
+        $order->date_paid_confirmed = now();
+
+        $order->save();
+
+        $order->refresh();
+
+        return $order;
     }
 }
