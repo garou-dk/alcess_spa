@@ -12,6 +12,7 @@ class Sale extends Model
         "sale_code",
         "user_id",
         "total_amount",
+        "payment_method"
     ];
 
     public function user() {

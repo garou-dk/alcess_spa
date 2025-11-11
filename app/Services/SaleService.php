@@ -13,18 +13,22 @@ class SaleService
         return DB::transaction(function () use ($data) {
             $authService = new AuthService();
             $user = $authService->getAuth();
-            $total_amount = 0;
-
             $productIds = collect($data["products"])->pluck("product_id")->toArray();
 
             $productList = Product::query()
                 ->whereIn("product_id", $productIds)
                 ->get();
 
+            $total_amount = 0;
+            foreach ($data["products"] as $item) {
+                $total_amount += $item["quantity"] * $productList->where("product_id", $item["product_id"])->value("product_price");
+            }
+
             $sale = Sale::query()->create([
                 "sale_code" => Uuid::uuid4()->toString(),
                 "user_id" => $user->user_id,
                 "total_amount" => $total_amount,
+                "payment_method" => $data["payment_method"]
             ]);
             $products = [];
             foreach ($data["products"] as $item) {
@@ -35,7 +39,7 @@ class SaleService
                     "price" => $productList->where("product_id", $item["product_id"])->value("product_price")
                 ];
             }
-            $sale->saleItems()->saveMany($products);
+            $sale->saleItems()->createMany($products);
 
             $sale->refresh();
 
@@ -43,5 +47,16 @@ class SaleService
 
             return $sale;
         });
+    }
+
+    public function getSale(array $data) {
+        $sale = Sale::query()
+            ->with(['saleItems.product', 'user'])
+            ->where('sale_id', $data['sale_id'])
+            ->first();
+
+        abort_if(empty($sale), 404, 'Sale not found');
+
+        return $sale;
     }
 }

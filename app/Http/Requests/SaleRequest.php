@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SaleRequest extends FormRequest
 {
@@ -25,6 +26,7 @@ class SaleRequest extends FormRequest
             'products' => ['required', 'array'],
             'products.*.product_id' => ['required', 'integer', 'exists:products,product_id'],
             'products.*.quantity' => ['required', 'integer', 'min:1'],
+            'payment_method' => ['required', 'string', Rule::in('Cash', 'E-wallet', 'Debit', 'Credit')]
         ];
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('sale_code')->unique()->nullable();
             $table->foreignId('user_id')->constrained('users', 'user_id');
             $table->double('total_amount');
+            $table->enum('payment_method', ['Cash', 'E-wallet', 'Debit', 'Credit']);
             $table->timestamps();
         });
     }

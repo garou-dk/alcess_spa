@@ -109,4 +109,10 @@ class ProductController extends Controller
             ->data($this->service->searchProduct($request->validated()))
             ->response();
     }
+
+    public function searchBySku(string $id) {
+        return ApiResponse::success()
+            ->data($this->service->searchBySku(['sku' => $id]))
+            ->response();
+    }
 }

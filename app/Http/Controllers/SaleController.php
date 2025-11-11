@@ -14,6 +14,13 @@ class SaleController extends Controller
     public function recordSale(SaleRequest $request) {
         return ApiResponse::success()
             ->data($this->service->recordSale($request->validated()))
+            ->message("Sale recorded successfully")
+            ->response();
+    }
+
+    public function getSale(string $id) {
+        return ApiResponse::success()
+            ->data($this->service->getSale(['sale_id' => $id]))
             ->response();
     }
 }

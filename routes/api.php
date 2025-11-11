@@ -91,6 +91,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/{id}', 'update');
                     Route::patch('/update-image/{id}', 'changeImage');
                     Route::patch('/change-status/{id}', 'changeStatus');
+                    Route::get('/sku-search/{id}', 'searchBySku');
                 });
 
             Route::controller(SpecificationController::class)
@@ -139,7 +140,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::controller(SaleController::class)
                 ->prefix('sales')
                 ->group(function () {
-                    Route::post('record', 'recordSales');
+                    Route::post('/', 'recordSale');
+                    Route::get('/{id}', 'getSale');
                 });
         });
     });
