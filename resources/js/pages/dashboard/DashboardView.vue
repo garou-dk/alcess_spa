@@ -63,14 +63,14 @@
                             <p
                                 class="text-center text-xl font-bold text-green-600"
                             >
-                                388
+                                1
                             </p>
-                            <p class="space-x-2 text-center">
+                            <!-- <p class="space-x-2 text-center">
                                 <i class="pi pi-arrow-up text-green-600" />
                                 <span class="text-gray-600"
                                     >16.52% Previous Day 333</span
                                 >
-                            </p>
+                            </p> -->
                         </div>
                     </div>
                     <div
@@ -83,14 +83,14 @@
                             <p
                                 class="text-center text-xl font-bold text-green-600"
                             >
-                                537
+                                1
                             </p>
-                            <p class="space-x-2 text-center">
+                            <!-- <p class="space-x-2 text-center">
                                 <i class="pi pi-arrow-up text-green-600" />
                                 <span class="text-gray-600"
                                     >21.77% Previous Day 441</span
                                 >
-                            </p>
+                            </p> -->
                         </div>
                     </div>
                     <div
@@ -103,14 +103,14 @@
                             <p
                                 class="text-center text-xl font-bold text-red-600"
                             >
-                                996
+                                1
                             </p>
-                            <p class="space-x-2 text-center">
+                            <!-- <p class="space-x-2 text-center">
                                 <i class="pi pi-arrow-down text-red-600" />
                                 <span class="text-gray-600"
                                     >1.00% Previous Day 1006</span
                                 >
-                            </p>
+                            </p> -->
                         </div>
                     </div>
                     <div
@@ -123,20 +123,20 @@
                             <p
                                 class="text-center text-xl font-bold text-red-600"
                             >
-                                672
+                                1
                             </p>
-                            <p class="space-x-2 text-center">
+                            <!-- <p class="space-x-2 text-center">
                                 <i class="pi pi-arrow-down text-red-600" />
                                 <span class="text-gray-600"
                                     >16.21% Previous Day 802</span
                                 >
-                            </p>
+                            </p> -->
                         </div>
                     </div>
                 </div>
                 <div class="max-lg:w-full lg:w-1/2">
                     <p class="text-center font-semibold text-gray-700">
-                        Current Shipping Status
+                        Current Sale and Order Status
                     </p>
                     <div class="flex w-full justify-center p-5">
                         <VueApexCharts
@@ -274,9 +274,9 @@ const loadProductService = useAxiosUtil<
     DataTableInterface<ProductInterface>
 >();
 const toast = useToast();
-const series = ref<number[]>([70, 30]);
+const series = ref<number[]>([50, 50]);
 const chartOptions = ref({
-    labels: ["Ordered", "Shipped"],
+    labels: ["Ordered", "POS/Sales"],
     colors: ["#fa625e", "#03b5a9"],
     legend: {
         position: "bottom",

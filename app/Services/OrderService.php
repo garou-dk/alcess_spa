@@ -79,7 +79,9 @@ class OrderService
 
     public function getCustomerOrders(array $data) {
         return Order::query()
-            ->with(['productOrders.product', 'barangay.municity.province.region.islandGroup'])
+            ->with(['productOrders' => function($query) {
+                $query->with(['product', 'rate']);
+            }, 'barangay.municity.province.region.islandGroup'])
             ->where('user_id', $data['user_id'])
             ->latest()
             ->get();

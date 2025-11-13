@@ -6,6 +6,15 @@ import { UnitInterface } from "@/interfaces/UnitInterface";
 import { CategoryInterface } from "@/interfaces/CategoryInterface";
 import { ProductSpecificationInterface } from "@/interfaces/ProductSpecificationInterface";
 import { FeaturedImageInterface } from "@/interfaces/FeaturedImageInterface";
+import { IRate } from "./IRate";
+
+interface IRateGroups {
+    "5": IRate[];
+    "4": IRate[];
+    "3": IRate[];
+    "2": IRate[];
+    "1": IRate[];
+}
 
 interface ProductSearchInterface extends SearchInterface {
     category_id: number | null;
@@ -41,6 +50,8 @@ interface ProductInterface {
     category: CategoryInterface;
     specifications: ProductSpecificationInterface[];
     featured_images: FeaturedImageInterface[];
+    rates_avg_rate?: number;
+    grouped_rates?: IRateGroups;
 }
 
 interface AddProductFormInterface {

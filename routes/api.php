@@ -14,6 +14,7 @@ use App\Http\Controllers\MunicityController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\RateController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
@@ -182,6 +183,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/set-payment/{id}', 'setPayment');
                     Route::patch('/mark-delivered/{id}', 'markAsReceived');
                     Route::patch('confirm-cash-delivery/{id}', 'cashOnDeliveryConfirm');
+                });
+
+            Route::controller(RateController::class)
+                ->prefix('rates')
+                ->group(function () {
+                    Route::post('/{id}', 'addRate');
                 });
         });
 

@@ -174,6 +174,24 @@
                                     {{ CurrencyUtil.formatCurrency(data.price * data.quantity) }}
                                 </template>
                             </Column>
+                            <Column v-if="item.status === 'Delivered'" header="Rate">
+                                <template #body="{ data }">
+                                    <div class="flex justify-center">
+                                        <Button
+                                            v-if="!data.rate"
+                                            icon="pi pi-star"
+                                            label="Rate"
+                                            @click="openRate(data)"
+                                        />
+                                        <Button
+                                            v-else
+                                            icon="pi pi-star-fill"
+                                            label="View Rate"
+                                            @click="viewRating(data.rate)"
+                                        />
+                                    </div>
+                                </template>
+                            </Column>
                             <template #footer>
                                 <div class="flex justify-end">
                                     <div>
@@ -227,6 +245,60 @@
                 @close-popup="closePaymentModal"
             />
         </Dialog>
+        <Dialog
+            v-model:visible="rateModal.visible"
+            header="Rate Order"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <RateForm
+                v-if="rateModal.data"
+                :data="rateModal.data"
+                @cb="rateCb"
+            />
+        </Dialog>
+        <Dialog
+            v-model:visible="viewRateModal.visible"
+            header="View Rate"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+        >
+            <div class="flex flex-col gap-2">
+                <div v-if="viewRateModal.data">
+                    <InputForm
+                        :errors="[]"
+                        label-name="Rate"
+                        id="rating"
+                        tag="span"
+                    >
+                        <div class="flex justify-center">
+                            <Rating
+                                :model-value="viewRateModal.data.rate"
+                                :readonly="true"
+                            />
+                        </div>
+                    </InputForm>
+                </div>
+                <div>
+                    <InputForm
+                        :errors="[]"
+                        id="comment"
+                        labelName="Comment"
+                        tag="label"
+                    >
+                        <Textarea
+                            :model-value="viewRateModal.data.comment"
+                            id="comment"
+                            placeholder="Enter your comment"
+                            fluid
+                            readonly
+                        />
+                    </InputForm>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -234,7 +306,10 @@ import CancelOrderForm from '@/components/forms/CancelOrderForm.vue';
 import ConfirmCashDeliveryPrice from '@/components/forms/ConfirmCashDeliveryPrice.vue';
 import MarkAsDelivered from '@/components/forms/MarkAsDelivered.vue';
 import PaymentForm from '@/components/forms/PaymentForm.vue';
+import RateForm from '@/components/forms/RateForm.vue';
 import { IOrder } from '@/interfaces/IOrder';
+import IProductOrder from '@/interfaces/IProductOrder';
+import { IRate } from '@/interfaces/IRate';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import CurrencyUtil from '@/utils/CurrencyUtil';
 import DateUtil from '@/utils/DateUtil';
@@ -328,6 +403,39 @@ const paymentModal = ref<{
     visible: false,
     order: null,
 });
+
+const rateModal = ref<{
+    visible: boolean;
+    data: IProductOrder | null;
+}>({
+    visible: false,
+    data: null
+});
+
+const openRate = (item: IProductOrder) => {
+    rateModal.value.data = item;
+    rateModal.value.visible = true;
+}
+
+const rateCb = () => {
+    load();
+    rateModal.value.visible = false;
+}
+
+const viewRateModal = ref<{
+    visible: boolean;
+    data: IRate | null;
+}>({
+    visible: false,
+    data: null
+});
+
+const viewRating = (value: IRate) => {
+    viewRateModal.value.data = value;
+    console.log(value);
+    
+    viewRateModal.value.visible = true;
+}
 
 const load = async () => {
     await loadService.get("customer/orders").then(() => {

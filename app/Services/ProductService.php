@@ -10,6 +10,7 @@ use App\Events\ProductLowStockCountEvent;
 use App\Events\ProductOutStockCountEvent;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Rate;
 
 class ProductService
 {
@@ -224,6 +225,7 @@ class ProductService
     {
         $product = Product::query()
             ->with(['category', 'unit', 'specifications', 'featuredImages'])
+            ->withAvg('rates', 'rate')
             ->where('available_online', true)
             ->where('is_active', true)
             ->whereNot('product_quantity', 0)
@@ -231,6 +233,8 @@ class ProductService
             ->first();
 
         abort_if(empty($product), 404, 'Product not found');
+
+        $product->grouped_rates = $this->fetchRatesGroupedByStar($product->product_id);
 
         return $product;
     }
@@ -282,5 +286,22 @@ class ProductService
         abort_if(empty($products), 404, 'Product not found or status is inactive!');
 
         return $products;
+    }
+
+    protected function fetchRatesGroupedByStar($productId)
+    {
+        $ratings = collect();
+
+        foreach (range(1, 5) as $rate) {
+            $ratings[$rate] = Rate::query()
+                ->where('product_id', $productId)
+                ->where('rate', $rate)
+                ->with(['user:user_id,full_name'])
+                ->latest()
+                ->take(5)
+                ->get();
+        }
+
+        return $ratings->sortKeysDesc();
     }
 }

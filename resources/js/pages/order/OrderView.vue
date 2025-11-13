@@ -376,6 +376,7 @@ const confirmPaymentCb = () => {
 const markPaidCb = (event: Event) => {
     editElement.value.toggle(event);
     load();
+    viewPaymentModal.visible = false;
 }
 
 onMounted(() => {

@@ -204,21 +204,21 @@
                         class="flex flex-wrap items-center justify-center px-2 max-lg:w-full lg:shrink"
                     >
                         <div>
-                            <p class="text-center text-2xl text-blue-700">
-                                4.5 out of 5
+                            <p v-if="product" class="text-center text-2xl text-blue-700">
+                                <span v-if="product.rates_avg_rate">
+                                    {{ product.rates_avg_rate }} out of 5
+                                </span>
+                                <span v-else>No Reviews</span>
                             </p>
-                            <div class="mb-3 flex gap-1 text-3xl text-blue-600">
-                                <i class="pi pi-star-fill"></i>
-                                <i class="pi pi-star-fill"></i>
-                                <i class="pi pi-star-fill"></i>
-                                <i class="pi pi-star-fill"></i>
-                                <i class="pi pi-star-half"></i>
+                            <div v-if="product.rates_avg_rate" class="mb-3 flex gap-1 text-3xl text-blue-600">
+                                <i v-for="n in 5" :class="{'pi pi-star-fill': n <= product.rates_avg_rate, 'pi pi-star': n > product.rates_avg_rate}"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Filter Buttons -->
                     <div
+                        v-if="product.rates_avg_rate"
                         class="flex grow flex-wrap items-center justify-evenly gap-2 px-2 max-lg:w-full"
                     >
                         <button
@@ -261,70 +261,23 @@
                 </div>
 
                 <!-- Reviews List -->
-                <div class="mt-4">
+                <div v-if="product.rates_avg_rate && ratings.length > 0" class="mt-4 mb-4">
                     <ul class="divide-y rounded bg-gray-50 shadow-md">
                         <!-- Review Item -->
-                        <li class="flex items-start gap-4 p-4">
-                            <img
-                                class="h-10 w-10 rounded-md"
-                                src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+                        <li v-for="(item, index) in ratings" :key="index" class="flex items-start gap-4 p-4">
+                            <Avatar
+                                shape="circle"
+                                :label="item.user.full_name.charAt(0)"
+                                class="aspect-square!"
+                                size="large"
                             />
                             <div class="flex-1">
-                                <div class="font-semibold">Dio Lupa</div>
+                                <div class="font-semibold">{{ item.user.full_name }}</div>
                                 <div class="flex gap-1 text-sm text-blue-600">
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
+                                    <i v-for="n in 5" :class="{'pi pi-star-fill': n <= item.rate, 'pi pi-star': n > item.rate}"></i>
                                 </div>
                                 <p class="mt-1 text-xs">
-                                    Sleek design, great battery life, and
-                                    performance is top-notch!
-                                </p>
-                            </div>
-                        </li>
-
-                        <li class="flex items-start gap-4 p-4">
-                            <img
-                                class="h-10 w-10 rounded-md"
-                                src="https://img.daisyui.com/images/profile/demo/4@94.webp"
-                            />
-                            <div class="flex-1">
-                                <div class="font-semibold">Ellie Beilish</div>
-                                <div class="flex gap-1 text-sm text-blue-600">
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                </div>
-                                <p class="mt-1 text-xs">
-                                    Super fast and reliable—perfect for work and
-                                    gaming. Love it!
-                                </p>
-                            </div>
-                        </li>
-
-                        <li class="flex items-start gap-4 p-4">
-                            <img
-                                class="h-10 w-10 rounded-md"
-                                src="https://img.daisyui.com/images/profile/demo/3@94.webp"
-                            />
-                            <div class="flex-1">
-                                <div class="font-semibold">
-                                    Sabrino Gardener
-                                </div>
-                                <div class="flex gap-1 text-sm text-blue-600">
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-fill"></i>
-                                    <i class="pi pi-star-half"></i>
-                                </div>
-                                <p class="mt-1 text-xs">
-                                    Best laptop I’ve owned! Lightweight,
-                                    powerful, and easy to use.
+                                    {{ item.comment }}
                                 </p>
                             </div>
                         </li>
@@ -358,6 +311,7 @@
 </template>
 <script setup lang="ts">
 import { CartFormInterface } from "@/interfaces/CartInterface";
+import { IRate } from "@/interfaces/IRate";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
@@ -383,6 +337,8 @@ const videoUrl = computed(() =>
 );
 const videoPlayer = ref(null);
 
+const ratings = ref<IRate[]>([]);
+
 const form: CartFormInterface = reactive({
     product_id: null,
     quantity: 1,
@@ -401,7 +357,17 @@ const clearErrors = () => {
 const load = async () => {
     await loadService.get(`find-product/${route.params["id"]}`).then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
+            ratings.value = [];
             product.value = loadService.request.data;
+            Object.entries(loadService.request.data.grouped_rates).forEach(
+                ([key, value]) => {
+                    value.forEach((rate: IRate) => {
+                        ratings.value.push(rate);
+                    });
+                },
+            );
+            console.log(ratings.value);
+            
         } else {
             toast.error(
                 loadService.request.message ?? "Failed to load product",

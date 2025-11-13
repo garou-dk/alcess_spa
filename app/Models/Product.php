@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -25,6 +26,10 @@ class Product extends Model
         'available_online',
     ];
 
+    protected $casts = [
+        'rates_avg_rate' => 'decimal:1',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'category_id');
@@ -43,5 +48,9 @@ class Product extends Model
     public function featuredImages()
     {
         return $this->hasMany(FeaturedImage::class, 'product_id', 'product_id');
+    }
+
+    public function rates() {
+        return $this->hasMany(Rate::class, 'product_id', 'product_id');
     }
 }
