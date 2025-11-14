@@ -1,10 +1,117 @@
 <template>
     <div>
+        <!-- Key Metrics Summary -->
+        <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <BoxShadow>
+                <div class="p-4 w-full">
+                    <div class="flex items-center justify-between">
+                        <div class="grow">
+                            <p class="text-sm text-gray-600">Total Revenue</p>
+                            <p class="text-2xl font-bold text-green-600">
+                                {{ CurrencyUtil.formatCurrency(totalRevenue) }}
+                            </p>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <i class="pi pi-arrow-up text-green-600" />
+                                <span>12.5% vs last month</span>
+                            </p>
+                        </div>
+                        <div class="rounded-full bg-green-100 p-3 shrink">
+                            <i class="pi pi-dollar text-2xl text-green-600" />
+                        </div>
+                    </div>
+                </div>
+            </BoxShadow>
+
+            <BoxShadow>
+                <div class="p-4 w-full">
+                    <div class="flex items-center justify-between">
+                        <div class="grow">
+                            <p class="text-sm text-gray-600">Total Products</p>
+                            <p class="text-2xl font-bold text-blue-600">
+                                {{ totalProducts }}
+                            </p>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <span class="text-orange-600">{{ lowStockCount }} low stock</span>
+                            </p>
+                        </div>
+                        <div class="rounded-full bg-blue-100 p-3 shrink">
+                            <i class="pi pi-box text-2xl text-blue-600" />
+                        </div>
+                    </div>
+                </div>
+            </BoxShadow>
+
+            <BoxShadow>
+                <div class="p-4 w-full">
+                    <div class="flex items-center justify-between">
+                        <div class="grow">
+                            <p class="text-sm text-gray-600">Pending Orders</p>
+                            <p class="text-2xl font-bold text-orange-600">
+                                {{ pendingOrdersCount }}
+                            </p>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <span>{{ todayOrdersCount }} today</span>
+                            </p>
+                        </div>
+                        <div class="rounded-full bg-orange-100 p-3 shrink">
+                            <i class="pi pi-shopping-cart text-2xl text-orange-600" />
+                        </div>
+                    </div>
+                </div>
+            </BoxShadow>
+
+            <BoxShadow>
+                <div class="p-4 w-full">
+                    <div class="flex items-center justify-between">
+                        <div class="grow">
+                            <p class="text-sm text-gray-600">Inventory Value</p>
+                            <p class="text-2xl font-bold text-purple-600">
+                                {{ CurrencyUtil.formatCurrency(inventoryValue) }}
+                            </p>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <span>Across {{ totalProducts }} items</span>
+                            </p>
+                        </div>
+                        <div class="rounded-full bg-purple-100 p-3 shrink">
+                            <i class="pi pi-warehouse text-2xl text-purple-600" />
+                        </div>
+                    </div>
+                </div>
+            </BoxShadow>
+        </div>
+
+        <!-- Best Selling Products -->
         <BoxShadow class="mb-5">
             <div class="w-full">
-                <h1 class="mb-1 w-full text-center text-2xl text-gray-700">
-                    Best Selling Products
-                </h1>
+                <div class="flex items-center justify-between p-3">
+                    <h1 class="text-xl font-semibold text-gray-700">
+                        Best Selling Products
+                    </h1>
+                    <div class="flex gap-2">
+                        <button
+                            @click="changePeriod('week')"
+                            :class="[
+                                'rounded px-3 py-1 text-sm',
+                                period === 'week'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-700',
+                            ]"
+                        >
+                            Week
+                        </button>
+                        <button
+                            @click="changePeriod('month')"
+                            :class="[
+                                'rounded px-3 py-1 text-sm',
+                                period === 'month'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-700',
+                            ]"
+                        >
+                            Month
+                        </button>
+                    </div>
+                </div>
                 <DataTable
                     class="w-full"
                     :value="paginate.data"
@@ -36,11 +143,20 @@
                         </template>
                     </Column>
                     <Column field="category.category_name" header="Category" />
-                    <Column field="product_quantity" header="Product Sold" />
+                    <Column field="product_quantity" header="Units Sold" />
                     <Column field="product_price" header="Price">
                         <template #body="{ data }">
                             {{
                                 CurrencyUtil.formatCurrency(data.product_price)
+                            }}
+                        </template>
+                    </Column>
+                    <Column header="Revenue">
+                        <template #body="{ data }">
+                            {{
+                                CurrencyUtil.formatCurrency(
+                                    data.product_price * data.product_quantity,
+                                )
                             }}
                         </template>
                     </Column>
@@ -50,11 +166,13 @@
                 </DataTable>
             </div>
         </BoxShadow>
+
+        <!-- Sales & Inventory Status -->
         <BoxShadow class="mb-5">
             <div class="flex w-full flex-wrap p-5">
                 <div class="flex flex-wrap max-lg:w-full lg:w-1/2">
                     <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-b lg:border-gray-500"
+                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-b lg:border-gray-300"
                     >
                         <div>
                             <p class="text-center font-semibold text-gray-700">
@@ -63,54 +181,46 @@
                             <p
                                 class="text-center text-xl font-bold text-green-600"
                             >
-                                1
+                                {{ totalOrders }}
                             </p>
-                            <!-- <p class="space-x-2 text-center">
+                            <p class="mt-1 text-center text-xs text-gray-600">
                                 <i class="pi pi-arrow-up text-green-600" />
-                                <span class="text-gray-600"
-                                    >16.52% Previous Day 333</span
-                                >
-                            </p> -->
+                                <span>8.2% from last period</span>
+                            </p>
                         </div>
                     </div>
                     <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-b lg:border-gray-500"
+                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-b lg:border-gray-300"
                     >
                         <div>
                             <p class="text-center font-semibold text-gray-700">
-                                Total Shipping Orders
+                                Shipping Orders
                             </p>
                             <p
-                                class="text-center text-xl font-bold text-green-600"
+                                class="text-center text-xl font-bold text-blue-600"
                             >
-                                1
+                                {{ shippingOrders }}
                             </p>
-                            <!-- <p class="space-x-2 text-center">
-                                <i class="pi pi-arrow-up text-green-600" />
-                                <span class="text-gray-600"
-                                    >21.77% Previous Day 441</span
-                                >
-                            </p> -->
+                            <p class="mt-1 text-center text-xs text-gray-600">
+                                <span>In transit</span>
+                            </p>
                         </div>
                     </div>
                     <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-gray-500"
+                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-gray-300"
                     >
                         <div>
                             <p class="text-center font-semibold text-gray-700">
                                 Items Ordered
                             </p>
                             <p
-                                class="text-center text-xl font-bold text-red-600"
+                                class="text-center text-xl font-bold text-purple-600"
                             >
-                                1
+                                {{ itemsOrdered }}
                             </p>
-                            <!-- <p class="space-x-2 text-center">
-                                <i class="pi pi-arrow-down text-red-600" />
-                                <span class="text-gray-600"
-                                    >1.00% Previous Day 1006</span
-                                >
-                            </p> -->
+                            <p class="mt-1 text-center text-xs text-gray-600">
+                                <span>Total units</span>
+                            </p>
                         </div>
                     </div>
                     <div
@@ -121,22 +231,19 @@
                                 Items Shipped
                             </p>
                             <p
-                                class="text-center text-xl font-bold text-red-600"
+                                class="text-center text-xl font-bold text-teal-600"
                             >
-                                1
+                                {{ itemsShipped }}
                             </p>
-                            <!-- <p class="space-x-2 text-center">
-                                <i class="pi pi-arrow-down text-red-600" />
-                                <span class="text-gray-600"
-                                    >16.21% Previous Day 802</span
-                                >
-                            </p> -->
+                            <p class="mt-1 text-center text-xs text-gray-600">
+                                <span>Delivered units</span>
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="max-lg:w-full lg:w-1/2">
                     <p class="text-center font-semibold text-gray-700">
-                        Current Sale and Order Status
+                        Sales Distribution
                     </p>
                     <div class="flex w-full justify-center p-5">
                         <VueApexCharts
@@ -149,11 +256,13 @@
                 </div>
             </div>
         </BoxShadow>
+
+        <!-- Charts Section -->
         <div class="mb-5 flex flex-wrap">
             <div class="p-2 max-lg:w-full lg:w-1/2">
                 <BoxShadow>
                     <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-600">
+                        <p class="p-3 font-semibold text-gray-700">
                             Sales Overview
                         </p>
                         <div>
@@ -171,9 +280,38 @@
             <div class="p-2 max-lg:w-full lg:w-1/2">
                 <BoxShadow>
                     <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-600">
-                            Nearly out of stock
+                        <p class="p-3 font-semibold text-gray-700">
+                            Top Categories by Revenue
                         </p>
+                        <div>
+                            <VueApexCharts
+                                type="bar"
+                                :options="categoryChartOptions"
+                                :series="categorySeries"
+                                width="100%"
+                                height="350"
+                            />
+                        </div>
+                    </div>
+                </BoxShadow>
+            </div>
+        </div>
+
+        <!-- Inventory Alerts & Recent Activity -->
+        <div class="mb-5 flex flex-wrap">
+            <div class="p-2 max-lg:w-full lg:w-1/2">
+                <BoxShadow>
+                    <div class="w-full">
+                        <div class="flex items-center justify-between p-3">
+                            <p class="font-semibold text-gray-700">
+                                Low Stock Alert
+                            </p>
+                            <span
+                                class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600"
+                            >
+                                {{ lowStockCount }} items
+                            </span>
+                        </div>
                         <DataTable
                             class="w-full"
                             :value="paginate.data"
@@ -208,31 +346,73 @@
                                 field="category.category_name"
                                 header="Category"
                             />
-                            <Column
-                                field="low_stock_threshold"
-                                header="In Stock"
-                            />
+                            <Column header="Stock Level">
+                                <template #body="{ data }">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            :class="[
+                                                'font-semibold',
+                                                data.low_stock_threshold < 10
+                                                    ? 'text-red-600'
+                                                    : 'text-orange-600',
+                                            ]"
+                                        >
+                                            {{ data.low_stock_threshold }}
+                                        </span>
+                                        <i
+                                            class="pi pi-exclamation-triangle text-orange-600"
+                                        />
+                                    </div>
+                                </template>
+                            </Column>
                             <template #empty>
-                                <p>No result found</p>
+                                <p>No low stock items</p>
                             </template>
                         </DataTable>
                     </div>
                 </BoxShadow>
             </div>
+            <div class="p-2 max-lg:w-full lg:w-1/2">
+                <BoxShadow>
+                    <div class="w-full">
+                        <p class="p-3 font-semibold text-gray-700">
+                            Inventory Movement
+                        </p>
+                        <div class="p-3">
+                            <VueApexCharts
+                                type="area"
+                                :options="inventoryChartOptions"
+                                :series="inventorySeries"
+                                width="100%"
+                                height="300"
+                            />
+                        </div>
+                    </div>
+                </BoxShadow>
+            </div>
         </div>
+
+        <!-- Pending Orders -->
         <BoxShadow class="mb-3">
             <div class="w-full">
-                <p class="p-3 font-semibold text-gray-600">Pending Orders</p>
+                <div class="flex items-center justify-between p-3">
+                    <p class="font-semibold text-gray-700">
+                        Recent Pending Orders
+                    </p>
+                    <button class="text-sm text-blue-600 hover:underline">
+                        View All
+                    </button>
+                </div>
                 <DataTable
                     class="w-full"
                     :value="users"
                     :loading="loadProductService.request.loading"
                     columnResizeMode="expand"
                 >
-                    <Column field="full_name" header="Name">
+                    <Column field="full_name" header="Customer">
                         <template #body="{ data }">
                             <div class="flex items-center">
-                                <Avatar shape="circle" icon="pi pi-camera" />
+                                <Avatar shape="circle" icon="pi pi-user" />
                                 <div class="ml-2 shrink">
                                     {{ data.full_name }}
                                 </div>
@@ -246,8 +426,29 @@
                             }}
                         </template>
                     </Column>
+                    <Column field="order_amount" header="Amount">
+                        <template #body="{ data }">
+                            {{ CurrencyUtil.formatCurrency(data.order_amount) }}
+                        </template>
+                    </Column>
+                    <Column header="Status">
+                        <template #body="{ data }">
+                            <span
+                                :class="[
+                                    'rounded-full px-2 py-1 text-xs',
+                                    data.status === 'pending'
+                                        ? 'bg-orange-100 text-orange-600'
+                                        : data.status === 'processing'
+                                          ? 'bg-blue-100 text-blue-600'
+                                          : 'bg-green-100 text-green-600',
+                                ]"
+                            >
+                                {{ data.status }}
+                            </span>
+                        </template>
+                    </Column>
                     <template #empty>
-                        <p>No result found</p>
+                        <p>No pending orders</p>
                     </template>
                 </DataTable>
             </div>
@@ -274,10 +475,33 @@ const loadProductService = useAxiosUtil<
     DataTableInterface<ProductInterface>
 >();
 const toast = useToast();
-const series = ref<number[]>([50, 50]);
+
+// Dashboard Metrics
+const totalRevenue = ref(1256789);
+const totalProducts = ref(245);
+const lowStockCount = ref(12);
+const pendingOrdersCount = ref(28);
+const todayOrdersCount = ref(8);
+const inventoryValue = ref(3456780);
+const totalOrders = ref(156);
+const shippingOrders = ref(42);
+const itemsOrdered = ref(534);
+const itemsShipped = ref(489);
+
+// Period filter
+const period = ref("week");
+
+const changePeriod = (newPeriod: string) => {
+    period.value = newPeriod;
+    // Reload data based on period
+    load();
+};
+
+// Sales Distribution Chart
+const series = ref<number[]>([65, 35]);
 const chartOptions = ref({
-    labels: ["Ordered", "POS/Sales"],
-    colors: ["#fa625e", "#03b5a9"],
+    labels: ["Online Orders", "POS/In-Store Sales"],
+    colors: ["#3B82F6", "#10B981"],
     legend: {
         position: "bottom",
     },
@@ -296,10 +520,11 @@ const chartOptions = ref({
     ],
 });
 
+// Sales Overview Chart
 const series2 = ref([
     {
         name: "Sales",
-        data: [26668, 33335, 22223, 40001, 44446, 28890, 20001],
+        data: [26668, 33335, 22223, 40001, 44446, 28890, 35420],
     },
 ]);
 const chartOptions2 = ref({
@@ -324,10 +549,10 @@ const chartOptions2 = ref({
         curve: "smooth",
         width: 3,
     },
-    colors: ["#00CED1"],
+    colors: ["#3B82F6"],
     markers: {
         size: 5,
-        colors: ["#00CED1"],
+        colors: ["#3B82F6"],
         strokeColors: "#fff",
         strokeWidth: 2,
     },
@@ -342,7 +567,10 @@ const chartOptions2 = ref({
     },
     yaxis: {
         title: {
-            text: "Sales",
+            text: "Sales (₱)",
+        },
+        labels: {
+            formatter: (val) => `₱${(val / 1000).toFixed(0)}k`,
         },
     },
     tooltip: {
@@ -352,27 +580,125 @@ const chartOptions2 = ref({
     },
 });
 
+// Category Revenue Chart
+const categorySeries = ref([
+    {
+        name: "Revenue",
+        data: [125000, 98000, 87000, 72000, 65000],
+    },
+]);
+const categoryChartOptions = ref({
+    chart: {
+        id: "category-revenue-bar",
+        toolbar: {
+            show: false,
+        },
+    },
+    plotOptions: {
+        bar: {
+            borderRadius: 8,
+            horizontal: false,
+            columnWidth: "60%",
+        },
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    xaxis: {
+        categories: ["Electronics", "Clothing", "Food", "Books", "Toys"],
+    },
+    colors: ["#8B5CF6"],
+    yaxis: {
+        title: {
+            text: "Revenue (₱)",
+        },
+        labels: {
+            formatter: (val) => `₱${(val / 1000).toFixed(0)}k`,
+        },
+    },
+    tooltip: {
+        y: {
+            formatter: (val) => `₱${val.toLocaleString("en-PH")}`,
+        },
+    },
+});
+
+// Inventory Movement Chart
+const inventorySeries = ref([
+    {
+        name: "Stock In",
+        data: [120, 95, 150, 110, 135, 125, 140],
+    },
+    {
+        name: "Stock Out",
+        data: [85, 110, 95, 125, 100, 115, 105],
+    },
+]);
+const inventoryChartOptions = ref({
+    chart: {
+        id: "inventory-movement",
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    colors: ["#10B981", "#EF4444"],
+    dataLabels: {
+        enabled: false,
+    },
+    xaxis: {
+        categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    },
+    yaxis: {
+        title: {
+            text: "Units",
+        },
+    },
+    legend: {
+        position: "top",
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.7,
+            opacityTo: 0.3,
+        },
+    },
+});
+
 const users: {
     full_name: string;
     date_ordered: string;
+    order_amount: number;
+    status: string;
 }[] = [
     {
         full_name: "Alice Johnson",
-        date_ordered: "2025-07-20",
+        date_ordered: "2025-11-14",
+        order_amount: 5240,
+        status: "pending",
     },
     {
         full_name: "Bob Smith",
-        date_ordered: "2025-07-21",
+        date_ordered: "2025-11-14",
+        order_amount: 3150,
+        status: "processing",
     },
     {
         full_name: "Charlie Davis",
-        date_ordered: "2025-07-22",
+        date_ordered: "2025-11-13",
+        order_amount: 8900,
+        status: "pending",
     },
 ];
 
 const form: ProductSearchInterface = reactive({
     search: null,
-    limit: 3,
+    limit: 5,
     page: 1,
     category_id: null,
     status: null,
