@@ -5,6 +5,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AppConfigurationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangayController;
+use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeaturedImageController;
@@ -143,6 +144,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::post('/', 'recordSale');
                     Route::get('/{id}', 'getSale');
+                });
+
+            Route::controller(BatchController::class)
+                ->prefix('batches')
+                ->group(function () {
+                    Route::post('/', 'store');
+                    Route::get('/', 'recommendedBatch');
                 });
         });
     });
