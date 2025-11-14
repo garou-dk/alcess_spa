@@ -152,6 +152,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::post('/', 'store');
                     Route::get('/', 'recommendedBatch');
                 });
+
+            Route::prefix('reports')
+                ->group(function () {
+                    Route::get('inventory', [ProductController::class, 'inventoryCount']);
+                    Route::get('customers', [UserController::class, 'customerList']);
+                });
         });
     });
 

@@ -8,7 +8,7 @@
                 @click="printReport()"
             />
         </div>
-        <div id="inventory-report">
+        <div id="inventory-report" v-if="!loadService.request.loading">
             <div
                 style="
                     display: flex;
@@ -28,7 +28,7 @@
                         INVENTORY REPORT
                     </h1>
                     <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> Carlos Mendez<br />
+                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
                         <strong>Date:</strong>
                         {{
                             DateUtil.formatToMonthDayYear(
@@ -81,72 +81,21 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Quantity Shipped
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
                             Current Quantity
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr v-for="(product, index) in products" :key="index">
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            Dell Laptop
+                            {{ product.product_name }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            LAP123
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">15</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">55</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Ergonomic Chair
+                            {{ product.sku }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            OCH456
+                            {{ product.product_quantity }}
                         </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">5</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">35</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            HP Laser Printer
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            PRI789
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">3</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">12</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Samsung Monitor
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            MON012
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">10</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">30</td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Lenovo Desktop
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            DES345
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">8</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">42</td>
                     </tr>
                 </tbody>
             </table>
@@ -155,17 +104,7 @@
             <div style="display: flex; justify-content: space-between">
                 <div style="width: 45%; text-align: center">
                     <span style="display: block; margin-top: 5px"
-                        >Henry Bennet</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
-                </div>
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Penelope Smith</span
+                        >Albert Daligdigan</span
                     >
                     <small>{{
                         DateUtil.formatToMonthDayYear(
@@ -175,11 +114,21 @@
                 </div>
             </div>
         </div>
+        <div class="flex justify-center" v-else>
+            <PageLoader />
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
+import { ProductInterface } from "@/interfaces/ProductInterface";
+import Page from "@/stores/Page";
+import useAxiosUtil from "@/utils/AxiosUtil";
 import DateUtil from "@/utils/DateUtil";
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+
+const products = ref<ProductInterface[]>([]);
 
 const printReport = () => {
     const printContents =
@@ -194,4 +143,22 @@ const printReport = () => {
         printWindow.close();
     }
 };
+
+const loadService = useAxiosUtil<null, ProductInterface[]>();
+const toast = useToast();
+
+const load = async () => {
+    await loadService.get('admin/reports/inventory').then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            products.value = loadService.request.data;
+        }
+        else {
+            toast.error(loadService.request.message ?? "Failed to load settings");
+        }
+    });
+}
+
+onMounted(() => {
+    load();
+});
 </script>

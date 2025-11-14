@@ -3,6 +3,7 @@ import {
     SearchErrorInterface,
     SearchInterface,
 } from "@/interfaces/SearchInterface";
+import { IAddress } from "./IAddress";
 
 interface UserInterface {
     user_id: number;
@@ -13,6 +14,9 @@ interface UserInterface {
     image: string | null;
     is_active: number;
     role: RoleInterface;
+    created_at: string;
+    updated_at: string;
+    address: IAddress | null;
 }
 
 interface UserSearchInterface extends SearchInterface {

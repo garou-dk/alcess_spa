@@ -146,4 +146,11 @@ class UserService
 
         return $user;
     }
+
+    public function customerList() {
+        return User::query()
+            ->with(['address.barangay.municity.province.region.islandGroup'])
+            ->where('role_id', 3)
+            ->get();
+    }
 }

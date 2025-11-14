@@ -9,7 +9,7 @@
             />
         </div>
 
-        <div id="inventory-report">
+        <div id="inventory-report" v-if="!loadService.request.loading">
             <!-- Header -->
             <div
                 style="
@@ -30,7 +30,7 @@
                         LIST OF CUSTOMER
                     </h1>
                     <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> Carlos Mendez<br />
+                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
                         <strong>Date:</strong>
                         {{
                             DateUtil.formatToMonthDayYear(
@@ -59,18 +59,6 @@
                             "
                         >
                             Date
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Invoice Number
                         </th>
                         <th
                             style="
@@ -111,38 +99,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr v-for="(person, index) in data" :key="index">
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-29
+                            {{ DateUtil.formatToMonthDayYear(person.created_at) }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-0001
+                            {{ person.full_name }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            John Doe
+                            {{
+                                person.address ? showCompleteAddress(person.address) : "N/A"
+                            }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            123 Main St, Davao City
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            0917-123-4567
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-29
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-0002
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Jane Smith
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            456 Park Ave, Tagum
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            0928-456-7890
+                            {{ person.address ? person.address.contact_number : 'N/A' }}
                         </td>
                     </tr>
                     <!-- Add more rows as needed -->
@@ -154,17 +124,7 @@
             <div style="display: flex; justify-content: space-between">
                 <div style="width: 45%; text-align: center">
                     <span style="display: block; margin-top: 5px"
-                        >Henry Bennet</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
-                </div>
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Penelope Smith</span
+                        >Albert Daligdigan</span
                     >
                     <small>{{
                         DateUtil.formatToMonthDayYear(
@@ -174,12 +134,23 @@
                 </div>
             </div>
         </div>
+        <div class="flex justify-center" v-else>
+            <PageLoader />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
+import { IAddress } from "@/interfaces/IAddress";
+import { UserInterface } from "@/interfaces/UserInterface";
+import Page from "@/stores/Page";
+import useAxiosUtil from "@/utils/AxiosUtil";
 import DateUtil from "@/utils/DateUtil";
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toastification";
+
+const data = ref<UserInterface[]>([]);
 
 const printReport = () => {
     const printContents =
@@ -201,4 +172,26 @@ const printReport = () => {
         printWindow.close();
     }
 };
+
+const loadService = useAxiosUtil<null, UserInterface[]>();
+const toast = useToast();
+
+const load = async () => {
+    await loadService.get('admin/reports/customers').then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            data.value = loadService.request.data;
+        }
+        else {
+            toast.error(loadService.request.message ?? "Failed to load settings");
+        }
+    });
+}
+
+const showCompleteAddress = (value: IAddress) => {
+    return `${value.other_details}, ${value.barangay.barangay_name}, ${value.barangay.municity.municity_name}, ${value.barangay.municity.province.province_name}, ${value.barangay.municity.province.region.region_name}, ${value.barangay.municity.province.region.island_group.island_group_name}, ${value.postal_code}`
+}
+
+onMounted(() => {
+    load();
+});
 </script>

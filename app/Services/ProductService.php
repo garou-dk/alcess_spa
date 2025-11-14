@@ -305,4 +305,10 @@ class ProductService
 
         return $ratings->sortKeysDesc();
     }
+
+    public function inventoryCount() {
+        return Product::query()
+            ->where('is_active', true)
+            ->get();
+    }
 }

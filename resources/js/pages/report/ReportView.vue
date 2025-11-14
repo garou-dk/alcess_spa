@@ -68,7 +68,7 @@
             </div>
         </BoxShadow>
 
-        <BoxShadow>
+        <!-- <BoxShadow>
             <div class="w-full p-5">
                 <h2 class="mb-4 text-xl font-bold text-gray-800">
                     Orders vs Sales (Monthly)
@@ -80,7 +80,7 @@
                     height="400"
                 />
             </div>
-        </BoxShadow>
+        </BoxShadow> -->
     </div>
 </template>
 <script setup lang="ts">

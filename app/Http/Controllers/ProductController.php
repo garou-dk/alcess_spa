@@ -115,4 +115,10 @@ class ProductController extends Controller
             ->data($this->service->searchBySku(['sku' => $id]))
             ->response();
     }
+
+    public function inventoryCount() {
+        return ApiResponse::success()
+            ->data($this->service->inventoryCount())
+            ->response();
+    }
 }

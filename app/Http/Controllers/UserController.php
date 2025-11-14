@@ -121,4 +121,10 @@ class UserController extends Controller
             ->message('Status changed successfully')
             ->response();
     }
+
+    public function customerList() {
+        return ApiResponse::success()
+            ->data($this->service->customerList())
+            ->response();
+    }
 }
