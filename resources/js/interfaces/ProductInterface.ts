@@ -52,6 +52,7 @@ interface ProductInterface {
     featured_images: FeaturedImageInterface[];
     rates_avg_rate?: number;
     grouped_rates?: IRateGroups;
+    batch_id: number | null;
 }
 
 interface AddProductFormInterface {

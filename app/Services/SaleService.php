@@ -38,6 +38,9 @@ class SaleService
                     "quantity" => $item["quantity"], 
                     "price" => $productList->where("product_id", $item["product_id"])->value("product_price")
                 ];
+                Product::query()
+                    ->where("product_id", $item["product_id"])
+                    ->decrement("product_quantity", $item["quantity"]);
             }
             $sale->saleItems()->createMany($products);
 

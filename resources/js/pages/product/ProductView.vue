@@ -148,6 +148,7 @@
                         {{ CurrencyUtil.formatCurrency(data.product_price) }}
                     </template>
                 </Column>
+                <Column field="batch_id" header="Batch ID" />
                 <Column header="Actions">
                     <template #body="{ data }">
                         <div class="flex gap-2">

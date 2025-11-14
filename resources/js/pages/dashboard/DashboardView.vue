@@ -300,77 +300,7 @@
         <!-- Inventory Alerts & Recent Activity -->
         <div class="mb-5 flex flex-wrap">
             <div class="p-2 max-lg:w-full lg:w-1/2">
-                <BoxShadow>
-                    <div class="w-full">
-                        <div class="flex items-center justify-between p-3">
-                            <p class="font-semibold text-gray-700">
-                                Low Stock Alert
-                            </p>
-                            <span
-                                class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600"
-                            >
-                                {{ lowStockCount }} items
-                            </span>
-                        </div>
-                        <DataTable
-                            class="w-full"
-                            :value="paginate.data"
-                            :loading="loadProductService.request.loading"
-                            columnResizeMode="expand"
-                        >
-                            <Column field="product_name" header="Product Name">
-                                <template #body="{ data }">
-                                    <div class="flex items-center">
-                                        <Avatar
-                                            v-if="data.product_image"
-                                            shape="circle"
-                                            :image="
-                                                UrlUtil.getBaseAppUrl(
-                                                    `storage/images/product/${data.product_image}`,
-                                                )
-                                            "
-                                            class="aspect-square!"
-                                        />
-                                        <Avatar
-                                            v-else
-                                            shape="circle"
-                                            icon="pi pi-camera"
-                                        />
-                                        <div class="ml-2 shrink">
-                                            {{ data.product_name }}
-                                        </div>
-                                    </div>
-                                </template>
-                            </Column>
-                            <Column
-                                field="category.category_name"
-                                header="Category"
-                            />
-                            <Column header="Stock Level">
-                                <template #body="{ data }">
-                                    <div class="flex items-center gap-2">
-                                        <span
-                                            :class="[
-                                                'font-semibold',
-                                                data.low_stock_threshold < 10
-                                                    ? 'text-red-600'
-                                                    : 'text-orange-600',
-                                            ]"
-                                        >
-                                            {{ data.low_stock_threshold }}
-                                        </span>
-                                        <i
-                                            class="pi pi-exclamation-triangle text-orange-600"
-                                        />
-                                    </div>
-                                </template>
-                            </Column>
-                            <template #empty>
-                                <p>No low stock items</p>
-                            </template>
-                        </DataTable>
-                    </div>
-                </BoxShadow>
+                <BatchForm />
             </div>
             <div class="p-2 max-lg:w-full lg:w-1/2">
                 <BoxShadow>
@@ -456,6 +386,7 @@
     </div>
 </template>
 <script setup lang="ts">
+import BatchForm from "@/components/forms/BatchForm.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
     ProductInterface,

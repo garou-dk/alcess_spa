@@ -16,6 +16,17 @@ class BatchService
 
         $batch->batchProducts()->createMany($data['batch_products']);
 
+        foreach ($data['batch_products'] as $value) {
+            $product = Product::query()
+                ->where('product_id', $value['product_id'])
+                ->first();
+
+            $product->product_quantity = $product->product_quantity + $value['quantity'];
+            $product->batch_id = $batch->batch_id;
+            
+            $product->save();
+        }
+
         return $batch;
     }
 
@@ -28,6 +39,7 @@ class BatchService
         return [
             'batch_id' => $batchId,
             'batch_products' => Product::query()
+                ->with(['category'])
                 ->whereColumn('product_quantity', '<=', 'low_stock_threshold')
                 ->where('is_active', true)
                 ->get()

@@ -11,5 +11,6 @@ class BatchProduct extends Model
     protected $fillable = [
         'batch_id',
         'product_id',
+        'quantity',
     ];
 }
