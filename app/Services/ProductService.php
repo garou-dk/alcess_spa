@@ -17,6 +17,7 @@ class ProductService
     public function bestSelling()
     {
         $products = Product::query()
+            ->with(['category'])
             ->where('is_active', true)
             ->where('available_online', true)
             ->whereNot('product_quantity', 0)
