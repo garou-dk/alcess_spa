@@ -1,33 +1,38 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-        <div class="container mx-auto px-4">
-            <div class="mx-auto max-w-6xl">
-                <!-- Header -->
-                <div class="mb-8 text-center">
-                    <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                        Shopping Cart
-                    </h1>
-                    <p class="text-gray-600">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-4 sm:py-8">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="mx-auto max-w-7xl">
+                <!-- Header with animated gradient -->
+                <div class="mb-6 sm:mb-8 text-center">
+                    <div class="inline-block">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 sm:mb-3">
+                            Shopping Cart
+                        </h1>
+                        <div class="h-1 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-full"></div>
+                    </div>
+                    <p class="text-gray-600 mt-3 text-sm sm:text-base">
+                        <i class="pi pi-shopping-bag mr-2"></i>
                         {{ carts.length }} {{ carts.length === 1 ? 'item' : 'items' }} in your cart
                     </p>
                 </div>
 
-                <div class="grid gap-6 lg:grid-cols-3">
+                <div class="grid gap-4 sm:gap-6 lg:grid-cols-3">
                     <!-- Cart Items -->
                     <div class="lg:col-span-2">
-                        <div class="rounded-2xl bg-white shadow-lg overflow-hidden">
-                            <!-- Select All Header -->
-                            <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <div class="rounded-2xl sm:rounded-3xl bg-white shadow-xl overflow-hidden border border-gray-100">
+                            <!-- Select All Header with gradient -->
+                            <div class="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50 px-4 sm:px-6 py-3 sm:py-4">
                                 <div class="flex items-center gap-3">
                                     <Checkbox
                                         v-model="selectAll"
                                         binary
                                         @change="toggleSelectAll"
+                                        class="scale-110"
                                     />
-                                    <span class="text-sm font-medium text-gray-700">
+                                    <span class="text-sm sm:text-base font-semibold text-gray-700">
                                         Select All
                                     </span>
-                                    <span v-if="selectedCount > 0" class="ml-auto text-sm text-gray-600">
+                                    <span v-if="selectedCount > 0" class="ml-auto text-xs sm:text-sm px-3 py-1 bg-blue-600 text-white rounded-full font-medium">
                                         {{ selectedCount }} selected
                                     </span>
                                 </div>
@@ -38,142 +43,164 @@
                                 <div
                                     v-for="(cart, index) in carts"
                                     :key="index"
-                                    class="group p-6 transition-all duration-200 hover:bg-gray-50"
-                                    :class="{ 'bg-blue-50/30': form.carts[index].checked }"
+                                    class="group p-3 sm:p-6 transition-all duration-300"
+                                    :class="{ 
+                                        'bg-gradient-to-r from-blue-50 to-indigo-50 shadow-inner': form.carts[index].checked,
+                                        'hover:bg-gray-50': !form.carts[index].checked
+                                    }"
                                 >
-                                    <div class="flex gap-4">
-                                        <!-- Checkbox -->
-                                        <div class="flex items-start pt-2">
+                                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                                        <!-- Checkbox - Mobile: Top Left -->
+                                        <div class="flex items-start sm:pt-2 absolute sm:relative">
                                             <Checkbox
                                                 v-model="form.carts[index].checked"
                                                 binary
-                                                class="transition-transform hover:scale-110"
+                                                class="transition-transform hover:scale-110 scale-110 sm:scale-100"
                                             />
                                         </div>
 
-                                        <!-- Product Image -->
-                                        <div class="flex-shrink-0">
-                                            <div
-                                                class="h-28 w-28 overflow-hidden rounded-xl border-2 border-gray-100 transition-all duration-200 group-hover:border-gray-200 group-hover:shadow-md"
-                                            >
-                                                <img
-                                                    v-if="cart.product.product_image"
-                                                    :src="
-                                                        UrlUtil.getBaseAppUrl(
-                                                            `storage/images/product/${cart.product.product_image}`,
-                                                        )
-                                                    "
-                                                    :alt="cart.product.product_name"
-                                                    class="h-full w-full object-cover"
-                                                />
+                                        <!-- Mobile Layout Container -->
+                                        <div class="flex gap-3 sm:gap-4 flex-1 pl-8 sm:pl-0">
+                                            <!-- Product Image -->
+                                            <div class="flex-shrink-0">
                                                 <div
-                                                    v-else
-                                                    class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
+                                                    class="h-20 w-20 sm:h-28 sm:w-28 overflow-hidden rounded-xl sm:rounded-2xl border-2 border-gray-100 transition-all duration-300 group-hover:border-blue-300 group-hover:shadow-lg"
+                                                    :class="{ 'border-blue-400 shadow-lg': form.carts[index].checked }"
                                                 >
-                                                    <i class="pi pi-image text-4xl text-gray-400"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Product Details -->
-                                        <div class="flex-1 min-w-0">
-                                            <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">
-                                                {{ cart.product.product_name }}
-                                            </h3>
-                                            
-                                            <div class="mb-3">
-                                                <span class="text-2xl font-bold text-blue-600">
-                                                    {{
-                                                        CurrencyUtil.formatCurrency(
-                                                            cart.product.product_price,
-                                                        )
-                                                    }}
-                                                </span>
-                                            </div>
-
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                                                    <i class="pi pi-check-circle text-xs"></i>
-                                                    {{ cart.product.product_quantity }} in stock
-                                                </span>
-                                            </div>
-
-                                            <!-- Quantity Controls -->
-                                            <div class="flex items-center gap-4">
-                                                <span class="text-sm font-medium text-gray-600">Quantity:</span>
-                                                <InputGroup class="w-[140px]">
-                                                    <Button
-                                                        type="button"
-                                                        icon="pi pi-minus"
-                                                        severity="secondary"
-                                                        size="small"
-                                                        @click="removeQuantity(index)"
-                                                        :disabled="form.carts[index].quantity <= 1"
-                                                        class="hover:bg-gray-200 transition-colors"
-                                                    />
-                                                    <InputNumber
-                                                        size="small"
-                                                        v-model="form.carts[index].quantity"
-                                                        :min="1"
-                                                        :max="cart.product.product_quantity"
-                                                        :invalid="
-                                                            form.carts[index].quantity <= 0 ||
-                                                            form.carts[index].quantity >
-                                                                cart.product.product_quantity
-                                                        "
-                                                        class="text-center font-semibold"
-                                                        :pt="{
-                                                            root: {
-                                                                class: 'p-inputnumber-custom',
-                                                            },
-                                                        }"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        icon="pi pi-plus"
-                                                        severity="secondary"
-                                                        size="small"
-                                                        @click="
-                                                            addQuantity(
-                                                                index,
-                                                                cart.product.product_quantity,
+                                                    <img
+                                                        v-if="cart.product.product_image"
+                                                        :src="
+                                                            UrlUtil.getBaseAppUrl(
+                                                                `storage/images/product/${cart.product.product_image}`,
                                                             )
                                                         "
-                                                        :disabled="form.carts[index].quantity >= cart.product.product_quantity"
-                                                        class="hover:bg-gray-200 transition-colors"
+                                                        :alt="cart.product.product_name"
+                                                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                     />
-                                                </InputGroup>
+                                                    <div
+                                                        v-else
+                                                        class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
+                                                    >
+                                                        <i class="pi pi-image text-2xl sm:text-4xl text-gray-400"></i>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <!-- Subtotal for this item -->
-                                            <div class="mt-3">
-                                                <span class="text-sm text-gray-600">Subtotal: </span>
-                                                <span class="text-lg font-bold text-gray-800">
-                                                    {{ CurrencyUtil.formatCurrency(cart.product.product_price * form.carts[index].quantity) }}
-                                                </span>
-                                            </div>
-                                        </div>
+                                            <!-- Product Details -->
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <h3 class="text-sm sm:text-lg font-bold text-gray-800 line-clamp-2 pr-2">
+                                                        {{ cart.product.product_name }}
+                                                    </h3>
+                                                    <!-- Delete Button - Mobile: Top Right -->
+                                                    <Button
+                                                        type="button"
+                                                        icon="pi pi-trash"
+                                                        severity="danger"
+                                                        text
+                                                        rounded
+                                                        size="small"
+                                                        @click="removeSingleItem(index)"
+                                                        class="hover:scale-110 transition-transform flex-shrink-0 sm:hidden"
+                                                    />
+                                                </div>
+                                                
+                                                <div class="mb-2">
+                                                    <span class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                                        {{
+                                                            CurrencyUtil.formatCurrency(
+                                                                cart.product.product_price,
+                                                            )
+                                                        }}
+                                                    </span>
+                                                </div>
 
-                                        <!-- Delete Button -->
-                                        <div class="flex items-start">
-                                            <Button
-                                                type="button"
-                                                icon="pi pi-trash"
-                                                severity="danger"
-                                                text
-                                                rounded
-                                                @click="removeSingleItem(index)"
-                                                class="hover:scale-110 transition-transform"
-                                            />
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 px-2 sm:px-3 py-1 text-xs font-semibold text-green-700 border border-green-200">
+                                                        <i class="pi pi-check-circle text-xs"></i>
+                                                        {{ cart.product.product_quantity }} in stock
+                                                    </span>
+                                                </div>
+
+                                                <!-- Quantity Controls -->
+                                                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                                                    <span class="text-xs sm:text-sm font-semibold text-gray-600">Quantity:</span>
+                                                    <InputGroup class="w-full sm:w-[140px]">
+                                                        <Button
+                                                            type="button"
+                                                            icon="pi pi-minus"
+                                                            severity="secondary"
+                                                            size="small"
+                                                            @click="removeQuantity(index)"
+                                                            :disabled="form.carts[index].quantity <= 1"
+                                                            class="hover:bg-blue-100 transition-colors"
+                                                        />
+                                                        <InputNumber
+                                                            size="small"
+                                                            v-model="form.carts[index].quantity"
+                                                            :min="1"
+                                                            :max="cart.product.product_quantity"
+                                                            :invalid="
+                                                                form.carts[index].quantity <= 0 ||
+                                                                form.carts[index].quantity >
+                                                                    cart.product.product_quantity
+                                                            "
+                                                            class="text-center font-bold"
+                                                            :pt="{
+                                                                root: {
+                                                                    class: 'p-inputnumber-custom',
+                                                                },
+                                                            }"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            icon="pi pi-plus"
+                                                            severity="secondary"
+                                                            size="small"
+                                                            @click="
+                                                                addQuantity(
+                                                                    index,
+                                                                    cart.product.product_quantity,
+                                                                )
+                                                            "
+                                                            :disabled="form.carts[index].quantity >= cart.product.product_quantity"
+                                                            class="hover:bg-blue-100 transition-colors"
+                                                        />
+                                                    </InputGroup>
+                                                </div>
+
+                                                <!-- Subtotal for this item -->
+                                                <div class="flex items-center justify-between sm:justify-start gap-2 p-2 sm:p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                                                    <span class="text-xs sm:text-sm text-gray-600 font-medium">Subtotal:</span>
+                                                    <span class="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                                        {{ CurrencyUtil.formatCurrency(cart.product.product_price * form.carts[index].quantity) }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Delete Button - Desktop -->
+                                            <div class="hidden sm:flex items-start">
+                                                <Button
+                                                    type="button"
+                                                    icon="pi pi-trash"
+                                                    severity="danger"
+                                                    text
+                                                    rounded
+                                                    @click="removeSingleItem(index)"
+                                                    class="hover:scale-110 transition-transform hover:bg-red-50"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Empty State -->
-                                <div v-if="carts.length === 0" class="py-16 text-center">
-                                    <i class="pi pi-shopping-cart text-6xl text-gray-300 mb-4"></i>
-                                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h3>
-                                    <p class="text-gray-500">Add some items to get started!</p>
+                                <div v-if="carts.length === 0" class="py-12 sm:py-16 text-center px-4">
+                                    <div class="inline-block p-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-4">
+                                        <i class="pi pi-shopping-cart text-4xl sm:text-6xl text-gray-400"></i>
+                                    </div>
+                                    <h3 class="text-lg sm:text-xl font-bold text-gray-700 mb-2">Your cart is empty</h3>
+                                    <p class="text-sm sm:text-base text-gray-500">Add some amazing items to get started!</p>
                                 </div>
                             </div>
                         </div>
@@ -181,35 +208,50 @@
 
                     <!-- Order Summary Sidebar -->
                     <div class="lg:col-span-1">
-                        <div class="sticky top-8 rounded-2xl bg-white shadow-lg p-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
-                                Order Summary
-                            </h2>
+                        <div class="sticky top-4 sm:top-8 rounded-2xl sm:rounded-3xl bg-white shadow-xl p-4 sm:p-6 border border-gray-100">
+                            <div class="flex items-center gap-2 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-200">
+                                <i class="pi pi-wallet text-xl sm:text-2xl text-blue-600"></i>
+                                <h2 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                    Order Summary
+                                </h2>
+                            </div>
 
-                            <div class="space-y-4 mb-6">
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Items ({{ selectedCount }}):</span>
-                                    <span class="font-semibold">{{ subTotal() }}</span>
+                            <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                                <div class="flex justify-between items-center text-sm sm:text-base text-gray-600 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <span class="flex items-center gap-2">
+                                        <i class="pi pi-shopping-bag text-blue-600"></i>
+                                        Items ({{ selectedCount }})
+                                    </span>
+                                    <span class="font-bold text-gray-800">{{ subTotal() }}</span>
                                 </div>
                                 
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Shipping:</span>
-                                    <span class="font-semibold text-green-600">To be calculated</span>
+                                <div class="flex justify-between items-center text-sm sm:text-base text-gray-600 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <span class="flex items-center gap-2">
+                                        <i class="pi pi-truck text-blue-600"></i>
+                                        Shipping
+                                    </span>
+                                    <span class="font-bold text-green-600 flex items-center gap-1">
+                                        <i class="pi pi-check-circle text-xs"></i>
+                                        FREE
+                                    </span>
                                 </div>
 
-                                <div class="border-t pt-4 flex justify-between text-xl font-bold text-gray-800">
-                                    <span>Total:</span>
-                                    <span class="text-blue-600">{{ subTotal() }}</span>
+                                <div class="border-t-2 border-dashed border-gray-300 pt-3 sm:pt-4 flex justify-between items-center text-lg sm:text-xl">
+                                    <span class="font-bold text-gray-700">Total:</span>
+                                    <span class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                        {{ subTotal() }}
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="space-y-3">
+                            <div class="space-y-2 sm:space-y-3">
                                 <Button
                                     :disabled="selectedCount === 0"
                                     type="button"
                                     label="Proceed to Checkout"
-                                    icon="pi pi-shopping-cart"
-                                    class="w-full bg-blue-600 hover:bg-blue-700 border-blue-600 text-white font-semibold py-3 transition-all duration-200 hover:shadow-lg disabled:opacity-50"
+                                    icon="pi pi-arrow-right"
+                                    iconPos="right"
+                                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 text-white font-bold py-3 sm:py-4 text-sm sm:text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
                                     @click="checkoutItems()"
                                 />
                                 
@@ -220,16 +262,20 @@
                                     icon="pi pi-trash"
                                     severity="danger"
                                     outlined
-                                    class="w-full font-semibold py-3 transition-all duration-200 hover:shadow-md"
+                                    class="w-full font-semibold py-2 sm:py-3 text-sm sm:text-base transition-all duration-300 hover:shadow-md hover:scale-[1.02] disabled:hover:scale-100"
                                     @click="removeSelected()"
                                 />
                             </div>
 
-                            <!-- Security Badge -->
-                            <div class="mt-6 pt-6 border-t">
-                                <div class="flex items-center gap-2 text-sm text-gray-600">
-                                    <i class="pi pi-shield text-green-600"></i>
-                                    <span>Secure checkout guaranteed</span>
+                            <!-- Security Badges -->
+                            <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200 space-y-2">
+                                <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 p-2 bg-green-50 rounded-lg border border-green-200">
+                                    <i class="pi pi-shield text-green-600 text-base sm:text-lg"></i>
+                                    <span class="font-medium">Secure checkout guaranteed</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                                    <i class="pi pi-replay text-blue-600 text-base sm:text-lg"></i>
+                                    <span class="font-medium">30-day return policy</span>
                                 </div>
                             </div>
                         </div>
@@ -238,13 +284,13 @@
             </div>
         </div>
 
-        <!-- Checkout Dialog -->
+        <!-- Checkout Dialog - Responsive -->
         <Dialog
             v-model:visible="showCheckout"
             modal
             header="Checkout"
-            :style="{ width: '75vw' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :style="{ width: '95vw', maxWidth: '1200px' }"
+            :breakpoints="{ '1199px': '90vw', '575px': '95vw' }"
         >
             <CheckoutForm
                 v-if="selectedItems.length > 0"
@@ -392,3 +438,25 @@ onMounted(() => {
     load();
 });
 </script>
+
+<style scoped>
+/* Custom scrollbar for better mobile experience */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #2563eb, #4f46e5);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #1d4ed8, #4338ca);
+}
+</style>
