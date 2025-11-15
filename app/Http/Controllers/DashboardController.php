@@ -27,4 +27,10 @@ class DashboardController extends Controller
             ->data($this->service->getPendingOrdersReport())
             ->response();
     }
+
+    public function getTotalInventoryValue() {
+        return ApiResponse::success()
+            ->data($this->service->getTotalInventoryValue())
+            ->response();
+    }
 }

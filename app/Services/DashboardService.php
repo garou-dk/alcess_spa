@@ -88,4 +88,18 @@ class DashboardService
             'today_pending' => $todayPending,
         ];
     }
+
+    public function getTotalInventoryValue(): array
+    {
+        $totalValue = Product::where('is_active', true)
+            ->selectRaw('SUM(product_price * product_quantity) as total_inventory_value')
+            ->value('total_inventory_value') ?? 0;
+        
+        $totalProducts = Product::where('is_active', true)->count();
+        
+        return [
+            'total_inventory_value' => $totalValue,
+            'total_products' => $totalProducts,
+        ];
+    }
 }

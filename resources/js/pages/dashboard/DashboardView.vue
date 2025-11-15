@@ -7,24 +7,7 @@
 
             <OrderPending />
 
-            <BoxShadow>
-                <div class="p-4 w-full">
-                    <div class="flex items-center justify-between">
-                        <div class="grow">
-                            <p class="text-sm text-gray-600">Inventory Value</p>
-                            <p class="text-2xl font-bold text-purple-600">
-                                {{ CurrencyUtil.formatCurrency(inventoryValue) }}
-                            </p>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <span>Across {{ totalProducts }} items</span>
-                            </p>
-                        </div>
-                        <div class="rounded-full bg-purple-100 p-3 shrink">
-                            <i class="pi pi-warehouse text-2xl text-purple-600" />
-                        </div>
-                    </div>
-                </div>
-            </BoxShadow>
+            <InventoryValue />
         </div>
 
         <!-- Best Selling Products -->
@@ -334,6 +317,7 @@
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
+import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
