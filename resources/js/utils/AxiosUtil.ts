@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 axios.defaults.baseURL = import.meta.env.APP_URL;
-axios.defaults.timeout = 60000;
+axios.defaults.timeout = 0;
 
 export default function useAxiosUtil<Input, Output>() {
     const request: RequestInterface<Output> = reactive({
@@ -105,7 +105,6 @@ export default function useAxiosUtil<Input, Output>() {
                 "Content-Type": "application/json",
                 Accept: "application/json",
             },
-            signal: AbortSignal.timeout(10000),
         })
             .then((response) => {
                 setResult(response);
