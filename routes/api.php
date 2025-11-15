@@ -177,6 +177,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('pending', 'getPendingOrders');
                     Route::get('sales-report', 'getRevenueReport');
                 });
+
+            Route::controller(RateController::class)
+                ->prefix('rates')
+                ->group(function () {
+                    Route::get('/', 'fetchRateWithoutComment');
+                    Route::patch('/{id}', 'addReply');
+                });
         });
     });
 

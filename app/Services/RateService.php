@@ -33,4 +33,30 @@ class RateService
 
         return $rate;
     }
+
+    public function addReply(array $data) {
+        $rate = Rate::query()
+            ->where('rate_id', $data['rate_id'])
+            ->first();
+
+        abort_if(empty($rate), 404, 'Rate not found.');
+
+        abort_unless(empty($rate->reply), 422, 'This rate already has a reply.');
+
+        $rate->reply = $data['reply'];
+
+        $rate->save();
+
+        return $rate;
+    }
+
+    public function fetchCommentsWithoutReply() {
+        $rate = Rate::query()
+            ->whereNull('reply')
+            ->with(['user:user_id,full_name', 'product'])
+            ->oldest()
+            ->get();
+
+        return $rate;
+    }
 }

@@ -57,6 +57,11 @@
             icon="pi pi-chart-bar"
             label="Reports"
         />
+        <SideBarButton
+            to="admin.rate.index"
+            icon="pi pi-star"
+            label="Ratings"
+        />
     </div>
 </template>
 <script setup lang="ts">

@@ -4,7 +4,7 @@ import { RouteRecordRaw } from "vue-router";
 
 const route: RouteRecordRaw = {
     path: "category",
-    name: "category",
+    name: "category.product-category-index",
     redirect: { name: "home" },
     children: [
         {
