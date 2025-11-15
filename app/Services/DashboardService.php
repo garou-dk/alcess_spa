@@ -340,4 +340,14 @@ class DashboardService
         
         return $result;
     }
+
+    public function getPendingOrders()
+    {
+        $pendingOrders = Order::with('user')
+            ->where('status', 'Pending')
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        return $pendingOrders;
+    }
 }

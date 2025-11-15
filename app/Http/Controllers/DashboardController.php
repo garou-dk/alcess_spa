@@ -63,4 +63,10 @@ class DashboardController extends Controller
             ->data($this->service->getStockInOutReport())
             ->response();
     }
+
+    public function getPendingOrders() {
+        return ApiResponse::success()
+            ->data($this->service->getPendingOrders())
+            ->response();
+    }
 }

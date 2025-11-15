@@ -31,67 +31,7 @@
             </div>
         </div>
 
-        <!-- Pending Orders -->
-        <BoxShadow class="mb-3">
-            <div class="w-full">
-                <div class="flex items-center justify-between p-3">
-                    <p class="font-semibold text-gray-700">
-                        Recent Pending Orders
-                    </p>
-                    <button class="text-sm text-blue-600 hover:underline">
-                        View All
-                    </button>
-                </div>
-                <DataTable
-                    class="w-full"
-                    :value="users"
-                    :loading="loadProductService.request.loading"
-                    columnResizeMode="expand"
-                >
-                    <Column field="full_name" header="Customer">
-                        <template #body="{ data }">
-                            <div class="flex items-center">
-                                <Avatar shape="circle" icon="pi pi-user" />
-                                <div class="ml-2 shrink">
-                                    {{ data.full_name }}
-                                </div>
-                            </div>
-                        </template>
-                    </Column>
-                    <Column field="date_ordered" header="Date Ordered">
-                        <template #body="{ data }">
-                            {{
-                                DateUtil.formatToMonthDayYear(data.date_ordered)
-                            }}
-                        </template>
-                    </Column>
-                    <Column field="order_amount" header="Amount">
-                        <template #body="{ data }">
-                            {{ CurrencyUtil.formatCurrency(data.order_amount) }}
-                        </template>
-                    </Column>
-                    <Column header="Status">
-                        <template #body="{ data }">
-                            <span
-                                :class="[
-                                    'rounded-full px-2 py-1 text-xs',
-                                    data.status === 'pending'
-                                        ? 'bg-orange-100 text-orange-600'
-                                        : data.status === 'processing'
-                                          ? 'bg-blue-100 text-blue-600'
-                                          : 'bg-green-100 text-green-600',
-                                ]"
-                            >
-                                {{ data.status }}
-                            </span>
-                        </template>
-                    </Column>
-                    <template #empty>
-                        <p>No pending orders</p>
-                    </template>
-                </DataTable>
-            </div>
-        </BoxShadow>
+        <PendingReport />
     </div>
 </template>
 <script setup lang="ts">
@@ -99,6 +39,7 @@ import BatchForm from "@/components/forms/BatchForm.vue";
 import CategorySales from "@/components/reports/CategorySales.vue";
 import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
+import PendingReport from "@/components/reports/PendingReport.vue";
 import PieGraphReport from "@/components/reports/PieGraphReport.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
 import SalesPrevious7Days from "@/components/reports/SalesPrevious7Days.vue";
