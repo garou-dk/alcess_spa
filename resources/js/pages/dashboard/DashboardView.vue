@@ -14,22 +14,7 @@
         <!-- Charts Section -->
         <div class="mb-5 flex flex-wrap">
             <div class="p-2 max-lg:w-full lg:w-1/2">
-                <BoxShadow>
-                    <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-700">
-                            Sales Overview
-                        </p>
-                        <div>
-                            <VueApexCharts
-                                type="line"
-                                :options="chartOptions2"
-                                :series="series2"
-                                width="100%"
-                                height="350"
-                            />
-                        </div>
-                    </div>
-                </BoxShadow>
+                <SalesPrevious7Days />
             </div>
             <div class="p-2 max-lg:w-full lg:w-1/2">
                 <BoxShadow>
@@ -145,6 +130,7 @@ import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
 import PieGraphReport from "@/components/reports/PieGraphReport.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
+import SalesPrevious7Days from "@/components/reports/SalesPrevious7Days.vue";
 import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";

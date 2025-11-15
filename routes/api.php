@@ -169,6 +169,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('inventory-value', 'getTotalInventoryValue');
                     Route::get('top-sellers', 'getTop5MostSoldItems');
                     Route::get('monthly-report', 'getCurrentMonthReport');
+                    Route::get('7-day-sales', 'getPrevious7DaysSales');
                 });
         });
     });

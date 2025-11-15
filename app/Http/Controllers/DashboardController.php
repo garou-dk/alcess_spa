@@ -45,4 +45,10 @@ class DashboardController extends Controller
             ->data($this->service->getCurrentMonthReport())
             ->response();
     }
+
+    public function getPrevious7DaysSales()  {
+        return ApiResponse::success()
+            ->data($this->service->getPrevious7DaysSales())
+            ->response();
+    }
 }

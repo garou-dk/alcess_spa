@@ -201,4 +201,48 @@ class DashboardService
             'total_revenue' => round($productOrdersRevenue + $saleItemsRevenue, 2),
         ];
     }
+
+    public function getPrevious7DaysSales(): array
+    {
+        $endDate = Carbon::now()->endOfDay();
+        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        
+        // Get daily revenue from orders (with date_paid_confirmed)
+        $ordersSales = Order::whereNotNull('date_paid_confirmed')
+            ->whereBetween('date_paid_confirmed', [$startDate, $endDate])
+            ->selectRaw('DATE(date_paid_confirmed) as date, SUM(total_amount) as revenue')
+            ->groupBy('date')
+            ->pluck('revenue', 'date');
+        
+        // Get daily revenue from sale_items
+        $saleItemsSales = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->whereBetween('sales.created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(sales.created_at) as date, SUM(sale_items.price * sale_items.quantity) as revenue')
+            ->groupBy('date')
+            ->pluck('revenue', 'date');
+        
+        // Generate array for all 7 days
+        $result = [];
+        $currentDate = $startDate->copy();
+        
+        for ($i = 0; $i < 7; $i++) {
+            $dateKey = $currentDate->format('Y-m-d');
+            
+            $ordersRevenue = $ordersSales->get($dateKey, 0);
+            $saleItemsRevenue = $saleItemsSales->get($dateKey, 0);
+            $totalRevenue = $ordersRevenue + $saleItemsRevenue;
+            
+            $result[] = [
+                'date' => $dateKey,
+                'day' => $currentDate->format('l'),
+                'orders_revenue' => round($ordersRevenue, 2),
+                'sale_items_revenue' => round($saleItemsRevenue, 2),
+                'total_revenue' => round($totalRevenue, 2),
+            ];
+            
+            $currentDate->addDay();
+        }
+        
+        return array_reverse($result);
+    }
 }
