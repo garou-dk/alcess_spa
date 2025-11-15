@@ -2,25 +2,7 @@
     <div>
         <!-- Key Metrics Summary -->
         <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <BoxShadow>
-                <div class="p-4 w-full">
-                    <div class="flex items-center justify-between">
-                        <div class="grow">
-                            <p class="text-sm text-gray-600">Total Revenue</p>
-                            <p class="text-2xl font-bold text-green-600">
-                                {{ CurrencyUtil.formatCurrency(totalRevenue) }}
-                            </p>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <i class="pi pi-arrow-up text-green-600" />
-                                <span>12.5% vs last month</span>
-                            </p>
-                        </div>
-                        <div class="rounded-full bg-green-100 p-3 shrink">
-                            <i class="pi pi-dollar text-2xl text-green-600" />
-                        </div>
-                    </div>
-                </div>
-            </BoxShadow>
+            <TotalRevenueReport />
 
             <BoxShadow>
                 <div class="p-4 w-full">
@@ -387,6 +369,7 @@
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
+import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {
     ProductInterface,
@@ -408,7 +391,6 @@ const loadProductService = useAxiosUtil<
 const toast = useToast();
 
 // Dashboard Metrics
-const totalRevenue = ref(1256789);
 const totalProducts = ref(245);
 const lowStockCount = ref(12);
 const pendingOrdersCount = ref(28);

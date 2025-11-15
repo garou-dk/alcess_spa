@@ -8,6 +8,7 @@ use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeaturedImageController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\IslandGroupController;
@@ -157,6 +158,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('inventory', [ProductController::class, 'inventoryCount']);
                     Route::get('customers', [UserController::class, 'customerList']);
+                });
+
+            Route::controller(DashboardController::class)
+                ->prefix('dashboard')
+                ->group(function () {
+                    Route::get('monthly-revenue', 'getMonthlyRevenue');
                 });
         });
     });
