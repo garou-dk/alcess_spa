@@ -33,4 +33,10 @@ class DashboardController extends Controller
             ->data($this->service->getTotalInventoryValue())
             ->response();
     }
+
+    public function getTop5MostSoldItems() {
+        return ApiResponse::success()
+            ->data($this->service->getTop5MostSoldItems())
+            ->response();
+    }
 }

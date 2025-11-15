@@ -2,100 +2,13 @@
     <div>
         <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <TotalRevenueReport />
-
             <ProductStats />
-
             <OrderPending />
-
             <InventoryValue />
         </div>
 
         <!-- Best Selling Products -->
-        <BoxShadow class="mb-5">
-            <div class="w-full">
-                <div class="flex items-center justify-between p-3">
-                    <h1 class="text-xl font-semibold text-gray-700">
-                        Best Selling Products
-                    </h1>
-                    <div class="flex gap-2">
-                        <button
-                            @click="changePeriod('week')"
-                            :class="[
-                                'rounded px-3 py-1 text-sm',
-                                period === 'week'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 text-gray-700',
-                            ]"
-                        >
-                            Week
-                        </button>
-                        <button
-                            @click="changePeriod('month')"
-                            :class="[
-                                'rounded px-3 py-1 text-sm',
-                                period === 'month'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 text-gray-700',
-                            ]"
-                        >
-                            Month
-                        </button>
-                    </div>
-                </div>
-                <DataTable
-                    class="w-full"
-                    :value="paginate.data"
-                    :loading="loadProductService.request.loading"
-                    columnResizeMode="expand"
-                >
-                    <Column field="product_name" header="Product Name">
-                        <template #body="{ data }">
-                            <div class="flex items-center">
-                                <Avatar
-                                    v-if="data.product_image"
-                                    shape="circle"
-                                    :image="
-                                        UrlUtil.getBaseAppUrl(
-                                            `storage/images/product/${data.product_image}`,
-                                        )
-                                    "
-                                    class="aspect-square!"
-                                />
-                                <Avatar
-                                    v-else
-                                    shape="circle"
-                                    icon="pi pi-camera"
-                                />
-                                <div class="ml-2 shrink">
-                                    {{ data.product_name }}
-                                </div>
-                            </div>
-                        </template>
-                    </Column>
-                    <Column field="category.category_name" header="Category" />
-                    <Column field="product_quantity" header="Units Sold" />
-                    <Column field="product_price" header="Price">
-                        <template #body="{ data }">
-                            {{
-                                CurrencyUtil.formatCurrency(data.product_price)
-                            }}
-                        </template>
-                    </Column>
-                    <Column header="Revenue">
-                        <template #body="{ data }">
-                            {{
-                                CurrencyUtil.formatCurrency(
-                                    data.product_price * data.product_quantity,
-                                )
-                            }}
-                        </template>
-                    </Column>
-                    <template #empty>
-                        <p>No result found</p>
-                    </template>
-                </DataTable>
-            </div>
-        </BoxShadow>
+        <TopSoldProducts />
 
         <!-- Sales & Inventory Status -->
         <BoxShadow class="mb-5">
@@ -320,6 +233,7 @@ import BatchForm from "@/components/forms/BatchForm.vue";
 import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
+import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {

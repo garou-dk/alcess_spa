@@ -167,6 +167,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('product-stats', 'getProductStats');
                     Route::get('pending-orders', 'getPendingOrdersReport');
                     Route::get('inventory-value', 'getTotalInventoryValue');
+                    Route::get('top-sellers', 'getTop5MostSoldItems');
                 });
         });
     });

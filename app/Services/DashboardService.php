@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductOrder;
 use App\Models\SaleItem;
 use Carbon\Carbon;
 
@@ -118,5 +119,59 @@ class DashboardService
             'total_inventory_value' => $totalValue,
             'total_products' => $totalProducts,
         ];
+    }
+
+    public function getTop5MostSoldItems(): array
+    {
+        // Get quantities from product_orders (only confirmed paid orders)
+        $orderQuantities = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+            ->whereNotNull('orders.date_paid_confirmed')
+            ->selectRaw('product_orders.product_id, SUM(product_orders.quantity) as total_quantity')
+            ->groupBy('product_orders.product_id')
+            ->pluck('total_quantity', 'product_id');
+        
+        // Get quantities from sale_items
+        $saleQuantities = SaleItem::selectRaw('product_id, SUM(quantity) as total_quantity')
+            ->groupBy('product_id')
+            ->pluck('total_quantity', 'product_id');
+        
+        // Combine both sources
+        $combinedQuantities = [];
+        
+        foreach ($orderQuantities as $productId => $quantity) {
+            $combinedQuantities[$productId] = ($combinedQuantities[$productId] ?? 0) + $quantity;
+        }
+        
+        foreach ($saleQuantities as $productId => $quantity) {
+            $combinedQuantities[$productId] = ($combinedQuantities[$productId] ?? 0) + $quantity;
+        }
+        
+        // Sort by quantity descending and get top 5
+        arsort($combinedQuantities);
+        $top5ProductIds = array_slice(array_keys($combinedQuantities), 0, 5, true);
+        
+        // Get product details with unit and category relationships
+        $products = Product::with(['unit', 'category'])
+            ->whereIn('product_id', $top5ProductIds)
+            ->get()
+            ->keyBy('product_id');
+        
+        // Build result array
+        $result = [];
+        foreach ($top5ProductIds as $productId) {
+            $product = $products->get($productId);
+            if ($product) {
+                $result[] = [
+                    'product_id' => $productId,
+                    'product_name' => $product->product_name,
+                    'product_image' => $product->product_image,
+                    'units_sold' => $combinedQuantities[$productId],
+                    'unit' => $product->unit,
+                    'category' => $product->category,
+                ];
+            }
+        }
+        
+        return $result;
     }
 }
