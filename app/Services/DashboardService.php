@@ -74,4 +74,18 @@ class DashboardService
                 : 0
         ];
     }
+
+    public function getPendingOrdersReport(): array
+    {
+        $totalPending = Order::where('status', 'Pending')->count();
+        
+        $todayPending = Order::where('status', 'Pending')
+            ->whereDate('created_at', today())
+            ->count();
+        
+        return [
+            'total_pending' => $totalPending,
+            'today_pending' => $todayPending,
+        ];
+    }
 }

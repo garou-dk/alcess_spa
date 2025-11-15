@@ -5,24 +5,7 @@
 
             <ProductStats />
 
-            <BoxShadow>
-                <div class="p-4 w-full">
-                    <div class="flex items-center justify-between">
-                        <div class="grow">
-                            <p class="text-sm text-gray-600">Pending Orders</p>
-                            <p class="text-2xl font-bold text-orange-600">
-                                {{ pendingOrdersCount }}
-                            </p>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <span>{{ todayOrdersCount }} today</span>
-                            </p>
-                        </div>
-                        <div class="rounded-full bg-orange-100 p-3 shrink">
-                            <i class="pi pi-shopping-cart text-2xl text-orange-600" />
-                        </div>
-                    </div>
-                </div>
-            </BoxShadow>
+            <OrderPending />
 
             <BoxShadow>
                 <div class="p-4 w-full">
@@ -351,6 +334,7 @@
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
+import OrderPending from "@/components/reports/OrderPending.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";

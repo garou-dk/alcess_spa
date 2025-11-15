@@ -165,6 +165,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('monthly-revenue', 'getMonthlyRevenue');
                     Route::get('product-stats', 'getProductStats');
+                    Route::get('pending-orders', 'getPendingOrdersReport');
                 });
         });
     });
