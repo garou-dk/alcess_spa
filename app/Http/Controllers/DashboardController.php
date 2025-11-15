@@ -51,4 +51,10 @@ class DashboardController extends Controller
             ->data($this->service->getPrevious7DaysSales())
             ->response();
     }
+
+    public function getRevenueByCategories() {
+        return ApiResponse::success()
+            ->data($this->service->getRevenueByCategories())
+            ->response();
+    }
 }

@@ -207,21 +207,18 @@ class DashboardService
         $endDate = Carbon::now()->endOfDay();
         $startDate = Carbon::now()->subDays(6)->startOfDay();
         
-        // Get daily revenue from orders (with date_paid_confirmed)
         $ordersSales = Order::whereNotNull('date_paid_confirmed')
             ->whereBetween('date_paid_confirmed', [$startDate, $endDate])
             ->selectRaw('DATE(date_paid_confirmed) as date, SUM(total_amount) as revenue')
             ->groupBy('date')
             ->pluck('revenue', 'date');
         
-        // Get daily revenue from sale_items
         $saleItemsSales = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
             ->whereBetween('sales.created_at', [$startDate, $endDate])
             ->selectRaw('DATE(sales.created_at) as date, SUM(sale_items.price * sale_items.quantity) as revenue')
             ->groupBy('date')
             ->pluck('revenue', 'date');
         
-        // Generate array for all 7 days
         $result = [];
         $currentDate = $startDate->copy();
         
@@ -244,5 +241,58 @@ class DashboardService
         }
         
         return array_reverse($result);
+    }
+
+    public function getRevenueByCategories(): array
+    {
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        
+        $orderRevenue = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+            ->join('products', 'product_orders.product_id', '=', 'products.product_id')
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->whereNotNull('orders.date_paid_confirmed')
+            ->whereBetween('orders.date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
+            ->selectRaw('categories.category_id, categories.category_name, SUM(product_orders.price * product_orders.quantity) as revenue')
+            ->groupBy('categories.category_id', 'categories.category_name')
+            ->get()
+            ->keyBy('category_id');
+        
+        $saleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->join('products', 'sale_items.product_id', '=', 'products.product_id')
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
+            ->selectRaw('categories.category_id, categories.category_name, SUM(sale_items.price * sale_items.quantity) as revenue')
+            ->groupBy('categories.category_id', 'categories.category_name')
+            ->get()
+            ->keyBy('category_id');
+        
+        $allCategoryIds = $orderRevenue->keys()->merge($saleRevenue->keys())->unique();
+        
+        $result = [];
+        foreach ($allCategoryIds as $categoryId) {
+            $orderRev = $orderRevenue->get($categoryId);
+            $saleRev = $saleRevenue->get($categoryId);
+            
+            $orderRevenueAmount = $orderRev ? $orderRev->revenue : 0;
+            $saleRevenueAmount = $saleRev ? $saleRev->revenue : 0;
+            $totalRevenue = $orderRevenueAmount + $saleRevenueAmount;
+            
+            $categoryName = $orderRev ? $orderRev->category_name : $saleRev->category_name;
+            
+            $result[] = [
+                'category_id' => $categoryId,
+                'category_name' => $categoryName,
+                'orders_revenue' => round($orderRevenueAmount, 2),
+                'sales_revenue' => round($saleRevenueAmount, 2),
+                'total_revenue' => round($totalRevenue, 2),
+            ];
+        }
+        
+        usort($result, function($a, $b) {
+            return $b['total_revenue'] <=> $a['total_revenue'];
+        });
+        
+        return $result;
     }
 }

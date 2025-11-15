@@ -17,22 +17,7 @@
                 <SalesPrevious7Days />
             </div>
             <div class="p-2 max-lg:w-full lg:w-1/2">
-                <BoxShadow>
-                    <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-700">
-                            Top Categories by Revenue
-                        </p>
-                        <div>
-                            <VueApexCharts
-                                type="bar"
-                                :options="categoryChartOptions"
-                                :series="categorySeries"
-                                width="100%"
-                                height="350"
-                            />
-                        </div>
-                    </div>
-                </BoxShadow>
+                <CategorySales />
             </div>
         </div>
 
@@ -126,6 +111,7 @@
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
+import CategorySales from "@/components/reports/CategorySales.vue";
 import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
 import PieGraphReport from "@/components/reports/PieGraphReport.vue";
