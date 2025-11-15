@@ -1,9 +1,10 @@
 <template>
     <form
-        class="rounded border border-gray-500 p-2"
+        class="rounded-lg border-2 p-4 transition-all duration-200"
+        :class="props.isSelected ? 'border-blue-400 bg-blue-50 shadow-md' : 'border-gray-300 bg-white hover:border-gray-400'"
         @submit.prevent="handleSubmit()"
     >
-        <div class="flex flex-wrap">
+        <div class="flex flex-wrap items-start">
             <div class="p-2 max-lg:w-full lg:grow">
                 <InputForm
                     :errors="errors.specification_name"
@@ -19,6 +20,7 @@
                         fluid
                         :invalid="errors.specification_name.length > 0"
                         :disabled="!props.isSelected"
+                        class="transition-all duration-200"
                     />
                 </InputForm>
             </div>
@@ -37,6 +39,7 @@
                         fluid
                         :invalid="errors.specification_value.length > 0"
                         :disabled="!props.isSelected"
+                        class="transition-all duration-200"
                     />
                 </InputForm>
             </div>
@@ -48,6 +51,8 @@
                         type="submit"
                         icon="pi pi-save"
                         :loading="submitService.request.loading"
+                        class="h-10 w-10 flex items-center justify-center"
+                        severity="success"
                     />
                 </div>
                 <div v-else class="flex items-end">
@@ -61,8 +66,15 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Selected Indicator -->
+        <div v-if="props.isSelected" class="mt-2 flex items-center gap-2 text-sm text-blue-700">
+            <i class="pi pi-pencil"></i>
+            <span class="font-medium">Editing mode - Make changes and click save</span>
+        </div>
     </form>
 </template>
+
 <script setup lang="ts">
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import {
