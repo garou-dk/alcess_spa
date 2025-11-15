@@ -8,6 +8,7 @@ use App\Http\Requests\ProductImageRequest;
 use App\Http\Requests\ProductRequest;
 use App\Http\Requests\SearchProductRequest;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -125,6 +126,16 @@ class ProductController extends Controller
     public function getProductByCategory(string $id) {
         return ApiResponse::success()
             ->data($this->service->getProductByCategory(['category'=> $id]))
+            ->response();
+    }
+
+    public function searchProductName(Request $request) {
+        $data = $request->validate([
+            'search' => ['required', 'string', 'max:255']
+        ]);
+
+        return ApiResponse::success()
+            ->data($this->service->searchProductName($data))
             ->response();
     }
 }

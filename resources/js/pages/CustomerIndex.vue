@@ -23,27 +23,20 @@
                             </div>
                         </RouterLink>
                     </template>
-                    <template #center>
-                        <div class="w-[500px] max-lg:hidden">
-                            <form>
-                                <InputGroup>
-                                    <InputGroupAddon>
-                                        <i class="pi pi-search" />
-                                    </InputGroupAddon>
-                                    <InputText
-                                        v-model="form.search"
-                                        :invalid="errors.search.length > 0"
-                                        placeholder="Search product"
-                                        fluid
-                                        name="search"
-                                        autocomplete="off"
-                                    />
-                                </InputGroup>
-                            </form>
-                        </div>
-                    </template>
                     <template #end>
                         <div v-if="Page.user" class="flex gap-5">
+                            <div class="flex items-center">
+                                <RouterLink
+                                    :to="{ name: 'customer.search-product' }"
+                                >
+                                    <Button
+                                        type="button"
+                                        icon="pi pi-search"
+                                        severity="secondary"
+                                        rounded
+                                    />
+                                </RouterLink>
+                            </div>
                             <div class="flex items-center">
                                 <CartButton />
                             </div>

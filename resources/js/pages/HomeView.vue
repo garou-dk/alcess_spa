@@ -24,30 +24,21 @@
                             </div>
                         </RouterLink>
                     </template>
-                    <template #center>
-                        <div class="w-[500px] max-lg:hidden">
-                            <form>
-                                <InputGroup>
-                                    <InputGroupAddon>
-                                        <i class="pi pi-search" />
-                                    </InputGroupAddon>
-                                    <InputText
-                                        type="text"
-                                        v-model="form.search"
-                                        :invalid="errors.search.length > 0"
-                                        placeholder="Search product"
-                                        fluid
-                                        id="search"
-                                        name="search"
-                                        autocomplete="off"
-                                    />
-                                </InputGroup>
-                            </form>
-                        </div>
-                    </template>
                     <template #end>
-                        <div class="flex">
-                            <div v-if="!Page.user" class="px-2">
+                        <div class="flex gap-2">
+                            <div class="px-2">
+                                <RouterLink
+                                    :to="{ name: 'customer.search-product' }"
+                                >
+                                    <Button
+                                        type="button"
+                                        icon="pi pi-search"
+                                        severity="secondary"
+                                        rounded
+                                    />
+                                </RouterLink>
+                            </div>
+                            <div v-if="!Page.user" class="px-2 flex items-center">
                                 <button
                                     type="button"
                                     class="cursor-pointer text-white"

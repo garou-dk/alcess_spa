@@ -329,4 +329,13 @@ class ProductService
             ->whereNot('product_quantity', 0)
             ->get();
     }
+
+    public function searchProductName(array $data) {
+        return Product::query()
+            ->where('is_active', true)
+            ->whereNot('product_quantity', 0)
+            ->whereLike('product_name', '%'. $data['search'] .'%')
+            ->limit(10)
+            ->get();
+    }
 }

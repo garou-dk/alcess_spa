@@ -46,6 +46,7 @@ Route::controller(ProductController::class)
     ->group(function () {
         Route::get('/', 'searchProduct');
         Route::get('/category/{id}','getProductByCategory');
+        Route::get('search','searchProductName');
     });
 
 Route::middleware(['auth:sanctum'])->group(function () {
