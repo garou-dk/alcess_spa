@@ -7,98 +7,9 @@
             <InventoryValue />
         </div>
 
-        <!-- Best Selling Products -->
         <TopSoldProducts />
 
-        <!-- Sales & Inventory Status -->
-        <BoxShadow class="mb-5">
-            <div class="flex w-full flex-wrap p-5">
-                <div class="flex flex-wrap max-lg:w-full lg:w-1/2">
-                    <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-b lg:border-gray-300"
-                    >
-                        <div>
-                            <p class="text-center font-semibold text-gray-700">
-                                Total Orders
-                            </p>
-                            <p
-                                class="text-center text-xl font-bold text-green-600"
-                            >
-                                {{ totalOrders }}
-                            </p>
-                            <p class="mt-1 text-center text-xs text-gray-600">
-                                <i class="pi pi-arrow-up text-green-600" />
-                                <span>8.2% from last period</span>
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-b lg:border-gray-300"
-                    >
-                        <div>
-                            <p class="text-center font-semibold text-gray-700">
-                                Shipping Orders
-                            </p>
-                            <p
-                                class="text-center text-xl font-bold text-blue-600"
-                            >
-                                {{ shippingOrders }}
-                            </p>
-                            <p class="mt-1 text-center text-xs text-gray-600">
-                                <span>In transit</span>
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2 lg:border-r lg:border-gray-300"
-                    >
-                        <div>
-                            <p class="text-center font-semibold text-gray-700">
-                                Items Ordered
-                            </p>
-                            <p
-                                class="text-center text-xl font-bold text-purple-600"
-                            >
-                                {{ itemsOrdered }}
-                            </p>
-                            <p class="mt-1 text-center text-xs text-gray-600">
-                                <span>Total units</span>
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center justify-center p-2 max-lg:w-full lg:w-1/2"
-                    >
-                        <div>
-                            <p class="text-center font-semibold text-gray-700">
-                                Items Shipped
-                            </p>
-                            <p
-                                class="text-center text-xl font-bold text-teal-600"
-                            >
-                                {{ itemsShipped }}
-                            </p>
-                            <p class="mt-1 text-center text-xs text-gray-600">
-                                <span>Delivered units</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="max-lg:w-full lg:w-1/2">
-                    <p class="text-center font-semibold text-gray-700">
-                        Sales Distribution
-                    </p>
-                    <div class="flex w-full justify-center p-5">
-                        <VueApexCharts
-                            type="pie"
-                            :options="chartOptions"
-                            :series="series"
-                            width="100%"
-                        />
-                    </div>
-                </div>
-            </div>
-        </BoxShadow>
+        <PieGraphReport />
 
         <!-- Charts Section -->
         <div class="mb-5 flex flex-wrap">
@@ -232,6 +143,7 @@
 import BatchForm from "@/components/forms/BatchForm.vue";
 import InventoryValue from "@/components/reports/InventoryValue.vue";
 import OrderPending from "@/components/reports/OrderPending.vue";
+import PieGraphReport from "@/components/reports/PieGraphReport.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
 import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";

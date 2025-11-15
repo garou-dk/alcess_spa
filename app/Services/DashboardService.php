@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\Sale;
 use App\Models\SaleItem;
 use Carbon\Carbon;
 
@@ -123,19 +124,16 @@ class DashboardService
 
     public function getTop5MostSoldItems(): array
     {
-        // Get quantities from product_orders (only confirmed paid orders)
         $orderQuantities = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
             ->whereNotNull('orders.date_paid_confirmed')
             ->selectRaw('product_orders.product_id, SUM(product_orders.quantity) as total_quantity')
             ->groupBy('product_orders.product_id')
             ->pluck('total_quantity', 'product_id');
         
-        // Get quantities from sale_items
         $saleQuantities = SaleItem::selectRaw('product_id, SUM(quantity) as total_quantity')
             ->groupBy('product_id')
             ->pluck('total_quantity', 'product_id');
         
-        // Combine both sources
         $combinedQuantities = [];
         
         foreach ($orderQuantities as $productId => $quantity) {
@@ -146,17 +144,14 @@ class DashboardService
             $combinedQuantities[$productId] = ($combinedQuantities[$productId] ?? 0) + $quantity;
         }
         
-        // Sort by quantity descending and get top 5
         arsort($combinedQuantities);
         $top5ProductIds = array_slice(array_keys($combinedQuantities), 0, 5, true);
         
-        // Get product details with unit and category relationships
         $products = Product::with(['unit', 'category'])
             ->whereIn('product_id', $top5ProductIds)
             ->get()
             ->keyBy('product_id');
         
-        // Build result array
         $result = [];
         foreach ($top5ProductIds as $productId) {
             $product = $products->get($productId);
@@ -173,5 +168,37 @@ class DashboardService
         }
         
         return $result;
+    }
+
+    public function getCurrentMonthReport(): array
+    {
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        
+        $ordersCount = Order::whereNotNull('date_paid_confirmed')
+            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
+            ->count();
+        
+        $salesCount = Sale::whereBetween('created_at', [$currentMonthStart, $currentMonthEnd])
+            ->count();
+        
+        $productOrdersRevenue = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+            ->whereNotNull('orders.date_paid_confirmed')
+            ->whereBetween('orders.date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
+            ->selectRaw('SUM(product_orders.price * product_orders.quantity) as total')
+            ->value('total') ?? 0;
+        
+        $saleItemsRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
+            ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
+            ->value('total') ?? 0;
+        
+        return [
+            'orders_count' => $ordersCount,
+            'sales_count' => $salesCount,
+            'product_orders_revenue' => round($productOrdersRevenue, 2),
+            'sale_items_revenue' => round($saleItemsRevenue, 2),
+            'total_revenue' => round($productOrdersRevenue + $saleItemsRevenue, 2),
+        ];
     }
 }

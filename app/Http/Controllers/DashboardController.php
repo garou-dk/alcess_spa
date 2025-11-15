@@ -39,4 +39,10 @@ class DashboardController extends Controller
             ->data($this->service->getTop5MostSoldItems())
             ->response();
     }
+
+    public function getCurrentMonthReport() {
+        return ApiResponse::success()
+            ->data($this->service->getCurrentMonthReport())
+            ->response();
+    }
 }
