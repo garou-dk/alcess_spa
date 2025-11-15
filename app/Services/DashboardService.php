@@ -4,36 +4,45 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\SaleItem;
 use Carbon\Carbon;
 
 class DashboardService
 {
-    public function getMonthlyRevenue()
+    public function getMonthlyRevenue(): array
     {
-        // Get current month dates
         $currentMonthStart = Carbon::now()->startOfMonth();
         $currentMonthEnd = Carbon::now()->endOfMonth();
         
-        // Get last month dates
         $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
         $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
         
-        // Current month revenue (only confirmed paid orders)
-        $currentMonthRevenue = Order::whereNotNull('date_paid_confirmed')
+        $currentMonthOrderRevenue = Order::whereNotNull('date_paid_confirmed')
             ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
             ->sum('total_amount');
         
-        // Last month revenue (only confirmed paid orders)
-        $lastMonthRevenue = Order::whereNotNull('date_paid_confirmed')
+        $currentMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->whereBetween('sale_items.created_at', [$currentMonthStart, $currentMonthEnd])
+            ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
+            ->value('total') ?? 0;
+        
+        $currentMonthRevenue = $currentMonthOrderRevenue + $currentMonthSaleRevenue;
+        
+        $lastMonthOrderRevenue = Order::whereNotNull('date_paid_confirmed')
             ->whereBetween('date_paid_confirmed', [$lastMonthStart, $lastMonthEnd])
             ->sum('total_amount');
         
-        // Calculate percentage increase/decrease
+        $lastMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->whereBetween('sale_items.created_at', [$lastMonthStart, $lastMonthEnd])
+            ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
+            ->value('total') ?? 0;
+        
+        $lastMonthRevenue = $lastMonthOrderRevenue + $lastMonthSaleRevenue;
+        
         $percentageChange = 0;
         if ($lastMonthRevenue > 0) {
             $percentageChange = (($currentMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100;
         } elseif ($currentMonthRevenue > 0) {
-            // If last month was 0 but current month has revenue
             $percentageChange = 100;
         }
         
@@ -41,12 +50,20 @@ class DashboardService
             'current_month' => [
                 'period' => $currentMonthStart->format('F Y'),
                 'revenue' => round($currentMonthRevenue, 2),
-                'formatted_revenue' => '₱' . number_format($currentMonthRevenue, 2)
+                'formatted_revenue' => '₱' . number_format($currentMonthRevenue, 2),
+                'breakdown' => [
+                    'orders' => round($currentMonthOrderRevenue, 2),
+                    'sales' => round($currentMonthSaleRevenue, 2)
+                ]
             ],
             'last_month' => [
                 'period' => $lastMonthStart->format('F Y'),
                 'revenue' => round($lastMonthRevenue, 2),
-                'formatted_revenue' => '₱' . number_format($lastMonthRevenue, 2)
+                'formatted_revenue' => '₱' . number_format($lastMonthRevenue, 2),
+                'breakdown' => [
+                    'orders' => round($lastMonthOrderRevenue, 2),
+                    'sales' => round($lastMonthSaleRevenue, 2)
+                ]
             ],
             'comparison' => [
                 'percentage_change' => round($percentageChange, 2),
