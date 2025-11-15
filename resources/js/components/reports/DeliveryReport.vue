@@ -28,7 +28,7 @@
                         Delivery Report
                     </h1>
                     <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> Carlos Mendez<br />
+                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
                         <strong>Date:</strong>
                         {{
                             DateUtil.formatToMonthDayYear(
@@ -305,6 +305,7 @@
 </template>
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
+import Page from "@/stores/Page";
 import DateUtil from "@/utils/DateUtil";
 
 const printReport = () => {

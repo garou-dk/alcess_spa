@@ -16,7 +16,7 @@
                                     label: 'Inventory Report',
                                     value: 'inventory',
                                 },
-                                { label: 'Delivery Report', value: 'delivery' },
+                                // { label: 'Delivery Report', value: 'delivery' },
                                 { label: 'List of Customers', value: 'order' },
                                 { label: 'Sales Report', value: 'sales' },
                             ]"
@@ -28,7 +28,7 @@
                         />
                     </InputForm>
                 </div>
-                <div class="grow">
+                <div v-if="selectedReport === 'sales'" class="grow">
                     <InputForm
                         :errors="[]"
                         id="date-range"
@@ -41,6 +41,7 @@
                             selectionMode="range"
                             :manualInput="false"
                             fluid
+                            v-model="dateRange"
                         />
                     </InputForm>
                 </div>
@@ -48,11 +49,6 @@
                     <Button
                         label="Print"
                         icon="pi pi-print"
-                        class="primary-bg"
-                    />
-                    <Button
-                        label="Export"
-                        icon="pi pi-file-export"
                         class="primary-bg"
                     />
                 </div>
@@ -64,7 +60,7 @@
                 <InventoryReport v-if="selectedReport === 'inventory'" />
                 <DeliveryReport v-else-if="selectedReport === 'delivery'" />
                 <CustomerListReport v-else-if="selectedReport === 'order'" />
-                <SalesReport v-else-if="selectedReport === 'sales'" />
+                <SalesReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'sales' && startDate !== null && endDate !== null" />
             </div>
         </BoxShadow>
 
@@ -88,10 +84,27 @@ import CustomerListReport from "@/components/reports/CustomerListReport.vue";
 import DeliveryReport from "@/components/reports/DeliveryReport.vue";
 import InventoryReport from "@/components/reports/InventoryReport.vue";
 import SalesReport from "@/components/reports/SalesReport.vue";
-import { ref } from "vue";
+import DateUtil from "@/utils/DateUtil";
+import { ref, watch } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 
 const selectedReport = ref<string>("inventory");
+
+const dateRange = ref<Date[]>([]);
+
+const startDate = ref<string | null>(null);
+const endDate = ref<string | null>(null);
+
+watch(dateRange, () => {
+    if (dateRange.value.length > 0 && dateRange.value.length === 2 && dateRange.value[0] !== null && dateRange.value[1] !== null) {
+        startDate.value = DateUtil.formatYYYYMMDD(dateRange.value[0]);
+        endDate.value = DateUtil.formatYYYYMMDD(dateRange.value[1]);
+    }
+    else {
+        startDate.value = null;
+        endDate.value = null;
+    }
+})
 
 const options = {
     chart: {

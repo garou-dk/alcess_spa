@@ -124,7 +124,7 @@
             <div style="display: flex; justify-content: space-between">
                 <div style="width: 45%; text-align: center">
                     <span style="display: block; margin-top: 5px"
-                        >Albert Daligdigan</span
+                        >Blademier S. Canalita</span
                     >
                     <small>{{
                         DateUtil.formatToMonthDayYear(

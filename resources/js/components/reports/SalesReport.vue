@@ -9,7 +9,7 @@
             />
         </div>
 
-        <div id="sales-report">
+        <div id="sales-report-data">
             <!-- Header -->
             <div
                 style="
@@ -30,7 +30,7 @@
                         SALES REPORT
                     </h1>
                     <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> Carlos Mendez<br />
+                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
                         <strong>Date:</strong>
                         {{
                             DateUtil.formatToMonthDayYear(
@@ -70,19 +70,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Invoice Number
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Customer Name
+                            Transaction ID
                         </th>
                         <th
                             style="
@@ -135,46 +123,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr v-for="(val, index) in data" :key="index">
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-29
+                            {{ DateUtil.formatToMonthDayYear(val.date) }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-1001
+                            {{ val.reference_code }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            John Doe
+                            {{ val.product_name }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            Laptop
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">2</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱35,000
+                            {{ val.quantity }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱70,000
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-29
+                            {{ CurrencyUtil.formatCurrency(val.price) }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-1002
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Jane Smith
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Printer
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">1</td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱5,000
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱5,000
+                            {{ CurrencyUtil.formatCurrency(val.total) }}
                         </td>
                     </tr>
                     <!-- Add more sales rows here -->
@@ -186,17 +152,7 @@
             <div style="display: flex; justify-content: space-between">
                 <div style="width: 45%; text-align: center">
                     <span style="display: block; margin-top: 5px"
-                        >Henry Bennet</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
-                </div>
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Penelope Smith</span
+                        >Blademier S. Canalita</span
                     >
                     <small>{{
                         DateUtil.formatToMonthDayYear(
@@ -211,10 +167,44 @@
 
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
+import Page from "@/stores/Page";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
+import { onMounted, reactive, ref } from "vue";
+import { useToast } from "vue-toastification";
+
+interface Props {
+    startDate: string;
+    endDate: string;
+}
+
+interface IForm {
+    start_date: string | null;
+    end_date: string | null;
+}
+
+interface ISalesData {
+    date: string;
+    reference_code: string;
+    product_name: string;
+    quantity: number;
+    price: number;
+    total: number;
+    type: "Sale";
+}
+
+const props = defineProps<Props>();
+
+const form: IForm = reactive({
+    start_date: props.startDate,
+    end_date: props.endDate,
+});
+
+const data = ref<ISalesData[]>([]);
 
 const printReport = () => {
-    const printContents = document.getElementById("sales-report")?.innerHTML;
+    const printContents = document.getElementById("sales-report-data")?.innerHTML;
     const printWindow = window.open("", "", "width=1000,height=600");
 
     if (printContents && printWindow) {
@@ -232,4 +222,22 @@ const printReport = () => {
         printWindow.close();
     }
 };
+
+const loadService = useAxiosUtil<IForm, ISalesData[]>();
+const toast = useToast();
+
+const load = async () => {
+    await loadService.get('admin/dashboard/sales-report', form).then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            data.value = loadService.request.data;
+        }
+        else {
+            toast.error(loadService.request.message ?? 'Failed to load data');
+        }
+    });
+}
+
+onMounted(() => {
+    load();
+});
 </script>

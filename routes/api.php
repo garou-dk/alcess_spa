@@ -173,6 +173,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('category-sales', 'getRevenueByCategories');
                     Route::get('stock-in-out', 'getStockInOutReport');
                     Route::get('pending', 'getPendingOrders');
+                    Route::get('sales-report', 'getRevenueReport');
                 });
         });
     });

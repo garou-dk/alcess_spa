@@ -9,6 +9,7 @@ use App\Models\ProductOrder;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
@@ -349,5 +350,59 @@ class DashboardService
             ->get();
         
         return $pendingOrders;
+    }
+
+    public function getRevenueReport($startDate = null, $endDate = null): array
+    {
+        // Set default date range if not provided
+        $startDate = $startDate ?? now()->startOfMonth()->format('Y-m-d');
+        $endDate = $endDate ?? now()->endOfDay()->format('Y-m-d');
+        
+        // Query for product_orders
+        $orderRevenue = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+            ->join('products', 'product_orders.product_id', '=', 'products.product_id')
+            ->whereNotNull('orders.date_paid_confirmed')
+            ->whereBetween(DB::raw('DATE(orders.date_paid_confirmed)'), [$startDate, $endDate])
+            ->select(
+                DB::raw('DATE(orders.date_paid_confirmed) as date'),
+                'orders.order_public_id as reference_code',
+                'products.product_name',
+                'product_orders.quantity',
+                'product_orders.price',
+                DB::raw('(product_orders.quantity * product_orders.price) as total'),
+                DB::raw("'Order' as type")
+            );
+        
+        // Query for sale_items
+        $saleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->join('products', 'sale_items.product_id', '=', 'products.product_id')
+            ->whereBetween(DB::raw('DATE(sales.created_at)'), [$startDate, $endDate])
+            ->select(
+                DB::raw('DATE(sales.created_at) as date'),
+                'sales.sale_code as reference_code',
+                'products.product_name',
+                'sale_items.quantity',
+                'sale_items.price',
+                DB::raw('(sale_items.quantity * sale_items.price) as total'),
+                DB::raw("'Sale' as type")
+            );
+        
+        // Union both queries and order by date descending
+        $results = $orderRevenue
+            ->unionAll($saleRevenue)
+            ->orderBy('date', 'desc')
+            ->get();
+        
+        return $results->map(function ($item) {
+            return [
+                'date' => $item->date,
+                'reference_code' => $item->reference_code,
+                'product_name' => $item->product_name,
+                'quantity' => (int) $item->quantity,
+                'price' => round($item->price, 2),
+                'total' => round($item->total, 2),
+                'type' => $item->type,
+            ];
+        })->toArray();
     }
 }

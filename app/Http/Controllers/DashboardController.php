@@ -69,4 +69,15 @@ class DashboardController extends Controller
             ->data($this->service->getPendingOrders())
             ->response();
     }
+
+    public function getRevenueReport(Request $request) {
+        $data = $request->validate([
+            'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:end_date'],
+            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+        ]);
+
+        return ApiResponse::success()
+            ->data($this->service->getRevenueReport($data))
+            ->response();
+    }
 }
