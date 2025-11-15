@@ -15,4 +15,10 @@ class DashboardController extends Controller
             ->data($this->service->getMonthlyRevenue())
             ->response();
     }
+
+    public function getProductStats() {
+        return ApiResponse::success()
+            ->data($this->service->getProductStats())
+            ->response();
+    }
 }

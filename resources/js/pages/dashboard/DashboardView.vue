@@ -1,27 +1,9 @@
 <template>
     <div>
-        <!-- Key Metrics Summary -->
         <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <TotalRevenueReport />
 
-            <BoxShadow>
-                <div class="p-4 w-full">
-                    <div class="flex items-center justify-between">
-                        <div class="grow">
-                            <p class="text-sm text-gray-600">Total Products</p>
-                            <p class="text-2xl font-bold text-blue-600">
-                                {{ totalProducts }}
-                            </p>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <span class="text-orange-600">{{ lowStockCount }} low stock</span>
-                            </p>
-                        </div>
-                        <div class="rounded-full bg-blue-100 p-3 shrink">
-                            <i class="pi pi-box text-2xl text-blue-600" />
-                        </div>
-                    </div>
-                </div>
-            </BoxShadow>
+            <ProductStats />
 
             <BoxShadow>
                 <div class="p-4 w-full">
@@ -369,6 +351,7 @@
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
+import ProductStats from "@/components/reports/ProductStats.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";
 import {

@@ -76,6 +76,9 @@ const load = async () => {
                 data[key] = loadService.request.data[key];
             });
         }
+        else {
+            toast.error(loadService.request.message ?? 'Failed to load data');
+        }
     });
 }
 

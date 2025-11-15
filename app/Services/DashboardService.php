@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Product;
 use Carbon\Carbon;
 
 class DashboardService
@@ -55,36 +56,22 @@ class DashboardService
             ]
         ];
     }
-    
-    // Alternative method if you want to display in a view
-    public function showMonthlyRevenue()
+
+    public function getProductStats()
     {
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
-        $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
-        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+        $totalProducts = Product::where('is_active', true)->count();
         
-        $currentMonthRevenue = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
-            ->sum('total_amount');
-        
-        $lastMonthRevenue = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$lastMonthStart, $lastMonthEnd])
-            ->sum('total_amount');
-        
-        $percentageChange = 0;
-        if ($lastMonthRevenue > 0) {
-            $percentageChange = (($currentMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100;
-        } elseif ($currentMonthRevenue > 0) {
-            $percentageChange = 100;
-        }
+        $lowStockProducts = Product::where('is_active', true)
+            ->whereColumn('product_quantity', '<=', 'low_stock_threshold')
+            ->count();
         
         return [
-            'currentMonthRevenue' => $currentMonthRevenue,
-            'lastMonthRevenue' => $lastMonthRevenue,
-            'percentageChange' => $percentageChange,
-            'currentMonthStart' => $currentMonthStart,
-            'lastMonthStart' => $lastMonthStart
+            'total_products' => $totalProducts,
+            'low_stock_products' => $lowStockProducts,
+            'healthy_stock_products' => $totalProducts - $lowStockProducts,
+            'low_stock_percentage' => $totalProducts > 0 
+                ? round(($lowStockProducts / $totalProducts) * 100, 2) 
+                : 0
         ];
     }
 }
