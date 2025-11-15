@@ -311,4 +311,22 @@ class ProductService
             ->where('is_active', true)
             ->get();
     }
+
+    public function getProductByCategory(array $data) {
+        $category = Category::query()
+            ->where('category_slug', $data['category'])
+            ->first();
+
+        abort_if(empty($category), 404, 'Category not found');
+
+        return Product::query()
+            ->with(['category'])
+            ->when(!empty($data['search']), function ($query) use ($data) {
+                $query->whereLike('product_name','%'. $data['search'] .'%');
+            })
+            ->where('category_id', $category->category_id)
+            ->where('is_active', true)
+            ->whereNot('product_quantity', 0)
+            ->get();
+    }
 }

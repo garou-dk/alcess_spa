@@ -4,6 +4,7 @@ interface CategoryInterface {
     deleted_at: string | null;
     editable: number;
     category_image: string | null;
+    category_slug: string;
 }
 
 interface CategoryFormInterface {

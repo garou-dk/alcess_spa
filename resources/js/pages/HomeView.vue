@@ -105,6 +105,7 @@
                         v-for="(category, index) in CategoryStore.categories"
                         :key="index"
                         class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                        @click="goRoute('customer.product-category', { id: category.category_name })"
                     >
                         <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                         <div class="relative flex flex-col items-center gap-3">
@@ -444,6 +445,7 @@ import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import { useRouter } from "vue-router";
 
 const appName = import.meta.env.VITE_APP_NAME;
 const loginFormVisible = ref<boolean>(false);
@@ -477,6 +479,12 @@ const loadBestSellingProducts = async () => {
             products.value = loadBestSellingService.request.data;
         }
     });
+};
+
+const router = useRouter();
+
+const goRoute = (route: string, params: Record<string, string>) => {
+    router.push({ name: route, params: params });
 };
 
 onMounted(() => {

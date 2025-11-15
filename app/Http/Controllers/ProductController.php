@@ -121,4 +121,10 @@ class ProductController extends Controller
             ->data($this->service->inventoryCount())
             ->response();
     }
+
+    public function getProductByCategory(string $id) {
+        return ApiResponse::success()
+            ->data($this->service->getProductByCategory(['category'=> $id]))
+            ->response();
+    }
 }

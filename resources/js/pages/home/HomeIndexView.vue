@@ -40,6 +40,7 @@
                             v-for="(category, index) in CategoryStore.categories"
                             :key="index"
                             class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                            @click="goRoute('customer.product-category', { id: category.category_slug })"
                         >
                             <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                             <div class="relative flex flex-col items-center gap-3">
@@ -156,12 +157,6 @@
                                 <h3 class="mb-2 line-clamp-2 min-h-[2.5rem] text-sm font-semibold text-gray-800 transition-colors group-hover:text-sky-600">
                                     {{ product.product_name }}
                                 </h3>
-                                
-                                <!-- Rating -->
-                                <div class="mb-3 flex items-center gap-1">
-                                    <i v-for="i in 5" :key="i" class="pi pi-star-fill text-xs text-yellow-400" />
-                                    <span class="ml-1 text-xs text-gray-500">(4.5)</span>
-                                </div>
 
                                 <!-- Price -->
                                 <div class="mb-3">
@@ -249,60 +244,9 @@
                 </section>
             </div>
         </div>
-        <footer class="mt-16 bg-gradient-to-r from-gray-800 to-gray-900 py-12 text-white">
-            <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                    <div>
-                        <h3 class="mb-4 text-lg font-bold">{{ appName }}</h3>
-                        <p class="text-sm text-gray-400">
-                            Your trusted online marketplace for quality products at great prices.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Quick Links</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">FAQs</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Customer Service</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><a href="#" class="hover:text-white transition-colors">Track Order</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Terms & Conditions</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Connect With Us</h4>
-                        <div class="flex gap-3">
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
-                                <i class="pi pi-facebook" />
-                            </button>
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
-                                <i class="pi pi-twitter" />
-                            </button>
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
-                                <i class="pi pi-instagram" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm text-gray-400">
-                    <p>&copy; 2025 {{ appName }}. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
     </div>
 </template>
 <script setup lang="ts">
-// import {
-//     SearchErrorInterface,
-//     SearchProductInterface,
-// } from "@/interfaces/SearchProductInterface";
 import { onMounted, ref } from "vue";
 import HeroBg from "@/../img/hero-bg.jpg";
 import { useCategoryStore } from "@/stores/CategoryState";
@@ -310,29 +254,11 @@ import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import { useRouter } from "vue-router";
 
-// const appName = import.meta.env.VITE_APP_NAME;
-// const loginFormVisible = ref<boolean>(false);
-// const registerFormVisible = ref<boolean>(false);
 const CategoryStore = useCategoryStore();
 const loadBestSellingService = useAxiosUtil<null, ProductInterface[]>();
 const products = ref<ProductInterface[]>([]);
-// const form: SearchProductInterface = reactive({
-//     search: null,
-// });
-// const errors: SearchErrorInterface = reactive({
-//     search: [],
-// });
-
-// const openLoginForm = () => {
-//     registerFormVisible.value = false;
-//     loginFormVisible.value = true;
-// };
-
-// const openRegisterForm = () => {
-//     loginFormVisible.value = false;
-//     registerFormVisible.value = true;
-// };
 
 const appName = import.meta.env.VITE_APP_NAME;
 
@@ -346,6 +272,13 @@ const loadBestSellingProducts = async () => {
         }
     });
 };
+
+const router = useRouter();
+
+const goRoute = (route: string, params: Record<string, string>) => {
+    router.push({ name: route, params: params });
+};
+
 
 onMounted(() => {
     CategoryStore.fetchCategories();
