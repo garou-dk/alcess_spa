@@ -27,22 +27,7 @@
                 <BatchForm />
             </div>
             <div class="p-2 max-lg:w-full lg:w-1/2">
-                <BoxShadow>
-                    <div class="w-full">
-                        <p class="p-3 font-semibold text-gray-700">
-                            Inventory Movement
-                        </p>
-                        <div class="p-3">
-                            <VueApexCharts
-                                type="area"
-                                :options="inventoryChartOptions"
-                                :series="inventorySeries"
-                                width="100%"
-                                height="300"
-                            />
-                        </div>
-                    </div>
-                </BoxShadow>
+                <StockInOut />
             </div>
         </div>
 
@@ -117,6 +102,7 @@ import OrderPending from "@/components/reports/OrderPending.vue";
 import PieGraphReport from "@/components/reports/PieGraphReport.vue";
 import ProductStats from "@/components/reports/ProductStats.vue";
 import SalesPrevious7Days from "@/components/reports/SalesPrevious7Days.vue";
+import StockInOut from "@/components/reports/StockInOut.vue";
 import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
 import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
 import DataTableInterface from "@/interfaces/DataTableInterface";

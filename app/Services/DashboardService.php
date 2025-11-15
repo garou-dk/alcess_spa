@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BatchProduct;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductOrder;
@@ -211,12 +212,14 @@ class DashboardService
             ->whereBetween('date_paid_confirmed', [$startDate, $endDate])
             ->selectRaw('DATE(date_paid_confirmed) as date, SUM(total_amount) as revenue')
             ->groupBy('date')
+            ->orderBy('date', 'asc')
             ->pluck('revenue', 'date');
         
         $saleItemsSales = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
             ->whereBetween('sales.created_at', [$startDate, $endDate])
             ->selectRaw('DATE(sales.created_at) as date, SUM(sale_items.price * sale_items.quantity) as revenue')
             ->groupBy('date')
+            ->orderBy('date', 'asc')
             ->pluck('revenue', 'date');
         
         $result = [];
@@ -240,7 +243,7 @@ class DashboardService
             $currentDate->addDay();
         }
         
-        return array_reverse($result);
+        return $result;
     }
 
     public function getRevenueByCategories(): array
@@ -292,6 +295,48 @@ class DashboardService
         usort($result, function($a, $b) {
             return $b['total_revenue'] <=> $a['total_revenue'];
         });
+        
+        return $result;
+    }
+
+    public function getStockInOutReport(): array
+    {
+        $endDate = Carbon::now()->endOfDay();
+        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        
+        $stockOut = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+            ->whereIn('orders.status', ['Shipped', 'For delivery', 'Delivered', 'Released'])
+            ->whereBetween('product_orders.created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(product_orders.created_at) as date, SUM(product_orders.quantity) as quantity')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->pluck('quantity', 'date');
+        
+        $stockIn = BatchProduct::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, SUM(quantity) as quantity')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->pluck('quantity', 'date');
+        
+        $result = [];
+        $currentDate = $startDate->copy();
+        
+        for ($i = 0; $i < 7; $i++) {
+            $dateKey = $currentDate->format('Y-m-d');
+            
+            $stockInQty = $stockIn->get($dateKey, 0);
+            $stockOutQty = $stockOut->get($dateKey, 0);
+            
+            $result[] = [
+                'date' => $dateKey,
+                'day' => $currentDate->format('l'),
+                'stock_in' => (int) $stockInQty,
+                'stock_out' => (int) $stockOutQty,
+                'net_change' => (int) ($stockInQty - $stockOutQty),
+            ];
+            
+            $currentDate->addDay();
+        }
         
         return $result;
     }

@@ -61,7 +61,7 @@
                     Sales Distribution
                 </p>
                 <div class="flex w-full justify-center p-5">
-                    <VueApexCharts v-if="!loadService.request.loading" type="pie" :options="chartOptions" :series="series" width="100%" />
+                    <VueApexCharts v-if="!loadService.request.loading && series[0] > 0" type="pie" :options="chartOptions" :series="series" width="100%" />
                     <div v-else class="w-full flex justify-center p-2">
                         <PageLoader />
                     </div>

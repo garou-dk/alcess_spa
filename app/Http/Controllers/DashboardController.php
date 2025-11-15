@@ -57,4 +57,10 @@ class DashboardController extends Controller
             ->data($this->service->getRevenueByCategories())
             ->response();
     }
+
+    public function getStockInOutReport() {
+        return ApiResponse::success()
+            ->data($this->service->getStockInOutReport())
+            ->response();
+    }
 }
