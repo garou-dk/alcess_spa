@@ -5,91 +5,58 @@
                 <p class="font-semibold text-gray-700">
                     Low Stock Alert
                 </p>
-                <span
-                    class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600"
-                >
+                <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600">
                     {{ lowStockCount }} items
                 </span>
             </div>
-            <DataTable
-                class="w-full"
-                :value="paginate.data"
-                :loading="loadProductService.request.loading"
-                columnResizeMode="expand"
-                editMode="cell" 
-                @cell-edit-complete="onCellEditComplete"
-                size="large"
-            >
+            <DataTable class="w-full" :value="paginate.data" :loading="loadProductService.request.loading"
+                columnResizeMode="expand" editMode="cell" @cell-edit-complete="onCellEditComplete" size="large">
                 <Column field="product_name" header="Product Name">
                     <template #body="{ data }">
                         <div class="flex items-center">
-                            <Avatar
-                                v-if="data.product_image"
-                                shape="circle"
-                                :image="
-                                    UrlUtil.getBaseAppUrl(
-                                        `storage/images/product/${data.product_image}`,
-                                    )
-                                "
-                                class="aspect-square!"
-                            />
-                            <Avatar
-                                v-else
-                                shape="circle"
-                                icon="pi pi-camera"
-                            />
+                            <Avatar v-if="data.product_image" shape="circle" :image="UrlUtil.getBaseAppUrl(
+                                `storage/images/product/${data.product_image}`,
+                            )
+                                " class="aspect-square!" />
+                            <Avatar v-else shape="circle" icon="pi pi-camera" />
                             <div class="ml-2 shrink">
                                 {{ data.product_name }}
                             </div>
                         </div>
                     </template>
                 </Column>
-                <Column
-                    field="category.category_name"
-                    header="Category"
-                />
+                <Column field="category.category_name" header="Category" />
                 <Column header="Quantity" field="product_quantity">
                     <template #body="{ data }">
                         <div class="flex items-center gap-2">
-                            <span
-                                :class="[
-                                    'font-semibold',
-                                    data.low_stock_threshold >= data.product_quantity
-                                        ? 'text-red-600'
-                                        : 'text-orange-600',
-                                ]"
-                            >
+                            <span :class="[
+                                'font-semibold',
+                                data.low_stock_threshold >= data.product_quantity
+                                    ? 'text-red-600'
+                                    : 'text-orange-600',
+                            ]">
                                 {{ data.product_quantity }}
                             </span>
-                            <i
-                                class="pi pi-exclamation-triangle text-orange-600"
-                            />
+                            <i class="pi pi-exclamation-triangle text-orange-600" />
                         </div>
                     </template>
                 </Column>
-                <Column
-                    header="Refill"
-                    field="quantity"
-                >
+                <Column header="Refill" field="quantity">
                     <template #editor="{ data, field }">
-                        <InputNumber size="small" style="width: 5rem;" v-model="data[field]" :min="0" autofocus fluid @focus="e => (e.target as HTMLInputElement).select()" />
+                        <InputNumber size="small" style="width: 5rem;" v-model="data[field]" :min="0" autofocus fluid
+                            @focus="e => (e.target as HTMLInputElement).select()" />
                     </template>
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <Button type="button" icon="pi pi-trash" severity="danger" size="small" @click="removeProduct(data)" />
+                        <Button type="button" icon="pi pi-trash" severity="danger" size="small"
+                            @click="removeProduct(data)" />
                     </template>
                 </Column>
                 <template #footer>
                     <div class="flex justify-end">
-                        <Button
-                            type="button"
-                            label="Create Batch"
-                            icon="pi pi-plus"
-                            size="small"
-                            :loading="submitService.request.loading"
-                            @click="handleSubmit()"
-                        />
+                        <Button type="button" :label="`Generate ${toOrdinal(paginate.batch_id)} Batch`" icon="pi pi-plus"
+                            size="small" :loading="submitService.request.loading" @click="handleSubmit()" />
                     </div>
                 </template>
                 <template #empty>
@@ -119,7 +86,7 @@ interface BatchProduct extends ProductInterface {
     quantity: number;
 }
 
-const paginate : {
+const paginate: {
     batch_id: number;
     data: BatchProduct[],
 } = reactive({
@@ -127,7 +94,7 @@ const paginate : {
     data: [],
 });
 
-const form : IForm = reactive({
+const form: IForm = reactive({
     batch_products: []
 });
 
@@ -177,7 +144,7 @@ const validate = () => {
             form.batch_products.push({
                 product_id: product.product_id,
                 quantity: product.quantity
-            }) 
+            })
         }
     });
     if (form.batch_products.length === 0) {
@@ -200,6 +167,18 @@ const handleSubmit = async () => {
             }
         });
     }
+};
+
+const toOrdinal = (n: number) => {
+    const rem10 = n % 10;
+    const rem100 = n % 100;
+
+    if (rem100 >= 11 && rem100 <= 13) return n + "th";
+    if (rem10 === 1) return n + "st";
+    if (rem10 === 2) return n + "nd";
+    if (rem10 === 3) return n + "rd";
+
+    return n + "th";
 };
 
 onMounted(() => {
