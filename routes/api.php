@@ -14,6 +14,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\IslandGroupController;
 use App\Http\Controllers\MunicityController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderNotificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\RateController;
@@ -183,6 +184,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('/', 'fetchRateWithoutComment');
                     Route::patch('/{id}', 'addReply');
+                });
+            
+            Route::controller(OrderNotificationController::class)
+                ->prefix('order-notifications')
+                ->group(function () {
+                    Route::get('/', 'index');
+                    Route::patch('/mark-as-read/{id}', 'markAsRead');
+                    Route::patch('/mark-all-as-read', 'markAllAsRead');
                 });
         });
     });

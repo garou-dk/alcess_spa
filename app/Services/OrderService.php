@@ -6,8 +6,10 @@ use App\Enums\FileDirectoryEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
+use App\Events\OrderNotificationEvent;
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\OrderNotification;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
@@ -58,6 +60,21 @@ class OrderService
             $order = Order::create($orderInsert);
 
             $order->productOrders()->createMany($products);
+
+            $order->refresh();
+
+            $order->load('user');
+
+            $fullName = $order->user->full_name;
+
+            $notification = OrderNotification::create([
+                'user_id'=> $data['user_id'],
+                'notification_type' => 'Pending Order',
+                'notification_to' => 'Store',
+                'message' => "{$fullName} has placed a new order. Please check the order.",
+            ]);
+
+            OrderNotificationEvent::dispatch($notification->toArray());
 
             return $order;
         });
@@ -125,58 +142,84 @@ class OrderService
     }
 
     public function cancelOrder(array $data) {
-        $order = Order::query();
+        return DB::transaction(function () use ($data) {
+            $order = Order::query();
 
-        if (!empty($data['user_id'])) {
-            $order = $order->where('user_id', $data['user_id']);
-        }
+            if (!empty($data['user_id'])) {
+                $order = $order->where('user_id', $data['user_id']);
+            }
 
-        $order = $order->where('order_id', $data['order_id'])->first();
+            $order = $order->where('order_id', $data['order_id'])->first();
 
-        abort_if(empty($order), 404, 'Order not found.');
+            abort_if(empty($order), 404, 'Order not found.');
 
-        abort_unless(
-            in_array($order->status, [OrderStatusEnum::PENDING->value, OrderStatusEnum::CONFIRMED->value]),
-            400,
-            'You are not allowed to cancel this order any more.'
-        );
+            abort_unless(
+                in_array($order->status, [OrderStatusEnum::PENDING->value, OrderStatusEnum::CONFIRMED->value]),
+                400,
+                'You are not allowed to cancel this order any more.'
+            );
 
-        $order->status = OrderStatusEnum::CANCELLED->value;
-        $order->save();
+            $order->status = OrderStatusEnum::CANCELLED->value;
+            $order->save();
 
-        $order->refresh();
+            $order->refresh();
 
-        $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
+            $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
 
-        return $order;
+            $fullName = $order->user->full_name;
+
+            $notification = OrderNotification::create([
+                'user_id'=> $data['user_id'],
+                'notification_type' => 'Cancelled Order',
+                'notification_to' => 'Store',
+                'message' => "{$fullName} has cancelled an order. Please check the order.",
+            ]);
+
+            OrderNotificationEvent::dispatch($notification->toArray());
+
+            return $order;
+        });
     }
 
     public function setPayment(array $data) {
-        $order = Order::query();
-        $order = $order->where('user_id', $data['user_id']);
-        $order = $order->where('order_id', $data['order_id'])->first();
+        return DB::transaction(function () use ($data) {
+            $order = Order::query();
+            $order = $order->where('user_id', $data['user_id']);
+            $order = $order->where('order_id', $data['order_id'])->first();
 
-        abort_if(empty($order), 404, 'Order not found.');
+            abort_if(empty($order), 404, 'Order not found.');
 
-        abort_if($order->status != OrderStatusEnum::CONFIRMED->value, 400, 'Order is not confirmed.');
+            abort_if($order->status != OrderStatusEnum::CONFIRMED->value, 400, 'Order is not confirmed.');
 
-        $fileService = new ManageFileService();
+            $fileService = new ManageFileService();
 
-        $result = $fileService->saveFile($data['payment_proof'], FileDirectoryEnum::PAYMENT_PROOF->value);
+            $result = $fileService->saveFile($data['payment_proof'], FileDirectoryEnum::PAYMENT_PROOF->value);
 
-        $order->status = OrderStatusEnum::PROCESSING->value;
-        $order->proof_of_payment = $result['file_name'];
-        $order->bank_name = $data['bank_name'];
-        $order->transaction_number = $data['transaction_number'];
-        $order->date_payment_processed = now();
+            $order->status = OrderStatusEnum::PROCESSING->value;
+            $order->proof_of_payment = $result['file_name'];
+            $order->bank_name = $data['bank_name'];
+            $order->transaction_number = $data['transaction_number'];
+            $order->date_payment_processed = now();
 
-        $order->save();
+            $order->save();
 
-        $order->refresh();
+            $order->refresh();
 
-        $order->load(['productOrders.product', 'barangay.municity.province.region.islandGroup']);
+            $order->load(['productOrders.product', 'barangay.municity.province.region.islandGroup']);
 
-        return $order;
+            $fullName = $order->user->full_name;
+
+            $notification = OrderNotification::create([
+                'user_id'=> $data['user_id'],
+                'notification_type' => 'Paid',
+                'notification_to' => 'Store',
+                'message' => "{$fullName} has set payment for an order. Please check the order.",
+            ]);
+
+            OrderNotificationEvent::dispatch($notification->toArray());
+
+            return $order;
+        });
     }
 
     public function fetchPaymentImage(array $data) {

@@ -15,8 +15,8 @@
                 <!-- Notification Button -->
                 <div>
                     <OverlayBadge
-                        :value="notifications.filter(n => !n.read).length"
-                        :severity="notifications.filter(n => !n.read).length > 0 ? 'danger' : 'secondary'"
+                        :value="notifications.filter(n => !n.is_read).length"
+                        :severity="notifications.filter(n => !n.is_read).length > 0 ? 'danger' : 'secondary'"
                         pt:pcBadge:root:class="bg-sky-800! text-white"
                     >
                         <Button
@@ -25,7 +25,7 @@
                             icon="pi pi-bell"
                             :class="[
                                 'bg-sky-800! text-white transition-all duration-200',
-                                notifications.filter(n => !n.read).length > 0 ? 'animate-pulse' : ''
+                                notifications.filter(n => !n.is_read).length > 0 ? 'animate-pulse' : ''
                             ]"
                         />
                     </OverlayBadge>
@@ -100,11 +100,11 @@
                                 <div v-else class="divide-y divide-gray-100">
                                     <div
                                         v-for="notification in filteredNotifications"
-                                        :key="notification.id"
+                                        :key="notification.order_notification_id"
                                         @click="markAsRead(notification)"
                                         :class="[
                                             'p-3 sm:p-4 cursor-pointer transition-all duration-200 hover:bg-gray-50',
-                                            !notification.read ? 'bg-blue-50/50' : ''
+                                            !notification.is_read ? 'bg-blue-50/50' : ''
                                         ]"
                                     >
                                         <div class="flex gap-2 sm:gap-3">
@@ -112,36 +112,33 @@
                                             <div 
                                                 :class="[
                                                     'flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center',
-                                                    getNotificationColor(notification.type)
+                                                    getNotificationColor(notification.notification_type)
                                                 ]"
                                             >
-                                                <i :class="getNotificationIcon(notification.type)" class="text-base sm:text-lg"></i>
+                                                <i :class="getNotificationIcon(notification.notification_type)" class="text-base sm:text-lg"></i>
                                             </div>
 
                                             <!-- Notification Content -->
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-start justify-between gap-2 mb-1">
                                                     <h4 class="font-semibold text-gray-800 text-xs sm:text-sm leading-tight">
-                                                        {{ notification.title }}
+                                                        {{ notification.message }}
                                                     </h4>
                                                     <span 
-                                                        v-if="!notification.read"
+                                                        v-if="!notification.is_read"
                                                         class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1"
                                                     ></span>
                                                 </div>
-                                                <p class="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-2">
-                                                    {{ notification.message }}
-                                                </p>
                                                 <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500">
                                                     <span class="flex items-center gap-1">
                                                         <i class="pi pi-clock text-[10px] sm:text-xs"></i>
-                                                        {{ formatTime(notification.time) }}
+                                                        {{ formatTime(notification.created_at) }}
                                                     </span>
                                                     <span 
-                                                        v-if="notification.category"
+                                                        v-if="notification.notification_type"
                                                         class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded text-gray-700 font-medium"
                                                     >
-                                                        {{ notification.category }}
+                                                        {{ notification.notification_type }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -151,7 +148,7 @@
                             </div>
 
                             <!-- Notification Footer -->
-                            <div v-if="notifications.length > 0" class="border-t border-gray-200 p-2 sm:p-3 bg-gray-50">
+                            <!-- <div v-if="notifications.length > 0" class="border-t border-gray-200 p-2 sm:p-3 bg-gray-50">
                                 <Button
                                     type="button"
                                     label="View All Notifications"
@@ -161,7 +158,7 @@
                                     iconPos="right"
                                     @click="viewAllNotifications"
                                 />
-                            </div>
+                            </div> -->
                         </div>
                     </Popover>
                 </div>
@@ -217,9 +214,14 @@
 <script setup lang="ts">
 import Page from "@/stores/Page";
 import { Popover } from "primevue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, onMounted, onUnmounted, ref } from "vue";
 import LogoutButton from "@/components/LogoutButton.vue";
 import UrlUtil from "@/utils/UrlUtil";
+import { useEcho } from "@laravel/echo-vue";
+import { IOrderNotification } from "@/interfaces/IOrderNotification";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 
 const sideBar = inject("sideBar");
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
@@ -227,50 +229,15 @@ const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const activeTab = ref<'all' | 'unread'>('all');
 
 // Sample notifications - replace with your actual data source
-const notifications = ref([
-    {
-        id: 1,
-        type: 'order',
-        title: 'Order Confirmed',
-        message: 'Your order #12345 has been confirmed and is being processed.',
-        time: new Date(Date.now() - 5 * 60000), // 5 minutes ago
-        read: false,
-        category: 'Orders'
-    },
-    {
-        id: 2,
-        type: 'delivery',
-        title: 'Out for Delivery',
-        message: 'Your package is out for delivery and will arrive today.',
-        time: new Date(Date.now() - 30 * 60000), // 30 minutes ago
-        read: false,
-        category: 'Delivery'
-    },
-    {
-        id: 3,
-        type: 'promotion',
-        title: 'Special Offer',
-        message: 'Get 20% off on your next purchase. Limited time offer!',
-        time: new Date(Date.now() - 2 * 60 * 60000), // 2 hours ago
-        read: true,
-        category: 'Promotions'
-    },
-    {
-        id: 4,
-        type: 'info',
-        title: 'Account Updated',
-        message: 'Your profile information has been successfully updated.',
-        time: new Date(Date.now() - 24 * 60 * 60000), // 1 day ago
-        read: true,
-        category: 'Account'
-    },
+const notifications = ref<IOrderNotification[]>([
+
 ]);
 
-const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
+const unreadCount = computed(() => notifications.value.filter(n => !n.is_read).length);
 
 const filteredNotifications = computed(() => {
     if (activeTab.value === 'unread') {
-        return notifications.value.filter(n => !n.read);
+        return notifications.value.filter(n => !n.is_read);
     }
     return notifications.value;
 });
@@ -287,13 +254,20 @@ const openAvatar = (event: Event) => {
     }
 };
 
-const markAsRead = (notification: any) => {
-    notification.read = true;
-    // Add your API call here to mark as read in backend
+const submitMarkReadService = useAxiosUtil();
+
+const router = useRouter();
+
+const markAsRead = async (notification: IOrderNotification) => {
+    notification.is_read = true;
+    router.push({ name: 'admin.order.index' });
+    notificationElement.value?.hide();
+    await submitMarkReadService.patch(`admin/order-notifications/mark-as-read/${notification.order_notification_id}`, null).then(() => {
+    });
 };
 
 const markAllAsRead = () => {
-    notifications.value.forEach(n => n.read = true);
+    notifications.value.forEach(n => n.is_read = true);
     // Add your API call here to mark all as read in backend
 };
 
@@ -317,17 +291,18 @@ const getNotificationIcon = (type: string) => {
 
 const getNotificationColor = (type: string) => {
     const colors = {
-        order: 'bg-blue-100 text-blue-600',
-        delivery: 'bg-green-100 text-green-600',
-        promotion: 'bg-purple-100 text-purple-600',
-        info: 'bg-gray-100 text-gray-600',
-        warning: 'bg-amber-100 text-amber-600',
-        success: 'bg-emerald-100 text-emerald-600'
+        'Pending Order': 'bg-blue-100 text-blue-600',
+        'Confirmed Order': 'bg-green-100 text-green-600',
+        'To Ship': 'bg-orange-100 text-orange-600',
+        'Paid': 'bg-emerald-100 text-emerald-600',
+        'Cancelled Order': 'bg-red-100 text-red-600',
+        'Rejected Order': 'bg-red-200 text-red-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-600';
 };
 
-const formatTime = (date: Date) => {
+const formatTime = (value: string) => {
+    const date = new Date(value);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / 60000);
@@ -340,4 +315,34 @@ const formatTime = (date: Date) => {
     if (days < 7) return `${days}d ago`;
     return date.toLocaleDateString();
 };
+
+const loadService = useAxiosUtil<null, IOrderNotification[]>();
+const toast = useToast();
+
+const loadNotifications = async () => {
+    await loadService.get("admin/order-notifications").then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            notifications.value = loadService.request.data;
+        } else {
+            toast.error(loadService.request.message ?? "Failed to load notifications");
+        }
+    });
+};
+
+const { leave } = useEcho(
+    "admin-order-notification",
+    [".admin-order-notification.event"],
+    (value: IOrderNotification) => {
+        notifications.value.unshift(value);
+    },
+);
+
+onMounted(() => {
+    loadNotifications();
+});
+
+onUnmounted(() => {
+    leave();
+});
+
 </script>

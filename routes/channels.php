@@ -19,3 +19,10 @@ Broadcast::channel('product', function (User $user) {
 Broadcast::channel('cart.{id}', function ($user, $id) {
     return (int) $user->user_id === (int) $id;
 });
+
+Broadcast::channel('admin-order-notification', function (User $user) {
+    $authService = new AuthService;
+    $user = $authService->getAuth();
+
+    return in_array($user->role->role_name, RoleEnum::storeUsers());
+});
