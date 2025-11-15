@@ -3,15 +3,12 @@
         <div class="container mx-auto">
             <div class="mx-auto max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl">
                 <div class="flex flex-wrap">
-                    <!-- Left Side - Branding -->
                     <div class="relative max-lg:w-full lg:w-1/2">
                         <div class="flex h-full flex-col items-center justify-center bg-gradient-to-br from-sky-600 to-sky-800 p-12 lg:min-h-[600px]">
-                            <!-- Decorative Elements -->
                             <div class="absolute left-0 top-0 h-32 w-32 rounded-full bg-white/10 blur-3xl"></div>
                             <div class="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
                             
                             <div class="relative z-10 text-center">
-                                <!-- Logo with Animation -->
                                 <div class="mb-8 flex justify-center">
                                     <div class="group relative">
                                         <div class="absolute inset-0 animate-pulse rounded-full bg-white/20 blur-xl"></div>
@@ -25,7 +22,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Welcome Text -->
                                 <div class="space-y-4">
                                     <h2 class="text-4xl font-bold text-white lg:text-5xl">
                                         Welcome Back
@@ -39,7 +35,6 @@
                                     </p>
                                 </div>
 
-                                <!-- Features List -->
                                 <div class="mt-12 space-y-4 text-left">
                                     <div class="flex items-center gap-3 text-white/90">
                                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
@@ -52,10 +47,8 @@
                         </div>
                     </div>
 
-                    <!-- Right Side - Login Form -->
                     <div class="max-lg:w-full lg:w-1/2">
                         <div class="flex h-full flex-col justify-center p-8 lg:p-12 lg:min-h-[600px]">
-                            <!-- Header -->
                             <div class="mb-8">
                                 <div class="mb-2 flex items-center gap-3">
                                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100">
@@ -72,12 +65,10 @@
                                 </p>
                             </div>
 
-                            <!-- Login Form -->
                             <div class="space-y-6">
                                 <LoginForm :admin="true" />
                             </div>
 
-                            <!-- Additional Info -->
                             <div class="mt-8 rounded-xl bg-sky-50 p-4">
                                 <div class="flex items-start gap-3">
                                     <i class="pi pi-info-circle mt-0.5 text-sky-600"></i>
@@ -90,7 +81,6 @@
                                 </div>
                             </div>
 
-                            <!-- Footer Links -->
                             <div class="mt-8 text-center">
                                 <p class="text-sm text-gray-500">
                                     Need help? 
@@ -104,7 +94,6 @@
                 </div>
             </div>
 
-            <!-- Copyright -->
             <div class="mt-8 text-center text-sm text-gray-500">
                 <p>&copy; 2025 All rights reserved. Powered by your store management system.</p>
             </div>
