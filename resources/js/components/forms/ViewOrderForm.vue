@@ -151,12 +151,7 @@ const orderStatus = (value: string) => {
         Confirmed: 'bg-green-200',
         Processing: 'bg-blue-200',
         Shipped: 'bg-purple-200',
-        "For delivery": 'bg-orange-200',
         Delivered: 'bg-green-600',
-        Released: 'bg-blue-600',
-        Cancelled: 'bg-red-200',
-        Refunded: 'bg-red-300',
-        Rejected: 'bg-red-300',
     }[value];
 }
 
