@@ -1,4 +1,4 @@
-import { getStoreRoles } from "@/enums/RoleEnum";
+import { RoleEnum } from "@/enums/RoleEnum";
 import UserView from "@/pages/user/UserView.vue";
 import { RouteRecordRaw } from "vue-router";
 
@@ -12,7 +12,7 @@ const route: RouteRecordRaw = {
             name: "admin.users.index",
             component: UserView,
             meta: {
-                access: getStoreRoles(),
+                access: [RoleEnum.ADMIN],
                 pageName: "User",
                 pageSubName: "Manage user efficiently",
             },

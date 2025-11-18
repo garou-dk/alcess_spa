@@ -27,6 +27,7 @@
             label="Inventory"
         />
         <SideBarButton
+            v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
             to="admin.users.index"
             icon="pi pi-users"
             label="Users"
@@ -69,6 +70,8 @@ import Logo from "@/../img/logo.png";
 import SideBarButton from "@/components/SideBarButton.vue";
 import SideBarAccordion from "@/components/SideBarAccordion.vue";
 import { useRoute } from "vue-router";
+import Page from "@/stores/Page";
+import { RoleEnum } from "@/enums/RoleEnum";
 
 const route = useRoute();
 </script>

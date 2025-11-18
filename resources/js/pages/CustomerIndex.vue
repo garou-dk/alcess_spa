@@ -4,24 +4,33 @@
             <nav class="p-2">
                 <Toolbar style="background-color: transparent; border: none">
                     <template #start>
-                        <RouterLink :to="{ name: 'home' }">
-                            <div class="flex">
-                                <div class="px-2">
-                                    <div class="rounded-full bg-white">
-                                        <img
-                                            :src="Icon"
-                                            class="h-16 w-16"
-                                            alt="Store Icon"
-                                        />
+                        <div class="flex items-center gap-2">
+                            <RouterLink :to="{ name: 'home' }">
+                                <div class="flex">
+                                    <div class="px-2">
+                                        <div class="rounded-full bg-white">
+                                            <img
+                                                :src="Icon"
+                                                class="h-16 w-16"
+                                                alt="Store Icon"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center px-2">
+                                        <h1 class="text-3xl font-bold text-white">
+                                            {{ appName }}
+                                        </h1>
                                     </div>
                                 </div>
-                                <div class="flex items-center px-2">
-                                    <h1 class="text-3xl font-bold text-white">
-                                        {{ appName }}
-                                    </h1>
-                                </div>
-                            </div>
-                        </RouterLink>
+                            </RouterLink>
+                            <Button
+                                icon="pi pi-facebook"
+                                rounded
+                                as="a"
+                                href="https://www.facebook.com/alcesslaptopstore"
+                                target="_blank"
+                            />
+                        </div>
                     </template>
                     <template #end>
                         <div v-if="Page.user" class="flex gap-5">
