@@ -26,7 +26,18 @@ class ApproveDeclineRequest extends FormRequest
     {
         return [
             'status' => ['required', 'string', 'max:255', Rule::in([OrderStatusEnum::CONFIRMED->value, OrderStatusEnum::REJECTED->value])],
-            'shipping_fee' => ['required', 'numeric', 'min:0'],
+            'shipping_fee' => [
+                Rule::requiredIf($this->input('status') === OrderStatusEnum::CONFIRMED->value), 
+                Rule::excludeIf($this->input('status') === OrderStatusEnum::REJECTED->value),
+                'numeric', 
+                'min:0'
+            ],
+            'remarks' => [
+                Rule::requiredIf($this->input('status') === OrderStatusEnum::REJECTED->value), 
+                Rule::excludeIf($this->input('status') === OrderStatusEnum::CONFIRMED->value),
+                'string', 
+                'max:255'
+            ],
         ];
     }
 }

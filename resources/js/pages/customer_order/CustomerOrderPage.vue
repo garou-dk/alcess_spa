@@ -54,6 +54,10 @@
                                         <p class="text-xs text-gray-600 mb-1">Status</p>
                                         <p class="font-semibold">{{ item.status }}</p>
                                     </div>
+                                    <div v-if="item.remarks">
+                                        <p class="text-xs text-gray-600 mb-1">Reason</p>
+                                        <p class="font-semibold">{{ item.remarks }}</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -314,13 +318,16 @@ import MarkAsDelivered from '@/components/forms/MarkAsDelivered.vue';
 import PaymentForm from '@/components/forms/PaymentForm.vue';
 import RateForm from '@/components/forms/RateForm.vue';
 import { IOrder } from '@/interfaces/IOrder';
+import { IOrderNotification } from '@/interfaces/IOrderNotification';
 import IProductOrder from '@/interfaces/IProductOrder';
 import { IRate } from '@/interfaces/IRate';
+import Page from '@/stores/Page';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import CurrencyUtil from '@/utils/CurrencyUtil';
 import DateUtil from '@/utils/DateUtil';
 import UrlUtil from '@/utils/UrlUtil';
-import { onMounted, ref, watch } from 'vue';
+import { useEcho } from '@laravel/echo-vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
@@ -349,7 +356,7 @@ const orderStatus = (value: string) => {
         'Released': 'bg-teal-50 border-l-4 border-teal-400',
         'Cancelled': 'bg-red-50 border-l-4 border-red-400',
         'Refunded': 'bg-pink-50 border-l-4 border-pink-400',
-        'Rejected': 'bg-gray-50 border-l-4 border-gray-400',
+        'Rejected': 'bg-red-50 border-l-4 border-red-400',
     };
     return statusMap[value] || 'bg-gray-50';
 };
@@ -448,7 +455,19 @@ const paymentModalCb = () => {
     load();
 };
 
+const { leave } = useEcho(
+    `detect-order.${Page.user.user_id}`,
+    [".customer-order.event"],
+    (value: IOrderNotification) => {
+        load();
+    },
+);
+
 onMounted(() => {
     load();
+});
+
+onUnmounted(() => {
+    leave();
 });
 </script>

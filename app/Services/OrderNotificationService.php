@@ -6,9 +6,10 @@ use App\Models\OrderNotification;
 
 class OrderNotificationService
 {
-    public function fetchNotifications() {
+    public function fetchNotifications(array $data) {
         return OrderNotification::query()
             ->with('user')
+            ->where('notification_to', $data['notification_to'])
             ->latest()
             ->limit(10)
             ->get();

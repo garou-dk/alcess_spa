@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="handleSubmit()">
         <p>Are you sure you want to change the status to <b>{{ form.status }}</b>?</p>
-        <div class="my-2">
+        <div class="my-2" v-if="form.status && form.status == 'Confirmed'" >
             <InputForm
                 :errors="errors.shipping_fee"
                 id="shipping_fee"
@@ -19,6 +19,22 @@
                     :min="0"
                     currency="PHP"
                     mode="currency"
+                />
+            </InputForm>
+        </div>
+        <div class="my-2" v-if="form.status && form.status == 'Rejected'">
+            <InputForm
+                :errors="errors.remarks"
+                id="remarks"
+                labelName="Remarks*"
+                tag="span"
+            >
+                <Textarea
+                    v-model="form.remarks"
+                    id="remarks"
+                    placeholder="Remarks"
+                    fluid
+                    :invalid="errors.remarks.length > 0"
                 />
             </InputForm>
         </div>
@@ -48,40 +64,57 @@ interface Props {
 interface IForm {
     status: string | null;
     shipping_fee: number | null;
+    remarks: string | null
 }
 
 interface IFormError {
     status: string[];
     shipping_fee: string[];
+    remarks: string[]
 }
 
 const props = defineProps<Props>();
 const submitService = useAxiosUtil<IForm, IOrder>();
 const form = reactive<IForm>({
     status: props.status,
-    shipping_fee: null
+    shipping_fee: null,
+    remarks: null
 });
 const errors = reactive<IFormError>({
     status: [],
-    shipping_fee: []
+    shipping_fee: [],
+    remarks: []
 })
 const toast = useToast();
 const emit = defineEmits(["cb", "closePopup"]);
 
+const clearErrors = () => {
+    errors.status = [];
+    errors.shipping_fee = [];
+    errors.remarks = [];
+}
+
 const validate = () => {
-    if (props.data.order_type === 'Delivery' && form.shipping_fee === null) {
+    clearErrors();
+    if (form.status && form.status == 'Confirmed' && props.data.order_type === 'Delivery' && form.shipping_fee === null) {
         errors.shipping_fee.push("Shipping fee is required.");
     }
     if (form.status === null) {
         errors.status.push("Status is required.");
     }
 
-    const hasErrors = [errors.shipping_fee.length > 0, errors.status.length > 0];
+    if (form.status && form.status == 'Rejected' && !form.remarks) {
+        errors.remarks.push("Remarks is required.");
+    }
+
+    const hasErrors = [errors.shipping_fee.length > 0, errors.status.length > 0, errors.remarks.length > 0];
     return hasErrors.includes(true) ? false : form;
 }
 
 const handleSubmit = async () => {
-    if (validate()) {
+    const result = validate();
+    
+    if (result) {
         if (props.data.order_type !== 'Delivery') {
             form.shipping_fee = 0;
         }

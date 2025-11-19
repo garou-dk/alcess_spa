@@ -239,6 +239,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::post('/{id}', 'addRate');
                 });
+
+            Route::controller(OrderNotificationController::class)
+                ->prefix('order-notifications')
+                ->group(function () {
+                    Route::get('/', 'index');
+                    Route::patch('/mark-as-read/{id}', 'markAsRead');
+                    Route::patch('/mark-all-as-read', 'markAllAsRead');
+                });
         });
 
     Route::controller(FileController::class)

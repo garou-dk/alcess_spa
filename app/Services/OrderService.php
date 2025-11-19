@@ -6,6 +6,8 @@ use App\Enums\FileDirectoryEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
+use App\Events\CustomerOrderEvent;
+use App\Events\DetectOrderChangeEvent;
 use App\Events\OrderNotificationEvent;
 use App\Models\Address;
 use App\Models\Order;
@@ -111,34 +113,53 @@ class OrderService
     }
 
     public function approveOrDecline(array $data) {
-        $order = Order::query();
+        return DB::transaction(function() use ($data) {
+            $order = Order::query();
 
-        if (!empty($data['user_id'])) {
-            $order = $order->where('user_id', $data['user_id']);
-        }
+            if (!empty($data['user_id'])) {
+                $order = $order->where('user_id', $data['user_id']);
+            }
 
-        $order = $order->where('order_id', $data['order_id'])
-            ->with(['productOrders.product'])
-            ->first();
+            $order = $order->where('order_id', $data['order_id'])
+                ->with(['productOrders.product'])
+                ->first();
 
-        abort_if(empty($order), 404, 'Order not found.');
+            abort_if(empty($order), 404, 'Order not found.');
 
-        abort_if($order->status != OrderStatusEnum::PENDING->value, 400, 'Order is not pending.');
+            abort_if($order->status != OrderStatusEnum::PENDING->value, 400, 'Order is not pending.');
 
-        abort_if($order->order_type == OrderTypeEnum::DELIVERY->value && !isset($data['shipping_fee']), 400, 'Shipping fee is required.');
+            $order->status = $data['status'];
+            $order->shipping_fee = $data['shipping_fee'] ?? 0;
+            $list = array_map(fn ($item) => $item['price'] * $item['quantity'], $order->productOrders->toArray());
+            $order->total_amount = array_sum($list) + $order->shipping_fee;
+            if ($data['status'] == OrderStatusEnum::REJECTED->value) {
+                $order->remarks = $data['remarks'];
+            }
+            
+            $order->save();
 
-        $order->status = $data['status'];
-        $order->shipping_fee = $data['shipping_fee'] ?? 0;
-        $list = array_map(fn ($item) => $item['price'] * $item['quantity'], $order->productOrders->toArray());
-        $order->total_amount = array_sum($list) + $order->shipping_fee;
-        
-        $order->save();
+            $order->refresh();
 
-        $order->refresh();
+            $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
 
-        $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
+            $orderStatus = $data['status'];
 
-        return $order;
+            $userId = $order->user_id;
+
+            $notifcationType = $data['status'] == OrderStatusEnum::CONFIRMED->value ? 'Confirmed Order' : 'Rejected Order';
+
+            $notification = OrderNotification::create([
+                'user_id'=> $userId,
+                'notification_type' => $notifcationType,
+                'notification_to' => 'Customer',
+                'message' => "Order has been {$orderStatus}",
+            ]);
+
+            CustomerOrderEvent::dispatch($notification->toArray(), $userId);
+            DetectOrderChangeEvent::dispatch($notification->toArray(), $userId);
+
+            return $order;
+        });
     }
 
     public function cancelOrder(array $data) {

@@ -2,7 +2,7 @@
     <div>
         <header class="bg-sky-800">
             <nav class="p-2">
-                <Toolbar style="background-color: transparent; border: none">
+                <Toolbar style="background-color: transparent; border: none" pt:end:class="max-lg:w-full">
                     <template #start>
                         <div class="flex items-center gap-2">
                             <RouterLink :to="{ name: 'home' }">
@@ -33,7 +33,7 @@
                         </div>
                     </template>
                     <template #end>
-                        <div v-if="Page.user" class="flex gap-5">
+                        <div v-if="Page.user" class="flex gap-5 justify-evenly w-full">
                             <div class="flex items-center">
                                 <RouterLink
                                     :to="{ name: 'customer.search-product' }"
@@ -45,6 +45,78 @@
                                         rounded
                                     />
                                 </RouterLink>
+                            </div>
+                            <!-- Notification Bell -->
+                            <div class="flex items-center">
+                                <button
+                                    type="button"
+                                    class="relative cursor-pointer"
+                                    @click="openNotifications"
+                                >
+                                    <Button
+                                        type="button"
+                                        icon="pi pi-bell"
+                                        severity="secondary"
+                                        rounded
+                                    />
+                                    <Badge 
+                                        v-if="unreadCount > 0"
+                                        :value="unreadCount"
+                                        severity="danger"
+                                        class="absolute -right-1 -top-1"
+                                    />
+                                </button>
+                                <Popover
+                                    ref="notificationElement"
+                                    :dismissable="true"
+                                >
+                                    <div class="w-80 sm:w-96">
+                                        <div class="border-b p-3">
+                                            <div class="flex items-center justify-between">
+                                                <h3 class="text-base sm:text-lg font-semibold">Notifications</h3>
+                                                <Button
+                                                    v-if="unreadCount > 0"
+                                                    type="button"
+                                                    label="Mark all read"
+                                                    text
+                                                    size="small"
+                                                    class="text-xs sm:text-sm"
+                                                    @click="markAllAsRead"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="max-h-96 overflow-y-auto">
+                                            <div
+                                                v-if="notifications.length === 0"
+                                                class="p-4 text-center text-gray-500 text-sm"
+                                            >
+                                                No notifications
+                                            </div>
+                                            <div
+                                                v-for="notification in notifications"
+                                                :key="notification.order_notification_id"
+                                                class="border-b p-3 hover:bg-gray-50 cursor-pointer transition-colors"
+                                                :class="{ 'bg-blue-50': !notification.is_read }"
+                                                @click="markAsRead(notification.order_notification_id)"
+                                            >
+                                                <div class="flex gap-2 sm:gap-3">
+                                                    <div class="flex-shrink-0">
+                                                        <i
+                                                            class="text-lg sm:text-xl pi pi-cart"
+                                                        />
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="font-medium text-sm sm:text-base truncate">{{ notification.message }}</p>
+                                                        <p class="text-xs text-gray-400 mt-1">{{ DateUtil.formatToMonthDayYear(notification.created_at) }} {{ DateUtil.timeStringAMPM(DateUtil.timeString(new Date(notification.created_at))) }}</p>
+                                                    </div>
+                                                    <div v-if="!notification.is_read" class="flex-shrink-0">
+                                                        <Badge value=" " severity="info" class="w-2 h-2" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Popover>
                             </div>
                             <div class="flex items-center">
                                 <CartButton />
@@ -128,6 +200,7 @@
         <div>
             <RouterView />
         </div>
+        
         <Dialog
             v-model:visible="loginFormVisible"
             modal
@@ -199,22 +272,28 @@
         </Dialog>
     </div>
 </template>
+
 <script setup lang="ts">
 import {
     SearchErrorInterface,
     SearchProductInterface,
 } from "@/interfaces/SearchProductInterface";
-import { reactive, ref } from "vue";
+import { reactive, ref, computed, onMounted, onUnmounted } from "vue";
 import Icon from "@/../img/logo.png";
 import Page from "@/stores/Page";
 import UrlUtil from "@/utils/UrlUtil";
-import { Popover } from "primevue";
+import { Popover, Badge } from "primevue";
 import LogoutButton from "@/components/LogoutButton.vue";
 import CartButton from "@/components/CartButton.vue";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import AddressForm from "@/components/forms/AddressForm.vue";
 import { useRouter } from "vue-router";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { IOrderNotification } from "@/interfaces/IOrderNotification";
+import { useToast } from "vue-toastification";
+import DateUtil from "@/utils/DateUtil";
+import { useEcho } from "@laravel/echo-vue";
 
 const appName = import.meta.env.VITE_APP_NAME;
 const form: SearchProductInterface = reactive({
@@ -223,16 +302,58 @@ const form: SearchProductInterface = reactive({
 const errors: SearchErrorInterface = reactive({
     search: [],
 });
+
 const avatarElement = ref<null | InstanceType<typeof Popover>>();
+const notificationElement = ref<null | InstanceType<typeof Popover>>();
 const loginFormVisible = ref<boolean>(false);
 const registerFormVisible = ref<boolean>(false);
 const addressForm = ref<boolean>(false);
 const router = useRouter();
 
+interface Notification {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+    icon: string;
+    color: string;
+}
+
+const notifications = ref<IOrderNotification[]>([
+]);
+
+const unreadCount = computed(() => {
+    return notifications.value.filter(n => !n.is_read).length;
+});
+
 const openAvatar = (event: Event) => {
     if (avatarElement.value) {
         avatarElement.value.toggle(event);
     }
+};
+
+const openNotifications = (event: Event) => {
+    if (notificationElement.value) {
+        notificationElement.value.toggle(event);
+    }
+};
+
+const submitMarkReadService = useAxiosUtil();
+
+const markAsRead = async (id: number) => {
+    const notification = notifications.value.find(n => n.order_notification_id === id);
+    if (notification && !notification.is_read) {
+        notification.is_read = true;
+    }
+    notificationElement.value?.hide();
+    router.push({ name: 'customer.order.index' });
+    await submitMarkReadService.patch(`customer/order-notifications/mark-as-read/${notification.order_notification_id}`, null).then(() => {
+    });
+};
+
+const markAllAsRead = () => {
+    notifications.value.forEach(n => n.is_read = true);
 };
 
 const openRegisterForm = () => {
@@ -260,5 +381,34 @@ const goToOrder = () => {
     addressForm.value = false;
     router.push({ name: "customer-order" });
     avatarElement.value?.hide();
-}
+};
+
+const loadService = useAxiosUtil<null, IOrderNotification[]>();
+const toast = useToast();
+
+const loadNotifications = async () => {
+    await loadService.get("customer/order-notifications").then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            notifications.value = loadService.request.data;
+        } else {
+            toast.error(loadService.request.message ?? "Failed to load notifications");
+        }
+    });
+};
+
+const { leave } = useEcho(
+    `order.${Page.user.user_id}`,
+    [".customer-order.event"],
+    (value: IOrderNotification) => {
+        notifications.value.unshift(value);
+    },
+);
+
+onMounted(() => {
+    loadNotifications();
+});
+
+onUnmounted(() => {
+    leave();
+});
 </script>

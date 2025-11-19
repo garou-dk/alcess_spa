@@ -231,8 +231,7 @@
                                         Shipping
                                     </span>
                                     <span class="font-bold text-green-600 flex items-center gap-1">
-                                        <i class="pi pi-check-circle text-xs"></i>
-                                        FREE
+                                        TBA
                                     </span>
                                 </div>
 

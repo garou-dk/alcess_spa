@@ -26,3 +26,11 @@ Broadcast::channel('admin-order-notification', function (User $user) {
 
     return in_array($user->role->role_name, RoleEnum::storeUsers());
 });
+
+Broadcast::channel('order.{id}', function ($user, $id) {
+    return (int) $user->user_id === (int) $id;
+});
+
+Broadcast::channel('detect-order.{id}', function ($user, $id) {
+    return (int) $user->user_id === (int) $id;
+});
