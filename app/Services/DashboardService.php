@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatusEnum;
 use App\Models\BatchProduct;
 use App\Models\Order;
 use App\Models\Product;
@@ -402,6 +403,57 @@ class DashboardService
                 'price' => round($item->price, 2),
                 'total' => round($item->total, 2),
                 'type' => $item->type,
+            ];
+        })->toArray();
+    }
+
+    public function getForDeliveryReport(array $data): array
+    {
+        $forDeliveryOrders = Order::with(['user', 'productOrders.product', 'barangay.municity.province.region.islandGroup'])
+            ->whereIn('status', [
+                OrderStatusEnum::SHIPPED->value,
+                OrderStatusEnum::FOR_DELIVERY->value,
+                OrderStatusEnum::DELIVERED->value,
+            ])
+            ->where('order_type', 'Delivery')
+            ->whereBetween('created_at', [
+                $data['start_date'],
+                $data['end_date'],
+            ])
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        return $forDeliveryOrders->map(function ($order) {
+            $products = $order->productOrders->map(function ($productOrder) {
+                return [
+                    'product_name' => $productOrder->product->product_name,
+                    'quantity' => $productOrder->quantity,
+                    'price' => round($productOrder->price, 2),
+                    'subtotal' => round($productOrder->quantity * $productOrder->price, 2),
+                ];
+            });
+            
+            return [
+                'order_id' => $order->order_id,
+                'order_public_id' => $order->order_public_id,
+                'customer_name' => $order->user->full_name,
+                'contact_number' => $order->contact_number,
+                'barangay_id' => $order->barangay_id,
+                'other_details' => $order->other_details,
+                'postal_code' => $order->postal_code,
+                'delivery_courier' => $order->delivery_courier,
+                'tracking_number' => $order->tracking_number,
+                'estimated_delivery_start' => $order->estimated_delivery_date_start,
+                'estimated_delivery_end' => $order->estimated_delivery_date_end,
+                'shipping_fee' => round($order->shipping_fee ?? 0, 2),
+                'total_amount' => round($order->total_amount, 2),
+                'payment_method' => $order->payment_method,
+                'date_paid_confirmed' => $order->date_paid_confirmed?->format('Y-m-d H:i:s'),
+                'products' => $products->toArray(),
+                'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                'days_in_delivery' => $order->created_at->diffInDays(now()),
+                'customer_received_date' => $order->customer_received_date,
+                'address' => "{$order->other_details}, {$order->barangay->barangay_name}, {$order->barangay->municity->municity_name}, {$order->barangay->municity->province->province_name}, {$order->barangay->municity->province->region->islandGroup->island_group_name}",
             ];
         })->toArray();
     }

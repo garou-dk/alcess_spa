@@ -177,6 +177,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::get('stock-in-out', 'getStockInOutReport');
                     Route::get('pending', 'getPendingOrders');
                     Route::get('sales-report', 'getRevenueReport');
+                    Route::get('delivery-report', 'getForDeliveryReport');
                 });
 
             Route::controller(RateController::class)

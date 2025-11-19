@@ -16,7 +16,7 @@
                                     label: 'Inventory Report',
                                     value: 'inventory',
                                 },
-                                // { label: 'Delivery Report', value: 'delivery' },
+                                { label: 'Delivery Report', value: 'delivery' },
                                 { label: 'List of Customers', value: 'order' },
                                 { label: 'Sales Report', value: 'sales' },
                             ]"
@@ -28,7 +28,7 @@
                         />
                     </InputForm>
                 </div>
-                <div v-if="selectedReport === 'sales'" class="grow">
+                <div v-if="selectedReport === 'sales' || selectedReport === 'delivery'" class="grow">
                     <InputForm
                         :errors="[]"
                         id="date-range"
@@ -58,7 +58,7 @@
         <BoxShadow class="mb-2">
             <div class="w-full p-5">
                 <InventoryReport v-if="selectedReport === 'inventory'" />
-                <DeliveryReport v-else-if="selectedReport === 'delivery'" />
+                <DeliveryReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'delivery' && startDate !== null && endDate !== null" />
                 <CustomerListReport v-else-if="selectedReport === 'order'" />
                 <SalesReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'sales' && startDate !== null && endDate !== null" />
             </div>

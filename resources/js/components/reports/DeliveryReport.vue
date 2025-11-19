@@ -8,7 +8,7 @@
                 @click="printReport()"
             />
         </div>
-        <div id="delivery-report">
+        <div v-if="!loadService.request.loading" id="delivery-report">
             <div
                 style="
                     display: flex;
@@ -115,18 +115,6 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Item Price
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
                             Address
                         </th>
                         <th
@@ -144,134 +132,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr v-for="(product, index) in data" :key="index">
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            Alice Bennett
+                            {{ product.customer_name }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-100239
+                            {{ product.order_public_id }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-20
+                            <span v-if="product.estimated_delivery_start && product.estimated_delivery_end">
+                                {{ DateUtil.formatToMonthDayYear(product.estimated_delivery_start) }} - {{ DateUtil.formatToMonthDayYear(product.estimated_delivery_end) }}
+                            </span>
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-23
+                            <span v-if="product.customer_received_date">
+                                {{ DateUtil.formatToMonthDayYear(product.customer_received_date) }}
+                            </span>
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            TRK582143
+                            {{ product.tracking_number }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱4,785.00
+                            {{ product.address }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
-                            742 Aspen Drive, Denver, CO
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱5,933.40
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            David Nguyen
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-100240
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-21
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-24
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            TRK613892
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱2,610.00
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            19 Westchester Ave, White Plains, NY
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱3,427.80
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Samantha Torres
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-100241
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-22
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-25
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            TRK904312
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱7,003.50
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            88 Lakeside Blvd, Austin, TX
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱8,166.40
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Michael Chan
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-100242
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-23
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-26
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            TRK123578
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱1,971.42
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            456 Ocean View, Santa Monica, CA
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱2,842.00
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            Natalie Brooks
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            INV-100243
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-24
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            2025-07-27
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            TRK779002
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱3,387.20
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            101 Elm Street, Portland, OR
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            ₱4,389.70
+                            {{ CurrencyUtil.formatCurrency(product.total_amount) }}
                         </td>
                     </tr>
                 </tbody>
@@ -281,17 +166,7 @@
             <div style="display: flex; justify-content: space-between">
                 <div style="width: 45%; text-align: center">
                     <span style="display: block; margin-top: 5px"
-                        >Henry Bennet</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
-                </div>
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Penelope Smith</span
+                        >Blademier S. Canalita</span
                     >
                     <small>{{
                         DateUtil.formatToMonthDayYear(
@@ -301,12 +176,81 @@
                 </div>
             </div>
         </div>
+        <div v-else class="flex justify-center p-2">
+            <PageLoader />
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
 import Page from "@/stores/Page";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
+import { onMounted, reactive, ref } from "vue";
+import { useToast } from "vue-toastification";
+
+interface IDeliveryReportData {
+    order_id: number;
+    order_public_id: string;
+    customer_name: string;
+    contact_number: string;
+    barangay_id: number;
+    other_details: string;
+    postal_code: string;
+    delivery_courier: string;
+    tracking_number: string;
+    estimated_delivery_start: string;
+    estimated_delivery_end: string;
+    shipping_fee: number;
+    total_amount: number;
+    payment_method: string;
+    date_paid_confirmed?: string;
+    products: Array<{
+        product_name: string;
+        quantity: number;
+        price: number;
+        subtotal: number;
+    }>;
+    created_at: string;
+    days_in_delivery: number;
+    customer_received_date: string | null;
+    address: string;
+}
+
+interface IForm {
+    start_date: string | null;
+    end_date: string | null;
+}
+
+interface Props {
+    startDate: string;
+    endDate: string;
+}
+
+
+const data = ref<IDeliveryReportData[]>([]);
+
+const loadService = useAxiosUtil<IForm, IDeliveryReportData[]>();
+
+const toast = useToast();
+
+const props = defineProps<Props>();
+
+const form : IForm = reactive({
+    start_date: props.startDate,
+    end_date: props.endDate,
+});
+
+const load = async () => {
+    await loadService.get("admin/dashboard/delivery-report", form).then(() => {
+        if (loadService.request.status === 200 && loadService.request.data) {
+            data.value = loadService.request.data;
+        } else {
+            toast.error(loadService.request.message ?? "No data found");
+        }
+    });
+}
 
 const printReport = () => {
     const printContents = document.getElementById("delivery-report")?.innerHTML;
@@ -320,4 +264,8 @@ const printReport = () => {
         printWindow.close();
     }
 };
+
+onMounted(() => {
+    load();
+});
 </script>
