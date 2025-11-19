@@ -11,6 +11,8 @@
                     :series="series2"
                     width="100%"
                     height="350"
+                    @click="showModal = true"
+                    style="cursor: pointer;"
                 />
             </div>
         </div>
@@ -18,12 +20,48 @@
             <PageLoader />
         </div>
     </BoxShadow>
+
+    <!-- PrimeVue Dialog Modal -->
+    <Dialog 
+        v-model:visible="showModal" 
+        modal 
+        header="Sales Data Table" 
+        :style="{ width: '50rem' }"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+        <DataTable 
+            :value="tableData" 
+            :paginator="false" 
+            responsiveLayout="scroll"
+            stripedRows
+        >
+            <Column field="day" header="Day" :sortable="true"></Column>
+            <Column field="date" header="Date" :sortable="true"></Column>
+            <Column field="orders_revenue" header="Orders Revenue" :sortable="true">
+                <template #body="slotProps">
+                    {{ CurrencyUtil.formatCurrency(slotProps.data.orders_revenue) }}
+                </template>
+            </Column>
+            <Column field="sale_items_revenue" header="Sale Items Revenue" :sortable="true">
+                <template #body="slotProps">
+                    {{ CurrencyUtil.formatCurrency(slotProps.data.sale_items_revenue) }}
+                </template>
+            </Column>
+            <Column field="total_revenue" header="Total Revenue" :sortable="true">
+                <template #body="slotProps">
+                    {{ CurrencyUtil.formatCurrency(slotProps.data.total_revenue) }}
+                </template>
+            </Column>
+        </DataTable>
+    </Dialog>
 </template>
+
 <script setup lang="ts">
 import useAxiosUtil from '@/utils/AxiosUtil';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import VueApexCharts from 'vue3-apexcharts';
+import CurrencyUtil from '@/utils/CurrencyUtil';
 
 interface SalesDataPoint {
     date: string;
@@ -33,23 +71,30 @@ interface SalesDataPoint {
     total_revenue: number;
 }
 
+const showModal = ref(false);
+const tableData = ref<SalesDataPoint[]>([]);
+
 const series2 = ref([
     {
         name: "Sales",
         data: [0, 0, 0, 0, 0, 0, 0],
     },
 ]);
+
 const chartOptions2 = ref({
     chart: {
         id: "weekly-sales-line",
         toolbar: {
             show: false,
         },
+        events: {
+            click: function() {
+                showModal.value = true;
+            }
+        }
     },
     xaxis: {
-        categories: [
-            
-        ],
+        categories: [],
     },
     stroke: {
         curve: "smooth",
@@ -76,12 +121,12 @@ const chartOptions2 = ref({
             text: "Sales (₱)",
         },
         labels: {
-            formatter: (val) => `₱${(val / 1000).toFixed(0)}k`,
+            formatter: (val) => CurrencyUtil.formatCurrency(val),
         },
     },
     tooltip: {
         y: {
-            formatter: (val) => `₱${val.toLocaleString("en-PH")}`,
+            formatter: (val) => CurrencyUtil.formatCurrency(val),
         },
     },
 });
@@ -92,6 +137,7 @@ const toast = useToast();
 const load = async () => {
     await loadService.get('admin/dashboard/7-day-sales').then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
+            tableData.value = loadService.request.data;
             series2.value[0].data = loadService.request.data.map((item) => item.total_revenue);
             chartOptions2.value.xaxis.categories = loadService.request.data.map((item) => item.day);
         }
