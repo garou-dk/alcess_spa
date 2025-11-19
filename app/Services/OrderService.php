@@ -310,6 +310,18 @@ class OrderService
                 $product->save();
             };
 
+            $userId = $order->user_id;
+
+            $notification = OrderNotification::create([
+                'user_id'=> $userId,
+                'notification_type' => 'To Ship',
+                'notification_to' => 'Customer',
+                'message' => "Your order has been shipped.",
+            ]);
+
+            CustomerOrderEvent::dispatch($notification->toArray(), $userId);
+            DetectOrderChangeEvent::dispatch($notification->toArray(), $userId);
+
             return $order;
         });
     }
