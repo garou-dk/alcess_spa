@@ -24,8 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
         
-        // Global middleware for security
-        $middleware->prepend(ForceHttps::class);
+        //Global middleware for security
+        //$middleware->prepend(ForceHttps::class);
         $middleware->append(SecurityHeaders::class);
         
         $middleware->alias([
