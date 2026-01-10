@@ -1,0 +1,22 @@
+/* Modern Input Field */
+.input-modern {
+  @apply w-full px-4 py-2.5 rounded-modern border border-gray-300;
+  @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+  @apply transition-all duration-200;
+  @apply placeholder:text-gray-400;
+}
+
+/* Input with Icon */
+.input-with-icon {
+  @apply pl-10;
+}
+
+/* Input Icon Wrapper */
+.input-icon-wrapper {
+  @apply relative;
+}
+
+/* Input Icon */
+.input-icon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+}

@@ -1,14 +1,20 @@
 <template>
-    <div class="flex flex-col gap-1" :class="props.addClass">
-        <label v-if="props.tag === 'label'" :for="props.id">{{
-            props.labelName
-        }}</label>
-        <span v-else>{{ props.labelName }}</span>
+    <div class="flex flex-col" :class="props.addClass">
+        <label 
+            v-if="props.tag === 'label'" 
+            :for="props.id"
+            class="block text-sm font-medium text-gray-700 mb-2"
+        >
+            {{ props.labelName }}
+        </label>
+        <span v-else class="block text-sm font-medium text-gray-700 mb-2">
+            {{ props.labelName }}
+        </span>
         <slot />
         <span
             v-for="(error, index) in props.errors"
             :key="index"
-            class="first-letter-cap text-sm text-red-500"
+            class="block mt-1 text-sm text-red-600"
         >
             {{ error }}
         </span>

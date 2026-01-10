@@ -28,6 +28,9 @@ class SaleService
                 "sale_code" => Uuid::uuid4()->toString(),
                 "user_id" => $user->user_id,
                 "total_amount" => $total_amount,
+                "customer_name" => $data["customer_name"],
+                "customer_address" => $data["customer_address"],
+                "prepared_by" => $data["prepared_by"],
                 "payment_method" => $data["payment_method"]
             ]);
             $products = [];
@@ -61,5 +64,27 @@ class SaleService
         abort_if(empty($sale), 404, 'Sale not found');
 
         return $sale;
+    }
+
+    public function getTodayStats() {
+        $today = now()->startOfDay();
+        
+        $stats = Sale::query()
+            ->whereDate('created_at', $today)
+            ->selectRaw('COUNT(*) as total_transactions, COALESCE(SUM(total_amount), 0) as total_sales')
+            ->first();
+
+        return [
+            'total_sales' => $stats->total_sales ?? 0,
+            'total_transactions' => $stats->total_transactions ?? 0,
+        ];
+    }
+
+    public function getAllSales() {
+        return Sale::query()
+            ->with(['saleItems.product', 'user'])
+            ->whereDoesntHave('order') // Only show POS sales, not sales generated from online orders
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }

@@ -6,6 +6,9 @@ interface ISale {
     sale_code: string;
     user_id: number;
     total_amount: number;
+    customer_name: string;
+    customer_address: string;
+    prepared_by: string;
     created_at: string;
     sale_items: ISaleItem[];
     user: UserInterface;

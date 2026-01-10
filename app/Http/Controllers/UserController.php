@@ -11,6 +11,7 @@ use App\Http\Requests\ChangeUserStatusRequest;
 use App\Http\Requests\FetchUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -122,9 +123,14 @@ class UserController extends Controller
             ->response();
     }
 
-    public function customerList() {
+    public function customerList(Request $request) {
+        $data = $request->validate([
+            'start_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'end_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+        ]);
+        
         return ApiResponse::success()
-            ->data($this->service->customerList())
+            ->data($this->service->customerList($data))
             ->response();
     }
 }

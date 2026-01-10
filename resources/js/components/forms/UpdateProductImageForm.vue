@@ -3,102 +3,61 @@
         <!-- Header Section -->
         <div class="mb-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Product Image</h2>
-            <p class="text-sm text-gray-600">Upload or update your product image</p>
+            <p class="text-sm text-gray-600">Upload or update your product image (optional)</p>
         </div>
 
-        <!-- Image Upload Card -->
+        <!-- Image Upload Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="mb-2 p-2">
-                <InputForm
-                    :errors="errors.product_image"
-                    id="product_image"
-                    label-name="Product Image"
-                    tag="label"
-                >
+            <div class="flex flex-col items-center">
+                <!-- Preview -->
+                <div v-if="result.blobURL || props.data.product_image" class="mb-4">
+                    <img 
+                        :src="result.blobURL || UrlUtil.getBaseAppUrl(`storage/images/product/${props.data.product_image}`)" 
+                        alt="Product Preview" 
+                        class="w-64 h-64 object-cover rounded-lg border-2 border-gray-300" 
+                    />
+                </div>
+                
+                <!-- Upload Button -->
+                <div class="w-full max-w-md">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
                     <input
                         ref="uploadInput"
                         type="file"
-                        name="product_image"
-                        id="product_image"
-                        class="hidden"
-                        accept="image/png, image/jpeg, image/jpg"
-                        @change="onFileSelect"
+                        accept="image/*"
+                        @change="selectFile"
+                        class="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100
+                            cursor-pointer"
                     />
+                    <p class="text-xs text-gray-500 mt-2">Recommended: Square image, at least 500x500px</p>
+                </div>
 
-                    <!-- Current Image Display -->
-                    <div
-                        v-if="!form.product_image && !result.dataURL && props.data.product_image"
-                        class="mb-2 flex justify-center"
-                    >
-                        <Image
-                            :src="UrlUtil.getBaseAppUrl(`storage/images/product/${props.data.product_image}`)"
-                            class="h-64 w-64 rounded border border-gray-300 object-cover"
-                        />
-                    </div>
-
-                    <!-- Upload Prompt -->
-                    <button
-                        v-if="!form.product_image && !result.dataURL"
-                        type="button"
-                        class="w-full cursor-pointer border-2 border-dashed border-blue-400 rounded-lg p-12 hover:border-blue-600 hover:bg-blue-50 transition-all duration-200 group"
-                        @click="selectImage()"
-                    >
-                        <div class="flex flex-col items-center gap-3">
-                            <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
-                                <i class="pi pi-cloud-upload text-3xl text-blue-600"></i>
-                            </div>
-                            <span class="text-lg font-semibold text-gray-800">Select an Image</span>
-                            <span class="text-sm text-gray-600">PNG, JPG or JPEG</span>
-                        </div>
-                    </button>
-
-                    <!-- Preview Section -->
-                    <div v-else class="flex flex-col">
-                        <div class="flex justify-center mb-4">
-                            <div class="relative">
-                                <img
-                                    :src="result.dataURL"
-                                    class="h-64 w-64 rounded-lg border-2 border-green-400 object-cover shadow-lg"
-                                    alt="User Image"
-                                />
-                                <div class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1">
-                                    <i class="pi pi-check"></i>
-                                    Ready
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2 flex flex-wrap justify-center gap-2">
-                            <Button
-                                type="button"
-                                label="Change Image"
-                                icon="pi pi-pencil"
-                                class="primary-bg"
-                                @click="selectImage"
-                            />
-                            <Button
-                                type="button"
-                                label="Remove Image"
-                                icon="pi pi-trash"
-                                severity="danger"
-                                @click="
-                                    form.product_image = null;
-                                    result.dataURL = '';
-                                    result.blobURL = '';
-                                "
-                            />
-                        </div>
-                    </div>
-                </InputForm>
+                <!-- Clear Button -->
+                <button
+                    v-if="result.blobURL"
+                    type="button"
+                    @click="clearImage"
+                    class="mt-4 text-sm text-red-600 hover:text-red-700"
+                >
+                    <i class="pi pi-times mr-1"></i>
+                    Remove Image
+                </button>
             </div>
         </div>
 
-        <!-- Save Button -->
-        <div v-if="form.product_image" class="flex justify-center mt-6">
+        <!-- Next Button -->
+        <div v-if="form.product_image" class="flex justify-end mt-6">
             <Button
                 type="submit"
-                label="Save Image"
-                icon="pi pi-save"
-                class="primary-bg px-6 py-2"
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                 :loading="submitService.request.loading"
             />
         </div>
@@ -108,8 +67,14 @@
             v-model:visible="showCropperModal"
             modal
             header="Crop Image"
+            :dismissableMask="true"
             :style="{ width: '28rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :pt="{
+                header: { class: '!bg-blue-600 !text-white' },
+                closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
+                closeButtonIcon: { class: '!text-white' }
+            }"
         >
             <VuePictureCropper
                 :boxStyle="{
@@ -125,12 +90,12 @@
                     aspectRatio: 1,
                 }"
             />
-            <div class="mt-2 flex justify-center">
+            <div class="mt-4 flex justify-end pt-4 border-t border-gray-200">
                 <Button
                     type="button"
                     label="Crop Image"
-                    icon="pi pi-image"
-                    class="primary-bg"
+                    icon="pi pi-check"
+                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                     @click="getCropResult()"
                 />
             </div>
@@ -190,24 +155,25 @@ const selectImage = () => {
     }
 };
 
-const onFileSelect = (e: Event) => {
-    img.value = "";
-    result.dataURL = "";
-    result.blobURL = "";
-    form.product_image = null;
+const selectFile = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
 
-    const { files } = e.target as HTMLInputElement;
-    if (!files || !files.length) return;
-
-    const file = files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
         img.value = String(reader.result);
         showCropperModal.value = true;
         if (!uploadInput.value) return;
-        uploadInput.value.value = "";
+        uploadInput.value.value = '';
     };
+};
+
+const clearImage = () => {
+    form.product_image = null;
+    result.dataURL = '';
+    result.blobURL = '';
 };
 
 const getCropResult = async () => {
@@ -216,11 +182,11 @@ const getCropResult = async () => {
     const blob: Blob | null = await cropper.getBlob();
     if (!blob) return;
     const file = await cropper.getFile({
-        fileName: "cropped-image",
+        fileName: 'product-image',
     });
+    form.product_image = file;
     result.dataURL = base64;
     result.blobURL = URL.createObjectURL(blob);
-    form.product_image = file;
     showCropperModal.value = false;
 };
 
@@ -254,8 +220,9 @@ const handleSubmit = async () => {
                     submitService.request.status === 200 &&
                     submitService.request.data
                 ) {
-                    toast.success(submitService.request.message);
-                    emit("cb", submitService.request.data);
+                    toast.success("Product image saved. Continue to add specifications.");
+                    // Pass false to keep modal open and move to next tab
+                    emit("cb", submitService.request.data, false);
                     clearForm();
                 } else {
                     toast.error(

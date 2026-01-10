@@ -102,6 +102,7 @@
                 type="submit"
                 label="Save"
                 icon="pi pi-save"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
             />
         </div>
     </form>

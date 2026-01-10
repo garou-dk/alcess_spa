@@ -12,6 +12,9 @@ class Sale extends Model
         "sale_code",
         "user_id",
         "total_amount",
+        "customer_name",
+        "customer_address",
+        "prepared_by",
         "payment_method"
     ];
 
@@ -21,5 +24,9 @@ class Sale extends Model
 
     public function saleItems() {
         return $this->hasMany(SaleItem::class,'sale_id','sale_id');
+    }
+
+    public function order() {
+        return $this->hasOne(Order::class, 'sale_id', 'sale_id');
     }
 }

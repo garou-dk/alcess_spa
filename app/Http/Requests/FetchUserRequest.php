@@ -24,7 +24,7 @@ class FetchUserRequest extends FormRequest
         return [
             'search' => ['nullable', 'string'],
             'status' => ['nullable', 'integer', 'in:0,1'],
-            'role_id' => ['required', 'integer', 'exists:roles,role_id'],
+            'role_id' => ['nullable', 'integer', 'exists:roles,role_id'],
             'limit' => ['nullable', 'integer', 'min:1'],
         ];
     }

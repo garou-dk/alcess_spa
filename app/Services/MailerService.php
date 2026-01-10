@@ -53,6 +53,6 @@ class MailerService
         ]);
 
         $formattedDate = Carbon::parse($expiration)->format('F j, Y \a\t h:i A');
-        Mail::send(new SendVerificationMail($user->email, $link, $formattedDate));
+        Mail::queue(new SendVerificationMail($user->email, $link, $formattedDate));
     }
 }

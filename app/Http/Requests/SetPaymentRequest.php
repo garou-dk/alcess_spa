@@ -24,7 +24,8 @@ class SetPaymentRequest extends FormRequest
         return [
             'payment_proof' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/jpg', 'max:10048'],
             'bank_name' => ['required', 'string', 'max:255'],
-            'transaction_number' => ['required', 'string', 'max:255'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'contact_number' => ['required', 'string', 'max:20'],
         ];
     }
 }

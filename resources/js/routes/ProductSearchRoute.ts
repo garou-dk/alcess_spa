@@ -3,18 +3,28 @@ import ProductSearch from "@/pages/product/ProductSearch.vue";
 import { RouteRecordRaw } from "vue-router";
 
 const route: RouteRecordRaw = {
-    path: "search-product",
-    name: "search-product",
+    path: "products",
+    name: "products",
     redirect: { name: "home" },
     children: [
         {
-            path: "",
+            path: "search",
             name: "customer.search-product",
             component: ProductSearch,
             meta: {
                 access: getStoreCustomers(),
                 pageName: "Search Product",
                 pageSubName: "Search Product",
+            },
+        },
+        {
+            path: "browse",
+            name: "customer.browse-products",
+            component: ProductSearch,
+            meta: {
+                access: getStoreCustomers(),
+                pageName: "Browse Products",
+                pageSubName: "Browse Products",
             },
         },
     ],

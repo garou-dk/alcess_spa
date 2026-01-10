@@ -23,7 +23,7 @@ class SetBankAccountRequest extends FormRequest
     {
         return [
             'account_number' => ['required', 'string', 'max:255'],
-            'screenshot' => ['required', 'file', 'mimetypes:image/jpeg,image/png', 'max:10048'],
+            'screenshot' => ['nullable', 'file', 'mimetypes:image/jpeg,image/png', 'max:10048'],
         ];
     }
 }

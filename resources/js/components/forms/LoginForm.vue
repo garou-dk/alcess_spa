@@ -42,7 +42,7 @@
                 label="Login"
                 :loading="authService.request.loading"
                 fluid
-                pt:root:class="bg-sky-800! rounded-3xl!"
+                pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!"
             />
         </div>
         <slot name="footer" />
@@ -98,26 +98,33 @@ const validate = () => {
     return hasErrors.includes(true) ? false : form;
 };
 
+const emit = defineEmits(['success']);
+
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
         await authService
             .post(props.admin ? "admin/login" : "login", data)
-            .then(() => {
+            .then(async () => {
                 if (
                     authService.request.status === 200 &&
                     authService.request.data
                 ) {
                     Page.user = authService.request.data;
+                    
+                    // Navigate first
                     if (
                         getStoreRoles().includes(
                             Page.user.role.role_name as RoleEnum,
                         )
                     ) {
-                        router.push({ name: "admin.app" });
+                        await router.push({ name: "admin.app" });
                     } else {
-                        router.push({ name: "customer.home.index" });
+                        await router.push({ name: "customer.home.index" });
                     }
+                    
+                    // Then close modal after navigation completes
+                    emit('success');
                 } else {
                     toast.error(
                         authService.request.message ?? "Please try again.",

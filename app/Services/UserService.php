@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\FileDirectoryEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -63,7 +64,13 @@ class UserService
         if (isset($data['status'])) {
             $user->where('is_active', $data['status']);
         }
-        $user->where('role_id', $data['role_id']);
+        if (! empty($data['role_id'])) {
+            $user->where('role_id', $data['role_id']);
+        }
+
+        // Order by role_id first (Admin=1, Staff=2, Customer=3), then by newest
+        $user->orderBy('role_id', 'asc')
+             ->orderBy('created_at', 'desc');
 
         return $user->paginate($data['limit'] ?? 5);
     }
@@ -147,10 +154,16 @@ class UserService
         return $user;
     }
 
-    public function customerList() {
-        return User::query()
+    public function customerList(array $data = []) {
+        $query = User::query()
             ->with(['address.barangay.municity.province.region.islandGroup'])
-            ->where('role_id', 3)
-            ->get();
+            ->where('role_id', 3);
+        
+        // Apply date range filter if provided
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $query->whereBetween(DB::raw('DATE(created_at)'), [$data['start_date'], $data['end_date']]);
+        }
+        
+        return $query->orderBy('created_at', 'desc')->get();
     }
 }

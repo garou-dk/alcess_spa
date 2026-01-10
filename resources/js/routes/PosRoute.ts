@@ -14,8 +14,8 @@ const route: RouteRecordRaw = {
             component: PosView,
             meta: {
                 access: getStoreRoles(),
-                pageName: "Sales",
-                pageSubName: "Streamline Sales, Boost Efficiency",
+                pageName: "Orders",
+                pageSubName: "Streamline Orders, Boost Efficiency",
             },
         },
         {
@@ -24,8 +24,8 @@ const route: RouteRecordRaw = {
             component: PosDetails,
             meta: {
                 access: getStoreRoles(),
-                pageName: "Sales",
-                pageSubName: "Streamline Sales, Boost Efficiency",
+                pageName: "Orders",
+                pageSubName: "Streamline Orders, Boost Efficiency",
             },
         }
     ],

@@ -1,49 +1,97 @@
 <template>
     <div>
-        <form @submit.prevent="handleSubmit()" v-if="!loadService.request.loading" class="flex flex-col gap-2">
-            <div v-if="defaultValues && defaultValues.screenshot.value">
-                <div>
-                    <p class="font-semibold text-center">Store QR Code</p>
+        <form @submit.prevent="handleSubmit()" v-if="!loadService.request.loading" class="flex flex-col gap-4">
+            <!-- Store QR Code -->
+            <div v-if="defaultValues && defaultValues.screenshot.value" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <p class="font-semibold text-center mb-3">Store QR Code</p>
+                <div class="flex justify-center mb-3">
+                    <img :src="UrlUtil.getBaseApiUrl(ssLink)" alt="Store QR Code" class="w-64 h-64 object-contain" />
                 </div>
-                <img :src="UrlUtil.getBaseApiUrl(ssLink)" alt="Screenshot of QR Code" class="w-full" />
-                <div>
-                    <p class="text-center">E-Wallet Account Number : {{ defaultValues.bank_account.value }}</p>
-                </div>
+                <p class="text-center text-sm text-gray-700">E-Wallet Account Number: <span class="font-semibold">{{ defaultValues.bank_account.value }}</span></p>
             </div>
+
+            <!-- Customer Name -->
+            <div>
+                <InputForm
+                    :errors="errors.customer_name"
+                    id="customer_name"
+                    labelName="Name*"
+                    tag="label"
+                >
+                    <InputText
+                        v-model="form.customer_name"
+                        id="customer_name"
+                        type="text"
+                        placeholder="Enter your name"
+                        fluid
+                        :invalid="errors.customer_name.length > 0"
+                    />
+                </InputForm>
+            </div>
+
+            <!-- Contact Number -->
+            <div>
+                <InputForm
+                    :errors="errors.contact_number"
+                    id="contact_number"
+                    labelName="Contact Number*"
+                    tag="label"
+                >
+                    <InputText
+                        v-model="form.contact_number"
+                        id="contact_number"
+                        type="text"
+                        placeholder="Enter your contact number"
+                        fluid
+                        :invalid="errors.contact_number.length > 0"
+                    />
+                </InputForm>
+            </div>
+
+            <!-- Amount (View Only) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                <InputText
+                    :model-value="CurrencyUtil.formatCurrency(order.total_amount || 0)"
+                    readonly
+                    disabled
+                    fluid
+                    class="!bg-gray-100 !font-bold !text-lg"
+                />
+            </div>
+
+            <!-- Date (View Only - Current Date) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                <InputText
+                    :model-value="currentDate"
+                    readonly
+                    disabled
+                    fluid
+                    class="!bg-gray-100"
+                />
+            </div>
+
+            <!-- E-Wallet -->
             <div>
                 <InputForm
                     :errors="errors.bank_name"
                     id="bank_name"
-                    labelName="Bank Name/E-Wallet*"
+                    labelName="E-Wallet*"
                     tag="label"
                 >
                     <InputText
                         v-model="form.bank_name"
                         id="bank_name"
                         type="text"
-                        placeholder="Enter bank/e-wallet name"
+                        placeholder="Enter e-wallet name"
                         fluid
                         :invalid="errors.bank_name.length > 0"
                     />
                 </InputForm>
             </div>
-            <div>
-                <InputForm
-                    :errors="errors.transaction_number"
-                    id="transaction_number"
-                    labelName="Transaction Number*"
-                    tag="label"
-                >
-                    <InputText
-                        v-model="form.transaction_number"
-                        id="transaction_number"
-                        type="text"
-                        placeholder="Enter transaction number"
-                        fluid
-                        :invalid="errors.transaction_number.length > 0"
-                    />
-                </InputForm>
-            </div>
+
+            <!-- Upload Screenshot -->
             <div>
                 <InputForm
                     :errors="errors.payment_proof"
@@ -51,9 +99,7 @@
                     labelName="Proof of Payment (Screenshot/Image)*"
                     tag="span"
                 >
-                    <div
-                        v-if="selectedFile"
-                    >
+                    <div v-if="selectedFile">
                         <InputGroup>
                             <InputText
                                 :model-value="selectedFile.name"
@@ -69,16 +115,34 @@
                             </InputGroupAddon>
                         </InputGroup>
                     </div>
-                    <Button v-else label="Upload Screenshot" icon="pi pi-upload" @click="fileElement.click()" />
+                    <Button 
+                        v-else 
+                        label="Upload Screenshot" 
+                        icon="pi pi-upload" 
+                        @click="fileElement.click()" 
+                        type="button"
+                        class="w-full !bg-blue-600 hover:!bg-blue-700"
+                    />
                 </InputForm>
             </div>
-            <div class="flex justify-center mt-3">
+
+            <!-- Footer Buttons -->
+            <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-200">
+                <Button
+                    type="button"
+                    label="Cancel"
+                    icon="pi pi-times"
+                    @click="emit('closePopup')"
+                    severity="secondary"
+                    outlined
+                />
                 <Button
                     type="submit"
                     label="Submit"
                     icon="pi pi-save"
-                    class="primary-bg"
+                    class="!bg-blue-600 hover:!bg-blue-700"
                     :loading="submitService.request.loading"
+                    :disabled="!isFormValid"
                 />
             </div>
         </form>
@@ -93,7 +157,9 @@ import { IAppConfiguration } from '@/interfaces/IAppConfiguration';
 import { IOrder } from '@/interfaces/IOrder';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import UrlUtil from '@/utils/UrlUtil';
-import { onMounted, reactive, ref, watch } from 'vue';
+import CurrencyUtil from '@/utils/CurrencyUtil';
+import DateUtil from '@/utils/DateUtil';
+import { onMounted, reactive, ref, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 
 interface IReceivedData {
@@ -108,18 +174,36 @@ interface Props {
 interface IForm {
     payment_proof: File | null;
     bank_name: string | null;
-    transaction_number: string | null;
+    customer_name: string | null;
+    contact_number: string | null;
 }
 
 interface IFormError {
     payment_proof: string[];
     bank_name: string[];
-    transaction_number: string[];
+    customer_name: string[];
+    contact_number: string[];
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits(["cb", "closePopup"]);
 const toast = useToast();
+
+const currentDate = computed(() => {
+    return DateUtil.formatToMonthDayYear(new Date().toISOString());
+});
+
+const isFormValid = computed(() => {
+    return !!(
+        form.customer_name && 
+        form.customer_name.trim() !== '' &&
+        form.contact_number && 
+        form.contact_number.trim() !== '' &&
+        form.bank_name && 
+        form.bank_name.trim() !== '' &&
+        form.payment_proof
+    );
+});
 
 const fileElement = ref<HTMLInputElement>();
 
@@ -148,13 +232,15 @@ watch(selectedFile, () => {
 const form = reactive<IForm>({
     payment_proof: null,
     bank_name: null,
-    transaction_number: null
+    customer_name: null,
+    contact_number: null
 });
 
 const errors = reactive<IFormError>({
     payment_proof: [],
     bank_name: [],
-    transaction_number: []
+    customer_name: [],
+    contact_number: []
 });
 
 const loadService = useAxiosUtil<null, IReceivedData>();
@@ -175,6 +261,10 @@ const load = async () => {
             toast.error(loadService.request.message ?? "Failed to load settings");
         }
     });
+    
+    // Pre-fill customer name and contact number from order
+    form.customer_name = props.order.user?.full_name || '';
+    form.contact_number = props.order.contact_number || '';
 }
 
 const clearErrors = () => {
@@ -184,20 +274,25 @@ const clearErrors = () => {
 };
 
 const clearForm = () => {
-    form.transaction_number = null;
+    form.bank_name = null;
+    form.customer_name = null;
+    form.contact_number = null;
     selectedFile.value = null;
 }
 
 const validate = () => {
     clearErrors();
-    if (!form.transaction_number) {
-        errors.transaction_number.push("Transaction number is required");
+    if (!form.customer_name || form.customer_name.trim() === '') {
+        errors.customer_name.push("Name is required");
+    }
+    if (!form.contact_number || form.contact_number.trim() === '') {
+        errors.contact_number.push("Contact number is required");
+    }
+    if (!form.bank_name || form.bank_name.trim() === '') {
+        errors.bank_name.push("E-wallet is required");
     }
     if (!form.payment_proof) {
         errors.payment_proof.push("Payment proof is required");
-    }
-    if (!form.bank_name) {
-        errors.bank_name.push("Bank name is required");
     }
     return Object.keys(errors).every((key) => errors[key].length === 0);
 }
@@ -207,7 +302,8 @@ const submitService = useAxiosUtil<FormData, IOrder>();
 const handleSubmit = async () => {
     if (validate()) {
         const newForm = new FormData();
-        newForm.append("transaction_number", form.transaction_number ?? "");
+        newForm.append("customer_name", form.customer_name ?? "");
+        newForm.append("contact_number", form.contact_number ?? "");
         newForm.append("payment_proof", form.payment_proof ?? "");
         newForm.append("bank_name", form.bank_name ?? "");
         await submitService.patchFormData(`customer/orders/set-payment/${props.order.order_id}`, newForm).then(() => {

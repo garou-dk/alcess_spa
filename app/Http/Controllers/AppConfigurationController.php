@@ -32,18 +32,25 @@ class AppConfigurationController extends Controller
 
     public function setBankAccount(SetBankAccountRequest $request) {
         $data = $request->validated();
-        $fileService = new ManageFileService();
 
-        $screenshot = $fileService->saveFile($data['screenshot'], FileDirectoryEnum::CONFIGURATION_IMAGE->value);
+        // Only update screenshot if a new file was uploaded
+        if (isset($data['screenshot']) && $data['screenshot'] instanceof \Illuminate\Http\UploadedFile) {
+            $fileService = new ManageFileService();
+            $screenshot = $fileService->saveFile($data['screenshot'], FileDirectoryEnum::CONFIGURATION_IMAGE->value);
 
-        $ss = $this->service->updateConfiguration([
-            'key' => AppConfigurationEnum::OnlineBankScreenShot->value,
-            'value' => $screenshot['file_name']
-        ]);
+            $this->service->updateConfiguration([
+                'key' => AppConfigurationEnum::OnlineBankScreenShot->value,
+                'value' => $screenshot['file_name']
+            ]);
+        }
 
         $account = $this->service->updateConfiguration([
             'key' => AppConfigurationEnum::OnlineBankAccount->value,
             'value' => $data['account_number']
+        ]);
+
+        $ss = $this->service->getConfiguration([
+            'key' => AppConfigurationEnum::OnlineBankScreenShot->value
         ]);
 
         return ApiResponse::success()

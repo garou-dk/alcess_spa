@@ -60,7 +60,7 @@
                                 type="button"
                                 label="Change Image"
                                 icon="pi pi-pencil"
-                                class="primary-bg"
+                                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                                 @click="selectImage"
                             />
                             <Button
@@ -83,7 +83,7 @@
                     type="submit"
                     label="Save"
                     icon="pi pi-save"
-                    class="primary-bg"
+                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                     :loading="submitService.request.loading"
                 />
             </div>
@@ -94,6 +94,11 @@
             header="Crop Image"
             :style="{ width: '28rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :pt="{
+                header: { class: '!bg-blue-600 !text-white' },
+                closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
+                closeButtonIcon: { class: '!text-white' }
+            }"
         >
             <VuePictureCropper
                 :boxStyle="{
@@ -114,7 +119,7 @@
                     type="button"
                     label="Crop Image"
                     icon="pi pi-image"
-                    class="primary-bg"
+                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                     @click="getCropResult()"
                     :loading="imageProcessing"
                 />

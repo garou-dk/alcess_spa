@@ -1,19 +1,51 @@
 <template>
-    <form @submit.prevent="handleSubmit()" class="p-6 max-w-7xl mx-auto">
+    <form @submit.prevent="handleSubmit()" :class="responsive.getResponsiveClasses({
+        mobile: 'p-3 w-full',
+        tablet: 'p-4 max-w-4xl mx-auto',
+        desktop: 'p-6 max-w-7xl mx-auto'
+    })">
         <!-- Header Section -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Product Information</h2>
-            <p class="text-sm text-gray-600">Fill in the details below to add a new product</p>
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'mb-4',
+            tablet: 'mb-6',
+            desktop: 'mb-8'
+        })">
+            <h2 :class="responsive.getResponsiveClasses({
+                mobile: 'text-lg font-bold text-gray-800 mb-2',
+                tablet: 'text-xl font-bold text-gray-800 mb-2',
+                desktop: 'text-2xl font-bold text-gray-800 mb-2'
+            })">Product Information</h2>
+            <p :class="responsive.getResponsiveClasses({
+                mobile: 'text-xs text-gray-600',
+                tablet: 'text-sm text-gray-600',
+                desktop: 'text-sm text-gray-600'
+            })">Fill in the details below to add a new product</p>
         </div>
 
         <!-- Basic Information Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4',
+            tablet: 'bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6',
+            desktop: 'bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6'
+        })">
+            <h3 :class="responsive.getResponsiveClasses({
+                mobile: 'text-base font-semibold text-gray-800 mb-3 flex items-center',
+                tablet: 'text-lg font-semibold text-gray-800 mb-4 flex items-center',
+                desktop: 'text-lg font-semibold text-gray-800 mb-4 flex items-center'
+            })">
                 <i class="pi pi-info-circle mr-2 text-blue-600"></i>
                 Basic Information
             </h3>
-            <div class="flex flex-wrap -mx-2">
-                <div class="p-2 max-lg:w-full lg:w-1/3">
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'space-y-4',
+                tablet: 'flex flex-wrap -mx-2',
+                desktop: 'flex flex-wrap -mx-2'
+            })">
+                <div :class="responsive.getResponsiveClasses({
+                    mobile: 'w-full',
+                    tablet: 'p-2 max-lg:w-full lg:w-1/3',
+                    desktop: 'p-2 max-lg:w-full lg:w-1/3'
+                })">
                     <InputForm
                         :errors="errors.product_name"
                         tag="label"
@@ -31,7 +63,11 @@
                         />
                     </InputForm>
                 </div>
-                <div class="p-2 max-lg:w-full lg:w-1/3">
+                <div :class="responsive.getResponsiveClasses({
+                    mobile: 'w-full',
+                    tablet: 'p-2 max-lg:w-full lg:w-1/3',
+                    desktop: 'p-2 max-lg:w-full lg:w-1/3'
+                })">
                     <InputForm
                         :errors="errors.category_id"
                         tag="span"
@@ -105,10 +141,11 @@
                         v-model="form.sku"
                         id="sku"
                         type="text"
-                        placeholder="Enter SKU (Optional)"
+                        placeholder="Enter SKU (Numbers only)"
                         fluid
-                        :invalid="errors.sku.length > 0"
                         class="transition-all duration-200"
+                        @keydown="validateSkuInput"
+                        @paste="handleSkuPaste"
                     />
                 </InputForm>
             </div>
@@ -238,9 +275,10 @@
         <div class="flex justify-end gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
             <Button
                 type="submit"
-                label="Save Product"
-                icon="pi pi-save"
-                class="primary-bg"
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                 :loading="submitService.request.loading"
             />
         </div>
@@ -255,15 +293,21 @@ import {
 } from "@/interfaces/ProductInterface";
 import { useCategoryStore } from "@/stores/CategoryState";
 import { useUnitStore } from "@/stores/UnitState";
+import { useResponsive } from "@/composables/useResponsive";
 import useAxiosUtil from "@/utils/AxiosUtil";
-import { reactive } from "vue";
+import { reactive, watch, ref } from "vue";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
-const emit = defineEmits(["cb"]);
+const responsive = useResponsive();
+const emit = defineEmits(["cb", "next"]);
 const submitService = useAxiosUtil<AddProductFormInterface, ProductInterface>();
 const categoryState = useCategoryStore();
 const unitState = useUnitStore();
+
+// Debounce timers
+const productNameDebounce = ref<number | null>(null);
+const skuDebounce = ref<number | null>(null);
 
 const form: AddProductFormInterface = reactive({
     product_name: null,
@@ -304,6 +348,44 @@ const clearError = () => {
     errors.available_online = [];
 };
 
+const validateSkuInput = (event: KeyboardEvent) => {
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey === true) ||
+        (event.keyCode === 67 && event.ctrlKey === true) ||
+        (event.keyCode === 86 && event.ctrlKey === true) ||
+        (event.keyCode === 88 && event.ctrlKey === true)) {
+        return;
+    }
+    
+    // Ensure that it is a number and stop the keypress if not
+    if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+        event.preventDefault();
+        errors.sku = ["SKU must contain only numbers."];
+        setTimeout(() => {
+            errors.sku = [];
+        }, 2000);
+    }
+};
+
+const handleSkuPaste = (event: ClipboardEvent) => {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    const numericOnly = pastedText.replace(/[^0-9]/g, '');
+    
+    if (numericOnly) {
+        form.sku = numericOnly;
+    }
+    
+    if (pastedText !== numericOnly) {
+        errors.sku = ["SKU must contain only numbers."];
+        setTimeout(() => {
+            errors.sku = [];
+        }, 2000);
+    }
+};
+
 const validate = () => {
     clearError();
 
@@ -334,6 +416,10 @@ const validate = () => {
     if (form.available_online === null) {
         errors.available_online.push("Availability is required.");
     }
+    // Validate SKU contains only numbers if provided
+    if (form.sku && !/^\d+$/.test(form.sku)) {
+        errors.sku.push("SKU must contain only numbers.");
+    }
 
     const hasErrors = [
         errors.product_name.length > 0,
@@ -351,29 +437,210 @@ const validate = () => {
     return hasErrors.includes(true) ? false : form;
 };
 
+// Real-time validation for product name
+const validateProductNameRealtime = async () => {
+    if (!form.product_name || form.product_name.trim() === '') {
+        const categoryError = 'The product name cannot be the same as any category name.';
+        const unitError = 'The product name cannot be the same as any unit name.';
+        errors.product_name = errors.product_name.filter(
+            err => err === categoryError || err === unitError
+        );
+        return;
+    }
+
+    const validateService = useAxiosUtil<{ product_name: string; category_id: number | null; unit_id: number | null }, null>();
+    await validateService.post("admin/products/validate-product-name", {
+        product_name: form.product_name,
+        category_id: form.category_id,
+        unit_id: form.unit_id
+    }).then(() => {
+        const categoryError = 'The product name cannot be the same as any category name.';
+        const unitError = 'The product name cannot be the same as any unit name.';
+        
+        // Preserve frontend validation errors
+        const frontendErrors = errors.product_name.filter(
+            err => err === categoryError || err === unitError
+        );
+        
+        if (validateService.request.status === 200) {
+            // Only clear API-related errors, keep frontend errors
+            errors.product_name = frontendErrors;
+        } else {
+            if (validateService.request.errors?.product_name) {
+                // Combine frontend errors with API errors
+                errors.product_name = [
+                    ...frontendErrors,
+                    ...validateService.request.errors.product_name
+                ];
+            }
+        }
+    });
+};
+
+// Real-time validation for SKU
+const validateSkuRealtime = async () => {
+    if (!form.sku || form.sku.trim() === '') {
+        errors.sku = [];
+        return;
+    }
+
+    // Check numeric format first
+    if (!/^\d+$/.test(form.sku)) {
+        errors.sku = ["SKU must contain only numbers."];
+        return;
+    }
+
+    const validateService = useAxiosUtil<{ sku: string }, null>();
+    await validateService.post("admin/products/validate-sku", {
+        sku: form.sku
+    }).then(() => {
+        if (validateService.request.status === 200) {
+            errors.sku = [];
+        } else {
+            if (validateService.request.errors?.sku) {
+                errors.sku = validateService.request.errors.sku;
+            }
+        }
+    });
+};
+
+// Immediate frontend validation for product name vs category and unit
+const validateProductNameVsCategoryAndUnit = () => {
+    if (!form.product_name) {
+        return;
+    }
+    
+    const productNameLower = form.product_name.trim().toLowerCase();
+    const categoryError = 'The product name cannot be the same as any category name.';
+    const unitError = 'The product name cannot be the same as any unit name.';
+    
+    // Remove previous category/unit errors
+    errors.product_name = errors.product_name.filter(
+        err => err !== categoryError && err !== unitError
+    );
+    
+    // Check against ALL categories (not just selected one)
+    const matchingCategory = categoryState.categories.find(
+        cat => cat.category_name.toLowerCase() === productNameLower
+    );
+    
+    if (matchingCategory) {
+        errors.product_name.push(categoryError);
+    }
+    
+    // Check against ALL units (not just selected one)
+    const matchingUnit = unitState.units.find(
+        unit => unit.unit_name.toLowerCase() === productNameLower
+    );
+    
+    if (matchingUnit) {
+        errors.product_name.push(unitError);
+    }
+};
+
+// Watch product name changes
+watch(
+    () => form.product_name,
+    (newValue) => {
+        // Immediate validation for category and unit name match
+        validateProductNameVsCategoryAndUnit();
+        
+        if (productNameDebounce.value) {
+            clearTimeout(productNameDebounce.value);
+        }
+        
+        if (newValue && newValue.trim() !== '') {
+            productNameDebounce.value = window.setTimeout(() => {
+                validateProductNameRealtime();
+            }, 150);
+        } else {
+            // Clear API-related errors when field is empty, keep frontend errors
+            const categoryError = 'The product name cannot be the same as any category name.';
+            const unitError = 'The product name cannot be the same as any unit name.';
+            errors.product_name = errors.product_name.filter(
+                err => err === categoryError || err === unitError
+            );
+        }
+    }
+);
+
+// Watch category changes (re-validate product name against new category)
+watch(
+    () => form.category_id,
+    (newValue) => {
+        // Immediate validation when category changes
+        validateProductNameVsCategoryAndUnit();
+        
+        if (form.product_name && form.product_name.trim() !== '') {
+            if (productNameDebounce.value) {
+                clearTimeout(productNameDebounce.value);
+            }
+            productNameDebounce.value = window.setTimeout(() => {
+                validateProductNameRealtime();
+            }, 150);
+        }
+    }
+);
+
+// Watch unit changes (re-validate product name against new unit)
+watch(
+    () => form.unit_id,
+    (newValue) => {
+        // Immediate validation when unit changes
+        validateProductNameVsCategoryAndUnit();
+        
+        if (form.product_name && form.product_name.trim() !== '') {
+            if (productNameDebounce.value) {
+                clearTimeout(productNameDebounce.value);
+            }
+            productNameDebounce.value = window.setTimeout(() => {
+                validateProductNameRealtime();
+            }, 150);
+        }
+    }
+);
+
+// Watch SKU changes
+watch(
+    () => form.sku,
+    (newValue) => {
+        if (skuDebounce.value) {
+            clearTimeout(skuDebounce.value);
+        }
+        
+        if (newValue && newValue.trim() !== '') {
+            skuDebounce.value = window.setTimeout(() => {
+                validateSkuRealtime();
+            }, 150);
+        } else {
+            errors.sku = [];
+        }
+    }
+);
+
 const handleSubmit = async () => {
+    const validateService = useAxiosUtil<AddProductFormInterface, null>();
     const data = validate();
     if (data) {
-        await submitService.post("admin/products", data).then(() => {
-            if (
-                submitService.request.status === 200 &&
-                submitService.request.data
-            ) {
-                toast.success(submitService.request.message);
-                emit("cb", submitService.request.data);
+        // Validate with backend to check for duplicates
+        await validateService.post("admin/products/validate-info", data).then(() => {
+            if (validateService.request.status === 200) {
+                toast.success("Product information validated. Continue to add images.");
+                // Emit the form data without saving to database
+                emit("next", data);
             } else {
-                toast.error(
-                    submitService.request.message ?? "Please try again",
-                );
-                if (submitService.request.errors) {
-                    Object.keys(submitService.request.errors).forEach((key) => {
-                        errors[key] = submitService.request.errors[key];
+                toast.error(validateService.request.message ?? "Validation failed");
+                if (validateService.request.errors) {
+                    Object.keys(validateService.request.errors).forEach((key) => {
+                        if (key in errors) {
+                            errors[key] = validateService.request.errors[key];
+                        }
                     });
                 }
             }
         });
     } else {
-        toast.error("Please fill in all required fields.");
+        toast.error("Please correct all errors before submitting.");
     }
 };
 </script>

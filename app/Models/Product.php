@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $primaryKey = 'product_id';
 
@@ -28,6 +29,10 @@ class Product extends Model
 
     protected $casts = [
         'rates_avg_rate' => 'decimal:1',
+    ];
+
+    protected $appends = [
+        'batch_number',
     ];
 
     public function category()
@@ -52,5 +57,18 @@ class Product extends Model
 
     public function rates() {
         return $this->hasMany(Rate::class, 'product_id', 'product_id');
+    }
+
+    public function batch() {
+        return $this->belongsTo(Batch::class, 'batch_id', 'batch_id');
+    }
+
+    /**
+     * Get the batch number for this product.
+     * 
+     * @return string|null
+     */
+    public function getBatchNumberAttribute() {
+        return $this->batch?->batch_number;
     }
 }

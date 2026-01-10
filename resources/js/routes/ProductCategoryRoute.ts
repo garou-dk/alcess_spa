@@ -1,5 +1,5 @@
 import { getStoreCustomers, getStoreRoles } from "@/enums/RoleEnum";
-import ProductCategory from "@/pages/product/ProductCategory.vue";
+import ProductSearch from "@/pages/product/ProductSearch.vue";
 import { RouteRecordRaw } from "vue-router";
 
 const route: RouteRecordRaw = {
@@ -10,7 +10,7 @@ const route: RouteRecordRaw = {
         {
             path: ":id",
             name: "customer.product-category",
-            component: ProductCategory,
+            component: ProductSearch,
             meta: {
                 access: getStoreCustomers(),
                 pageName: "Category",

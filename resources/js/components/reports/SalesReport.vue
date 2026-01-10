@@ -4,7 +4,7 @@
             <Button
                 label="Print"
                 icon="pi pi-print"
-                class="primary-bg"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                 @click="printReport()"
             />
         </div>
@@ -29,15 +29,6 @@
                     <h1 style="color: #00598a; font-size: 24px; margin: 0">
                         SALES REPORT
                     </h1>
-                    <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
-                        <strong>Date:</strong>
-                        {{
-                            DateUtil.formatToMonthDayYear(
-                                new Date().toISOString().split("T")[0],
-                            )
-                        }}
-                    </p>
                 </div>
             </div>
 
@@ -148,18 +139,34 @@
             </table>
 
             <!-- Approval -->
-            <h2 style="margin-top: 30px; font-size: 16px">Approval</h2>
-            <div style="display: flex; justify-content: space-between">
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Blademier S. Canalita</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
+            <div style="position: relative; margin-top: 30px">
+                <div style="float: left; width: 45%">
+                    <h2 style="font-size: 16px">Approval</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Blademier S. Canalita</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                new Date().toISOString().split("T")[0],
+                            )
+                        }}</small>
+                    </div>
                 </div>
+                <div style="float: right; width: 45%">
+                    <h2 style="font-size: 16px">Prepared by:</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Albert Von Daligdigan</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                new Date().toISOString().split("T")[0],
+                            )
+                        }}</small>
+                    </div>
+                </div>
+                <div style="clear: both"></div>
             </div>
         </div>
     </div>
@@ -212,14 +219,23 @@ const printReport = () => {
       <html>
         <head>
           <title>Sales Report</title>
+          <style>
+            @media print {
+              img { display: block !important; }
+            }
+          </style>
         </head>
         <body style="font-family: Arial, sans-serif;">${printContents}</body>
       </html>
     `);
         printWindow.document.close();
         printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+        
+        // Wait for images to load before printing
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     }
 };
 

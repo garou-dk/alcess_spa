@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-bottom flex items-center rounded-2xl bg-white p-2">
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <slot />
     </div>
 </template>

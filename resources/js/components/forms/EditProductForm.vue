@@ -1,19 +1,51 @@
 <template>
-    <form @submit.prevent="handleSubmit()" class="p-6 max-w-7xl mx-auto">
+    <form @submit.prevent="handleSubmit()" :class="responsive.getResponsiveClasses({
+        mobile: 'p-3 w-full',
+        tablet: 'p-4 max-w-4xl mx-auto',
+        desktop: 'p-6 max-w-7xl mx-auto'
+    })">
         <!-- Header Section -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Edit Product Information</h2>
-            <p class="text-sm text-gray-600">Update the product details below</p>
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'mb-4',
+            tablet: 'mb-6',
+            desktop: 'mb-8'
+        })">
+            <h2 :class="responsive.getResponsiveClasses({
+                mobile: 'text-lg font-bold text-gray-800 mb-2',
+                tablet: 'text-xl font-bold text-gray-800 mb-2',
+                desktop: 'text-2xl font-bold text-gray-800 mb-2'
+            })">Edit Product Information</h2>
+            <p :class="responsive.getResponsiveClasses({
+                mobile: 'text-xs text-gray-600',
+                tablet: 'text-sm text-gray-600',
+                desktop: 'text-sm text-gray-600'
+            })">Update the product details below</p>
         </div>
 
         <!-- Basic Information Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4',
+            tablet: 'bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6',
+            desktop: 'bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6'
+        })">
+            <h3 :class="responsive.getResponsiveClasses({
+                mobile: 'text-base font-semibold text-gray-800 mb-3 flex items-center',
+                tablet: 'text-lg font-semibold text-gray-800 mb-4 flex items-center',
+                desktop: 'text-lg font-semibold text-gray-800 mb-4 flex items-center'
+            })">
                 <i class="pi pi-info-circle mr-2 text-blue-600"></i>
                 Basic Information
             </h3>
-            <div class="flex flex-wrap -mx-2">
-                <div class="p-2 max-lg:w-full lg:w-1/3">
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'space-y-4',
+                tablet: 'flex flex-wrap -mx-2',
+                desktop: 'flex flex-wrap -mx-2'
+            })">
+                <div :class="responsive.getResponsiveClasses({
+                    mobile: 'w-full',
+                    tablet: 'p-2 max-lg:w-full lg:w-1/3',
+                    desktop: 'p-2 max-lg:w-full lg:w-1/3'
+                })">
                     <InputForm
                         :errors="errors.product_name"
                         tag="label"
@@ -101,15 +133,24 @@
                     label-name="SKU (Stock Keeping Unit)"
                     id="sku"
                 >
-                    <InputText
-                        v-model="form.sku"
-                        id="sku"
-                        type="text"
-                        placeholder="Enter SKU (Optional)"
-                        fluid
-                        :invalid="errors.sku.length > 0"
-                        class="transition-all duration-200"
-                    />
+                    <InputGroup>
+                        <InputText
+                            v-model="form.sku"
+                            id="sku"
+                            type="text"
+                            placeholder="Enter SKU (Numbers only)"
+                            class="transition-all duration-200"
+                            @keydown="validateSkuInput"
+                            @paste="handleSkuPaste"
+                        />
+                        <Button
+                            icon="pi pi-copy"
+                            severity="secondary"
+                            @click="copySKU"
+                            v-tooltip.top="'Copy SKU'"
+                            :disabled="!form.sku"
+                        />
+                    </InputGroup>
                 </InputForm>
             </div>
         </div>
@@ -235,19 +276,20 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-end gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
                 type="button"
                 label="Cancel"
                 icon="pi pi-times"
-                class="p-button-outlined p-button-secondary"
                 severity="secondary"
+                outlined
+                class="!border-0 hover:!bg-gray-200"
             />
             <Button
                 type="submit"
                 label="Update Product"
                 icon="pi pi-check"
-                class="primary-bg"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                 :loading="submitService.request.loading"
             />
         </div>
@@ -262,6 +304,7 @@ import {
 } from "@/interfaces/ProductInterface";
 import { useCategoryStore } from "@/stores/CategoryState";
 import { useUnitStore } from "@/stores/UnitState";
+import { useResponsive } from "@/composables/useResponsive";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { onMounted, reactive } from "vue";
 import { useToast } from "vue-toastification";
@@ -271,6 +314,7 @@ interface Props {
 }
 
 const toast = useToast();
+const responsive = useResponsive();
 const emit = defineEmits(["cb"]);
 const submitService = useAxiosUtil<AddProductFormInterface, ProductInterface>();
 const categoryState = useCategoryStore();
@@ -316,6 +360,44 @@ const clearError = () => {
     errors.available_online = [];
 };
 
+const validateSkuInput = (event: KeyboardEvent) => {
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.keyCode === 65 && event.ctrlKey === true) ||
+        (event.keyCode === 67 && event.ctrlKey === true) ||
+        (event.keyCode === 86 && event.ctrlKey === true) ||
+        (event.keyCode === 88 && event.ctrlKey === true)) {
+        return;
+    }
+    
+    // Ensure that it is a number and stop the keypress if not
+    if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+        event.preventDefault();
+        errors.sku = ["SKU must contain only numbers."];
+        setTimeout(() => {
+            errors.sku = [];
+        }, 2000);
+    }
+};
+
+const handleSkuPaste = (event: ClipboardEvent) => {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    const numericOnly = pastedText.replace(/[^0-9]/g, '');
+    
+    if (numericOnly) {
+        form.sku = numericOnly;
+    }
+    
+    if (pastedText !== numericOnly) {
+        errors.sku = ["SKU must contain only numbers."];
+        setTimeout(() => {
+            errors.sku = [];
+        }, 2000);
+    }
+};
+
 const validate = () => {
     clearError();
 
@@ -346,6 +428,10 @@ const validate = () => {
     if (form.available_online === null) {
         errors.available_online.push("Availability is required.");
     }
+    // Validate SKU contains only numbers if provided
+    if (form.sku && !/^\d+$/.test(form.sku)) {
+        errors.sku.push("SKU must contain only numbers.");
+    }
 
     const hasErrors = [
         errors.product_name.length > 0,
@@ -361,6 +447,17 @@ const validate = () => {
     ];
 
     return hasErrors.includes(true) ? false : form;
+};
+
+const copySKU = async () => {
+    if (form.sku) {
+        try {
+            await navigator.clipboard.writeText(form.sku);
+            toast.success("SKU copied to clipboard!");
+        } catch (err) {
+            toast.error("Failed to copy SKU");
+        }
+    }
 };
 
 const handleSubmit = async () => {
@@ -389,7 +486,7 @@ const handleSubmit = async () => {
                 }
             });
     } else {
-        toast.error("Please fill in all required fields.");
+        toast.error("Please correct all errors before submitting.");
     }
 };
 

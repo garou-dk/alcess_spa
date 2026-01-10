@@ -4,6 +4,7 @@
         icon="pi pi-trash"
         severity="danger"
         :loading="submitService.request.loading"
+        class="h-10 w-10 flex items-center justify-center"
         @click="handleSubmit()"
     />
 </template>

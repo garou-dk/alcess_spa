@@ -40,6 +40,7 @@
                 icon="pi pi-save"
                 fluid
                 :loading="submitService.request.loading"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
             />
         </div>
     </form>

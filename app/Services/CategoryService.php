@@ -9,9 +9,20 @@ class CategoryService
 {
     public function index()
     {
+        // Check if request is from admin (includes trashed categories)
+        $isAdminRequest = request()->is('api/admin/*');
+        
+        if ($isAdminRequest) {
+            return Category::query()
+                ->orderBy('created_at', 'desc')
+                ->withTrashed()
+                ->get();
+        }
+        
+        // For public/customer requests, return all active categories
+        // Show all categories (even without products) so customers can see what's available
         return Category::query()
             ->orderBy('category_name', 'asc')
-            ->withTrashed()
             ->get();
     }
 

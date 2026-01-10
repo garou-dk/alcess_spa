@@ -34,13 +34,13 @@
                 />
             </InputForm>
         </div>
-        <div class="flex justify-center p-2">
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
                 :loading="submitService.request.loading"
                 type="submit"
-                label="Save"
-                icon="pi pi-save"
-                class="primary-bg"
+                label="Save Specification"
+                icon="pi pi-check"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
             />
         </div>
     </form>

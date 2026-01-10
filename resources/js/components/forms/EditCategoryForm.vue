@@ -24,7 +24,7 @@
                     type="submit"
                     label="Save"
                     icon="pi pi-save"
-                    class="primary-bg"
+                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                     :loading="submitService.request.loading"
                 />
             </div>

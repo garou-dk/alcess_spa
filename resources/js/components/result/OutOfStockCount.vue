@@ -1,5 +1,8 @@
 <template>
-    <p class="ps-2 text-red-500">{{ result }}</p>
+    <div v-if="loadService.request.loading" class="animate-pulse">
+        <div class="h-6 bg-gray-200 rounded w-8 ps-2"></div>
+    </div>
+    <p v-else class="ps-2 text-xl font-bold text-red-600">{{ result }}</p>
 </template>
 <script setup lang="ts">
 import useAxiosUtil from "@/utils/AxiosUtil";

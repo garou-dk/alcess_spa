@@ -5,6 +5,8 @@ interface CategoryInterface {
     editable: number;
     category_image: string | null;
     category_slug: string;
+    is_popular?: boolean | number;
+    total_sales?: number;
 }
 
 interface CategoryFormInterface {

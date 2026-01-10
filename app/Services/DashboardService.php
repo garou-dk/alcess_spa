@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Enums\OrderStatusEnum;
+use App\Events\DashboardStatsUpdateEvent;
 use App\Models\BatchProduct;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\Rate;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Carbon\Carbon;
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
+    public function __construct(protected ReportService $reportService) {}
+
     public function getMonthlyRevenue(): array
     {
         $currentMonthStart = Carbon::now()->startOfMonth();
@@ -27,6 +31,8 @@ class DashboardService
             ->sum('total_amount');
         
         $currentMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id') // Only sales without linked orders
             ->whereBetween('sale_items.created_at', [$currentMonthStart, $currentMonthEnd])
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
@@ -38,6 +44,8 @@ class DashboardService
             ->sum('total_amount');
         
         $lastMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id') // Only sales without linked orders
             ->whereBetween('sale_items.created_at', [$lastMonthStart, $lastMonthEnd])
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
@@ -79,35 +87,30 @@ class DashboardService
         ];
     }
 
-    public function getProductStats()
-    {
-        $totalProducts = Product::where('is_active', true)->count();
-        
-        $lowStockProducts = Product::where('is_active', true)
-            ->whereColumn('product_quantity', '<=', 'low_stock_threshold')
-            ->count();
-        
-        return [
-            'total_products' => $totalProducts,
-            'low_stock_products' => $lowStockProducts,
-            'healthy_stock_products' => $totalProducts - $lowStockProducts,
-            'low_stock_percentage' => $totalProducts > 0 
-                ? round(($lowStockProducts / $totalProducts) * 100, 2) 
-                : 0
-        ];
-    }
+
 
     public function getPendingOrdersReport(): array
     {
-        $totalPending = Order::where('status', 'Pending')->count();
+        // Count new orders that are Processing and NOT yet accepted by admin
+        // Handle both false and NULL values for backward compatibility
+        $totalNew = Order::where('status', OrderStatusEnum::PROCESSING->value)
+            ->where(function($query) {
+                $query->where('admin_accepted', false)
+                      ->orWhereNull('admin_accepted');
+            })
+            ->count();
         
-        $todayPending = Order::where('status', 'Pending')
+        $todayNew = Order::where('status', OrderStatusEnum::PROCESSING->value)
+            ->where(function($query) {
+                $query->where('admin_accepted', false)
+                      ->orWhereNull('admin_accepted');
+            })
             ->whereDate('created_at', today())
             ->count();
         
         return [
-            'total_pending' => $totalPending,
-            'today_pending' => $todayPending,
+            'total_pending' => $totalNew,
+            'today_pending' => $todayNew,
         ];
     }
 
@@ -173,10 +176,16 @@ class DashboardService
         return $result;
     }
 
-    public function getCurrentMonthReport(): array
+    public function getCurrentMonthReport(?string $startDate = null, ?string $endDate = null): array
     {
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
+        // Use provided dates or default to current month
+        if ($startDate && $endDate) {
+            $currentMonthStart = Carbon::parse($startDate)->startOfDay();
+            $currentMonthEnd = Carbon::parse($endDate)->endOfDay();
+        } else {
+            $currentMonthStart = Carbon::now()->startOfMonth();
+            $currentMonthEnd = Carbon::now()->endOfMonth();
+        }
         
         $ordersCount = Order::whereNotNull('date_paid_confirmed')
             ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
@@ -192,6 +201,8 @@ class DashboardService
             ->value('total') ?? 0;
         
         $saleItemsRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id') // Only sales without linked orders
             ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
@@ -205,55 +216,20 @@ class DashboardService
         ];
     }
 
-    public function getPrevious7DaysSales(): array
+    public function getRevenueByCategories(?string $startDate = null, ?string $endDate = null): array
     {
-        $endDate = Carbon::now()->endOfDay();
-        $startDate = Carbon::now()->subDays(6)->startOfDay();
-        
-        $ordersSales = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$startDate, $endDate])
-            ->selectRaw('DATE(date_paid_confirmed) as date, SUM(total_amount) as revenue')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->pluck('revenue', 'date');
-        
-        $saleItemsSales = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
-            ->whereBetween('sales.created_at', [$startDate, $endDate])
-            ->selectRaw('DATE(sales.created_at) as date, SUM(sale_items.price * sale_items.quantity) as revenue')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->pluck('revenue', 'date');
-        
-        $result = [];
-        $currentDate = $startDate->copy();
-        
-        for ($i = 0; $i < 7; $i++) {
-            $dateKey = $currentDate->format('Y-m-d');
-            
-            $ordersRevenue = $ordersSales->get($dateKey, 0);
-            $saleItemsRevenue = $saleItemsSales->get($dateKey, 0);
-            $totalRevenue = $ordersRevenue + $saleItemsRevenue;
-            
-            $result[] = [
-                'date' => $dateKey,
-                'day' => $currentDate->format('l'),
-                'orders_revenue' => round($ordersRevenue, 2),
-                'sale_items_revenue' => round($saleItemsRevenue, 2),
-                'total_revenue' => round($totalRevenue, 2),
-            ];
-            
-            $currentDate->addDay();
+        // Use provided dates or default to current month
+        if ($startDate && $endDate) {
+            $currentMonthStart = Carbon::parse($startDate)->startOfDay();
+            $currentMonthEnd = Carbon::parse($endDate)->endOfDay();
+        } else {
+            $currentMonthStart = Carbon::now()->startOfMonth();
+            $currentMonthEnd = Carbon::now()->endOfMonth();
         }
         
-        return $result;
-    }
-
-    public function getRevenueByCategories(): array
-    {
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
-        
-        $orderRevenue = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+        // Orders Revenue - all paid orders (online transactions)
+        $orderRevenue = DB::table('product_orders')
+            ->join('orders', 'product_orders.order_id', '=', 'orders.order_id')
             ->join('products', 'product_orders.product_id', '=', 'products.product_id')
             ->join('categories', 'products.category_id', '=', 'categories.category_id')
             ->whereNotNull('orders.date_paid_confirmed')
@@ -263,9 +239,13 @@ class DashboardService
             ->get()
             ->keyBy('category_id');
         
-        $saleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+        // Sales Revenue - only sales that are NOT linked to orders (pure POS/walk-in transactions)
+        $saleRevenue = DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
             ->join('products', 'sale_items.product_id', '=', 'products.product_id')
             ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id') // Only sales without linked orders
             ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
             ->selectRaw('categories.category_id, categories.category_name, SUM(sale_items.price * sale_items.quantity) as revenue')
             ->groupBy('categories.category_id', 'categories.category_name')
@@ -283,6 +263,11 @@ class DashboardService
             $saleRevenueAmount = $saleRev ? $saleRev->revenue : 0;
             $totalRevenue = $orderRevenueAmount + $saleRevenueAmount;
             
+            // Skip categories with zero revenue
+            if ($totalRevenue <= 0) {
+                continue;
+            }
+            
             $categoryName = $orderRev ? $orderRev->category_name : $saleRev->category_name;
             
             $result[] = [
@@ -294,6 +279,7 @@ class DashboardService
             ];
         }
         
+        // Sort by total revenue (highest first)
         usort($result, function($a, $b) {
             return $b['total_revenue'] <=> $a['total_revenue'];
         });
@@ -301,29 +287,43 @@ class DashboardService
         return $result;
     }
 
-    public function getStockInOutReport(): array
+    public function getStockInOutReport(?string $startDate = null, ?string $endDate = null): array
     {
-        $endDate = Carbon::now()->endOfDay();
-        $startDate = Carbon::now()->subDays(6)->startOfDay();
+        // Use provided dates or default to last 7 days
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+            
+            // Calculate the number of days in the range
+            $daysDiff = $start->diffInDays($end) + 1; // +1 to include both start and end dates
+            
+            // Limit to reasonable range (max 30 days for performance)
+            $daysDiff = min($daysDiff, 30);
+        } else {
+            // Default: last 7 days
+            $end = Carbon::now()->endOfDay();
+            $start = Carbon::now()->subDays(6)->startOfDay();
+            $daysDiff = 7;
+        }
         
         $stockOut = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
-            ->whereIn('orders.status', ['Shipped', 'For delivery', 'Delivered', 'Released'])
-            ->whereBetween('product_orders.created_at', [$startDate, $endDate])
+            ->whereIn('orders.status', [OrderStatusEnum::SHIPPED->value, OrderStatusEnum::COMPLETED->value])
+            ->whereBetween('product_orders.created_at', [$start, $end])
             ->selectRaw('DATE(product_orders.created_at) as date, SUM(product_orders.quantity) as quantity')
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->pluck('quantity', 'date');
         
-        $stockIn = BatchProduct::whereBetween('created_at', [$startDate, $endDate])
+        $stockIn = BatchProduct::whereBetween('created_at', [$start, $end])
             ->selectRaw('DATE(created_at) as date, SUM(quantity) as quantity')
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->pluck('quantity', 'date');
         
         $result = [];
-        $currentDate = $startDate->copy();
+        $currentDate = $start->copy();
         
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < $daysDiff; $i++) {
             $dateKey = $currentDate->format('Y-m-d');
             
             $stockInQty = $stockIn->get($dateKey, 0);
@@ -345,12 +345,18 @@ class DashboardService
 
     public function getPendingOrders()
     {
-        $pendingOrders = Order::with('user')
-            ->where('status', 'Pending')
+        // Get new orders that are Processing and NOT yet accepted by admin
+        // Handle both false and NULL values for backward compatibility
+        $newOrders = Order::with('user')
+            ->where('status', OrderStatusEnum::PROCESSING->value)
+            ->where(function($query) {
+                $query->where('admin_accepted', false)
+                      ->orWhereNull('admin_accepted');
+            })
             ->orderBy('created_at', 'asc')
             ->get();
         
-        return $pendingOrders;
+        return $newOrders;
     }
 
     public function getRevenueReport($startDate = null, $endDate = null): array
@@ -409,19 +415,17 @@ class DashboardService
 
     public function getForDeliveryReport(array $data): array
     {
-        $forDeliveryOrders = Order::with(['user', 'productOrders.product', 'barangay.municity.province.region.islandGroup'])
-            ->whereIn('status', [
-                OrderStatusEnum::SHIPPED->value,
-                OrderStatusEnum::FOR_DELIVERY->value,
-                OrderStatusEnum::DELIVERED->value,
-            ])
-            ->where('order_type', 'Delivery')
-            ->whereBetween('created_at', [
+        $query = Order::with(['user', 'productOrders.product', 'barangay.municity.province.region.islandGroup']);
+        
+        // Apply date range filter only if both dates are provided
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $query->whereBetween('created_at', [
                 $data['start_date'],
                 $data['end_date'],
-            ])
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ]);
+        }
+        
+        $forDeliveryOrders = $query->orderBy('created_at', 'desc')->get();
         
         return $forDeliveryOrders->map(function ($order) {
             $products = $order->productOrders->map(function ($productOrder) {
@@ -436,7 +440,7 @@ class DashboardService
             return [
                 'order_id' => $order->order_id,
                 'order_public_id' => $order->order_public_id,
-                'customer_name' => $order->user->full_name,
+                'customer_name' => $order->user ? $order->user->full_name : 'N/A',
                 'contact_number' => $order->contact_number,
                 'barangay_id' => $order->barangay_id,
                 'other_details' => $order->other_details,
@@ -453,8 +457,36 @@ class DashboardService
                 'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                 'days_in_delivery' => $order->created_at->diffInDays(now()),
                 'customer_received_date' => $order->customer_received_date,
-                'address' => "{$order->other_details}, {$order->barangay->barangay_name}, {$order->barangay->municity->municity_name}, {$order->barangay->municity->province->province_name}, {$order->barangay->municity->province->region->islandGroup->island_group_name}",
+                'address' => $order->barangay 
+                    ? "{$order->other_details}, {$order->barangay->barangay_name}, {$order->barangay->municity->municity_name}, {$order->barangay->municity->province->province_name}, {$order->barangay->municity->province->region->islandGroup->island_group_name}"
+                    : ($order->other_details ?? 'N/A'),
             ];
         })->toArray();
+    }
+
+    public function getOnlineSalesData(?string $startDate, ?string $endDate): array
+    {
+        return $this->reportService->getOnlineSalesData($startDate, $endDate);
+    }
+
+    public function getWalkInSalesData(?string $startDate, ?string $endDate): array
+    {
+        return $this->reportService->getWalkInSalesData($startDate, $endDate);
+    }
+
+    public function getCustomerReviewData(array $data = []): array
+    {
+        return $this->reportService->getCustomerReviewData($data);
+    }
+
+    /**
+     * Broadcast dashboard stats update event
+     * Call this when orders or products change to update dashboard in real-time
+     */
+    public function broadcastDashboardStatsUpdate(): void
+    {
+        // Since we removed the statistic cards, we can simplify this
+        // or remove it entirely if no longer needed
+        event(new DashboardStatsUpdateEvent([]));
     }
 }

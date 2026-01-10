@@ -28,7 +28,16 @@ const config = {
     pt: {
         Dialog: {
             header: {
-                class: "bg-sky-800! text-white! rounded-t-[9px]! border-x-1! border-sky-800! shadow-[0_0_0_1px_#075985]!",
+                class: "!bg-blue-600 !bg-gradient-to-r !from-blue-600 !to-blue-600 !text-white !rounded-t-lg !border-blue-600 !border-t !border-l !border-r",
+                style: "background-color: #2563eb !important; background-image: none !important;",
+            },
+            closeButton: {
+                class: "!text-white !border-white !bg-transparent hover:!bg-blue-700 hover:!text-white",
+                style: "color: white !important; border-color: white !important;",
+            },
+            closeButtonIcon: {
+                class: "!text-white",
+                style: "color: white !important;",
             },
             root: {
                 class: "border-1! border-[rgba(0,0,0,0.4)]! pt-0!",

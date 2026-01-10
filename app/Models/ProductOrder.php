@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductOrder extends Model
 {
+    use HasFactory;
+
     public $primaryKey = 'product_order_id';
 
     protected $fillable = [
         'product_order_id',
+        'order_id',
         'product_id',
         'quantity',
         'price',
@@ -25,5 +29,9 @@ class ProductOrder extends Model
 
     public function rate() {
         return $this->hasOne(Rate::class, 'product_order_id', 'product_order_id');
+    }
+
+    public function rates() {
+        return $this->hasMany(Rate::class, 'product_order_id', 'product_order_id');
     }
 }

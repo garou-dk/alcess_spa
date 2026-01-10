@@ -172,7 +172,6 @@ export default function useAxiosUtil<Input, Output>() {
             data: data,
             headers: {
                 Accept: "application/json",
-                "Content-Type": "multipart/form-data",
             },
         })
             .then((response) => {

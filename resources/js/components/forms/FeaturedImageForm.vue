@@ -21,8 +21,14 @@
                 v-model:visible="showCropperModal"
                 modal
                 header="Crop Image"
+                :dismissableMask="true"
                 :style="{ width: '28rem' }"
                 :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+                :pt="{
+                    header: { class: '!bg-blue-600 !text-white' },
+                    closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
+                    closeButtonIcon: { class: '!text-white' }
+                }"
             >
                 <VuePictureCropper
                     :boxStyle="{
@@ -38,12 +44,12 @@
                         aspectRatio: 1,
                     }"
                 />
-                <div class="mt-2 flex justify-center">
+                <div class="mt-4 flex justify-end pt-4 border-t border-gray-200">
                     <Button
                         type="button"
                         label="Crop Image"
-                        icon="pi pi-image"
-                        class="primary-bg"
+                        icon="pi pi-check"
+                        class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                         @click="getCropResult()"
                     />
                 </div>

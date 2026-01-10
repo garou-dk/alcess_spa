@@ -1,377 +1,266 @@
 <template>
     <div>
-        <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <TotalRevenueReport />
-            <ProductStats />
-            <OrderPending />
-            <InventoryValue />
+        <!-- Full screen loading overlay for professional UX -->
+        <LoadingOverlay 
+            :show="isLoading && !isLoaded" 
+            title="Loading Dashboard"
+            subtitle="Fetching your latest data..."
+        />
+
+        <!-- Date and Time Display -->
+        <DateTimeDisplay />
+
+        <!-- Real-time Update Indicator -->
+        <Transition name="fade">
+            <div v-if="isUpdating" class="mb-4 flex items-center justify-center">
+                <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg flex items-center gap-2">
+                    <i class="pi pi-sync animate-spin"></i>
+                    <span class="text-sm font-medium">Dashboard updated with latest data</span>
+                </div>
+            </div>
+        </Transition>
+
+        <!-- New Orders Section -->
+        <div id="new-orders-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-0'">
+            <PendingReport />
         </div>
 
-        <TopSoldProducts />
-
-        <PieGraphReport />
-
-        <!-- Charts Section -->
-        <div class="mb-5 flex flex-wrap">
-            <div class="p-2 max-lg:w-full lg:w-1/2">
-                <SalesPrevious7Days />
-            </div>
-            <div class="p-2 max-lg:w-full lg:w-1/2">
-                <CategorySales />
-            </div>
+        <!-- Confirmed Orders Section -->
+        <div id="confirmed-orders-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
+            <DashboardOrdersTable />
         </div>
 
-        <!-- Inventory Alerts & Recent Activity -->
-        <div class="mb-5 flex flex-wrap">
-            <div class="p-2 max-lg:w-full lg:w-1/2">
-                <BatchForm />
-            </div>
-            <div class="p-2 max-lg:w-full lg:w-1/2">
-                <StockInOut />
-            </div>
+        <!-- Nearly Out of Stock Section -->
+        <div id="nearly-out-of-stock-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
+            <BatchForm />
         </div>
 
-        <PendingReport />
+        <!-- Best Selling Products Section -->
+        <div id="best-selling-products-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
+            <TopSoldProducts />
+        </div>
+
+        <!-- Inventory Movement Section -->
+        <div id="inventory-movement-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
+            <StockInOut />
+        </div>
+
+        <!-- Sales Distribution Section -->
+        <div id="sales-distribution-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
+            <!-- Charts Section - Desktop unchanged, mobile/tablet stacked -->
+            <div 
+                :class="[
+                    responsive.getResponsiveGap(),
+                    responsive.getResponsiveClasses({
+                        mobile: 'flex flex-col',
+                        tablet: 'flex flex-col', 
+                        desktop: 'mb-5 flex flex-wrap' // Original desktop layout preserved
+                    })
+                ]"
+            >
+                <div 
+                    :class="responsive.getResponsiveClasses({
+                        mobile: 'w-full',
+                        tablet: 'w-full',
+                        desktop: 'flex-1 min-w-0 max-lg:w-full lg:w-1/2' // Original desktop classes
+                    })"
+                >
+                    <PieGraphReport />
+                </div>
+                <div 
+                    :class="responsive.getResponsiveClasses({
+                        mobile: 'w-full',
+                        tablet: 'w-full',
+                        desktop: 'flex-1 min-w-0 max-lg:w-full lg:w-1/2' // Original desktop classes
+                    })"
+                >
+                    <CategorySales />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import BatchForm from "@/components/forms/BatchForm.vue";
 import CategorySales from "@/components/reports/CategorySales.vue";
-import InventoryValue from "@/components/reports/InventoryValue.vue";
-import OrderPending from "@/components/reports/OrderPending.vue";
+import DashboardOrdersTable from "@/components/reports/DashboardOrdersTable.vue";
 import PendingReport from "@/components/reports/PendingReport.vue";
 import PieGraphReport from "@/components/reports/PieGraphReport.vue";
-import ProductStats from "@/components/reports/ProductStats.vue";
-import SalesPrevious7Days from "@/components/reports/SalesPrevious7Days.vue";
 import StockInOut from "@/components/reports/StockInOut.vue";
 import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
-import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
-import DataTableInterface from "@/interfaces/DataTableInterface";
-import {
-    ProductInterface,
-    ProductSearchErrorInterface,
-    ProductSearchInterface,
-} from "@/interfaces/ProductInterface";
-import useAxiosUtil from "@/utils/AxiosUtil";
-import CurrencyUtil from "@/utils/CurrencyUtil";
-import DateUtil from "@/utils/DateUtil";
-import UrlUtil from "@/utils/UrlUtil";
-import { onMounted, reactive, ref } from "vue";
+import DateTimeDisplay from "@/components/DateTimeDisplay.vue";
+import { useDashboardData } from "@/composables/useDashboardData";
+import { useResponsive } from "@/composables/useResponsive";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useToast } from "vue-toastification";
-import VueApexCharts from "vue3-apexcharts";
+import { useRoute, useRouter } from "vue-router";
+import { watch, nextTick } from "vue";
 
-const loadProductService = useAxiosUtil<
-    ProductSearchInterface,
-    DataTableInterface<ProductInterface>
->();
 const toast = useToast();
+const route = useRoute();
+const router = useRouter();
 
-// Dashboard Metrics
-const totalProducts = ref(245);
-const lowStockCount = ref(12);
-const pendingOrdersCount = ref(28);
-const todayOrdersCount = ref(8);
-const inventoryValue = ref(3456780);
-const totalOrders = ref(156);
-const shippingOrders = ref(42);
-const itemsOrdered = ref(534);
-const itemsShipped = ref(489);
+// Use global responsive composable (preserves desktop, optimizes mobile/tablet)
+const responsive = useResponsive();
 
-// Period filter
-const period = ref("week");
+// Use the shared dashboard data composable
+const { loadDashboardData, refreshDashboardData, cleanup, isLoading, isLoaded, isUpdating, error } = useDashboardData();
 
-const changePeriod = (newPeriod: string) => {
-    period.value = newPeriod;
-    // Reload data based on period
-    load();
+// Track programmatic scrolling to prevent scroll-spy interference
+const isProgrammaticScroll = ref(false);
+let scrollTimeout: number | null = null;
+let programmaticScrollTimeout: number | null = null;
+let scrollObserver: IntersectionObserver | null = null;
+
+// Retry handler for failed data loads
+const handleRetry = async () => {
+    try {
+        await refreshDashboardData();
+        toast.success("Dashboard data reloaded successfully");
+    } catch (err) {
+        toast.error("Retry failed. Please try again later.");
+    }
 };
 
-// Sales Distribution Chart
-const series = ref<number[]>([65, 35]);
-const chartOptions = ref({
-    labels: ["Online Orders", "POS/In-Store Sales"],
-    colors: ["#3B82F6", "#10B981"],
-    legend: {
-        position: "bottom",
-    },
-    responsive: [
-        {
-            breakpoint: 768,
-            options: {
-                chart: {
-                    width: "100%",
-                },
-                legend: {
-                    position: "bottom",
-                },
-            },
-        },
-    ],
-});
-
-// Sales Overview Chart
-const series2 = ref([
-    {
-        name: "Sales",
-        data: [26668, 33335, 22223, 40001, 44446, 28890, 35420],
-    },
-]);
-const chartOptions2 = ref({
-    chart: {
-        id: "weekly-sales-line",
-        toolbar: {
-            show: false,
-        },
-    },
-    xaxis: {
-        categories: [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-        ],
-    },
-    stroke: {
-        curve: "smooth",
-        width: 3,
-    },
-    colors: ["#3B82F6"],
-    markers: {
-        size: 5,
-        colors: ["#3B82F6"],
-        strokeColors: "#fff",
-        strokeWidth: 2,
-    },
-    dataLabels: {
-        enabled: false,
-    },
-    grid: {
-        row: {
-            colors: ["#f3f3f3", "transparent"],
-            opacity: 0.5,
-        },
-    },
-    yaxis: {
-        title: {
-            text: "Sales (₱)",
-        },
-        labels: {
-            formatter: (val) => `₱${(val / 1000).toFixed(0)}k`,
-        },
-    },
-    tooltip: {
-        y: {
-            formatter: (val) => `₱${val.toLocaleString("en-PH")}`,
-        },
-    },
-});
-
-// Category Revenue Chart
-const categorySeries = ref([
-    {
-        name: "Revenue",
-        data: [125000, 98000, 87000, 72000, 65000],
-    },
-]);
-const categoryChartOptions = ref({
-    chart: {
-        id: "category-revenue-bar",
-        toolbar: {
-            show: false,
-        },
-    },
-    plotOptions: {
-        bar: {
-            borderRadius: 8,
-            horizontal: false,
-            columnWidth: "60%",
-        },
-    },
-    dataLabels: {
-        enabled: false,
-    },
-    xaxis: {
-        categories: ["Electronics", "Clothing", "Food", "Books", "Toys"],
-    },
-    colors: ["#8B5CF6"],
-    yaxis: {
-        title: {
-            text: "Revenue (₱)",
-        },
-        labels: {
-            formatter: (val) => `₱${(val / 1000).toFixed(0)}k`,
-        },
-    },
-    tooltip: {
-        y: {
-            formatter: (val) => `₱${val.toLocaleString("en-PH")}`,
-        },
-    },
-});
-
-// Inventory Movement Chart
-const inventorySeries = ref([
-    {
-        name: "Stock In",
-        data: [120, 95, 150, 110, 135, 125, 140],
-    },
-    {
-        name: "Stock Out",
-        data: [85, 110, 95, 125, 100, 115, 105],
-    },
-]);
-const inventoryChartOptions = ref({
-    chart: {
-        id: "inventory-movement",
-        toolbar: {
-            show: false,
-        },
-    },
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    colors: ["#10B981", "#EF4444"],
-    dataLabels: {
-        enabled: false,
-    },
-    xaxis: {
-        categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    },
-    yaxis: {
-        title: {
-            text: "Units",
-        },
-    },
-    legend: {
-        position: "top",
-    },
-    fill: {
-        type: "gradient",
-        gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.7,
-            opacityTo: 0.3,
-        },
-    },
-});
-
-const users: {
-    full_name: string;
-    date_ordered: string;
-    order_amount: number;
-    status: string;
-}[] = [
-    {
-        full_name: "Alice Johnson",
-        date_ordered: "2025-11-14",
-        order_amount: 5240,
-        status: "pending",
-    },
-    {
-        full_name: "Bob Smith",
-        date_ordered: "2025-11-14",
-        order_amount: 3150,
-        status: "processing",
-    },
-    {
-        full_name: "Charlie Davis",
-        date_ordered: "2025-11-13",
-        order_amount: 8900,
-        status: "pending",
-    },
-];
-
-const form: ProductSearchInterface = reactive({
-    search: null,
-    limit: 5,
-    page: 1,
-    category_id: null,
-    status: null,
-    available_online: null,
-    low_stock: null,
-});
-
-const errors: ProductSearchErrorInterface = reactive({
-    search: [],
-    limit: [],
-    page: [],
-    category_id: [],
-    status: [],
-    available_online: [],
-    low_stock: [],
-});
-
-const paginate: DataTableInterface<ProductInterface> = reactive({
-    data: [],
-    current_page: 0,
-    from: 0,
-    to: 0,
-    total: 0,
-    last_page: 0,
-});
-
-const clearError = () => {
-    Object.keys(errors).forEach((key) => {
-        errors[key] = [];
+// Scroll to section based on hash
+const scrollToSection = (sectionId: string) => {
+    // Mark as programmatic scroll
+    isProgrammaticScroll.value = true;
+    
+    // Clear any pending timeouts
+    if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+    }
+    if (programmaticScrollTimeout) {
+        clearTimeout(programmaticScrollTimeout);
+    }
+    
+    nextTick(() => {
+        // Special handling for first section - scroll to top of page
+        if (sectionId === 'new-orders-section') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Re-enable scroll-spy after animation completes (smooth scroll takes ~500-800ms)
+        programmaticScrollTimeout = window.setTimeout(() => {
+            isProgrammaticScroll.value = false;
+        }, 800);
     });
 };
 
-const validate = () => {
-    clearError();
-    if (!form.limit) {
-        errors.limit.push("Limit is required");
+// Watch for hash changes in route (when clicking sidebar)
+watch(() => route.hash, (newHash) => {
+    if (newHash) {
+        const sectionId = newHash.replace('#', '');
+        scrollToSection(sectionId);
     }
-    if (!form.page) {
-        errors.page.push("Page is required");
-    }
+}, { immediate: true });
 
-    const hasErrors = [errors.limit.length > 0, errors.page.length > 0];
-    return hasErrors.includes(true) ? false : form;
-};
+// Setup Intersection Observer for scroll-spy
+const setupScrollSpy = () => {
+    const sections = [
+        'new-orders-section',
+        'confirmed-orders-section',
+        'nearly-out-of-stock-section',
+        'best-selling-products-section',
+        'inventory-movement-section',
+        'sales-distribution-section'
+    ];
 
-const load = async (resetPage: boolean = false) => {
-    if (resetPage) {
-        form.page = 1;
-    }
-    if (!form.limit) {
-        form.limit = 5;
-    }
+    const observerOptions = {
+        root: null,
+        rootMargin: '-20% 0px -60% 0px', // Trigger when section is in the middle of viewport
+        threshold: 0
+    };
 
-    const data = validate();
-
-    if (data) {
-        await loadProductService.get("admin/products", data).then(() => {
-            if (
-                loadProductService.request.status === 200 &&
-                loadProductService.request.data
-            ) {
-                Object.keys(paginate).forEach((key) => {
-                    paginate[key] = loadProductService.request.data[key];
-                });
-            } else {
-                toast.error(
-                    loadProductService.request.message ?? "Please try again",
-                );
-                if (loadProductService.request.errors) {
-                    Object.keys(loadProductService.request.errors).forEach(
-                        (key) => {
-                            errors[key] =
-                                loadProductService.request.errors[key];
-                        },
-                    );
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            // Only update hash if NOT programmatically scrolling and section is intersecting
+            if (entry.isIntersecting && !isProgrammaticScroll.value) {
+                const sectionId = entry.target.id;
+                const newHash = `#${sectionId}`;
+                
+                // Update route hash without scrolling
+                if (route.hash !== newHash) {
+                    // Clear any pending scroll timeout
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    
+                    // Debounce the hash update
+                    scrollTimeout = window.setTimeout(() => {
+                        router.replace({ 
+                            name: route.name as string, 
+                            hash: newHash 
+                        });
+                    }, 150);
                 }
             }
         });
-    } else {
-        toast.error("Please fill in the required fields.");
-    }
+    }, observerOptions);
+
+    // Observe all sections
+    sections.forEach((sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            observer.observe(element);
+        }
+    });
+
+    return observer;
 };
 
+// Load dashboard data on mount
 onMounted(() => {
-    load();
+    loadDashboardData();
+    
+    // Setup scroll spy after content loads
+    setTimeout(() => {
+        scrollObserver = setupScrollSpy();
+    }, 1000);
+    
+    // Scroll to section if hash exists
+    if (route.hash) {
+        const sectionId = route.hash.replace('#', '');
+        setTimeout(() => scrollToSection(sectionId), 500); // Delay to ensure content is loaded
+    }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+    }
+    cleanup(); // Cleanup WebSocket connections
+    if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+    }
+    if (programmaticScrollTimeout) {
+        clearTimeout(programmaticScrollTimeout);
+    }
 });
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+</style>

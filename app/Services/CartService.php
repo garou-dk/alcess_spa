@@ -14,7 +14,9 @@ class CartService
         $user = $authService->getAuth();
         $carts = Cart::query()
             ->select('carts.*')
-            ->with(['product'])
+            ->with(['product' => function ($query) {
+                $query->withAvg('rates', 'rate');
+            }])
             ->join('products', 'products.product_id', '=', 'carts.product_id')
             ->where('carts.user_id', $user->user_id)
             ->where('products.product_quantity', '>', 0)

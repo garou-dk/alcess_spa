@@ -12,6 +12,7 @@
                         v-model="form.rate"
                         :invalid="errors.rate.length > 0"
                         :cancel="false"
+                        class="rating-yellow"
                     />   
                 </div>     
             </InputForm>
@@ -38,6 +39,7 @@
                 label="Submit"
                 icon="pi pi-save"
                 :loading="submitService.request.loading"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
             />
         </div>
     </form>
@@ -105,3 +107,46 @@ const handleSubmit = async () => {
     }
 }
 </script>
+
+<style>
+/* Yellow star styling for rating - comprehensive targeting */
+/* Default unselected stars - gray */
+.rating-yellow .p-rating-option,
+.rating-yellow .p-rating-option .p-rating-icon,
+.rating-yellow .p-rating-option svg,
+.rating-yellow button,
+.rating-yellow button svg,
+.rating-yellow button .p-icon {
+    color: #d1d5db !important; /* gray-300 for unselected */
+    fill: #d1d5db !important;
+}
+
+/* Selected/Active/Filled stars - yellow */
+.rating-yellow .p-rating-option-active,
+.rating-yellow .p-rating-option-active .p-rating-icon,
+.rating-yellow .p-rating-option-active svg,
+.rating-yellow .p-rating-option-active .p-icon,
+.rating-yellow .p-rating-option.p-focus,
+.rating-yellow .p-rating-option.p-focus svg,
+.rating-yellow button[data-p-active="true"],
+.rating-yellow button[data-p-active="true"] svg,
+.rating-yellow button[data-p-active="true"] .p-icon,
+.rating-yellow .p-highlight,
+.rating-yellow .p-highlight svg,
+.rating-yellow .p-highlight .p-icon {
+    color: #fbbf24 !important; /* yellow-400 for filled */
+    fill: #fbbf24 !important;
+}
+
+/* Hover state - yellow */
+.rating-yellow .p-rating-option:hover,
+.rating-yellow .p-rating-option:hover .p-rating-icon,
+.rating-yellow .p-rating-option:hover svg,
+.rating-yellow .p-rating-option:hover .p-icon,
+.rating-yellow button:hover,
+.rating-yellow button:hover svg,
+.rating-yellow button:hover .p-icon {
+    color: #fbbf24 !important; /* yellow-400 on hover */
+    fill: #fbbf24 !important;
+}
+</style>

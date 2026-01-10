@@ -124,6 +124,7 @@
                 label="Sign Up"
                 fluid
                 :loading="registerService.request.loading"
+                pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!"
             />
         </div>
         <slot name="footer" />

@@ -1,7 +1,9 @@
 <template>
     <form @submit.prevent="handleSubmit()">
-        <p>Are you sure you want to change the status to <b>{{ form.status }}</b>?</p>
-        <div class="my-2" v-if="form.status && form.status == 'Confirmed'" >
+        <div class="mb-4">
+            <p class="text-gray-700">Are you sure you want to change the status to <span class="font-semibold text-gray-900">{{ form.status }}</span>?</p>
+        </div>
+        <div class="my-2" v-if="(form.status === 'Accept' || form.status === 'Confirmed') && props.data.order_type === 'Delivery'" >
             <InputForm
                 :errors="errors.shipping_fee"
                 id="shipping_fee"
@@ -22,31 +24,36 @@
                 />
             </InputForm>
         </div>
-        <div class="my-2" v-if="form.status && form.status == 'Rejected'">
+        <div class="my-2" v-if="form.status === 'Decline' || form.status === 'Rejected'">
             <InputForm
                 :errors="errors.remarks"
                 id="remarks"
-                labelName="Remarks*"
+                labelName="Reason for Declining*"
                 tag="span"
             >
                 <Textarea
                     v-model="form.remarks"
                     id="remarks"
-                    placeholder="Remarks"
+                    placeholder="Enter reason for declining this order"
                     fluid
                     :invalid="errors.remarks.length > 0"
                 />
             </InputForm>
         </div>
-        <div class="flex justify-center">
-            <div class="flex">
-                <div class="p-2">
-                    <Button label="No" @click="closeModal" type="button" severity="danger" />
-                </div>
-                <div class="p-2">
-                    <Button label="Yes" type="submit" severity="success" :loading="submitService.request.loading" />
-                </div>
-            </div>
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <Button 
+                label="Cancel" 
+                @click="closeModal" 
+                type="button" 
+                severity="secondary"
+                outlined
+            />
+            <Button 
+                label="Confirm" 
+                type="submit" 
+                class="!bg-blue-600 hover:!bg-blue-700"
+                :loading="submitService.request.loading" 
+            />
         </div>
     </form>
 </template>
@@ -96,15 +103,19 @@ const clearErrors = () => {
 
 const validate = () => {
     clearErrors();
-    if (form.status && form.status == 'Confirmed' && props.data.order_type === 'Delivery' && form.shipping_fee === null) {
-        errors.shipping_fee.push("Shipping fee is required.");
+    
+    // Validate shipping fee for Delivery orders when accepting
+    if ((form.status === 'Accept' || form.status === 'Confirmed') && props.data.order_type === 'Delivery' && form.shipping_fee === null) {
+        errors.shipping_fee.push("Shipping fee is required for delivery orders.");
     }
+    
     if (form.status === null) {
         errors.status.push("Status is required.");
     }
 
-    if (form.status && form.status == 'Rejected' && !form.remarks) {
-        errors.remarks.push("Remarks is required.");
+    // Validate remarks when declining
+    if ((form.status === 'Decline' || form.status === 'Rejected') && !form.remarks) {
+        errors.remarks.push("Reason for declining is required.");
     }
 
     const hasErrors = [errors.shipping_fee.length > 0, errors.status.length > 0, errors.remarks.length > 0];
@@ -115,10 +126,25 @@ const handleSubmit = async () => {
     const result = validate();
     
     if (result) {
-        if (props.data.order_type !== 'Delivery') {
-            form.shipping_fee = 0;
+        // Determine which endpoint to use based on status
+        let endpoint = '';
+        let payload: any = {};
+        
+        if (form.status === 'Accept' || form.status === 'Confirmed') {
+            // Accept order endpoint
+            endpoint = `admin/orders/accept/${props.data.order_id}`;
+            payload = {
+                shipping_fee: props.data.order_type === 'Delivery' ? form.shipping_fee : 0
+            };
+        } else if (form.status === 'Decline' || form.status === 'Rejected') {
+            // Decline order endpoint
+            endpoint = `admin/orders/decline/${props.data.order_id}`;
+            payload = {
+                remarks: form.remarks
+            };
         }
-        await submitService.patch(`admin/orders/approval/${props.data.order_id}`, form).then(() => {
+        
+        await submitService.patch(endpoint, payload).then(() => {
             if (submitService.request.status === 200 && submitService.request.data) {
                 toast.success(submitService.request.message);
                 emit("cb", submitService.request.data);

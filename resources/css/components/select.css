@@ -1,0 +1,57 @@
+/* PrimeVue Select Styling */
+.p-select {
+  @apply rounded-modern border-gray-300;
+}
+
+.p-select:focus {
+  @apply border-primary ring-2 ring-primary/20;
+}
+
+.p-select-overlay {
+  @apply rounded-modern shadow-modern-md border border-gray-200 mt-1;
+}
+
+.p-select-option {
+  @apply px-4 py-2.5 transition-colors duration-150;
+}
+
+.p-select-option:hover {
+  @apply bg-gray-50;
+}
+
+.p-select-option.p-select-option-selected {
+  @apply bg-primary/10 text-primary;
+}
+
+/* Dropdown Styling */
+.p-dropdown {
+  @apply rounded-modern border-gray-300;
+}
+
+.p-dropdown:not(.p-disabled):hover {
+  @apply border-gray-400;
+}
+
+.p-dropdown:not(.p-disabled).p-focus {
+  @apply border-primary ring-2 ring-primary/20 shadow-none;
+}
+
+.p-dropdown-panel {
+  @apply rounded-modern shadow-modern-md border border-gray-200 mt-1;
+}
+
+.p-dropdown-item {
+  @apply px-4 py-2.5 transition-colors duration-150;
+}
+
+.p-dropdown-item:not(.p-disabled):hover {
+  @apply bg-gray-50;
+}
+
+.p-dropdown-item.p-focus {
+  @apply bg-gray-50;
+}
+
+.p-dropdown-item-selected {
+  @apply bg-primary/10 text-primary;
+}

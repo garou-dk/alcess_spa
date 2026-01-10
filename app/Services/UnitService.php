@@ -9,7 +9,7 @@ class UnitService
     public function fetchUnits()
     {
         return Unit::query()
-            ->orderBy('unit_name', 'asc')
+            ->orderBy('created_at', 'desc')
             ->withTrashed()
             ->get();
     }

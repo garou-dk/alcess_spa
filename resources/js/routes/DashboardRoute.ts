@@ -14,7 +14,7 @@ const route: RouteRecordRaw = {
             meta: {
                 access: getStoreRoles(),
                 pageName: "Dashboard",
-                pageSubName: "Welcome back, Here's you overview!",
+                pageSubName: "Welcome back, Here's your overview!",
             },
         },
     ],

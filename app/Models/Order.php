@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $primaryKey = 'order_id';
 
@@ -17,6 +18,8 @@ class Order extends Model
         'other_details',
         'contact_number',
         'status',
+        'admin_accepted',
+        'admin_accepted_at',
         'date_paid_confirmed',
         'estimated_delivery_date_start',
         'estimated_delivery_date_end',
@@ -32,8 +35,24 @@ class Order extends Model
         'order_public_id',
         'postal_code',
         'proof_of_payment',
+        'delivery_proof_images',
+        'delivery_proof_video',
         'remarks',
-        'date_payment_processed'
+        'date_payment_processed',
+        'sale_id',
+        'invoice_generated_at'
+    ];
+
+    protected $casts = [
+        'delivery_proof_images' => 'array',
+        'admin_accepted' => 'boolean',
+        'admin_accepted_at' => 'datetime',
+        'date_paid_confirmed' => 'datetime',
+        'estimated_delivery_date_start' => 'date',
+        'estimated_delivery_date_end' => 'date',
+        'customer_received_date' => 'date',
+        'date_payment_processed' => 'datetime',
+        'invoice_generated_at' => 'datetime',
     ];
 
     public function productOrders() {
@@ -46,5 +65,9 @@ class Order extends Model
 
     public function barangay() {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'barangay_id');
+    }
+
+    public function sale() {
+        return $this->belongsTo(Sale::class, 'sale_id', 'sale_id');
     }
 }

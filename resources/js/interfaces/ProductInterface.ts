@@ -53,6 +53,12 @@ interface ProductInterface {
     rates_avg_rate?: number;
     grouped_rates?: IRateGroups;
     batch_id: number | null;
+    batch_number?: string;
+    is_best_selling?: boolean | number;
+    total_sales?: number;
+    user_has_purchased?: boolean;
+    user_has_reviewed?: boolean;
+    product_order_id?: number | null;
 }
 
 interface AddProductFormInterface {
@@ -89,6 +95,26 @@ interface UpdateProductImageFormErrorInterface {
     product_image: string[];
 }
 
+interface AddStockRequestInterface {
+    quantity: number;
+}
+
+interface AddStockFormInterface {
+    quantity: number | null;
+}
+
+interface AddStockFormErrorInterface {
+    quantity: string[];
+}
+
+interface AddStockResponseInterface {
+    product_id: number;
+    product_name: string;
+    product_quantity: number;
+    category: CategoryInterface;
+    unit: UnitInterface;
+}
+
 export {
     ProductSearchInterface,
     ProductSearchErrorInterface,
@@ -97,4 +123,8 @@ export {
     AddProductFormErrorInterface,
     UpdateProductImageFormInterface,
     UpdateProductImageFormErrorInterface,
+    AddStockRequestInterface,
+    AddStockFormInterface,
+    AddStockFormErrorInterface,
+    AddStockResponseInterface,
 };

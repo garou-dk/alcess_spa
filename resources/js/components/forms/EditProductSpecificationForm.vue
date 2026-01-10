@@ -4,7 +4,7 @@
         :class="props.isSelected ? 'border-blue-400 bg-blue-50 shadow-md' : 'border-gray-300 bg-white hover:border-gray-400'"
         @submit.prevent="handleSubmit()"
     >
-        <div class="flex flex-wrap items-start">
+        <div class="flex flex-wrap items-end">
             <div class="p-2 max-lg:w-full lg:grow">
                 <InputForm
                     :errors="errors.specification_name"
@@ -46,7 +46,7 @@
             <div
                 class="flex flex-wrap gap-2 p-2 max-lg:w-full max-lg:justify-center"
             >
-                <div v-if="props.isSelected" class="flex items-end">
+                <div v-if="props.isSelected">
                     <Button
                         type="submit"
                         icon="pi pi-save"
@@ -55,10 +55,10 @@
                         severity="success"
                     />
                 </div>
-                <div v-else class="flex items-end">
+                <div v-else>
                     <slot name="select" />
                 </div>
-                <div class="flex items-end">
+                <div>
                     <DeleteProductSpecification
                         :data="props.data"
                         @cb="deleteEmit"

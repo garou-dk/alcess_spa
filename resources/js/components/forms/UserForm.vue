@@ -175,7 +175,7 @@
                             type="button"
                             label="Change Image"
                             icon="pi pi-pencil"
-                            class="primary-bg"
+                            class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                             @click="selectImage"
                         />
                         <Button
@@ -200,6 +200,7 @@
                 icon="pi pi-save"
                 fluid
                 :loading="registerService.request.loading"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
             />
         </div>
         <Dialog
@@ -228,7 +229,7 @@
                     type="button"
                     label="Crop Image"
                     icon="pi pi-image"
-                    class="primary-bg"
+                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
                     @click="getCropResult()"
                 />
             </div>

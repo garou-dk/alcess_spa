@@ -4,30 +4,55 @@ namespace App\Enums;
 
 enum OrderStatusEnum : string
 {
-    case PENDING = 'Pending';
-    case CONFIRMED = 'Confirmed';
     case PROCESSING = 'Processing';
+    case CONFIRMED = 'Confirmed';
     case SHIPPED = 'Shipped';
-    case FOR_DELIVERY = 'For delivery';
-    case DELIVERED = 'Delivered';
-    case RELEASED = 'Released';
+    case COMPLETED = 'Completed';
     case CANCELLED = 'Cancelled';
-    case REFUNDED = 'Refunded';
-    case REJECTED = 'Rejected';
 
     public static function all(): array
     {
         return [
-            self::PENDING->value,
-            self::CONFIRMED->value,
             self::PROCESSING->value,
+            self::CONFIRMED->value,
             self::SHIPPED->value,
-            self::FOR_DELIVERY->value,
-            self::DELIVERED->value,
-            self::RELEASED->value,
+            self::COMPLETED->value,
             self::CANCELLED->value,
-            self::REFUNDED->value,
-            self::REJECTED->value,
         ];
+    }
+
+    public function canTransitionTo(OrderStatusEnum $to): bool
+    {
+        $allowedTransitions = [
+            self::PROCESSING => [self::CONFIRMED, self::CANCELLED],
+            self::CONFIRMED => [self::SHIPPED],
+            self::SHIPPED => [self::COMPLETED],
+            self::COMPLETED => [],
+            self::CANCELLED => [],
+        ];
+
+        return in_array($to, $allowedTransitions[$this] ?? []);
+    }
+
+    public function getLabel(): string
+    {
+        return match($this) {
+            self::PROCESSING => 'Processing',
+            self::CONFIRMED => 'Confirmed',
+            self::SHIPPED => 'Shipped',
+            self::COMPLETED => 'Completed',
+            self::CANCELLED => 'Cancelled',
+        };
+    }
+
+    public function getBadgeClass(): string
+    {
+        return match($this) {
+            self::PROCESSING => 'bg-blue-50 text-blue-700',
+            self::CONFIRMED => 'bg-green-50 text-green-700',
+            self::SHIPPED => 'bg-purple-50 text-purple-700',
+            self::COMPLETED => 'bg-gray-50 text-gray-700',
+            self::CANCELLED => 'bg-red-50 text-red-700',
+        };
     }
 }

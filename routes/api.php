@@ -24,38 +24,82 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SpecificationController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
-Route::get('categories', [CategoryController::class, 'index']);
-
-Route::get('best-selling', [ProductController::class, 'bestSelling']);
-
-Route::get('find-product/{id}', [ProductController::class, 'fetchAvailableProduct']);
-
-Route::get('island-groups', [IslandGroupController::class, 'index']);
-
-Route::get('regions/{id}', [RegionController::class, 'index']);
-
-Route::get('provinces/{id}', [ProvinceController::class, 'index']);
-
-Route::get('municities/{id}', [MunicityController::class, 'index']);
-
-Route::get('barangays/{id}', [BarangayController::class, 'index']);
-
-Route::controller(ProductController::class)
-    ->prefix('products')
-    ->group(function () {
-        Route::get('/', 'searchProduct');
-        Route::get('/category/{id}','getProductByCategory');
-        Route::get('search','searchProductName');
+/*
+|--------------------------------------------------------------------------
+| Rate Limiting Configuration
+|--------------------------------------------------------------------------
+*/
+RateLimiter::for('auth', function (Request $request) {
+    return Limit::perMinute(5)->by($request->ip())->response(function () {
+        return response()->json([
+            'message' => 'Too many login attempts. Please try again in a minute.',
+        ], 429);
     });
+});
 
-Route::middleware(['auth:sanctum'])->group(function () {
+RateLimiter::for('password-reset', function (Request $request) {
+    return Limit::perMinute(3)->by($request->ip())->response(function () {
+        return response()->json([
+            'message' => 'Too many password reset attempts. Please try again later.',
+        ], 429);
+    });
+});
+
+RateLimiter::for('api', function (Request $request) {
+    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+});
+
+RateLimiter::for('public', function (Request $request) {
+    return Limit::perMinute(30)->by($request->ip());
+});
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Rate Limited)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['throttle:public'])->group(function () {
+    Route::get('categories', [CategoryController::class, 'index']);
+
+    Route::get('best-selling', [ProductController::class, 'bestSelling']);
+
+    Route::get('find-product/{id}', [ProductController::class, 'fetchAvailableProduct']);
+
+    Route::get('island-groups', [IslandGroupController::class, 'index']);
+
+    Route::get('regions/{id}', [RegionController::class, 'index']);
+
+    Route::get('provinces/{id}', [ProvinceController::class, 'index']);
+
+    Route::get('municities/{id}', [MunicityController::class, 'index']);
+
+    Route::get('barangays/{id}', [BarangayController::class, 'index']);
+
+    Route::controller(ProductController::class)
+        ->prefix('products')
+        ->group(function () {
+            Route::get('/', 'searchProduct');
+            Route::get('/category/{id}','getProductByCategory');
+            Route::get('search','searchProductName');
+        });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes (API Rate Limited)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
     Route::post('logout', [AuthController::class, 'logoutUser']);
     Route::prefix('admin')->group(function () {
-        Route::middleware(['role:'.RoleEnum::ADMIN->value.'-'.RoleEnum::STAFF->value])->group(function () {
-            Route::get('roles', [RoleController::class, 'index']);
+        // Admin-only routes (user management)
+        Route::middleware(['role:'.RoleEnum::ADMIN->value])->group(function () {
             Route::controller(UserController::class)
                 ->prefix('users')->group(function () {
                     Route::get('/', 'index');
@@ -66,6 +110,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Route::patch('/change-role/{id}', 'changeRole');
                     Route::patch('/change-status/{id}', 'changeStatus');
                 });
+        });
+
+        // Shared Admin-Staff routes
+        Route::middleware(['role:'.RoleEnum::ADMIN->value.'-'.RoleEnum::STAFF->value])->group(function () {
+            Route::get('roles', [RoleController::class, 'index']);
 
             Route::controller(UnitController::class)
                 ->prefix('units')
@@ -93,10 +142,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'store');
+                    Route::post('/validate-info', 'validateProductInfo');
+                    Route::post('/validate-product-name', 'validateProductName');
+                    Route::post('/validate-sku', 'validateSku');
+                    Route::post('/create-with-media', 'createWithMedia');
                     Route::delete('/{id}', 'destroy');
                     Route::patch('/{id}', 'update');
                     Route::patch('/update-image/{id}', 'changeImage');
                     Route::patch('/change-status/{id}', 'changeStatus');
+                    Route::patch('/{id}/add-stock', 'addStock');
                     Route::get('/sku-search/{id}', 'searchBySku');
                 });
 
@@ -128,11 +182,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('orders')
                 ->group(function () {
                     Route::get('/', 'getAllOrders');
-                    Route::patch('/approval/{id}', 'approveOrDecline');
-                    Route::patch('/cancel/{id}', 'cancelOrder');
+                    Route::patch('/accept/{id}', 'acceptOrder');
+                    Route::patch('/decline/{id}', 'declineOrder');
+                    Route::patch('/confirm-payment-status/{id}', 'confirmPaymentStatus');
                     Route::get('/payment-image/{id}', 'fetchPaymentImage');
-                    Route::patch('/confirm-payment/{id}', 'confirmPayment');
-                    Route::patch('/for-delivery/{id}', 'setToShipped');
+                    Route::post('/set-delivery/{id}', 'setDeliveryWithProof');
+                    Route::post('/generate-invoice/{id}', 'generateInvoice');
                 });
 
             Route::controller(AppConfigurationController::class)
@@ -146,7 +201,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::controller(SaleController::class)
                 ->prefix('sales')
                 ->group(function () {
+                    Route::get('/', 'getAllSales');
                     Route::post('/', 'recordSale');
+                    Route::get('/today-stats', 'getTodayStats');
                     Route::get('/{id}', 'getSale');
                 });
 
@@ -161,23 +218,28 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->group(function () {
                     Route::get('inventory', [ProductController::class, 'inventoryCount']);
                     Route::get('customers', [UserController::class, 'customerList']);
+                    Route::get('online-sales', [DashboardController::class, 'getOnlineSalesReport']);
+                    Route::get('walkin-sales', [DashboardController::class, 'getWalkInSalesReport']);
+                    Route::get('customer-reviews', [DashboardController::class, 'getCustomerReviewReport']);
                 });
 
             Route::controller(DashboardController::class)
                 ->prefix('dashboard')
                 ->group(function () {
+                    Route::get('aggregated', 'getAggregatedDashboard');
                     Route::get('monthly-revenue', 'getMonthlyRevenue');
-                    Route::get('product-stats', 'getProductStats');
                     Route::get('pending-orders', 'getPendingOrdersReport');
                     Route::get('inventory-value', 'getTotalInventoryValue');
                     Route::get('top-sellers', 'getTop5MostSoldItems');
                     Route::get('monthly-report', 'getCurrentMonthReport');
-                    Route::get('7-day-sales', 'getPrevious7DaysSales');
                     Route::get('category-sales', 'getRevenueByCategories');
                     Route::get('stock-in-out', 'getStockInOutReport');
                     Route::get('pending', 'getPendingOrders');
                     Route::get('sales-report', 'getRevenueReport');
                     Route::get('delivery-report', 'getForDeliveryReport');
+                    Route::get('online-sales-report', 'getOnlineSalesReport');
+                    Route::get('walkin-sales-report', 'getWalkInSalesReport');
+                    Route::get('customer-review-report', 'getCustomerReviewReport');
                 });
 
             Route::controller(RateController::class)
@@ -227,6 +289,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('orders')
                 ->group(function () {
                     Route::post('/', 'orderProducts');
+                    Route::get('/paid', 'getPaidOrders');
                     Route::get('/{id}', 'getOrder');
                     Route::get('/', 'getCustomerOrders');
                     Route::patch('/cancel/{id}', 'cancelOrder');
@@ -239,6 +302,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->prefix('rates')
                 ->group(function () {
                     Route::post('/{id}', 'addRate');
+                    Route::post('/{id}/like', 'toggleLike');
                 });
 
             Route::controller(OrderNotificationController::class)
@@ -258,12 +322,27 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 
+/*
+|--------------------------------------------------------------------------
+| Guest Routes (Authentication - Strict Rate Limiting)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['guest-only'])
     ->group(function () {
-        Route::post('login', [AuthController::class, 'authenticateCustomer']);
-        Route::post('register', [UserController::class, 'registerCustomer']);
-        Route::prefix('admin')->group(function () {
-            Route::post('login', [AuthController::class, 'authenticateAdmin']);
+        // Login routes with strict rate limiting (5 attempts per minute)
+        Route::middleware(['throttle:auth'])->group(function () {
+            Route::post('login', [AuthController::class, 'authenticateCustomer']);
+            Route::prefix('admin')->group(function () {
+                Route::post('login', [AuthController::class, 'authenticateAdmin']);
+            });
         });
+
+        Route::post('register', [UserController::class, 'registerCustomer']);
         Route::post('verify/{uuid}', [UserController::class, 'verifyEmail'])->middleware('signed')->name('verify-email');
+        
+        // Password reset with strict rate limiting (3 attempts per minute)
+        Route::prefix('password')->middleware(['throttle:password-reset'])->group(function () {
+            Route::post('send-code', [App\Http\Controllers\PasswordResetController::class, 'sendCode']);
+            Route::post('reset', [App\Http\Controllers\PasswordResetController::class, 'reset']);
+        });
     });

@@ -15,6 +15,21 @@ class SendVerificationMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     /**
+     * The number of times the job may be attempted.
+     */
+    public $tries = 3;
+
+    /**
+     * The number of seconds to wait before retrying the job.
+     */
+    public $backoff = [60, 300, 900]; // Retry after 1min, 5min, 15min
+
+    /**
+     * The maximum number of seconds the job can run before timing out.
+     */
+    public $timeout = 120;
+
+    /**
      * Create a new message instance.
      */
     public function __construct(public string $email, public string $link, public string $expiration) {}

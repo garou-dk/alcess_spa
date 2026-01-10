@@ -25,13 +25,22 @@ class RateController extends Controller
 
     public function fetchRateWithoutComment() {
         return ApiResponse::success()
-            ->data($this->service->fetchCommentsWithoutReply())
+            ->data($this->service->fetchAllRatings())
             ->response();
     }
 
     public function addReply(string $id, ReplyRateRequest $request) {
         return ApiResponse::success()
             ->data($this->service->addReply($request->validated() + ['rate_id' => $id]))
+            ->response();
+    }
+
+    public function toggleLike(string $id) {
+        $authService = new AuthService;
+        $user = $authService->getAuth();
+        return ApiResponse::success()
+            ->data($this->service->toggleLike($id, $user->user_id))
+            ->message('Like toggled successfully')
             ->response();
     }
 }

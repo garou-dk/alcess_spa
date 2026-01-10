@@ -1,15 +1,30 @@
 <template>
     <div>
-        <div class="flex justify-end">
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'flex justify-center mb-3',
+            tablet: 'flex justify-end mb-4',
+            desktop: 'flex justify-end'
+        })">
             <Button
                 label="Print"
                 icon="pi pi-print"
-                class="primary-bg"
+                :class="[
+                    '!bg-blue-600 hover:!bg-blue-700 !text-white',
+                    responsive.getResponsiveClasses({
+                        mobile: 'w-full text-sm',
+                        tablet: 'text-base',
+                        desktop: 'text-base'
+                    })
+                ]"
                 @click="printReport()"
             />
         </div>
 
-        <div id="inventory-report" v-if="!loadService.request.loading">
+        <div id="inventory-report" v-if="!loadService.request.loading" :class="responsive.getResponsiveClasses({
+            mobile: 'overflow-x-auto',
+            tablet: 'overflow-x-auto',
+            desktop: ''
+        })">
             <!-- Header -->
             <div
                 style="
@@ -29,112 +44,129 @@
                     <h1 style="color: #00598a; font-size: 24px; margin: 0">
                         LIST OF CUSTOMER
                     </h1>
-                    <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
-                        <strong>Date:</strong>
-                        {{
-                            DateUtil.formatToMonthDayYear(
-                                new Date().toISOString().split("T")[0],
-                            )
-                        }}
-                    </p>
                 </div>
             </div>
 
             <!-- Table -->
             <h2 style="margin-top: 30px; font-size: 16px">Customer Overview</h2>
-            <table
-                style="width: 100%; border-collapse: collapse; margin-top: 10px"
-            >
-                <thead>
-                    <tr>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Date
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Account Name
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Address
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Contact Number
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(person, index) in data" :key="index">
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ DateUtil.formatToMonthDayYear(person.created_at) }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ person.full_name }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{
-                                person.address ? showCompleteAddress(person.address) : "N/A"
-                            }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ person.address ? person.address.contact_number : 'N/A' }}
-                        </td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'overflow-x-auto',
+                tablet: 'overflow-x-auto',
+                desktop: ''
+            })">
+                <table
+                    style="width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 700px;"
+                >
+                    <thead>
+                        <tr>
+                            <th
+                                style="
+                                    border: 1px solid #ccc;
+                                    background-color: #00598a;
+                                    color: white;
+                                    padding: 8px;
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                "
+                            >
+                                Date
+                            </th>
+                            <th
+                                style="
+                                    border: 1px solid #ccc;
+                                    background-color: #00598a;
+                                    color: white;
+                                    padding: 8px;
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                "
+                            >
+                                Account Name
+                            </th>
+                            <th
+                                style="
+                                    border: 1px solid #ccc;
+                                    background-color: #00598a;
+                                    color: white;
+                                    padding: 8px;
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                "
+                            >
+                                Address
+                            </th>
+                            <th
+                                style="
+                                    border: 1px solid #ccc;
+                                    background-color: #00598a;
+                                    color: white;
+                                    padding: 8px;
+                                    -webkit-print-color-adjust: exact;
+                                    print-color-adjust: exact;
+                                "
+                            >
+                                Contact Number
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(person, index) in data" :key="index">
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ DateUtil.formatToMonthDayYear(person.created_at) }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ person.full_name }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{
+                                    person.address ? showCompleteAddress(person.address) : "N/A"
+                                }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ person.address ? person.address.contact_number : 'N/A' }}
+                            </td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Approval -->
-            <h2 style="margin-top: 30px; font-size: 16px">Approval</h2>
-            <div style="display: flex; justify-content: space-between">
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Blademier S. Canalita</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
+            <div style="position: relative; margin-top: 30px">
+                <div style="float: left; width: 45%">
+                    <h2 style="font-size: 16px">Approval</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Blademier S. Canalita</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                DateUtil.formatYYYYMMDD(new Date()),
+                            )
+                        }}</small>
+                    </div>
                 </div>
+                <div style="float: right; width: 45%">
+                    <h2 style="font-size: 16px">Prepared by:</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Albert Von Daligdigan</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                DateUtil.formatYYYYMMDD(new Date()),
+                            )
+                        }}</small>
+                    </div>
+                </div>
+                <div style="clear: both"></div>
             </div>
         </div>
-        <div class="flex justify-center" v-else>
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'flex justify-center py-8',
+            tablet: 'flex justify-center py-12',
+            desktop: 'flex justify-center'
+        })" v-else>
             <PageLoader />
         </div>
     </div>
@@ -147,8 +179,17 @@ import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import DateUtil from "@/utils/DateUtil";
+import { useResponsive } from "@/composables/useResponsive";
 import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
+
+interface Props {
+    startDate: string | null;
+    endDate: string | null;
+}
+
+const props = defineProps<Props>();
+const responsive = useResponsive();
 
 const data = ref<UserInterface[]>([]);
 
@@ -162,14 +203,23 @@ const printReport = () => {
       <html>
         <head>
           <title>List of Customer</title>
+          <style>
+            @media print {
+              img { display: block !important; }
+            }
+          </style>
         </head>
         <body style="font-family: Arial, sans-serif;">${printContents}</body>
       </html>
     `);
         printWindow.document.close();
         printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+        
+        // Wait for images to load before printing
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     }
 };
 
@@ -177,13 +227,15 @@ const loadService = useAxiosUtil<null, UserInterface[]>();
 const toast = useToast();
 
 const load = async () => {
-    await loadService.get('admin/reports/customers').then(() => {
+    const params = (props.startDate && props.endDate) 
+        ? `?start_date=${props.startDate}&end_date=${props.endDate}` 
+        : '';
+    
+    await loadService.get(`admin/reports/customers${params}`).then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
             data.value = loadService.request.data;
         }
-        else {
-            toast.error(loadService.request.message ?? "Failed to load settings");
-        }
+        // No toast notification for empty data - just show empty table
     });
 }
 

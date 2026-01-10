@@ -46,4 +46,17 @@ export default class DateUtil {
     public static getLastDayOfMonth(date: Date): Date {
         return new Date(date.getFullYear(), date.getMonth() + 1, 0);
     }
+
+    public static formatToMonthDayYearTime(text: string): string {
+        const date = new Date(text);
+        const month = date.toLocaleString("default", { month: "long" });
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const hour = date.getHours();
+        const minute = date.getMinutes();
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const hourString = (hour % 12 || 12).toString();
+        const minuteString = minute.toString().padStart(2, "0");
+        return `${month} ${day}, ${year} at ${hourString}:${minuteString} ${ampm}`;
+    }
 }

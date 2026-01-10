@@ -27,8 +27,17 @@ class AuthService
             abort(401, 'We sent you an email to verify your account. Please check your email inbox or spam folder.');
         }
 
+        // Invalidate previous session if exists
+        if ($user->current_session_id) {
+            \DB::table('sessions')->where('id', $user->current_session_id)->delete();
+        }
+
         Auth::guard('web')
             ->login($user);
+
+        // Store the new session ID
+        $sessionId = session()->getId();
+        $user->update(['current_session_id' => $sessionId]);
 
         $authData = $this->getAuth();
 
@@ -47,6 +56,13 @@ class AuthService
     public function logoutUser()
     {
         if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+            
+            // Clear the current session ID
+            if ($user) {
+                $user->update(['current_session_id' => null]);
+            }
+            
             Auth::guard('web')->logout();
             session()->flush();
             session()->regenerate();

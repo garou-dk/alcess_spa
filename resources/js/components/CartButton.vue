@@ -4,16 +4,25 @@
             <Button
                 type="button"
                 icon="pi pi-shopping-cart"
+                rounded
                 class="bg-white!"
                 :class="{
                     'text-sky-800!': count > 0,
                     'text-black!': !count,
                 }"
+                :size="size"
             />
         </RouterLink>
     </OverlayBadge>
 </template>
 <script setup lang="ts">
+interface Props {
+    size?: 'small' | 'large' | undefined;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    size: undefined
+});
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { useEcho } from "@laravel/echo-vue";

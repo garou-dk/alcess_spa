@@ -1,48 +1,144 @@
 <template>
     <header class="sticky top-0 z-10">
-        <nav class="shadow-bottom-float relative z-20 flex bg-white p-5">
-            <div class="grow">
-                <Button
-                    type="button"
-                    variant="link"
-                    raised
-                    icon="pi pi-bars"
-                    class="text-2xl text-gray-500!"
-                    @click="sideBar = !sideBar"
-                />
-            </div>
-            <div class="flex grow items-center justify-end gap-3 px-2">
-                <!-- Notification Button -->
-                <div>
-                    <OverlayBadge
-                        :value="notifications.filter(n => !n.is_read).length"
-                        :severity="notifications.filter(n => !n.is_read).length > 0 ? 'danger' : 'secondary'"
-                        pt:pcBadge:root:class="bg-sky-800! text-white"
+        <nav 
+            :class="[
+                'relative z-20 flex items-center justify-between bg-gray-100 transition-all duration-200',
+                getResponsiveClasses({
+                    mobile: 'p-3',
+                    tablet: 'p-4',
+                    desktop: 'p-5'
+                }),
+                { 'border-b border-gray-200': isScrolled }
+            ]"
+        >
+            <!-- Left Side: Hamburger Menu and Page Info -->
+            <div :class="getResponsiveClasses({
+                mobile: 'flex items-center gap-3',
+                tablet: 'flex items-center gap-4',
+                desktop: 'flex items-center gap-6'
+            })">
+                <!-- Hamburger Menu -->
+                <div class="flex-shrink-0">
+                    <button
+                        type="button"
+                        :class="[
+                            'hamburger-menu transition-all duration-200 rounded-lg flex items-center justify-center',
+                            getResponsiveClasses({
+                                mobile: 'text-xl',
+                                tablet: 'text-xl',
+                                desktop: 'text-2xl'
+                            })
+                        ]"
+                        :style="getResponsiveButtonStyles()"
+                        @click="sideBar = !sideBar"
+                        @mouseenter="$event.currentTarget.style.backgroundColor = '#DBEAFE'"
+                        @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
                     >
-                        <Button
-                            type="button"
-                            @click="openNotification"
-                            icon="pi pi-bell"
-                            :class="[
-                                'bg-sky-800! text-white transition-all duration-200',
-                                notifications.filter(n => !n.is_read).length > 0 ? 'animate-pulse' : ''
-                            ]"
-                        />
-                    </OverlayBadge>
+                        <i class="pi pi-bars"></i>
+                    </button>
+                </div>
+
+                <!-- Page Info -->
+                <div :class="getResponsiveClasses({
+                    mobile: 'hidden',
+                    tablet: 'block',
+                    desktop: 'block'
+                })">
+                    <h1 :class="getResponsiveClasses({
+                        mobile: 'text-lg font-bold text-gray-800',
+                        tablet: 'text-lg font-bold text-gray-800',
+                        desktop: 'text-xl font-bold text-gray-800'
+                    })">{{ route.meta["pageName"] }}</h1>
+                    <p :class="getResponsiveClasses({
+                        mobile: 'text-xs text-gray-600',
+                        tablet: 'text-xs text-gray-600',
+                        desktop: 'text-sm text-gray-600'
+                    })">{{ route.meta["pageSubName"] }}</p>
+                </div>
+            </div>
+
+            <!-- Right Side: Notifications and Avatar -->
+            <div :class="getResponsiveClasses({
+                mobile: 'flex flex-shrink-0 items-center justify-end gap-3 px-1',
+                tablet: 'flex flex-shrink-0 items-center justify-end gap-4 px-2',
+                desktop: 'flex flex-shrink-0 items-center justify-end gap-6 px-2'
+            })">
+                <!-- Notification Button -->
+                <div class="relative">
+                    <div 
+                        class="rounded-lg transition-all duration-200 inline-block"
+                        @mouseenter="$event.currentTarget.style.backgroundColor = '#DBEAFE'"
+                        @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+                    >
+                        <OverlayBadge
+                            :value="notifications.filter(n => !n.is_read).length"
+                            :severity="notifications.filter(n => !n.is_read).length > 0 ? 'danger' : 'secondary'"
+                        >
+                            <button
+                                type="button"
+                                @click="openNotification"
+                                :class="[
+                                    'transition-all duration-200 flex items-center justify-center relative',
+                                    getResponsiveClasses({
+                                        mobile: 'text-lg',
+                                        tablet: 'text-xl',
+                                        desktop: 'text-2xl'
+                                    }),
+                                    notifications.filter(n => !n.is_read).length > 0 ? 'animate-pulse' : ''
+                                ]"
+                                :style="getResponsiveButtonStyles()"
+                            >
+                                <i class="pi pi-bell"></i>
+                            </button>
+                        </OverlayBadge>
+                    </div>
                     <Popover
                         ref="notificationElement"
-                        :dismissable="true"
-                        class="inline-flex"
+                        :dismissable="false"
+                        @show="onPopoverShow"
+                        @hide="onPopoverHide"
                         :pt="{
-                            root: { class: 'max-sm:!left-0 max-sm:!right-0 max-sm:!w-screen max-sm:!max-w-none' }
+                            root: { 
+                                class: getResponsiveClasses({
+                                    mobile: '!left-0 !right-0 !w-screen !max-w-none',
+                                    tablet: '!right-0 !left-auto',
+                                    desktop: '!right-0 !left-auto'
+                                }),
+                                style: getResponsivePopoverStyles()
+                            }
                         }"
                     >
-                        <div class="w-full sm:w-[400px] max-h-[600px] max-sm:max-h-[calc(100vh-80px)] flex flex-col">
+                        <div :class="getResponsiveClasses({
+                            mobile: 'w-full flex flex-col overflow-hidden',
+                            tablet: 'w-full flex flex-col overflow-hidden',
+                            desktop: 'w-full flex flex-col overflow-hidden'
+                        })" :style="getResponsivePopoverContentStyles()">
                             <!-- Notification Header -->
-                            <div class="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-sky-50 to-blue-50">
+                            <div :class="[
+                                'flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-sky-50 to-blue-50 flex-shrink-0',
+                                getResponsiveClasses({
+                                    mobile: 'p-2',
+                                    tablet: 'p-3',
+                                    desktop: 'p-3 sm:p-4'
+                                })
+                            ]">
                                 <div class="flex items-center gap-2">
-                                    <i class="pi pi-bell text-sky-800 text-lg sm:text-xl"></i>
-                                    <h3 class="text-base sm:text-lg font-bold text-gray-800">Notifications</h3>
+                                    <i :class="[
+                                        'pi pi-bell text-sky-800',
+                                        getResponsiveClasses({
+                                            mobile: 'text-base',
+                                            tablet: 'text-lg',
+                                            desktop: 'text-lg sm:text-xl'
+                                        })
+                                    ]"></i>
+                                    <h3 :class="[
+                                        'font-bold text-gray-800',
+                                        getResponsiveClasses({
+                                            mobile: 'text-sm',
+                                            tablet: 'text-base',
+                                            desktop: 'text-base sm:text-lg'
+                                        })
+                                    ]">Notifications</h3>
                                     <span 
                                         v-if="unreadCount > 0" 
                                         class="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full"
@@ -56,17 +152,30 @@
                                     label="Mark all read"
                                     text
                                     size="small"
-                                    class="text-sky-700 hover:text-sky-900 text-xs font-semibold max-sm:!text-[10px] max-sm:!px-1"
-                                    @click="markAllAsRead"
+                                    :class="[
+                                        'text-sky-700 hover:text-sky-900 font-semibold',
+                                        getResponsiveClasses({
+                                            mobile: 'text-xs !px-1',
+                                            tablet: 'text-xs',
+                                            desktop: 'text-xs'
+                                        })
+                                    ]"
+                                    @click.stop="markAllAsRead"
+                                    @mousedown.stop
                                 />
                             </div>
 
                             <!-- Notification Tabs -->
                             <div class="flex border-b border-gray-200 bg-gray-50">
                                 <button
-                                    @click="activeTab = 'all'"
+                                    @click="handleTabClick('all', $event)"
                                     :class="[
-                                        'flex-1 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-200',
+                                        'flex-1 py-2 font-semibold transition-all duration-200',
+                                        getResponsiveClasses({
+                                            mobile: 'px-2 text-xs',
+                                            tablet: 'px-3 text-xs',
+                                            desktop: 'px-3 sm:px-4 text-xs sm:text-sm'
+                                        }),
                                         activeTab === 'all' 
                                             ? 'text-sky-800 border-b-2 border-sky-800 bg-white' 
                                             : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
@@ -75,9 +184,14 @@
                                     All ({{ notifications.length }})
                                 </button>
                                 <button
-                                    @click="activeTab = 'unread'"
+                                    @click="handleTabClick('unread', $event)"
                                     :class="[
-                                        'flex-1 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-200',
+                                        'flex-1 py-2 font-semibold transition-all duration-200',
+                                        getResponsiveClasses({
+                                            mobile: 'px-2 text-xs',
+                                            tablet: 'px-3 text-xs',
+                                            desktop: 'px-3 sm:px-4 text-xs sm:text-sm'
+                                        }),
                                         activeTab === 'unread' 
                                             ? 'text-sky-800 border-b-2 border-sky-800 bg-white' 
                                             : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
@@ -88,11 +202,43 @@
                             </div>
 
                             <!-- Notifications List -->
-                            <div class="overflow-y-auto flex-1">
-                                <div v-if="filteredNotifications.length === 0" class="p-6 sm:p-8 text-center">
-                                    <i class="pi pi-bell-slash text-3xl sm:text-4xl text-gray-300 mb-3"></i>
-                                    <p class="text-gray-500 font-medium text-sm sm:text-base">No notifications</p>
-                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">
+                            <div :class="getResponsiveClasses({
+                                mobile: 'overflow-y-auto max-h-[200px]',
+                                tablet: 'overflow-y-auto max-h-[250px]',
+                                desktop: 'overflow-y-auto max-h-[300px]'
+                            })">
+                                <div v-if="filteredNotifications.length === 0" :class="[
+                                    'text-center',
+                                    getResponsiveClasses({
+                                        mobile: 'p-4',
+                                        tablet: 'p-5',
+                                        desktop: 'p-6 sm:p-8'
+                                    })
+                                ]">
+                                    <i :class="[
+                                        'pi pi-bell-slash text-gray-300 mb-3',
+                                        getResponsiveClasses({
+                                            mobile: 'text-2xl',
+                                            tablet: 'text-3xl',
+                                            desktop: 'text-3xl sm:text-4xl'
+                                        })
+                                    ]"></i>
+                                    <p :class="[
+                                        'text-gray-500 font-medium',
+                                        getResponsiveClasses({
+                                            mobile: 'text-xs',
+                                            tablet: 'text-sm',
+                                            desktop: 'text-sm sm:text-base'
+                                        })
+                                    ]">No notifications</p>
+                                    <p :class="[
+                                        'text-gray-400 mt-1',
+                                        getResponsiveClasses({
+                                            mobile: 'text-xs',
+                                            tablet: 'text-xs',
+                                            desktop: 'text-xs sm:text-sm'
+                                        })
+                                    ]">
                                         {{ activeTab === 'unread' ? 'All caught up!' : 'You have no notifications yet' }}
                                     </p>
                                 </div>
@@ -103,40 +249,96 @@
                                         :key="notification.order_notification_id"
                                         @click="markAsRead(notification)"
                                         :class="[
-                                            'p-3 sm:p-4 cursor-pointer transition-all duration-200 hover:bg-gray-50',
+                                            'cursor-pointer transition-all duration-200 hover:bg-gray-50',
+                                            getResponsiveClasses({
+                                                mobile: 'p-2',
+                                                tablet: 'p-3',
+                                                desktop: 'p-3 sm:p-4'
+                                            }),
                                             !notification.is_read ? 'bg-blue-50/50' : ''
                                         ]"
                                     >
-                                        <div class="flex gap-2 sm:gap-3">
+                                        <div :class="getResponsiveClasses({
+                                            mobile: 'flex gap-2',
+                                            tablet: 'flex gap-2',
+                                            desktop: 'flex gap-2 sm:gap-3'
+                                        })">
                                             <!-- Notification Icon -->
                                             <div 
                                                 :class="[
-                                                    'flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center',
+                                                    'flex-shrink-0 rounded-full flex items-center justify-center',
+                                                    getResponsiveClasses({
+                                                        mobile: 'w-6 h-6',
+                                                        tablet: 'w-8 h-8',
+                                                        desktop: 'w-8 h-8 sm:w-10 sm:h-10'
+                                                    }),
                                                     getNotificationColor(notification.notification_type)
                                                 ]"
                                             >
-                                                <i :class="getNotificationIcon(notification.notification_type)" class="text-base sm:text-lg"></i>
+                                                <i :class="[
+                                                    getNotificationIcon(notification.notification_type),
+                                                    getResponsiveClasses({
+                                                        mobile: 'text-xs',
+                                                        tablet: 'text-sm',
+                                                        desktop: 'text-base sm:text-lg'
+                                                    })
+                                                ]"></i>
                                             </div>
 
                                             <!-- Notification Content -->
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-start justify-between gap-2 mb-1">
-                                                    <h4 class="font-semibold text-gray-800 text-xs sm:text-sm leading-tight">
+                                                    <h4 :class="[
+                                                        'font-semibold text-gray-800 leading-tight',
+                                                        getResponsiveClasses({
+                                                            mobile: 'text-xs',
+                                                            tablet: 'text-xs',
+                                                            desktop: 'text-xs sm:text-sm'
+                                                        })
+                                                    ]">
                                                         {{ notification.message }}
                                                     </h4>
                                                     <span 
                                                         v-if="!notification.is_read"
-                                                        class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1"
+                                                        :class="[
+                                                            'flex-shrink-0 bg-blue-600 rounded-full mt-1',
+                                                            getResponsiveClasses({
+                                                                mobile: 'w-1.5 h-1.5',
+                                                                tablet: 'w-2 h-2',
+                                                                desktop: 'w-2 h-2'
+                                                            })
+                                                        ]"
                                                     ></span>
                                                 </div>
-                                                <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500">
+                                                <div :class="[
+                                                    'flex items-center gap-2 text-gray-500',
+                                                    getResponsiveClasses({
+                                                        mobile: 'text-[9px]',
+                                                        tablet: 'text-[10px]',
+                                                        desktop: 'text-[10px] sm:text-xs'
+                                                    })
+                                                ]">
                                                     <span class="flex items-center gap-1">
-                                                        <i class="pi pi-clock text-[10px] sm:text-xs"></i>
+                                                        <i :class="[
+                                                            'pi pi-clock',
+                                                            getResponsiveClasses({
+                                                                mobile: 'text-[9px]',
+                                                                tablet: 'text-[10px]',
+                                                                desktop: 'text-[10px] sm:text-xs'
+                                                            })
+                                                        ]"></i>
                                                         {{ formatTime(notification.created_at) }}
                                                     </span>
                                                     <span 
                                                         v-if="notification.notification_type"
-                                                        class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded text-gray-700 font-medium"
+                                                        :class="[
+                                                            'bg-gray-100 rounded text-gray-700 font-medium',
+                                                            getResponsiveClasses({
+                                                                mobile: 'px-1 py-0.5',
+                                                                tablet: 'px-1.5 py-0.5',
+                                                                desktop: 'px-1.5 sm:px-2 py-0.5 sm:py-1'
+                                                            })
+                                                        ]"
                                                     >
                                                         {{ notification.notification_type }}
                                                     </span>
@@ -177,15 +379,23 @@
                                     `profile/${Page.user.image}`,
                                 )
                             "
-                            size="large"
+                            :size="getResponsiveClasses({
+                                mobile: 'normal',
+                                tablet: 'large',
+                                desktop: 'large'
+                            })"
                             shape="circle"
                         />
                         <Avatar
                             v-else
                             :label="Page.user && Page.user.full_name[0]"
-                            size="large"
+                            :size="getResponsiveClasses({
+                                mobile: 'normal',
+                                tablet: 'large',
+                                desktop: 'large'
+                            })"
                             shape="circle"
-                            class="bg-sky-800! text-white!"
+                            style="background-color: #2563EB; color: white;"
                         />
                     </button>
                     <Popover
@@ -193,16 +403,49 @@
                         :dismissable="true"
                         class="inline-flex"
                         :pt="{
-                            root: { class: 'max-sm:!right-0' }
+                            root: { class: getResponsiveClasses({
+                                mobile: '!right-0',
+                                tablet: '!right-0',
+                                desktop: '!right-0'
+                            }) }
                         }"
                     >
-                        <div class="p-2 min-w-[180px] sm:min-w-[200px]">
+                        <div :class="getResponsiveClasses({
+                            mobile: 'p-2 min-w-[160px]',
+                            tablet: 'p-2 min-w-[180px]',
+                            desktop: 'p-2 min-w-[180px] sm:min-w-[200px]'
+                        })">
                             <!-- User Info -->
-                            <div class="px-2 sm:px-3 py-2 mb-2 border-b border-gray-200">
-                                <p class="font-semibold text-gray-800 text-sm sm:text-base truncate">{{ Page.user?.full_name }}</p>
-                                <p class="text-xs sm:text-sm text-gray-600 truncate">{{ Page.user?.email }}</p>
+                            <div :class="[
+                                'border-b border-gray-200 mb-2',
+                                getResponsiveClasses({
+                                    mobile: 'px-2 py-2',
+                                    tablet: 'px-2 py-2',
+                                    desktop: 'px-2 sm:px-3 py-2'
+                                })
+                            ]">
+                                <p :class="[
+                                    'font-semibold text-gray-800 truncate',
+                                    getResponsiveClasses({
+                                        mobile: 'text-sm',
+                                        tablet: 'text-sm',
+                                        desktop: 'text-sm sm:text-base'
+                                    })
+                                ]">{{ Page.user?.full_name }}</p>
+                                <p :class="[
+                                    'text-gray-600 truncate',
+                                    getResponsiveClasses({
+                                        mobile: 'text-xs',
+                                        tablet: 'text-xs',
+                                        desktop: 'text-xs sm:text-sm'
+                                    })
+                                ]">{{ Page.user?.email }}</p>
                             </div>
-                            <LogoutButton />
+                            <LogoutButton :class="getResponsiveClasses({
+                                mobile: '!text-sm',
+                                tablet: '!text-sm',
+                                desktop: ''
+                            })" />
                         </div>
                     </Popover>
                 </div>
@@ -221,9 +464,59 @@ import { useEcho } from "@laravel/echo-vue";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { useToast } from "vue-toastification";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { useResponsive } from "@/composables/useResponsive";
 
 const sideBar = inject("sideBar");
+const isScrolled = ref(false);
+const route = useRoute();
+
+// Use responsive composable
+const responsive = useResponsive();
+const { 
+    isMobile, 
+    isTablet, 
+    isDesktop 
+} = responsive;
+
+// Extract the function separately to ensure it's available
+const getResponsiveClasses = responsive.getResponsiveClasses;
+
+const getResponsiveButtonStyles = () => {
+    const baseStyle = 'color: #2563EB; background: transparent; border: none; box-shadow: none; cursor: pointer;';
+    
+    if (isMobile.value) {
+        return `${baseStyle} width: 36px; height: 36px;`;
+    }
+    if (isTablet.value) {
+        return `${baseStyle} width: 40px; height: 40px;`;
+    }
+    return `${baseStyle} width: 44px; height: 44px;`;
+};
+
+const getResponsivePopoverStyles = () => {
+    if (isMobile.value) {
+        return 'width: calc(100vw - 16px); max-width: calc(100vw - 16px); z-index: 9999;';
+    }
+    if (isTablet.value) {
+        return 'width: 350px; max-width: 350px; z-index: 9999;';
+    }
+    return 'width: 450px; max-width: 450px; z-index: 9999;';
+};
+
+const getResponsivePopoverContentStyles = () => {
+    if (isMobile.value) {
+        return 'max-width: calc(100vw - 16px); overflow: hidden;';
+    }
+    if (isTablet.value) {
+        return 'max-width: 350px; overflow: hidden;';
+    }
+    return 'max-width: 450px; overflow: hidden;';
+};
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 0;
+};
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
 const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const activeTab = ref<'all' | 'unread'>('all');
@@ -242,15 +535,67 @@ const filteredNotifications = computed(() => {
     return notifications.value;
 });
 
+const isNotificationOpen = ref(false);
+
 const openNotification = (event: Event) => {
     if (notificationElement.value) {
-        notificationElement.value.toggle(event);
+        if (isNotificationOpen.value) {
+            notificationElement.value.hide();
+            isNotificationOpen.value = false;
+        } else {
+            notificationElement.value.show(event);
+            isNotificationOpen.value = true;
+        }
     }
 };
 
 const openAvatar = (event: Event) => {
     if (avatarElement.value) {
         avatarElement.value.toggle(event);
+    }
+};
+
+const handleTabClick = (tab: 'all' | 'unread', event: Event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    activeTab.value = tab;
+};
+
+let clickOutsideListener: ((event: MouseEvent) => void) | null = null;
+
+const onPopoverShow = () => {
+    isNotificationOpen.value = true;
+    // Add click outside listener
+    setTimeout(() => {
+        clickOutsideListener = (event: MouseEvent) => {
+            const popoverEl = notificationElement.value?.$el;
+            const target = event.target as Node;
+            
+            // Check if click is inside the popover
+            if (popoverEl && popoverEl.contains(target)) {
+                return;
+            }
+            
+            // Click is outside, close the popover
+            if (popoverEl && !popoverEl.contains(target)) {
+                notificationElement.value?.hide();
+                isNotificationOpen.value = false;
+                // Remove listener
+                if (clickOutsideListener) {
+                    document.removeEventListener('click', clickOutsideListener);
+                    clickOutsideListener = null;
+                }
+            }
+        };
+        document.addEventListener('click', clickOutsideListener);
+    }, 100);
+};
+
+const onPopoverHide = () => {
+    isNotificationOpen.value = false;
+    if (clickOutsideListener) {
+        document.removeEventListener('click', clickOutsideListener);
+        clickOutsideListener = null;
     }
 };
 
@@ -268,6 +613,7 @@ const markAsRead = async (notification: IOrderNotification) => {
 
 const markAllAsRead = () => {
     notifications.value.forEach(n => n.is_read = true);
+    toast.success('All notifications marked as read successfully!');
     // Add your API call here to mark all as read in backend
 };
 
@@ -339,10 +685,12 @@ const { leave } = useEcho(
 
 onMounted(() => {
     loadNotifications();
+    window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
     leave();
+    window.removeEventListener('scroll', handleScroll);
 });
 
 </script>

@@ -26,7 +26,10 @@ class SaleRequest extends FormRequest
             'products' => ['required', 'array'],
             'products.*.product_id' => ['required', 'integer', 'exists:products,product_id'],
             'products.*.quantity' => ['required', 'integer', 'min:1'],
-            'payment_method' => ['required', 'string', Rule::in('Cash', 'E-wallet', 'Debit', 'Credit')]
+            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_address' => ['required', 'string'],
+            'prepared_by' => ['required', 'string', 'max:255'],
+            'payment_method' => ['required', 'string', Rule::in('Cash', 'E-wallet', 'Installment')]
         ];
     }
 }

@@ -1,252 +1,419 @@
 <template>
     <BoxShadow>
         <div class="w-full">
-            <div class="flex items-center justify-between p-3">
-                <p class="font-semibold text-gray-700">
-                    Low Stock Alert
-                </p>
-                <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600">
-                    {{ lowStockCount }} items
-                </span>
-            </div>
-            <div class="flex items-center">
-                <p class="p-3 grow">Batch Number: {{ paginate.batch_id }}</p>
+            <div 
+                :class="[
+                    'flex items-center justify-between border-b border-gray-200',
+                    responsive.getResponsiveClasses({
+                        mobile: 'px-3 py-3',
+                        tablet: 'px-4 py-3',
+                        desktop: 'px-5 py-4' // Original desktop padding
+                    })
+                ]"
+            >
                 <div>
+                    <h1 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800'">
+                        Nearly Out Of Stock
+                    </h1>
+                    <p class="text-xs text-gray-500 mt-0.5">Products requiring restocking</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div :class="'flex items-center gap-2 text-gray-600 ' + responsive.getResponsiveTextSize('sm')">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700">
+                            <i class="pi pi-exclamation-triangle mr-1"></i>
+                            {{ lowStockCount }} items
+                        </span>
+                    </div>
                     <Button
                         type="button"
-                        label="Add Product"
-                        icon="pi pi-plus"
+                        label="View Table"
+                        icon="pi pi-table"
                         size="small"
-                        @click="openProductModal()"
+                        :class="[
+                            '!bg-blue-600 hover:!bg-blue-700 !text-white',
+                            responsive.getResponsiveClasses({
+                                mobile: '!text-xs',
+                                tablet: '!text-sm',
+                                desktop: '' // Original desktop size
+                            })
+                        ]"
+                        :pt="{
+                            icon: { 
+                                class: responsive.getResponsiveClasses({
+                                    mobile: '!text-xs',
+                                    tablet: '!text-sm',
+                                    desktop: ''
+                                })
+                            }
+                        }"
+                        @click="showModal = true"
                     />
                 </div>
             </div>
+
+            <!-- Desktop Table Layout - Hidden on mobile/tablet -->
+            <div class="hidden lg:block">
+
             <DataTable class="w-full" :value="paginate.data" :loading="loadProductService.request.loading"
-                columnResizeMode="expand" editMode="cell" @cell-edit-complete="onCellEditComplete" size="large">          
-                <Column field="product_name" header="Product Name">
+                columnResizeMode="expand" editMode="cell" @cell-edit-complete="onCellEditComplete" stripedRows
+                :pt="{
+                    headerCell: { class: 'text-xs' }
+                }">          
+                <Column field="product_name" header="Product" :sortable="true">
                     <template #body="{ data }">
-                        <div class="flex items-center">
+                        <div class="flex items-center gap-3 py-1">
                             <Avatar v-if="data.product_image" shape="circle" :image="UrlUtil.getBaseAppUrl(
                                 `storage/images/product/${data.product_image}`,
-                            )
-                                " class="aspect-square!" />
-                            <Avatar v-else shape="circle" icon="pi pi-camera" />
-                            <div class="ml-2 shrink">
-                                {{ data.product_name }}
+                            )" class="aspect-square! w-10 h-10" size="large" />
+                            <Avatar v-else shape="circle" icon="pi pi-camera" class="bg-gray-100 text-gray-400" size="large" />
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-gray-900 truncate text-sm">
+                                    {{ data.product_name }}
+                                </div>
                             </div>
                         </div>
                     </template>
                 </Column>
-                <Column field="category.category_name" header="Category" />
-                <Column header="Quantity" field="product_quantity">
+                <Column field="category.category_name" header="Category" :sortable="true">
                     <template #body="{ data }">
-                        <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                            {{ data.category.category_name }}
+                        </span>
+                    </template>
+                </Column>
+                <Column header="Stock" field="product_quantity" :sortable="true">
+                    <template #body="{ data }">
+                        <div class="flex items-center gap-1">
                             <span :class="[
-                                'font-semibold',
+                                'font-semibold text-sm',
                                 data.low_stock_threshold >= data.product_quantity
                                     ? 'text-red-600'
                                     : 'text-orange-600',
                             ]">
                                 {{ data.product_quantity }}
                             </span>
-                            <i class="pi pi-exclamation-triangle text-orange-600" />
+                            <i class="pi pi-exclamation-triangle text-xs" :class="data.low_stock_threshold >= data.product_quantity ? 'text-red-600' : 'text-orange-600'" />
                         </div>
                     </template>
                 </Column>
-                <Column header="Refill" field="quantity">
-                    <template #editor="{ data, field }">
-                        <InputNumber size="small" style="width: 5rem;" v-model="data[field]" :min="0" autofocus fluid
-                            @focus="e => (e.target as HTMLInputElement).select()" />
+                <Column header="Batch Number" field="batch.batch_number">
+                    <template #body="{ data }">
+                        <span class="text-sm text-gray-700">{{ data.batch?.batch_number || '-' }}</span>
                     </template>
                 </Column>
                 <Column header="Action">
                     <template #body="{ data }">
-                        <Button type="button" icon="pi pi-trash" severity="danger" size="small"
-                            @click="removeProduct(data)" />
+                        <Button type="button" icon="pi pi-plus" severity="success" size="small" class="cursor-pointer"
+                            @click="addProduct(data)" />
                     </template>
                 </Column>
-                <template #footer>
-                    <div class="flex justify-end">
-                        <Button type="button" :label="`Generate ${toOrdinal(paginate.batch_id)} Batch`" icon="pi pi-plus"
-                            size="small" :loading="submitService.request.loading" @click="handleSubmit()" />
+
+                <template #empty>
+                    <div class="text-center py-8">
+                        <i class="pi pi-check-circle text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 font-medium">No low stock items</p>
+                        <p class="text-xs text-gray-400 mt-1">All products are well stocked</p>
                     </div>
                 </template>
-                <template #empty>
-                    <p>No low stock items</p>
-                </template>
             </DataTable>
-        </div>
-        <Dialog
-            v-model:visible="findProductModal"
-            modal
-            header="Find Product"
-            :style="{ width: '100vw', height: '100svh' }"
-            class="p-dialog-maximized"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-        >
-            <DataTable
-                class="w-full"
-                :value="paginateProduct.data"
-                :loading="loadService.request.loading"
-                columnResizeMode="expand"
-            >
-                <template #header>
-                    <form @submit.prevent="load()" class="flex w-full flex-wrap">
-                        <div class="grow p-2">
-                            <InputForm
-                                :errors="errorsProduct.search"
-                                tag="label"
-                                label-name="Search"
-                                id="search"
-                            >
-                                <InputText
-                                    v-model="formProduct.search"
-                                    id="search"
-                                    type="text"
-                                    placeholder="Search by name"
-                                    fluid
-                                    :invalid="errorsProduct.search.length > 0"
+            </div>
+
+            <!-- Mobile/Tablet Card Layout - Shown on mobile/tablet -->
+            <div class="block lg:hidden" :class="responsive.getResponsiveClasses({ mobile: 'p-3', tablet: 'p-4' })">
+                <div v-if="paginate.data.length === 0" class="text-center py-8">
+                    <i class="pi pi-check-circle text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 font-medium">No low stock items</p>
+                    <p class="text-xs text-gray-400 mt-1">All products are well stocked</p>
+                </div>
+                <div v-else :class="'space-y-3 ' + (paginate.data.length > 5 ? 'max-h-96 overflow-y-auto' : '')">
+                    <div 
+                        v-for="product in paginate.data.slice(0, 5)" 
+                        :key="product.product_id"
+                        class="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:bg-gray-100 transition-colors"
+                    >
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-3 flex-1 min-w-0">
+                                <Avatar 
+                                    v-if="product.product_image" 
+                                    shape="circle" 
+                                    :image="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" 
+                                    :class="responsive.getResponsiveClasses({
+                                        mobile: 'w-10 h-10',
+                                        tablet: 'w-12 h-12'
+                                    }) + ' aspect-square!'" 
+                                    size="large" 
                                 />
-                            </InputForm>
-                        </div>
-                        <div class="p-2">
-                            <InputForm
-                                :errors="errorsProduct.category_id"
-                                tag="span"
-                                label-name="Category"
-                                id="category_id"
-                            >
-                                <Select
-                                    v-model="formProduct.category_id"
-                                    label-id="category_id"
-                                    :options="categoryState.categories"
-                                    placeholder="Select Category"
-                                    fluid
-                                    :invalid="errorsProduct.category_id.length > 0"
-                                    option-label="category_name"
-                                    option-value="category_id"
-                                    :loading="
-                                        categoryState.loadCategoryService.request
-                                            .loading
-                                    "
-                                    filter
-                                    show-clear
+                                <Avatar 
+                                    v-else 
+                                    shape="circle" 
+                                    icon="pi pi-camera" 
+                                    :class="responsive.getResponsiveClasses({
+                                        mobile: 'w-10 h-10',
+                                        tablet: 'w-12 h-12'
+                                    }) + ' bg-gray-100 text-gray-400'" 
+                                    size="large" 
                                 />
-                            </InputForm>
-                        </div>
-                        <div class="p-2">
-                            <InputForm
-                                :errors="errorsProduct.status"
-                                tag="span"
-                                label-name="Status"
-                                id="status"
-                            >
-                                <Select
-                                    v-model="formProduct.status"
-                                    label-id="status"
-                                    :options="[
-                                        { label: 'Active', value: 1 },
-                                        { label: 'Inactive', value: 0 },
-                                    ]"
-                                    placeholder="Select Status"
-                                    fluid
-                                    :invalid="errorsProduct.status.length > 0"
-                                    show-clear
-                                    option-label="label"
-                                    option-value="value"
+                                <div class="flex-1 min-w-0">
+                                    <div :class="responsive.getResponsiveTextSize('base') + ' font-medium text-gray-900 truncate'">
+                                        {{ product.product_name }}
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                            {{ product.category.category_name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right ml-3">
+                                <Button 
+                                    type="button" 
+                                    icon="pi pi-plus" 
+                                    severity="success" 
+                                    size="small" 
+                                    class="cursor-pointer"
+                                    @click="addProduct(product)" 
                                 />
-                            </InputForm>
-                        </div>
-                        <div class="flex items-end p-2">
-                            <Button type="button" icon="pi pi-filter" label="Filter" />
-                        </div>
-                    </form>
-                </template>
-                <Column field="product_name" header="Product Name">
-                    <template #body="{ data }">
-                        <div class="flex items-center">
-                            <Avatar
-                                v-if="data.product_image"
-                                shape="circle"
-                                :image="
-                                    UrlUtil.getBaseAppUrl(
-                                        `storage/images/product/${data.product_image}`,
-                                    )
-                                "
-                                class="aspect-square!"
-                            />
-                            <Avatar v-else shape="circle" icon="pi pi-camera" />
-                            <div class="ml-2 shrink">
-                                {{ data.product_name }}
                             </div>
                         </div>
-                    </template>
-                </Column>
-                <Column field="category.category_name" header="Category" />
-                <Column field="product_quantity" header="Stock" />
-                <Column header="Actions">
-                    <template #body="{ data }">
-                        <div class="flex gap-2">
-                            <Button
-                                type="button"
-                                icon="pi pi-check"
-                                rounded
-                                @click="selectProduct(data)"
-                            />
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-1">
+                                    <span :class="[
+                                        'font-semibold text-sm',
+                                        product.low_stock_threshold >= product.product_quantity
+                                            ? 'text-red-600'
+                                            : 'text-orange-600',
+                                    ]">
+                                        {{ product.product_quantity }}
+                                    </span>
+                                    <i class="pi pi-exclamation-triangle text-xs" :class="product.low_stock_threshold >= product.product_quantity ? 'text-red-600' : 'text-orange-600'" />
+                                    <span class="text-xs text-gray-500 ml-1">in stock</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                Batch: {{ product.batch?.batch_number || '-' }}
+                            </div>
                         </div>
-                    </template>
-                </Column>
-                <template #empty>
-                    <p>No result found</p>
-                </template>
+                    </div>
+                </div>
+                <!-- Show more indicator if there are more than 5 items -->
+                <div v-if="paginate.data.length > 5" class="text-center mt-3 pt-3 border-t border-gray-200">
+                    <span class="text-xs text-gray-500">Showing 5 of {{ paginate.data.length }} low stock items</span>
+                </div>
+            </div>
+        </div>
 
-                <template #footer>
-                    <div
-                        class="border-primary flex w-full items-center justify-between gap-4 rounded-full border bg-transparent px-2 py-1"
-                    >
-                        <Button
-                            icon="pi pi-chevron-left"
-                            rounded
-                            text
-                            @click="decrementPage()"
-                            :disabled="
-                                paginateProduct.current_page === 1 ||
-                                loadService.request.loading
-                            "
-                        />
-                        <div class="text-color font-medium">
-                            <span v-if="paginateProduct.from && paginateProduct.to"
-                                >Showing {{ paginateProduct.from }} to
-                                {{ paginateProduct.to }} of {{ paginateProduct.total }}</span
-                            >
-                            <span v-else>No page results</span>
+        <Dialog
+            v-model:visible="showModal"
+            modal
+            dismissableMask
+            header="Nearly Out Of Stock Products"
+            :style="{ width: '90vw', maxWidth: '1200px' }"
+            :breakpoints="{ '960px': '95vw' }"
+            :pt="{
+                header: { class: '!bg-blue-600 !text-white !rounded-t-lg !rounded-b-none' },
+                closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
+                closeButtonIcon: { class: '!text-white' }
+            }"
+        >
+            <!-- Desktop Table Layout - Hidden on mobile/tablet -->
+            <div class="hidden lg:block">
+                <DataTable
+                    :value="paginate.data"
+                    :loading="loadProductService.request.loading"
+                    stripedRows
+                    paginator
+                    :rows="10"
+                    class="w-full"
+                >
+                    <Column field="product_name" header="Product Name" style="width: 20%">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-3 py-1">
+                                <Avatar
+                                    v-if="data.product_image"
+                                    shape="circle"
+                                    :image="UrlUtil.getBaseAppUrl(`storage/images/product/${data.product_image}`)"
+                                    class="aspect-square! w-10 h-10"
+                                    size="large"
+                                />
+                                <Avatar v-else shape="circle" icon="pi pi-camera" class="bg-gray-100 text-gray-400" size="large" />
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-medium text-gray-900 truncate text-sm">
+                                        {{ data.product_name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column field="category.category_name" header="Category" style="width: 20%">
+                        <template #body="{ data }">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                {{ data.category.category_name }}
+                            </span>
+                        </template>
+                    </Column>
+                    <Column header="Current Stock" field="product_quantity" sortable style="width: 20%">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-1">
+                                <span :class="[
+                                    'font-semibold text-sm',
+                                    data.low_stock_threshold >= data.product_quantity
+                                        ? 'text-red-600'
+                                        : 'text-orange-600',
+                                ]">
+                                    {{ data.product_quantity }}
+                                </span>
+                                <i class="pi pi-exclamation-triangle text-xs" :class="data.low_stock_threshold >= data.product_quantity ? 'text-red-600' : 'text-orange-600'" />
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="Low Stock Threshold" field="low_stock_threshold" sortable style="width: 20%">
+                        <template #body="{ data }">
+                            <span class="text-sm text-gray-600">{{ data.low_stock_threshold }}</span>
+                        </template>
+                    </Column>
+                    <Column header="Batch Number" field="batch.batch_number" style="width: 20%">
+                        <template #body="{ data }">
+                            <span class="text-sm text-gray-700">{{ data.batch?.batch_number || '-' }}</span>
+                        </template>
+                    </Column>
+                    <template #empty>
+                        <div class="text-center py-8">
+                            <i class="pi pi-check-circle text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-500 font-medium">No low stock items</p>
+                            <p class="text-xs text-gray-400 mt-1">All products are well stocked</p>
                         </div>
-                        <Button
-                            icon="pi pi-chevron-right"
-                            rounded
-                            text
-                            @click="incrementPage()"
-                            :disabled="
-                                paginateProduct.last_page === paginateProduct.current_page ||
-                                loadService.request.loading
-                            "
+                    </template>
+                </DataTable>
+            </div>
+
+            <!-- Mobile/Tablet Card Layout - Shown on mobile/tablet -->
+            <div class="block lg:hidden">
+                <div v-if="paginate.data.length === 0 && !loadProductService.request.loading" class="text-center py-8">
+                    <i class="pi pi-check-circle text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 font-medium">No low stock items</p>
+                    <p class="text-xs text-gray-400 mt-1">All products are well stocked</p>
+                </div>
+                <div v-else>
+                    <!-- Cards Container -->
+                    <div :class="responsive.getResponsiveClasses({
+                        mobile: 'space-y-3 p-3',
+                        tablet: 'space-y-4 p-4'
+                    })">
+                        <div 
+                            v-for="product in paginatedProducts" 
+                            :key="product.product_id"
+                            :class="responsive.getResponsiveClasses({
+                                mobile: 'bg-white border border-gray-200 rounded-lg p-3 shadow-sm',
+                                tablet: 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm'
+                            })"
+                        >
+                            <!-- Product Header -->
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <Avatar 
+                                        v-if="product.product_image" 
+                                        shape="circle" 
+                                        :image="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" 
+                                        :class="responsive.getResponsiveClasses({
+                                            mobile: 'w-10 h-10',
+                                            tablet: 'w-12 h-12'
+                                        }) + ' aspect-square!'" 
+                                        size="large" 
+                                    />
+                                    <Avatar 
+                                        v-else 
+                                        shape="circle" 
+                                        icon="pi pi-camera" 
+                                        :class="responsive.getResponsiveClasses({
+                                            mobile: 'w-10 h-10',
+                                            tablet: 'w-12 h-12'
+                                        }) + ' bg-gray-100 text-gray-400'" 
+                                        size="large" 
+                                    />
+                                    <div class="flex-1 min-w-0">
+                                        <div :class="responsive.getResponsiveTextSize('base') + ' font-medium text-gray-900 truncate'">
+                                            {{ product.product_name }}
+                                        </div>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                                {{ product.category.category_name }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Stock Information -->
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-500 block mb-1">Current Stock</span>
+                                    <div class="flex items-center gap-1">
+                                        <span :class="[
+                                            'font-semibold',
+                                            product.low_stock_threshold >= product.product_quantity
+                                                ? 'text-red-600'
+                                                : 'text-orange-600',
+                                        ]">
+                                            {{ product.product_quantity }}
+                                        </span>
+                                        <i class="pi pi-exclamation-triangle text-xs" :class="product.low_stock_threshold >= product.product_quantity ? 'text-red-600' : 'text-orange-600'" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 block mb-1">Threshold</span>
+                                    <span class="text-gray-900 font-medium">{{ product.low_stock_threshold }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Batch Information -->
+                            <div class="mt-3 pt-3 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-500">Batch Number:</span>
+                                    <span class="text-gray-700 font-medium">{{ product.batch?.batch_number || '-' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pagination Controls -->
+                    <div v-if="paginate.data.length > itemsPerPage" class="mt-4 pt-4 border-t border-gray-200">
+                        <Paginator 
+                            :rows="itemsPerPage" 
+                            :totalRecords="paginate.data.length" 
+                            :first="(currentPage - 1) * itemsPerPage"
+                            @page="onPageChange"
+                            :pt="{
+                                root: { class: 'bg-transparent border-0' },
+                                pages: { class: 'text-sm' },
+                                pageButton: { class: 'text-sm min-w-8 h-8' }
+                            }"
                         />
                     </div>
-                </template>
-            </DataTable>
+                </div>
+            </div>
         </Dialog>
+
+        <AddStockModal
+            :visible="addStockModalVisible"
+            :product="selectedProduct"
+            @update:visible="addStockModalVisible = $event"
+            @success="handleStockAdded"
+        />
     </BoxShadow>
 </template>
 <script setup lang="ts">
-import DataTableInterface from '@/interfaces/DataTableInterface';
 import { IBatch } from '@/interfaces/IBatch';
-import { ProductInterface, ProductSearchErrorInterface, ProductSearchInterface } from '@/interfaces/ProductInterface';
-import { useCategoryStore } from '@/stores/CategoryState';
+import { ProductInterface } from '@/interfaces/ProductInterface';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { DataTableCellEditCompleteEvent } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import AddStockModal from '@/components/modals/AddStockModal.vue';
+
+import { useResponsive } from '@/composables/useResponsive';
 
 interface IForm {
     batch_products: {
@@ -259,9 +426,14 @@ interface BatchProduct extends ProductInterface {
     quantity: number;
 }
 
-const findProductModal = ref(false);
-const categoryState = useCategoryStore();
+const showModal = ref(false);
+const addStockModalVisible = ref(false);
+const selectedProduct = ref<ProductInterface | null>(null);
+const responsive = useResponsive();
 
+// Pagination for mobile/tablet cards
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
 const paginate: {
     batch_id: number;
@@ -275,6 +447,13 @@ const form: IForm = reactive({
     batch_products: []
 });
 
+// Computed property for paginated products (mobile/tablet cards)
+const paginatedProducts = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = start + itemsPerPage.value;
+    return paginate.data.slice(start, end);
+});
+
 const loadProductService = useAxiosUtil<null, IBatch>();
 const lowStockCount = computed(() => paginate.data.length);
 
@@ -285,21 +464,32 @@ const loadBatch = async () => {
             loadProductService.request.data
         ) {
             paginate.batch_id = loadProductService.request.data.batch_id;
-            paginate.data = loadProductService.request.data.batch_products.map((product: ProductInterface) => {
-                return {
-                    ...product,
-                    quantity: 0,
-                };
-            });
+            paginate.data = loadProductService.request.data.batch_products
+                .filter((product: ProductInterface) => product.product_quantity > 0)
+                .map((product: ProductInterface) => {
+                    return {
+                        ...product,
+                        quantity: 0,
+                    };
+                });
         }
     });
 };
 
-const removeProduct = async (product: BatchProduct) => {
-    const index = paginate.data.findIndex((item) => item.product_id === product.product_id);
-    if (index !== -1) {
-        paginate.data.splice(index, 1);
-    }
+const addProduct = async (product: BatchProduct) => {
+    selectedProduct.value = product;
+    addStockModalVisible.value = true;
+};
+
+const handleStockAdded = (updatedProduct: ProductInterface) => {
+    // Reload the batch data to get updated stock information
+    loadBatch();
+    // Note: Toast notification is already shown by AddStockModal
+};
+
+// Pagination handler for mobile/tablet cards
+const onPageChange = (event: any) => {
+    currentPage.value = event.page + 1; // PrimeVue uses 0-based indexing
 };
 
 const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
@@ -358,118 +548,7 @@ const toOrdinal = (n: number) => {
     return n + "th";
 };
 
-const paginateProduct: DataTableInterface<ProductInterface> = reactive({
-    data: [],
-    current_page: 0,
-    from: 0,
-    to: 0,
-    total: 0,
-    last_page: 0,
-});
 
-const formProduct: ProductSearchInterface = reactive({
-    search: null,
-    limit: 5,
-    page: 1,
-    category_id: null,
-    status: null,
-    available_online: null,
-    low_stock: null,
-});
-
-const errorsProduct: ProductSearchErrorInterface = reactive({
-    search: [],
-    limit: [],
-    page: [],
-    category_id: [],
-    status: [],
-    available_online: [],
-    low_stock: [],
-});
-
-const loadService = useAxiosUtil<
-    ProductSearchInterface,
-    DataTableInterface<ProductInterface>
->();
-
-const clearErrorProduct = () => {
-    Object.keys(errorsProduct).forEach((key) => {
-        errorsProduct[key] = [];
-    });
-};
-
-const validateProduct = () => {
-    clearErrorProduct();
-    if (!formProduct.limit) {
-        errorsProduct.limit.push("Limit is required");
-    }
-    if (!formProduct.page) {
-        errorsProduct.page.push("Page is required");
-    }
-
-    const hasErrors = [errorsProduct.limit.length > 0, errorsProduct.page.length > 0];
-    return hasErrors.includes(true) ? false : formProduct;
-};
-
-const load = async (resetPage: boolean = false) => {
-    if (resetPage) {
-        formProduct.page = 1;
-    }
-    if (!formProduct.limit) {
-        formProduct.limit = 5;
-    }
-
-    const data = validateProduct();
-
-    if (data) {
-        await loadService.get("admin/products", data).then(() => {
-            if (
-                loadService.request.status === 200 &&
-                loadService.request.data
-            ) {
-                Object.keys(paginateProduct).forEach((key) => {
-                    paginateProduct[key] = loadService.request.data[key];
-                });
-            } else {
-                toast.error(loadService.request.message ?? "Please try again");
-                if (loadService.request.errors) {
-                    Object.keys(loadService.request.errors).forEach((key) => {
-                        errorsProduct[key] = loadService.request.errors[key];
-                    });
-                }
-            }
-        });
-    } else {
-        toast.error("Please fill in the required fields.");
-    }
-};
-
-const decrementPage = () => {
-    if (paginateProduct.current_page > 1) {
-        formProduct.page = paginateProduct.current_page - 1;
-        load();
-    }
-};
-
-const incrementPage = () => {
-    if (paginateProduct.current_page < paginateProduct.last_page) {
-        formProduct.page = paginateProduct.current_page + 1;
-        load();
-    }
-};
-
-const openProductModal = () => {
-    load();
-    findProductModal.value = true;
-};
-
-const selectProduct = (product: ProductInterface) => {
-    paginate.data.push({
-        ...product,
-        quantity: 0,
-    });
-    findProductModal.value = false;
-};
 
 onMounted(() => {
     loadBatch();

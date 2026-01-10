@@ -1,32 +1,28 @@
 <template>
-    <div class="flex flex-wrap items-center p-5">
+    <div v-if="route.name !== 'admin.dashboard.index'" class="flex flex-wrap items-center px-5 py-3">
         <div class="grow p-2">
-            <h1 class="text-3xl font-semibold text-gray-600">
+            <h1 class="text-2xl font-semibold text-gray-600">
                 {{ route.meta["pageName"] }}
             </h1>
-            <h2 class="text-xl font-semibold text-gray-600">
+            <h2 class="text-base font-medium text-gray-500">
                 {{ route.meta["pageSubName"] }}
             </h2>
         </div>
         <div class="p-2">
-            <BoxShadow>
-                <div class="flex items-center gap-1 p-1 text-sm text-gray-600">
-                    <i class="pi pi-calendar text-2xl! text-blue-600"></i>
-                    <span class="ml-1 font-semibold select-none">{{
-                        currentDate
-                    }}</span>
-                </div>
-            </BoxShadow>
+            <div class="flex items-center gap-1 p-2 text-sm text-gray-600">
+                <i class="pi pi-calendar text-xl text-blue-600"></i>
+                <span class="ml-1 font-semibold select-none">{{
+                    currentDate
+                }}</span>
+            </div>
         </div>
         <div class="p-2">
-            <BoxShadow>
-                <div class="flex items-center gap-1 p-1 text-sm text-gray-600">
-                    <i class="pi pi-clock text-2xl! text-blue-600"></i>
-                    <span class="ml-1 font-semibold select-none">{{
-                        currentTime
-                    }}</span>
-                </div>
-            </BoxShadow>
+            <div class="flex items-center gap-1 p-2 text-sm text-gray-600">
+                <i class="pi pi-clock text-xl text-blue-600"></i>
+                <span class="ml-1 font-semibold select-none">{{
+                    currentTime
+                }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -69,6 +65,7 @@ const updateDateTime = () => {
         const timeFormatter = new Intl.DateTimeFormat("en-US", {
             hour: "2-digit",
             minute: "2-digit",
+            second: "2-digit",
             hour12: true,
             timeZone: "Asia/Singapore",
         });
@@ -76,8 +73,9 @@ const updateDateTime = () => {
         const timeParts = timeFormatter.formatToParts(gmt8);
         const hour = timeParts.find((p) => p.type === "hour")?.value;
         const minute = timeParts.find((p) => p.type === "minute")?.value;
+        const second = timeParts.find((p) => p.type === "second")?.value;
         const dayPeriod = timeParts.find((p) => p.type === "dayPeriod")?.value;
-        currentTime.value = `${hour} : ${minute} ${dayPeriod}`;
+        currentTime.value = `${hour} : ${minute} : ${second} ${dayPeriod}`;
     };
 
     update();

@@ -1,0 +1,33 @@
+/* PrimeVue DataTable Styling */
+.p-datatable {
+  @apply rounded-modern-lg overflow-hidden;
+}
+
+/* Table Header */
+.p-datatable .p-datatable-thead > tr > th {
+  @apply bg-gray-50 text-gray-700 font-semibold text-sm py-4 px-4;
+  @apply border-b border-gray-200;
+}
+
+/* Table Body Rows */
+.p-datatable .p-datatable-tbody > tr {
+  @apply border-b border-gray-100 transition-colors duration-150;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  @apply bg-gray-50;
+}
+
+/* Table Body Cells */
+.p-datatable .p-datatable-tbody > tr > td {
+  @apply py-4 px-4 text-gray-900;
+}
+
+/* Remove default PrimeVue focus styles that conflict */
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+  @apply bg-primary/5;
+}
+
+.p-datatable .p-datatable-tbody > tr.p-highlight:hover {
+  @apply bg-primary/10;
+}

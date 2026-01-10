@@ -1,151 +1,209 @@
 <template>
-    <div>
-        <form v-if="!loadAddressService.request.loading" class="flex flex-col" @submit.prevent="handleSubmit()">
-            <div class="p-2">
-                <InputForm
-                    :errors="[]"
-                    label-name="Island Group*"
-                    id="island_group"
-                    tag="span"
-                >
-                    <Select
-                        v-model="selectedIslandGroup"
-                        :options="islandGroups"
-                        option-label="island_group_name"
-                        placeholder="Select Island Group"
-                        filter
-                        show-clear
-                        :loading="loadIslandGroupService.request.loading"
-                    />
-                </InputForm>
+    <div class="py-3 sm:py-4 px-2 sm:px-0">
+        <form v-if="!loadAddressService.request.loading" class="space-y-4 sm:space-y-5" @submit.prevent="handleSubmit()">
+            <!-- Location Selection Card -->
+            <div class="rounded-lg sm:rounded-xl bg-white border border-gray-200 shadow-sm">
+                <div class="border-b border-gray-200 px-3 sm:px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-map text-blue-600 text-lg"></i>
+                        <h2 class="text-base sm:text-lg font-bold text-gray-800">Location Details</h2>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 space-y-4">
+                    <div>
+                        <InputForm
+                            :errors="[]"
+                            label-name="Island Group*"
+                            id="island_group"
+                            tag="span"
+                        >
+                            <Select
+                                v-model="selectedIslandGroup"
+                                :options="islandGroups"
+                                option-label="island_group_name"
+                                placeholder="Select Island Group"
+                                filter
+                                show-clear
+                                :loading="loadIslandGroupService.request.loading"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm
+                            :errors="[]"
+                            label-name="Region*"
+                            id="region"
+                            tag="span"
+                        >
+                            <Select
+                                v-model="selectedRegion"
+                                :options="regions"
+                                option-label="region_name"
+                                placeholder="Select Region"
+                                filter
+                                show-clear
+                                :loading="loadRegionService.request.loading"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm
+                            :errors="[]"
+                            label-name="Province*"
+                            id="province"
+                            tag="span"
+                        >
+                            <Select
+                                v-model="selectedProvince"
+                                :options="provinces"
+                                option-label="province_name"
+                                placeholder="Select Province"
+                                filter
+                                show-clear
+                                :loading="loadProvinceService.request.loading"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm
+                            :errors="[]"
+                            label-name="Municipality/City*"
+                            id="municity"
+                            tag="span"
+                        >
+                            <Select
+                                v-model="selectedMunicity"
+                                :options="municities"
+                                option-label="municity_name"
+                                placeholder="Select Municipality/City"
+                                filter
+                                show-clear
+                                :loading="loadMunicityService.request.loading"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm
+                            :errors="errors.barangay_id"
+                            label-name="Barangay*"
+                            id="barangay"
+                            tag="span"
+                        >
+                            <Select
+                                v-model="selectedBarangay"
+                                :options="barangays"
+                                option-label="barangay_name"
+                                placeholder="Select Barangay"
+                                filter
+                                show-clear
+                                :invalid="errors.barangay_id.length > 0"
+                                :loading="loadBarangayService.request.loading"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                </div>
             </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="[]"
-                    label-name="Region*"
-                    id="region"
-                    tag="span"
-                >
-                    <Select
-                        v-model="selectedRegion"
-                        :options="regions"
-                        option-label="region_name"
-                        placeholder="Select Region"
-                        filter
-                        show-clear
-                        :loading="loadRegionService.request.loading"
-                    />
-                </InputForm>
+
+            <!-- Address Details Card -->
+            <div class="rounded-lg sm:rounded-xl bg-white border border-gray-200 shadow-sm">
+                <div class="border-b border-gray-200 px-3 sm:px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-home text-blue-600 text-lg"></i>
+                        <h2 class="text-base sm:text-lg font-bold text-gray-800">Address Details</h2>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 space-y-4">
+                    <div>
+                        <InputForm
+                            :errors="errors.other_details"
+                            label-name="Unit / Block / Street / Purok / Sitio / Subdivision*"
+                            id="other_details"
+                            tag="label"
+                        >
+                            <Textarea
+                                v-model="form.other_details"
+                                id="other_details"
+                                placeholder="Enter your unit / block / street / purok / sitio / subdivision"
+                                :rows="3"
+                                :invalid="errors.other_details.length > 0"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm
+                            :errors="errors.postal_code"
+                            label-name="Postal Code*"
+                            id="postal_code"
+                            tag="label"
+                        >
+                            <InputText
+                                v-model="form.postal_code"
+                                id="postal_code"
+                                placeholder="Enter your postal code"
+                                :invalid="errors.postal_code.length > 0"
+                                class="w-full"
+                            />
+                        </InputForm>
+                    </div>
+                </div>
             </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="[]"
-                    label-name="Province*"
-                    id="province"
-                    tag="span"
-                >
-                    <Select
-                        v-model="selectedProvince"
-                        :options="provinces"
-                        option-label="province_name"
-                        placeholder="Select Province"
-                        filter
-                        show-clear
-                        :loading="loadProvinceService.request.loading"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="[]"
-                    label-name="Municipality/City*"
-                    id="municity"
-                    tag="span"
-                >
-                    <Select
-                        v-model="selectedMunicity"
-                        :options="municities"
-                        option-label="municity_name"
-                        placeholder="Select Municipality/City"
-                        filter
-                        show-clear
-                        :loading="loadMunicityService.request.loading"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.barangay_id"
-                    label-name="Barangay*"
-                    id="barangay"
-                    tag="span"
-                >
-                    <Select
-                        v-model="selectedBarangay"
-                        :options="barangays"
-                        option-label="barangay_name"
-                        placeholder="Select Barangay"
-                        filter
-                        show-clear
-                        :invalid="errors.barangay_id.length > 0"
-                        :loading="loadBarangayService.request.loading"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.other_details"
-                    label-name="Unit / Block / Street / Purok / Sitio / Subdivision*"
-                    id="other_details"
-                    tag="label"
-                >
-                    <Textarea
-                        v-model="form.other_details"
-                        id="other_details"
-                        placeholder="Enter your unit / block / street / purok / sitio / subdivision"
-                        :rows="3"
-                        :invalid="errors.other_details.length > 0"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.postal_code"
-                    label-name="Postal Code*"
-                    id="postal_code"
-                    tag="label"
-                >
-                    <InputText
-                        v-model="form.postal_code"
-                        id="postal_code"
-                        placeholder="Enter your postal code"
-                        :invalid="errors.postal_code.length > 0"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.contact_number"
-                    label-name="Contact Number*"
-                    id="contact_number"
-                    tag="label"
-                >
-                    <InputText
-                        v-model="form.contact_number"
+
+            <!-- Contact Information Card -->
+            <div class="rounded-lg sm:rounded-xl bg-white border border-gray-200 shadow-sm">
+                <div class="border-b border-gray-200 px-3 sm:px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-phone text-blue-600 text-lg"></i>
+                        <h2 class="text-base sm:text-lg font-bold text-gray-800">Contact Information</h2>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4">
+                    <InputForm
+                        :errors="errors.contact_number"
+                        label-name="Contact Number*"
                         id="contact_number"
-                        placeholder="Enter your contact number"
-                        :invalid="errors.contact_number.length > 0"
-                        pattern="^09\d{9}$"
-                        inputmode="numeric"
-                    />
-                </InputForm>
+                        tag="label"
+                    >
+                        <InputText
+                            v-model="form.contact_number"
+                            id="contact_number"
+                            placeholder="Enter your contact number (e.g., 09123456789)"
+                            :invalid="errors.contact_number.length > 0"
+                            pattern="^09\d{9}$"
+                            inputmode="numeric"
+                            class="w-full"
+                        />
+                    </InputForm>
+                </div>
             </div>
-            <div class="p-2 flex justify-center">
-                <Button type="submit" label="Save Address" icon="pi pi-save" :loading="submitService.request.loading" />
+
+            <!-- Submit Button -->
+            <div class="flex justify-center pt-2">
+                <Button 
+                    type="submit" 
+                    label="Save Address" 
+                    icon="pi pi-save" 
+                    :loading="submitService.request.loading"
+                    class="w-full sm:w-auto !bg-blue-600 hover:!bg-blue-700 !border-blue-600 text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 shadow-lg hover:shadow-xl transition-all duration-200"
+                    :class="{ 'opacity-50': submitService.request.loading }"
+                />
+            </div>
+
+            <!-- Info Notice -->
+            <div class="text-center text-xs sm:text-sm text-gray-500">
+                <span>Make sure your address details are accurate for delivery</span>
             </div>
         </form>
-        <div v-else class="flex justify-center p-5">
-            <PageLoader />
+        <div v-else class="flex justify-center items-center py-12 sm:py-16">
+            <div class="text-center">
+                <PageLoader />
+                <p class="text-gray-600 mt-4 text-sm sm:text-base">Loading address information...</p>
+            </div>
         </div>
     </div>
 </template>
@@ -158,6 +216,7 @@ import { IProvince } from '@/interfaces/IProvince';
 import { IRegion } from '@/interfaces/IRegion';
 import Page from '@/stores/Page';
 import useAxiosUtil from '@/utils/AxiosUtil';
+import { useResponsive } from '@/composables/useResponsive';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 

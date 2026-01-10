@@ -27,7 +27,7 @@ class FeaturedImageService
         $featuredImage = new FeaturedImage;
 
         $manageFileService = new ManageFileService;
-        $result = $manageFileService->saveFile($data['featured_image'], FileDirectoryEnum::PRODUCT_IMAGE->value, 'public');
+        $result = $manageFileService->saveFile($data['featured_image'], FileDirectoryEnum::FEATURED_IMAGE->value, 'public');
         $extension = $manageFileService->fileExtension($data['featured_image']);
 
         $featuredImage->thumbnail = match ($extension) {
@@ -54,9 +54,22 @@ class FeaturedImageService
 
         abort_if(empty($featuredImage), 404, 'Featured image not found');
 
-        $manageFileService = new ManageFileService;
-        $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $featuredImage->featured_image, 'public');
+        $productId = $featuredImage->product_id;
 
-        return $featuredImage->delete();
+        $manageFileService = new ManageFileService;
+        $manageFileService->removeFile(FileDirectoryEnum::FEATURED_IMAGE->value, $featuredImage->featured_image, 'public');
+
+        $featuredImage->delete();
+
+        // Return the updated product with fresh featured images
+        $product = Product::query()
+            ->where('product_id', $productId)
+            ->first();
+
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
+
+        ProductEvent::dispatch($product->toArray());
+
+        return $product;
     }
 }

@@ -23,10 +23,28 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_name' => ['required', 'string', 'max:255', Rule::unique('products', 'product_name')
-                ->when($this->method() === 'PATCH', function ($query) {
-                    $query->ignore($this->id, 'product_id');
-                }),
+            'product_name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('products', 'product_name')
+                    ->when($this->method() === 'PATCH', function ($query) {
+                        $query->ignore($this->id, 'product_id');
+                    }),
+                function ($attribute, $value, $fail) {
+                    if ($this->category_id) {
+                        $category = \App\Models\Category::find($this->category_id);
+                        if ($category && strtolower($category->category_name) === strtolower($value)) {
+                            $fail('The product name cannot be the same as the category name.');
+                        }
+                    }
+                    if ($this->unit_id) {
+                        $unit = \App\Models\Unit::find($this->unit_id);
+                        if ($unit && strtolower($unit->unit_name) === strtolower($value)) {
+                            $fail('The product name cannot be the same as the unit name.');
+                        }
+                    }
+                },
             ],
             'description' => ['required', 'string', 'max:4294967295'],
             'category_id' => ['required', 'integer', Rule::exists('categories', 'category_id')],
@@ -38,6 +56,7 @@ class ProductRequest extends FormRequest
             'sku' => [
                 'string',
                 'nullable',
+                'regex:/^\d+$/', // Only numeric characters allowed
                 Rule::unique('products', 'sku')
                     ->when($this->method() === 'PATCH', function ($query) {
                         $query->whereNot('product_id', $this->id);

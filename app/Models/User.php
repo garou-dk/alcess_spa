@@ -27,6 +27,7 @@ class User extends Authenticatable
         'role_id',
         'image',
         'is_active',
+        'current_session_id',
     ];
 
     /**

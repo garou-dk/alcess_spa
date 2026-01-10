@@ -1,14 +1,29 @@
 <template>
     <div>
-        <div class="flex justify-end">
+        <div :class="responsive.getResponsiveClasses({
+            mobile: 'flex justify-center mb-3',
+            tablet: 'flex justify-end mb-4',
+            desktop: 'flex justify-end'
+        })">
             <Button
                 label="Print"
                 icon="pi pi-print"
-                class="primary-bg"
+                :class="[
+                    '!bg-blue-600 hover:!bg-blue-700 !text-white',
+                    responsive.getResponsiveClasses({
+                        mobile: 'w-full text-sm',
+                        tablet: 'text-base',
+                        desktop: 'text-base'
+                    })
+                ]"
                 @click="printReport()"
             />
         </div>
-        <div v-if="!loadService.request.loading" id="delivery-report">
+        <div v-if="!loadService.request.loading" id="delivery-report" :class="responsive.getResponsiveClasses({
+            mobile: 'overflow-x-auto',
+            tablet: 'overflow-x-auto',
+            desktop: ''
+        })">
             <div
                 style="
                     display: flex;
@@ -25,24 +40,20 @@
                 </div>
                 <div style="text-align: right">
                     <h1 style="color: #00598a; font-size: 24px; margin: 0">
-                        Delivery Report
+                        ORDER STATUS REPORT
                     </h1>
-                    <p style="margin: 5px 0">
-                        <strong>Prepared by:</strong> {{ Page.user ? Page.user.full_name : '' }}<br />
-                        <strong>Date:</strong>
-                        {{
-                            DateUtil.formatToMonthDayYear(
-                                new Date().toISOString().split("T")[0],
-                            )
-                        }}
-                    </p>
                 </div>
             </div>
 
-            <h2 style="margin-top: 30px; font-size: 16px">Delivery Overview</h2>
-            <table
-                style="width: 100%; border-collapse: collapse; margin-top: 10px"
-            >
+            <h2 style="margin-top: 30px; font-size: 16px">Order Status Overview</h2>
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'overflow-x-auto',
+                tablet: 'overflow-x-auto',
+                desktop: ''
+            })">
+                <table
+                    style="width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px;"
+                >
                 <thead>
                     <tr>
                         <th
@@ -55,7 +66,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Customer
+                            Order ID
                         </th>
                         <th
                             style="
@@ -67,7 +78,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Invoice Number
+                            Product Name
                         </th>
                         <th
                             style="
@@ -79,7 +90,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Date of Delivery
+                            Customer Name
                         </th>
                         <th
                             style="
@@ -91,7 +102,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Date Received
+                            Quantity
                         </th>
                         <th
                             style="
@@ -103,7 +114,7 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Tracking Number
+                            Payment Method
                         </th>
                         <th
                             style="
@@ -115,68 +126,72 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Address
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Total
+                            Time of Purchase
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(product, index) in data" :key="index">
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ product.customer_name }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ product.order_public_id }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            <span v-if="product.estimated_delivery_start && product.estimated_delivery_end">
-                                {{ DateUtil.formatToMonthDayYear(product.estimated_delivery_start) }} - {{ DateUtil.formatToMonthDayYear(product.estimated_delivery_end) }}
-                            </span>
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            <span v-if="product.customer_received_date">
-                                {{ DateUtil.formatToMonthDayYear(product.customer_received_date) }}
-                            </span>
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ product.tracking_number }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ product.address }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ CurrencyUtil.formatCurrency(product.total_amount) }}
-                        </td>
-                    </tr>
+                    <template v-for="(order, index) in data" :key="index">
+                        <tr v-for="(product, pIndex) in order.products" :key="`${index}-${pIndex}`">
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ order.order_public_id }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ product.product_name }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ order.customer_name }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center">
+                                {{ product.quantity }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ order.payment_method }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                {{ DateUtil.formatToMonthDayYear(order.created_at) }}
+                            </td>
+                        </tr>
+                    </template>
                 </tbody>
-            </table>
+                </table>
+            </div>
 
-            <h2 style="margin-top: 30px; font-size: 16px">Approval</h2>
-            <div style="display: flex; justify-content: space-between">
-                <div style="width: 45%; text-align: center">
-                    <span style="display: block; margin-top: 5px"
-                        >Blademier S. Canalita</span
-                    >
-                    <small>{{
-                        DateUtil.formatToMonthDayYear(
-                            new Date().toISOString().split("T")[0],
-                        )
-                    }}</small>
+            <div style="position: relative; margin-top: 30px">
+                <div style="float: left; width: 45%">
+                    <h2 style="font-size: 16px">Approval</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Blademier S. Canalita</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                DateUtil.formatYYYYMMDD(new Date()),
+                            )
+                        }}</small>
+                    </div>
                 </div>
+                <div style="float: right; width: 45%">
+                    <h2 style="font-size: 16px">Prepared by:</h2>
+                    <div style="text-align: center">
+                        <span style="display: block; margin-top: 5px"
+                            >Albert Von Daligdigan</span
+                        >
+                        <small>{{
+                            DateUtil.formatToMonthDayYear(
+                                DateUtil.formatYYYYMMDD(new Date()),
+                            )
+                        }}</small>
+                    </div>
+                </div>
+                <div style="clear: both"></div>
             </div>
         </div>
-        <div v-else class="flex justify-center p-2">
+        <div v-else :class="responsive.getResponsiveClasses({
+            mobile: 'flex justify-center py-8',
+            tablet: 'flex justify-center py-12',
+            desktop: 'flex justify-center p-2'
+        })">
             <PageLoader />
         </div>
     </div>
@@ -187,6 +202,7 @@ import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
+import { useResponsive } from "@/composables/useResponsive";
 import { onMounted, reactive, ref } from "vue";
 import { useToast } from "vue-toastification";
 
@@ -224,31 +240,32 @@ interface IForm {
 }
 
 interface Props {
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
 }
 
 
+const props = defineProps<Props>();
+const responsive = useResponsive();
+
 const data = ref<IDeliveryReportData[]>([]);
-
 const loadService = useAxiosUtil<IForm, IDeliveryReportData[]>();
-
 const toast = useToast();
 
-const props = defineProps<Props>();
-
 const form : IForm = reactive({
-    start_date: props.startDate,
-    end_date: props.endDate,
+    start_date: props.startDate || null,
+    end_date: props.endDate || null,
 });
 
 const load = async () => {
+    console.log('Loading order status report with dates:', form);
     await loadService.get("admin/dashboard/delivery-report", form).then(() => {
+        console.log('Order status report response:', loadService.request);
         if (loadService.request.status === 200 && loadService.request.data) {
             data.value = loadService.request.data;
-        } else {
-            toast.error(loadService.request.message ?? "No data found");
+            console.log('Order status data loaded:', data.value.length, 'orders');
         }
+        // No toast notification for empty data - just show empty table
     });
 }
 
@@ -257,11 +274,29 @@ const printReport = () => {
     const printWindow = window.open("", "", "width=1000,height=600");
 
     if (printContents && printWindow) {
-        printWindow.document.write(printContents);
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Order Status Report</title>
+                    <style>
+                        @media print {
+                            img { display: block !important; }
+                        }
+                    </style>
+                </head>
+                <body style="font-family: Arial, sans-serif;">
+                    ${printContents}
+                </body>
+            </html>
+        `);
         printWindow.document.close();
         printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+        
+        // Wait for images to load before printing
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     }
 };
 

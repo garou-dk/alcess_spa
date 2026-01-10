@@ -10,6 +10,25 @@ import BoxShadow from "@/components/BoxShadow.vue";
 import { createPinia } from "pinia";
 import { configureEcho } from "@laravel/echo-vue";
 
+// Fix for ApexCharts passive event listener warnings on mobile
+// This suppresses the console warnings about non-passive touch event listeners
+if (typeof window !== 'undefined') {
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, listener, options) {
+        // Make touch events passive by default to improve mobile performance
+        if (type === 'touchstart' || type === 'touchmove' || type === 'touchend') {
+            if (typeof options === 'boolean') {
+                options = { capture: options, passive: true };
+            } else if (typeof options === 'object' && options !== null) {
+                options = { ...options, passive: true };
+            } else {
+                options = { passive: true };
+            }
+        }
+        return originalAddEventListener.call(this, type, listener, options);
+    };
+}
+
 configureEcho({
     broadcaster: "pusher",
     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",

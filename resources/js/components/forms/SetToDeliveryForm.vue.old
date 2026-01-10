@@ -67,12 +67,12 @@
                     />
                 </InputForm>
             </div>
-            <div class="p-2 flex justify-center">
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                 <Button
                     type="submit"
-                    label="Save"
-                    icon="pi pi-save"
-                    class="primary-bg"
+                    label="Set to Delivery"
+                    icon="pi pi-truck"
+                    class="!bg-blue-600 hover:!bg-blue-700"
                     :loading="submitService.request.loading"
                 />
             </div>

@@ -3,10 +3,10 @@
         <Button
             type="submit"
             label="Logout"
-            class="bg-sky-800! text-white"
             icon="pi pi-sign-out"
             fluid
             :loading="logoutService.request.loading"
+            class="!bg-blue-600 !text-white !border-none hover:!bg-blue-700 !transition-colors"
         />
     </form>
 </template>

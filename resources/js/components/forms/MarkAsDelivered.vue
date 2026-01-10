@@ -3,6 +3,7 @@
         label="Mark as Received"
         type="button"
         icon="pi pi-check"
+        class="primary-bg"
         @click="handleSubmit()"
         :loading="submitService.request.loading"
     />

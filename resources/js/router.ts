@@ -20,10 +20,13 @@ import HomeRoute from "@/routes/HomeRoute";
 import ProductInfoRoute from "@/routes/ProductInfoRoute";
 import CartRoute from "@/routes/CartRoute";
 import CustomerOrderRoute from "@/routes/CustomerOrderRoute";
+import { CustomerInvoiceRoute } from "@/routes/CustomerInvoiceRoute";
 import SettingRoute from "@/routes/SettingRoute";
 import ProductCategoryRoute from "@/routes/ProductCategoryRoute";
 import ProductSearchRoute from "@/routes/ProductSearchRoute";
 import RateRoute from "@/routes/RateRoute";
+import SalesWalkInRoute from "@/routes/SalesWalkInRoute";
+import SalesOnlineRoute from "@/routes/SalesOnlineRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -72,6 +75,8 @@ const router = createRouter({
                         { ...ProductRoute },
                         { ...OrderRoute },
                         { ...PosRoute },
+                        { ...SalesWalkInRoute },
+                        { ...SalesOnlineRoute },
                         { ...ReportRoute },
                         { ...SettingRoute },
                         { ...RateRoute },
@@ -94,6 +99,7 @@ const router = createRouter({
                 { ...ProductInfoRoute },
                 { ...CartRoute },
                 { ...CustomerOrderRoute },
+                { ...CustomerInvoiceRoute },
                 { ...ProductCategoryRoute },
                 { ...ProductSearchRoute },
             ],
@@ -109,25 +115,46 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
     if (!Page.loaded) {
-        await authService
-            .get("check", null)
-            .then(() => {
-                if (
-                    authService.request.status === 200 &&
-                    authService.request.data
-                ) {
-                    Page.user = authService.request.data;
+        // Silently check authentication status
+        // The 401 error is expected for non-logged-in users and should not be treated as an error
+        try {
+            await authService.axios({
+                url: "/api/check",
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                // Suppress console errors for this request
+                validateStatus: (status) => status < 500,
+            }).then((response) => {
+                if (response.status === 200 && response.data?.data) {
+                    Page.user = response.data.data;
                 } else {
                     Page.user = null;
                 }
-            })
-            .finally(() => {
-                Page.loaded = true;
             });
+        } catch (error) {
+            // Silently handle any errors - user is simply not authenticated
+            Page.user = null;
+        } finally {
+            Page.loaded = true;
+        }
     }
     if (Page.user) {
+        // If user is logged in and trying to access login page, redirect to appropriate dashboard
+        if (to.name === "admin.login") {
+            if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
+                next({ name: "admin.dashboard.index" });
+                return;
+            } else if (getStoreCustomers().includes(Page.user.role.role_name as RoleEnum)) {
+                next({ name: "customer.home.index" });
+                return;
+            }
+        }
+        
         if (
             Array.isArray(to.meta.access) &&
             to.meta.access.includes(Page.user.role.role_name)
@@ -142,6 +169,11 @@ router.beforeEach(async (to, from, next) => {
                 )
             ) {
                 next({ name: "customer.home.index" });
+            } else if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
+                next({ name: "admin.dashboard.index" });
+            } else {
+                // User doesn't have access
+                next({ name: "home" });
             }
         }
     } else {
@@ -150,7 +182,7 @@ router.beforeEach(async (to, from, next) => {
         if (Array.isArray(to.meta.access) && to.meta.access.includes(null)) {
             next();
         } else {
-            next({ name: "home" });
+            next({ name: "admin.login" });
         }
     }
 });
