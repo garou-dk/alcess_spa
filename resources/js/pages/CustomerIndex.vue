@@ -197,8 +197,7 @@
 
             <!-- Desktop Header (≥ 1024px) - Original Layout -->
             <nav v-if="isDesktop" class="p-2">
-                <Toolbar style="background-color: transparent; border: none" :pt="{ end: { class: 'flex-1' } }">
-                    <template #start>
+                <div class="flex items-center justify-between w-full">
                         <div class="flex items-center gap-2">
                             <RouterLink :to="{ name: 'home' }">
                                 <div class="flex">
@@ -219,132 +218,132 @@
                                 </div>
                             </RouterLink>
                         </div>
-                    </template>
-                    <template #end>
-                        <div v-if="Page.user" class="flex items-center gap-3 w-full">
-                            <!-- Search Bar - Only show on product pages -->
-                            <div v-if="isProductPage" class="flex-1 max-w-4xl mx-6">
-                                <form @submit.prevent="handleSearch">
-                                    <div class="relative">
-                                        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            v-model="form.search"
-                                            type="text"
-                                            placeholder="Search for products..."
-                                            class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
-                                        />
-                                    </div>
-                                </form>
-                            </div>
-                            
-                            <!-- Right side icons -->
-                            <div class="flex items-center" :class="isProductPage ? 'ml-6' : 'ml-auto'">
-                                <div class="flex gap-4 items-center">
-                                    <!-- Facebook Icon -->
-                                    <Button
-                                        icon="pi pi-facebook"
-                                        rounded
-                                        as="a"
-                                        href="https://www.facebook.com/alcesslaptopstore"
-                                        target="_blank"
-                                        class="!bg-white !text-blue-600"
-                                    />
-                                    <!-- Browse All Products -->
-                                    <Button
-                                        icon="pi pi-th-large"
-                                        rounded
-                                        severity="secondary"
-                                        @click="goToBrowseProducts"
-                                        v-tooltip.bottom="'Browse All Products'"
-                                    />
-                                    <CartButton />
-                                    <!-- Notification Bell -->
-                                    <OverlayBadge 
-                                        v-if="unreadCount > 0"
-                                        :value="unreadCount"
-                                        pt:pcBadge:root:class="bg-red-500! text-white !rounded-full !w-5 !h-5 !flex !items-center !justify-center !text-xs !font-semibold !leading-none"
-                                    >
+
+                        <div class="flex items-center w-full flex-1 justify-end">
+                            <div v-if="Page.user" class="flex items-center gap-3 w-full">
+                                <!-- Search Bar - Only show on product pages -->
+                                <div v-if="isProductPage" class="flex-1 max-w-4xl mx-6">
+                                    <form @submit.prevent="handleSearch">
+                                        <div class="relative">
+                                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <input
+                                                v-model="form.search"
+                                                type="text"
+                                                placeholder="Search for products..."
+                                                class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Right side icons -->
+                                <div class="flex items-center" :class="isProductPage ? 'ml-6' : 'ml-auto'">
+                                    <div class="flex gap-4 items-center">
+                                        <!-- Facebook Icon -->
                                         <Button
+                                            icon="pi pi-facebook"
+                                            rounded
+                                            as="a"
+                                            href="https://www.facebook.com/alcesslaptopstore"
+                                            target="_blank"
+                                            class="!bg-white !text-blue-600"
+                                        />
+                                        <!-- Browse All Products -->
+                                        <Button
+                                            icon="pi pi-th-large"
+                                            rounded
+                                            severity="secondary"
+                                            @click="goToBrowseProducts"
+                                            v-tooltip.bottom="'Browse All Products'"
+                                        />
+                                        <CartButton />
+                                        <!-- Notification Bell -->
+                                        <OverlayBadge 
+                                            v-if="unreadCount > 0"
+                                            :value="unreadCount"
+                                            pt:pcBadge:root:class="bg-red-500! text-white !rounded-full !w-5 !h-5 !flex !items-center !justify-center !text-xs !font-semibold !leading-none"
+                                        >
+                                            <Button
+                                                icon="pi pi-bell"
+                                                rounded
+                                                severity="secondary"
+                                                @click="openNotifications"
+                                            />
+                                        </OverlayBadge>
+                                        <Button
+                                            v-else
                                             icon="pi pi-bell"
                                             rounded
                                             severity="secondary"
                                             @click="openNotifications"
-                                        />
-                                    </OverlayBadge>
-                                    <Button
-                                        v-else
-                                        icon="pi pi-bell"
-                                        rounded
-                                        severity="secondary"
-                                        @click="openNotifications"
-                                    />
-                                    <!-- User Avatar -->
-                                    <button @click="openAvatar" class="cursor-pointer">
-                                        <Avatar
-                                            v-if="Page.user && Page.user.image"
-                                            :image="UrlUtil.getBaseApiUrl(`profile/${Page.user.image}`)"
-                                            shape="circle"
-                                            style="width: 40px; height: 40px;"
-                                        />
-                                        <Avatar
-                                            v-else
-                                            :label="Page.user && Page.user.full_name[0]"
-                                            shape="circle"
-                                            class="bg-white! text-black!"
-                                            style="width: 40px; height: 40px;"
-                                        />
-                                    </button>
+                                            />
+                                        <!-- User Avatar -->
+                                        <button @click="openAvatar" class="cursor-pointer">
+                                            <Avatar
+                                                v-if="Page.user && Page.user.image"
+                                                :image="UrlUtil.getBaseApiUrl(`profile/${Page.user.image}`)"
+                                                shape="circle"
+                                                style="width: 40px; height: 40px;"
+                                            />
+                                            <Avatar
+                                                v-else
+                                                :label="Page.user && Page.user.full_name[0]"
+                                                shape="circle"
+                                                class="bg-white! text-black!"
+                                                style="width: 40px; height: 40px;"
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div v-else class="flex items-center w-full">
-                            <!-- Search Bar - Only show on product pages -->
-                            <div v-if="isProductPage" class="flex-1 max-w-4xl mx-6">
-                                <form @submit.prevent="handleSearch">
-                                    <div class="relative">
-                                        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            v-model="form.search"
-                                            type="text"
-                                            placeholder="Search for products..."
-                                            class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
+                            <div v-else class="flex items-center w-full">
+                                <!-- Search Bar - Only show on product pages -->
+                                <div v-if="isProductPage" class="flex-1 max-w-4xl mx-6">
+                                    <form @submit.prevent="handleSearch">
+                                        <div class="relative">
+                                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                                            <input
+                                                v-model="form.search"
+                                                type="text"
+                                                placeholder="Search for products..."
+                                                class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Right side icons -->
+                                <div class="flex items-center" :class="isProductPage ? 'ml-6' : 'ml-auto'">
+                                    <div class="flex gap-4 items-center">
+                                        <!-- Facebook Icon -->
+                                        <Button
+                                            icon="pi pi-facebook"
+                                            rounded
+                                            as="a"
+                                            href="https://www.facebook.com/alcesslaptopstore"
+                                            target="_blank"
+                                            class="!bg-white !text-blue-600"
+                                        />
+                                        <!-- Browse All Products -->
+                                        <Button
+                                            icon="pi pi-th-large"
+                                            rounded
+                                            severity="secondary"
+                                            @click="goToBrowseProducts"
+                                            v-tooltip.bottom="'Browse All Products'"
+                                        />
+                                        <Button
+                                            icon="pi pi-user"
+                                            rounded
+                                            severity="secondary"
+                                            @click="openLoginForm()"
+                                            v-tooltip.bottom="'Login'"
                                         />
                                     </div>
-                                </form>
-                            </div>
-                            
-                            <!-- Right side icons -->
-                            <div class="flex items-center" :class="isProductPage ? 'ml-6' : 'ml-auto'">
-                                <div class="flex gap-4 items-center">
-                                    <!-- Facebook Icon -->
-                                    <Button
-                                        icon="pi pi-facebook"
-                                        rounded
-                                        as="a"
-                                        href="https://www.facebook.com/alcesslaptopstore"
-                                        target="_blank"
-                                        class="!bg-white !text-blue-600"
-                                    />
-                                    <!-- Browse All Products -->
-                                    <Button
-                                        icon="pi pi-th-large"
-                                        rounded
-                                        severity="secondary"
-                                        @click="goToBrowseProducts"
-                                        v-tooltip.bottom="'Browse All Products'"
-                                    />
-                                    <Button
-                                        icon="pi pi-user"
-                                        rounded
-                                        severity="secondary"
-                                        @click="openLoginForm()"
-                                        v-tooltip.bottom="'Login'"
-                                    />
                                 </div>
                             </div>
                         </div>
-                    </template>
-                </Toolbar>
+                </div>
             </nav>
         </header>
 

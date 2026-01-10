@@ -118,30 +118,29 @@
 
             <!-- Desktop Header (≥ 1024px) - Original Layout -->
             <nav v-if="isDesktop" class="p-2">
-                <Toolbar style="background-color: transparent; border: none" :pt="{ end: { class: 'flex-1' } }">
-                    <template #start>
-                        <div class="flex items-center gap-2">
-                            <RouterLink :to="{ name: 'home' }">
-                                <div class="flex">
-                                    <div class="px-2">
-                                        <div class="rounded-full bg-white">
-                                            <img
-                                                :src="Icon"
-                                                class="h-16 w-16"
-                                                alt="Store Icon"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center px-2">
-                                        <h1 class="text-3xl font-bold text-white">
-                                            {{ appName }}
-                                        </h1>
+            <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-2">
+                        <RouterLink :to="{ name: 'home' }">
+                            <div class="flex">
+                                <div class="px-2">
+                                    <div class="rounded-full bg-white">
+                                        <img
+                                            :src="Icon"
+                                            class="h-16 w-16"
+                                            alt="Store Icon"
+                                        />
                                     </div>
                                 </div>
-                            </RouterLink>
-                        </div>
-                    </template>
-                    <template #end>
+                                <div class="flex items-center px-2">
+                                    <h1 class="text-3xl font-bold text-white">
+                                        {{ appName }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </RouterLink>
+                    </div>
+                    
+                    <div class="flex items-center w-full flex-1 justify-end">
                         <div class="flex items-center w-full">
                             <!-- Search Bar - Only show on product pages and hide on small screens -->
                             <div v-if="isProductPage && !isMobile" class="flex-1 max-w-4xl mx-auto">
@@ -244,8 +243,8 @@
                                 </div>
                             </form>
                         </div>
-                    </template>
-                </Toolbar>
+                    </div>
+            </div>
             </nav>
         </header>
 
