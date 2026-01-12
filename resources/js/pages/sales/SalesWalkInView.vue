@@ -263,7 +263,7 @@
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                                 'bg-green-50 text-green-700': data.payment_method === 'Cash',
                                 'bg-blue-50 text-blue-700': data.payment_method === 'E-wallet',
-                                'bg-purple-50 text-purple-700': data.payment_method === 'Installment'
+                                'bg-purple-50 text-purple-700': data.payment_method && data.payment_method.startsWith('Installment')
                             }">
                                 <i :class="data.payment_method === 'Cash' ? 'pi pi-money-bill' : data.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                                 {{ data.payment_method }}
@@ -360,7 +360,7 @@
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                                         'bg-green-50 text-green-700': sale.payment_method === 'Cash',
                                         'bg-blue-50 text-blue-700': sale.payment_method === 'E-wallet',
-                                        'bg-purple-50 text-purple-700': sale.payment_method === 'Installment'
+                                        'bg-purple-50 text-purple-700': sale.payment_method && sale.payment_method.startsWith('Installment')
                                     }">
                                         <i :class="sale.payment_method === 'Cash' ? 'pi pi-money-bill' : sale.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                                         {{ sale.payment_method }}
@@ -593,7 +593,7 @@
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                                 'bg-green-50 text-green-700': selectedSale.payment_method === 'Cash',
                                 'bg-blue-50 text-blue-700': selectedSale.payment_method === 'E-wallet',
-                                'bg-purple-50 text-purple-700': selectedSale.payment_method === 'Installment'
+                                'bg-purple-50 text-purple-700': selectedSale.payment_method && selectedSale.payment_method.startsWith('Installment')
                             }">
                                 <i :class="selectedSale.payment_method === 'Cash' ? 'pi pi-money-bill' : selectedSale.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                                 {{ selectedSale.payment_method }}

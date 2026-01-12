@@ -29,7 +29,7 @@ class SaleRequest extends FormRequest
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_address' => ['required', 'string'],
             'prepared_by' => ['required', 'string', 'max:255'],
-            'payment_method' => ['required', 'string', Rule::in('Cash', 'E-wallet', 'Installment')]
+            'payment_method' => ['required', 'string', 'max:255']
         ];
     }
 }

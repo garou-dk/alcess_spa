@@ -653,12 +653,40 @@
                                     v-model="form.payment_method"
                                     :invalid="errors.payment_method.length > 0"
                                     class="w-full"
+                                    @change="form.installment_type = null"
                                 />
                                 <p v-if="errors.payment_method.length > 0" :class="getResponsiveClasses({
                                     mobile: 'text-xs text-red-600 mt-1',
                                     tablet: 'text-xs text-red-600 mt-1',
                                     desktop: 'text-xs text-red-600 mt-1'
                                 })">{{ errors.payment_method[0] }}</p>
+                            </div>
+
+                            <div v-if="form.payment_method === 'Installment'">
+                                <label :class="getResponsiveClasses({
+                                    mobile: 'block text-sm font-medium text-gray-700 mb-2',
+                                    tablet: 'block text-sm font-medium text-gray-700 mb-2',
+                                    desktop: 'block text-sm font-medium text-gray-700 mb-2'
+                                })">Installment Type</label>
+                                <Select
+                                    :options="[
+                                        { label: 'Home Credit', value: 'Home Credit' },
+                                        { label: 'Credit Card', value: 'Credit Card' },
+                                        { label: 'Kiro', value: 'Kiro' },
+                                    ]"
+                                    placeholder="Select Installment Type"
+                                    id="installment-type"
+                                    option-label="label"
+                                    option-value="value"
+                                    v-model="form.installment_type"
+                                    :invalid="errors.installment_type.length > 0"
+                                    class="w-full"
+                                />
+                                <p v-if="errors.installment_type.length > 0" :class="getResponsiveClasses({
+                                    mobile: 'text-xs text-red-600 mt-1',
+                                    tablet: 'text-xs text-red-600 mt-1',
+                                    desktop: 'text-xs text-red-600 mt-1'
+                                })">{{ errors.installment_type[0] }}</p>
                             </div>
                             
                             <div :class="getResponsiveClasses({
@@ -1104,7 +1132,7 @@
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                                 'bg-green-50 text-green-700': selectedSale.payment_method === 'Cash',
                                 'bg-blue-50 text-blue-700': selectedSale.payment_method === 'E-wallet',
-                                'bg-purple-50 text-purple-700': selectedSale.payment_method === 'Installment'
+                                'bg-purple-50 text-purple-700': selectedSale.payment_method && selectedSale.payment_method.startsWith('Installment')
                             }">
                                 <i :class="selectedSale.payment_method === 'Cash' ? 'pi pi-money-bill' : selectedSale.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                                 {{ selectedSale.payment_method }}
@@ -1327,6 +1355,7 @@ interface IForm {
     customer_address: string | null;
     prepared_by: string | null;
     payment_method: string | null;
+    installment_type: string | null;
 }
 
 interface IFormError {
@@ -1334,6 +1363,7 @@ interface IFormError {
     customer_address: string[];
     prepared_by: string[];
     payment_method: string[];
+    installment_type: string[];
 }
 
 const form : IForm = reactive({
@@ -1342,6 +1372,7 @@ const form : IForm = reactive({
     customer_address: null,
     prepared_by: null,
     payment_method: null,
+    installment_type: null,
 });
 
 const errors : IFormError = reactive({
@@ -1349,6 +1380,7 @@ const errors : IFormError = reactive({
     customer_address: [],
     prepared_by: [],
     payment_method: [],
+    installment_type: [],
 });
 
 const selectedProducts : {
@@ -1580,6 +1612,11 @@ const validate = () => {
         errors.payment_method.push("Payment method is required");
     }
 
+    if (form.payment_method === 'Installment' && !form.installment_type) {
+        noError = false;
+        errors.installment_type.push("Installment type is required");
+    }
+
     if (!noError) {
         toast.error("Please fill in all required fields");
         return false;
@@ -1601,7 +1638,11 @@ const router = useRouter();
 const handleSubmit = async () => {
     const validated = validate();
     if (validated) {
-        await submitService.post("admin/sales", validated);
+        const payload = { ...validated };
+        if (payload.payment_method === 'Installment') {
+            payload.payment_method = `Installment - ${payload.installment_type}`;
+        }
+        await submitService.post("admin/sales", payload);
         
         if (submitService.request.status === 200 && submitService.request.data) {
             clearErrors();

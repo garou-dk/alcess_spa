@@ -80,15 +80,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="mt-8 text-center">
-                                <p class="text-sm text-gray-500">
-                                    Need help? 
-                                    <a href="#" class="font-semibold text-sky-600 hover:underline">
-                                        Contact Support
-                                    </a>
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
