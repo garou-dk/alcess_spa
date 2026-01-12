@@ -1,1142 +1,459 @@
 <template>
     <div class="min-h-screen bg-gray-50">
-        <!-- Unified Responsive Header - Uses CSS for responsiveness to prevent layout jumps -->
-        <header class="bg-blue-600 sticky top-0 z-[100] shadow-md">
-            <nav class="header-nav">
-                <div class="header-container">
-                    <!-- Left: Logo Section -->
-                    <RouterLink :to="{ name: 'home' }" class="header-logo-link">
-                        <div class="header-logo-wrapper">
-                            <img :src="Icon" class="header-logo-img" alt="Store Icon" />
+        <!-- Stripe-Style Header -->
+        <header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-300">
+            <nav :class="[
+                'mx-auto transition-all duration-300',
+                isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 py-3' : 'bg-transparent py-5'
+            ]">
+                <div class="container mx-auto px-6 flex items-center justify-between">
+                    <!-- Logo -->
+                    <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
+                            <img :src="Icon" class="w-7 h-7" alt="Logo" />
                         </div>
-                        <h1 class="header-title">{{ appName }}</h1>
+                        <h1 :class="[
+                            'font-bold text-xl tracking-tight transition-colors',
+                            isScrolled ? 'text-gray-900' : 'text-white'
+                        ]">{{ appName }}</h1>
                     </RouterLink>
-                    
-                    <!-- Center: Search Bar (desktop/tablet only when on product page) -->
-                    <div v-if="isProductPage" class="header-search-container">
-                        <form @submit.prevent="handleSearch" class="w-full">
-                            <div class="relative">
-                                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                <input
-                                    v-model="form.search"
-                                    type="text"
-                                    placeholder="Search for products..."
-                                    class="header-search-input"
-                                />
-                            </div>
-                        </form>
+
+                    <!-- Navigation Links -->
+                    <div class="hidden md:flex items-center gap-8">
+                        <RouterLink v-for="link in ['Products', 'About', 'Contact']" :key="link" to="#" 
+                            :class="[
+                                'font-semibold text-sm transition-colors hover:opacity-70',
+                                isScrolled ? 'text-gray-600' : 'text-white/90'
+                            ]">{{ link }}</RouterLink>
                     </div>
-                    
-                    <!-- Right: Action buttons (consistent sizing) -->
-                    <div class="header-actions">
-                        <a
-                            href="https://www.facebook.com/alcesslaptopstore"
-                            target="_blank"
-                            class="header-action-btn header-action-btn-facebook"
-                            title="Visit our Facebook page"
-                        >
-                            <i class="pi pi-facebook"></i>
-                        </a>
-                        <button
-                            type="button"
-                            class="header-action-btn header-action-btn-secondary"
-                            @click="goToBrowseProducts"
-                            title="Browse All Products"
-                        >
-                            <i class="pi pi-th-large"></i>
+
+                    <!-- Actions -->
+                    <div class="flex items-center gap-4">
+                        <button v-if="!Page.user" @click="openLoginForm()" 
+                            :class="[
+                                'stripe-btn text-sm py-2 px-5 transition-all',
+                                isScrolled ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
+                            ]">
+                            Sign In
                         </button>
-                        <button
-                            v-if="!Page.user"
-                            type="button"
-                            class="header-action-btn header-action-btn-secondary"
-                            @click="openLoginForm()"
-                            title="Login"
-                        >
-                            <i class="pi pi-user"></i>
+                        <button v-else @click="goRoute('customer.dashboard')" 
+                            :class="[
+                                'stripe-btn text-sm py-2 px-5 transition-all',
+                                isScrolled ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
+                            ]">
+                            Dashboard
                         </button>
                     </div>
-                </div>
-                
-                <!-- Mobile Search Bar (shown below main header on mobile when on product page) -->
-                <div v-if="isProductPage" class="header-mobile-search">
-                    <form @submit.prevent="handleSearch">
-                        <div class="relative">
-                            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                                v-model="form.search"
-                                type="text"
-                                placeholder="Search products..."
-                                class="header-search-input"
-                            />
-                        </div>
-                    </form>
                 </div>
             </nav>
         </header>
 
+        <!-- Stripe Mesh Hero Section -->
+        <section class="relative stripe-mesh min-h-screen flex items-center overflow-hidden pt-20">
+            <!-- Background Orbs -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-20 left-10 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[120px] animate-stripe-float"></div>
+                <div class="absolute bottom-10 right-10 w-[600px] h-[600px] bg-indigo-500/20 rounded-full blur-[120px]" style="animation-delay: 2s;"></div>
+            </div>
 
-        <!-- Enhanced Hero Section with Modern Design -->
-        <div class="relative mb-16 overflow-hidden">
-            <!-- Animated Background Gradient -->
-            <div :class="[
-                'relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800',
-                isMobile ? 'min-h-[400px]' : isTablet ? 'min-h-[450px]' : 'min-h-[550px]'
-            ]">
-                <!-- Decorative Floating Elements -->
-                <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div class="absolute top-10 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse-slow"></div>
-                    <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
-                    <div class="absolute top-1/2 left-1/3 w-48 h-48 bg-indigo-400/10 rounded-full blur-2xl animate-float"></div>
-                </div>
-                
-                <!-- Main Hero Content -->
-                <div v-if="showCarousel" class="relative h-full z-10">
-                    <TransitionGroup name="hero-slide">
-                        <div
-                            v-for="(product, index) in [products.slice(0, 3)[currentSlide]]"
-                            :key="currentSlide"
-                            class="absolute inset-0"
-                        >
-                            <div class="container mx-auto px-4 h-full">
-                                <div :class="[
-                                    'grid h-full items-center',
-                                    isMobile ? 'grid-cols-1 gap-4 py-6' : 'grid-cols-2 gap-8'
-                                ]">
-                                    <!-- Left Side - Product Info -->
-                                    <div :class="[
-                                        'flex flex-col justify-center',
-                                        isMobile ? 'text-center order-2 -mt-4' : 'text-left'
-                                    ]">
-                                        <!-- Badge -->
-                                        <div :class="[
-                                            'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20',
-                                            isMobile ? 'px-2.5 py-1 mb-2 mx-auto' : isTablet ? 'px-4 py-2 mb-4' : 'px-5 py-2.5 mb-6 self-start'
-                                        ]">
-                                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                                            <span :class="[
-                                                'font-medium text-white/90',
-                                                isMobile ? 'text-[10px]' : 'text-sm'
-                                            ]">🔥 Best Seller</span>
-                                        </div>
-                                        
-                                        <!-- Product Name -->
-                                        <h1 :class="[
-                                            'font-bold text-white leading-tight',
-                                            isMobile ? 'text-xl mb-1' : isTablet ? 'text-3xl mb-3' : 'text-4xl lg:text-5xl mb-4'
-                                        ]">
-                                            {{ product.product_name }}
-                                        </h1>
-                                        
-                                        <!-- Category -->
-                                        <p :class="[
-                                            'text-blue-200',
-                                            isMobile ? 'text-xs mb-3' : isTablet ? 'text-base mb-4' : 'text-lg mb-6'
-                                        ]">
-                                            {{ product.category?.category_name || 'Premium Electronics' }}
-                                        </p>
-                                        
-                                        <!-- Price Card -->
-                                        <div :class="[
-                                            'inline-flex items-center bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20',
-                                            isMobile ? 'px-3 py-2 mb-4 mx-auto' : isTablet ? 'px-5 py-4 mb-5' : 'px-6 py-4 mb-8 self-start'
-                                        ]">
-                                            <div>
-                                                <p :class="['text-blue-200', isMobile ? 'text-[10px]' : 'text-sm']">Starting at</p>
-                                                <span :class="[
-                                                    'font-bold text-white',
-                                                    isMobile ? 'text-xl' : isTablet ? 'text-3xl' : 'text-4xl'
-                                                ]">
-                                                    {{ CurrencyUtil.formatCurrency(product.product_price) }}
-                                                </span>
-                                            </div>
-                                            <div class="ml-3 pl-3 border-l border-white/20">
-                                                <div class="flex items-center gap-0.5 mb-0.5">
-                                                    <i v-for="i in 5" :key="i" :class="[
-                                                        i <= 4 ? 'pi pi-star-fill text-yellow-400' : 'pi pi-star text-white/30',
-                                                        isMobile ? 'text-[8px]' : 'text-sm'
-                                                    ]"></i>
-                                                </div>
-                                                <p :class="['text-white/70', isMobile ? 'text-[10px]' : 'text-sm']">Top Rated</p>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- CTA Buttons -->
-                                        <div :class="[
-                                            'flex flex-wrap items-center',
-                                            isMobile ? 'gap-2 justify-center' : 'gap-4'
-                                        ]">
-                                            <button 
-                                                @click="addToCart(product.product_id)"
-                                                :disabled="addToCartService.request.loading"
-                                                :class="[
-                                                    'group shrink-0 relative overflow-hidden rounded-full bg-white font-semibold text-blue-700 transition-all duration-300 hover:shadow-2xl hover:shadow-white/25 disabled:opacity-50',
-                                                    isMobile ? 'px-4 py-2 text-xs' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
-                                                ]"
-                                            >
-                                                <span class="relative z-10 flex items-center gap-1.5">
-                                                    <i v-if="addToCartService.request.loading" class="pi pi-spin pi-spinner"></i>
-                                                    <i v-else class="pi pi-shopping-cart"></i>
-                                                    Add to Cart
-                                                </span>
-                                            </button>
-                                            <button 
-                                                @click="goToProductDetails(product.product_id)"
-                                                :class="[
-                                                    'rounded-full shrink-0 border-2 border-white/30 text-white font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/50',
-                                                    isMobile ? 'px-4 py-2 text-xs' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
-                                                ]"
-                                            >
-                                                Details
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Right Side - Product Image -->
-                                    <div :class="[
-                                        'flex items-center justify-center relative',
-                                        isMobile ? 'order-1 scale-90 -mb-4' : ''
-                                    ]">
-                                        <!-- Glow Effect -->
-                                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-3xl"></div>
-                                        
-                                        <div class="relative">
-                                            <img
-                                                v-if="product.product_image"
-                                                :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
-                                                :alt="product.product_name"
-                                                :class="[
-                                                    'w-auto object-contain drop-shadow-2xl transform transition-transform duration-500 hover:scale-105',
-                                                    isMobile ? 'max-h-[160px]' : isTablet ? 'max-h-[280px]' : 'max-h-[400px]'
-                                                ]"
-                                                @error="handleImageError"
-                                            />
-                                            <div
-                                                :class="[
-                                                    'fallback-image flex items-center justify-center rounded-3xl bg-white/10 backdrop-blur-sm',
-                                                    isMobile ? 'h-[160px] w-[160px]' : isTablet ? 'h-[280px] w-[280px]' : 'h-[400px] w-[400px]'
-                                                ]"
-                                                :style="{ display: product.product_image ? 'none' : 'flex' }"
-                                            >
-                                                <i :class="[
-                                                    'pi pi-image text-white/50',
-                                                    isMobile ? 'text-3xl' : isTablet ? 'text-6xl' : 'text-8xl'
-                                                ]"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Content -->
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="animate-fade-in">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8">
+                            <span class="flex h-2 w-2 rounded-full bg-blue-400"></span>
+                            <span class="text-white text-xs font-bold uppercase tracking-widest">Premium Tech Store</span>
                         </div>
-                    </TransitionGroup>
-                    
-                    <!-- Modern Carousel Indicators -->
-                    <div :class="[
-                        'absolute left-1/2 -translate-x-1/2 flex gap-2',
-                        isMobile ? 'bottom-4' : 'bottom-8'
-                    ]">
-                        <button
-                            v-for="(product, index) in products.slice(0, 3)"
-                            :key="index"
-                            @click="currentSlide = index"
-                            :class="[
-                                'transition-all duration-300 rounded-full',
-                                currentSlide === index 
-                                    ? 'w-10 h-2 bg-white' 
-                                    : 'w-2 h-2 bg-white/40 hover:bg-white/60'
-                            ]"
-                        ></button>
-                    </div>
-                </div>
-
-                <!-- Fallback Static Hero -->
-                <div v-else class="relative h-full min-h-[inherit] z-10">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="container mx-auto px-6">
-                            <div :class="[
-                                'text-white',
-                                isMobile ? 'text-center max-w-full' : 'max-w-2xl'
-                            ]">
-                                <div :class="[
-                                    'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6',
-                                    isMobile ? 'px-3 py-1.5' : 'px-4 py-2'
-                                ]">
-                                    <i class="pi pi-sparkles text-yellow-400"></i>
-                                    <span :class="['font-medium', isMobile ? 'text-xs' : 'text-sm']">Premium Tech Store</span>
-                                </div>
-                                <h1 :class="[
-                                    'font-bold leading-tight mb-4 animate-fade-in',
-                                    isMobile ? 'text-3xl' : isTablet ? 'text-4xl' : 'text-5xl lg:text-6xl'
-                                ]">
-                                    Welcome to <span class="text-blue-300">{{ appName }}</span>
-                                </h1>
-                                <p :class="[
-                                    'text-blue-100 mb-8',
-                                    isMobile ? 'text-base' : 'text-lg md:text-xl'
-                                ]">
-                                    Discover premium laptops, phones & computers at unbeatable prices with genuine warranty.
-                                </p>
-                                <button 
-                                    @click="goToBrowseProducts"
-                                    :class="[
-                                        'group inline-flex items-center gap-3 bg-white text-blue-700 font-semibold rounded-full transition-all hover:shadow-2xl hover:shadow-white/20',
-                                        isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
-                                    ]"
-                                >
-                                    <span>Shop Now</span>
-                                    <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Wave Divider -->
-            <div class="absolute bottom-0 left-0 right-0">
-                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                    <path d="M0 120L60 110C120 100 240 80 360 75C480 70 600 80 720 85C840 90 960 90 1080 85C1200 80 1320 70 1380 65L1440 60V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f9fafb"/>
-                </svg>
-            </div>
-        </div>
-
-        <!-- Trust Indicators Section -->
-        <div class="container mx-auto px-4 -mt-8 mb-12 relative z-10">
-            <div :class="[
-                'grid bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100',
-                isMobile ? 'grid-cols-2 gap-4 p-4' : isTablet ? 'grid-cols-4 gap-4 p-5' : 'grid-cols-4 gap-6 p-6'
-            ]">
-                <div class="flex items-center gap-3 group">
-                    <div :class="[
-                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-green-50 to-green-100 transition-transform group-hover:scale-110',
-                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
-                    ]">
-                        <i :class="['pi pi-verified text-green-600', isMobile ? 'text-lg' : 'text-xl']"></i>
-                    </div>
-                    <div>
-                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">100% Genuine</p>
-                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Authentic Products</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 group">
-                    <div :class="[
-                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 transition-transform group-hover:scale-110',
-                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
-                    ]">
-                        <i :class="['pi pi-truck text-blue-600', isMobile ? 'text-lg' : 'text-xl']"></i>
-                    </div>
-                    <div>
-                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">Fast Delivery</p>
-                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Nationwide Shipping</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 group">
-                    <div :class="[
-                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 transition-transform group-hover:scale-110',
-                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
-                    ]">
-                        <i :class="['pi pi-shield text-purple-600', isMobile ? 'text-lg' : 'text-xl']"></i>
-                    </div>
-                    <div>
-                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">Warranty</p>
-                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Official Coverage</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 group">
-                    <div :class="[
-                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 transition-transform group-hover:scale-110',
-                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
-                    ]">
-                        <i :class="['pi pi-headphones text-orange-600', isMobile ? 'text-lg' : 'text-xl']"></i>
-                    </div>
-                    <div>
-                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">24/7 Support</p>
-                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">We're Here to Help</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="container mx-auto px-4">
-            <!-- Interactive Categories/Products Section -->
-            <section :class="isMobile ? 'mb-12' : isTablet ? 'mb-16' : 'mb-20'">
-                <!-- Toggle Headers with Smooth Transitions -->
-                <div :class="[
-                    'text-center relative',
-                    isMobile ? 'mb-8' : isTablet ? 'mb-10' : 'mb-12'
-                ]" :style="{ minHeight: isMobile ? '60px' : isTablet ? '70px' : '80px' }">
-                    <button
-                        @click="activeView = 'categories'"
-                        :class="[
-                            'font-bold transition-all duration-500 ease-in-out cursor-pointer block w-full absolute left-0 right-0',
-                            activeView === 'categories' 
-                                ? (isMobile ? 'text-lg text-gray-800 top-0' : isTablet ? 'text-xl text-gray-800 top-0' : 'text-3xl text-gray-800 top-0')
-                                : (isMobile ? 'text-xs text-gray-400 hover:text-blue-600 top-8' : isTablet ? 'text-sm text-gray-400 hover:text-blue-600 top-10' : 'text-base text-gray-400 hover:text-blue-600 top-12')
-                        ]"
-                    >
-                        {{ categoriesHeading }}
-                    </button>
-                    <button
-                        @click="activeView = 'products'"
-                        :class="[
-                            'font-bold transition-all duration-500 ease-in-out cursor-pointer block w-full absolute left-0 right-0',
-                            activeView === 'products' 
-                                ? (isMobile ? 'text-lg text-gray-800 top-0' : isTablet ? 'text-xl text-gray-800 top-0' : 'text-3xl text-gray-800 top-0')
-                                : (isMobile ? 'text-xs text-gray-400 hover:text-blue-600 top-8' : isTablet ? 'text-sm text-gray-400 hover:text-blue-600 top-10' : 'text-base text-gray-400 hover:text-blue-600 top-12')
-                        ]"
-                    >
-                        {{ productsHeading }}
-                    </button>
-                </div>
-                
-                <!-- Categories View with Transition -->
-                <Transition
-                    enter-active-class="transition-all duration-500 ease-out"
-                    enter-from-class="opacity-0 translate-y-8"
-                    enter-to-class="opacity-100 translate-y-0"
-                    leave-active-class="transition-all duration-500 ease-in"
-                    leave-from-class="opacity-100 translate-y-0"
-                    leave-to-class="opacity-0 -translate-y-8"
-                    mode="out-in"
-                >
-                    <div v-if="activeView === 'categories'" key="categories" class="relative">
-                        <!-- Categories List - Uniform Design -->
-                        <div v-if="CategoryStore.categories && CategoryStore.categories.length > 0" :class="[
-                            'grid gap-6 py-6',
-                            isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-3' : 'grid-cols-4 lg:grid-cols-6'
-                        ]">
-                            <button
-                                v-for="(category, index) in CategoryStore.categories"
-                                :key="index"
-                                :class="[
-                                    'group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden'
-                                ]"
-                                @click="goRoute('customer.product-category', { id: category.category_id })"
-                            >
-                                <!-- Decorative background -->
-                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                                
-                                <div class="relative flex flex-col items-center gap-3">
-                                    <!-- Category Image Container -->
-                                    <div :class="[
-                                        'flex items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-blue-50 transition-colors',
-                                        isMobile ? 'h-16 w-16' : 'h-24 w-24'
-                                    ]">
-                                        <img
-                                            v-if="category.category_image"
-                                            :src="UrlUtil.getBaseAppUrl(`storage/images/category/${category.category_image}`)"
-                                            :alt="category.category_name"
-                                            class="h-full w-full object-contain transform transition-transform group-hover:scale-110"
-                                        />
-                                        <i v-else :class="['pi pi-image text-gray-300', isMobile ? 'text-2xl' : 'text-4xl']"></i>
-                                    </div>
-                                    
-                                    <!-- Category Info -->
-                                    <div class="text-center">
-                                        <h3 :class="[
-                                            'font-bold text-gray-800 line-clamp-1 transition-colors group-hover:text-blue-600',
-                                            isMobile ? 'text-xs' : 'text-sm'
-                                        ]">
-                                            {{ category.category_name }}
-                                        </h3>
-                                        <p class="text-[10px] text-blue-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity">View Products</p>
-                                    </div>
-                                </div>
+                        <h1 class="text-5xl lg:text-7xl font-bold text-white leading-tight mb-8">
+                            Next-gen tech, <br/>
+                            <span class="text-blue-200">now accessible.</span>
+                        </h1>
+                        <p class="text-xl text-blue-100/80 mb-10 max-w-xl leading-relaxed">
+                            Upgrade your workflow with our premium selection of laptops and peripherals. Trusted by over 1,000+ professionals nationwide.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button @click="goToBrowseProducts" class="stripe-btn-white stripe-btn text-lg py-4 px-8 shadow-xl">
+                                Start Shopping
+                                <i class="pi pi-arrow-right"></i>
                             </button>
-                        </div>
-                        
-                        <!-- Empty State for Categories -->
-                        <div v-else :class="[
-                            'flex flex-col items-center justify-center px-4',
-                            isMobile ? 'py-12' : isTablet ? 'py-14' : 'py-16'
-                        ]">
-                            <div :class="[
-                                'rounded-full bg-gradient-to-br from-blue-50 to-blue-100 mb-6',
-                                isMobile ? 'p-6' : isTablet ? 'p-7' : 'p-8'
-                            ]">
-                                <i :class="[
-                                    'pi pi-th-large text-blue-400',
-                                    isMobile ? 'text-4xl' : isTablet ? 'text-5xl' : 'text-6xl'
-                                ]" />
-                            </div>
-                            <h3 :class="[
-                                'font-semibold text-gray-800 mb-2',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-xl'
-                            ]">No Categories Available</h3>
-                            <p :class="[
-                                'text-gray-500 text-center max-w-md',
-                                isMobile ? 'text-sm' : isTablet ? 'text-sm' : 'text-base'
-                            ]">
-                                We're currently setting up our product categories. Check back soon for exciting new collections!
-                            </p>
-                        </div>
-                        
-                        <!-- Fade overlays -->
-                        <div v-if="CategoryStore.categories && CategoryStore.categories.length > 0" :class="[
-                            'pointer-events-none absolute left-0 top-0 bg-gradient-to-r from-gray-50 to-transparent',
-                            isMobile ? 'bottom-6 w-12' : isTablet ? 'bottom-7 w-16' : 'bottom-8 w-20'
-                        ]"></div>
-                        <div v-if="CategoryStore.categories && CategoryStore.categories.length > 0" :class="[
-                            'pointer-events-none absolute right-0 top-0 bg-gradient-to-l from-gray-50 to-transparent',
-                            isMobile ? 'bottom-6 w-12' : isTablet ? 'bottom-7 w-16' : 'bottom-8 w-20'
-                        ]"></div>
-                    </div>
-
-                    <!-- Products View with Transition -->
-                    <div v-else-if="activeView === 'products'" key="products" class="relative">
-                        <!-- Products List - Uniform Design -->
-                        <div v-if="products && products.length > 0" :class="[
-                            'grid gap-6 py-6',
-                            isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-3' : 'grid-cols-4 lg:grid-cols-5'
-                        ]">
-                            <div
-                                v-for="(product, index) in products"
-                                :key="index"
-                                :class="[
-                                    'group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden'
-                                ]"
-                            >
-                                <!-- Decorative background -->
-                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-indigo-50 to-transparent rounded-bl-full opacity-50"></div>
-                                
-                                <div class="relative flex flex-col items-center gap-3">
-                                    <!-- Product Image Container -->
-                                    <div :class="[
-                                        'flex items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-indigo-50 transition-colors',
-                                        isMobile ? 'h-24 w-full' : 'h-32 w-full'
-                                    ]">
-                                        <img
-                                            v-if="product.product_image"
-                                            :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
-                                            :alt="product.product_name"
-                                            class="h-full w-full object-contain transform transition-transform group-hover:scale-110"
-                                        />
-                                        <i v-else :class="['pi pi-image text-gray-300', isMobile ? 'text-2xl' : 'text-4xl']"></i>
-                                    </div>
-                                    
-                                    <!-- Product Info -->
-                                    <div class="text-center w-full">
-                                        <h3 :class="[
-                                            'font-bold text-gray-800 line-clamp-2 min-h-[2.5rem] mb-2',
-                                            isMobile ? 'text-xs' : 'text-sm'
-                                        ]">
-                                            {{ product.product_name }}
-                                        </h3>
-                                        
-                                        <!-- View Details Button -->
-                                        <RouterLink
-                                            :to="{
-                                                name: 'customer.product-info.index',
-                                                params: { id: product.product_id },
-                                            }"
-                                            :class="[
-                                                'inline-flex items-center justify-center w-full py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-semibold transition-all hover:bg-blue-600 hover:text-white',
-                                                isMobile ? 'text-[10px]' : 'text-xs'
-                                            ]"
-                                        >
-                                            View Details
-                                        </RouterLink>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Empty State for Products -->
-                        <div v-else :class="[
-                            'flex flex-col items-center justify-center px-4',
-                            isMobile ? 'py-12' : isTablet ? 'py-14' : 'py-16'
-                        ]">
-                            <div :class="[
-                                'rounded-full bg-gradient-to-br from-blue-50 to-blue-100 mb-6',
-                                isMobile ? 'p-6' : isTablet ? 'p-7' : 'p-8'
-                            ]">
-                                <i :class="[
-                                    'pi pi-shopping-bag text-blue-400',
-                                    isMobile ? 'text-4xl' : isTablet ? 'text-5xl' : 'text-6xl'
-                                ]" />
-                            </div>
-                            <h3 :class="[
-                                'font-semibold text-gray-800 mb-2',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-xl'
-                            ]">No Products Available</h3>
-                            <p :class="[
-                                'text-gray-500 text-center max-w-md',
-                                isMobile ? 'text-sm' : isTablet ? 'text-sm' : 'text-base'
-                            ]">
-                                Stay tuned for our latest offerings!
-                            </p>
-                        </div>
-                    </div>
-                </Transition>
-            </section>
-
-            <!-- Enhanced Features Section -->
-            <section :class="['relative', isMobile ? 'mb-12' : isTablet ? 'mb-16' : 'mb-20']">
-                <!-- Section Header -->
-                <div :class="['text-center', isMobile ? 'mb-8' : 'mb-12']">
-                    <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
-                        Why Choose Us
-                    </span>
-                    <h2 :class="[
-                        'font-bold text-gray-800',
-                        isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
-                    ]">
-                        Shop with <span class="text-blue-600">Confidence</span>
-                    </h2>
-                </div>
-
-                <div :class="[
-                    'grid gap-6',
-                    isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                ]">
-                    <!-- Feature Card 1 -->
-                    <div :class="[
-                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
-                    ]">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50 to-transparent rounded-bl-full opacity-50"></div>
-                        <div :class="[
-                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-green-100 to-green-50',
-                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
-                        ]">
-                            <i :class="[
-                                'pi pi-check-circle text-green-600',
-                                isMobile ? 'text-xl' : 'text-3xl'
-                            ]"></i>
-                        </div>
-                        <h3 :class="[
-                            'mb-1.5 font-bold text-gray-800',
-                            isMobile ? 'text-xs' : 'text-lg'
-                        ]">
-                            Quality Guarantee
-                        </h3>
-                        <p :class="[
-                            'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-[10px]' : 'text-sm'
-                        ]">
-                            100% genuine and verified products
-                        </p>
-                    </div>
-                    
-                    <!-- Feature Card 2 -->
-                    <div :class="[
-                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
-                    ]">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50"></div>
-                        <div :class="[
-                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50',
-                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
-                        ]">
-                            <i :class="[
-                                'pi pi-truck text-blue-600',
-                                isMobile ? 'text-xl' : 'text-3xl'
-                            ]"></i>
-                        </div>
-                        <h3 :class="[
-                            'mb-1.5 font-bold text-gray-800',
-                            isMobile ? 'text-xs' : 'text-lg'
-                        ]">
-                            Fast Delivery
-                        </h3>
-                        <p :class="[
-                            'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-[10px]' : 'text-sm'
-                        ]">
-                            Quick nationwide shipping
-                        </p>
-                    </div>
-                    
-                    <!-- Feature Card 3 -->
-                    <div :class="[
-                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
-                    ]">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-50 to-transparent rounded-bl-full opacity-50"></div>
-                        <div :class="[
-                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50',
-                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
-                        ]">
-                            <i :class="[
-                                'pi pi-shield text-purple-600',
-                                isMobile ? 'text-xl' : 'text-3xl'
-                            ]"></i>
-                        </div>
-                        <h3 :class="[
-                            'mb-1.5 font-bold text-gray-800',
-                            isMobile ? 'text-xs' : 'text-lg'
-                        ]">
-                            Secure Payment
-                        </h3>
-                        <p :class="[
-                            'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-[10px]' : 'text-sm'
-                        ]">
-                            Protected payment information
-                        </p>
-                    </div>
-                    
-                    <!-- Feature Card 4 -->
-                    <div :class="[
-                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
-                    ]">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-50 to-transparent rounded-bl-full opacity-50"></div>
-                        <div :class="[
-                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50',
-                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
-                        ]">
-                            <i :class="[
-                                'pi pi-sync text-orange-600',
-                                isMobile ? 'text-xl' : 'text-3xl'
-                            ]"></i>
-                        </div>
-                        <h3 :class="[
-                            'mb-1.5 font-bold text-gray-800',
-                            isMobile ? 'text-xs' : 'text-lg'
-                        ]">
-                            Easy Returns
-                        </h3>
-                        <p :class="[
-                            'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-[10px]' : 'text-sm'
-                        ]">
-                            7-day replacements for defects
-                        </p>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Call to Action Section -->
-        <section class="relative overflow-hidden mb-16">
-            <div :class="[
-                'bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800',
-                isMobile ? 'py-12 px-4' : isTablet ? 'py-16 px-6' : 'py-20 px-8'
-            ]">
-                <!-- Decorative Elements -->
-                <div class="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div class="absolute -top-24 -left-24 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
-                    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full"></div>
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/10 rounded-full"></div>
-                </div>
-
-                <div class="container mx-auto relative z-10">
-                    <div :class="[
-                        'flex flex-col items-center text-center',
-                        isMobile ? 'gap-6' : 'gap-8'
-                    ]">
-                        <!-- Badge -->
-                        <div :class="[
-                            'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20',
-                            isMobile ? 'px-3 py-1.5' : 'px-4 py-2'
-                        ]">
-                            <i class="pi pi-star-fill text-yellow-400"></i>
-                            <span class="text-white/90 font-medium text-sm">Special Offers Available</span>
-                        </div>
-
-                        <!-- Heading -->
-                        <div>
-                            <h2 :class="[
-                                'font-bold text-white mb-4',
-                                isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl lg:text-5xl'
-                            ]">
-                                Ready to Upgrade Your Tech?
-                            </h2>
-                            <p :class="[
-                                'text-blue-100 max-w-2xl mx-auto',
-                                isMobile ? 'text-base' : 'text-lg'
-                            ]">
-                                Explore our wide selection of laptops, phones, and computers. Find the perfect device for your needs at competitive prices.
-                            </p>
-                        </div>
-
-                        <!-- CTA Buttons -->
-                        <div :class="[
-                            'flex flex-wrap justify-center',
-                            isMobile ? 'gap-3' : 'gap-4'
-                        ]">
-                            <button 
-                                @click="goToBrowseProducts"
-                                :class="[
-                                    'group inline-flex items-center gap-2 bg-white text-blue-700 font-semibold rounded-full transition-all duration-300 hover:shadow-2xl hover:shadow-white/20',
-                                    isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
-                                ]"
-                            >
-                                <i class="pi pi-th-large"></i>
-                                Browse Products
-                                <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
-                            </button>
-                            <a 
-                                href="https://www.facebook.com/alcesslaptopstore"
-                                target="_blank"
-                                :class="[
-                                    'inline-flex items-center gap-2 border-2 border-white/30 text-white font-semibold rounded-full transition-all duration-300 hover:bg-white/10 hover:border-white/50',
-                                    isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
-                                ]"
-                            >
-                                <i class="pi pi-facebook"></i>
-                                Message Us
+                            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="stripe-btn text-lg py-4 px-8 text-white border border-white/30 hover:bg-white/10 transition-all">
+                                Contact Sales
                             </a>
                         </div>
+                    </div>
 
-                        <!-- Stats -->
-                        <div :class="[
-                            'grid bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20',
-                            isMobile ? 'grid-cols-3 gap-4 px-4 py-5 mt-4' : 'grid-cols-3 gap-8 px-8 py-6 mt-6'
-                        ]">
-                            <div class="text-center">
-                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">500+</p>
-                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Products</p>
-                            </div>
-                            <div class="text-center border-l border-r border-white/20">
-                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">1K+</p>
-                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Happy Customers</p>
-                            </div>
-                            <div class="text-center">
-                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">4.8</p>
-                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Star Rating</p>
-                            </div>
+                    <!-- Hero Visual -->
+                    <div v-if="showCarousel" class="relative lg:-mr-32 animate-fade-in" style="animation-delay: 0.2s;">
+                        <div class="relative stripe-glass rounded-[32px] p-8 lg:p-12 shadow-2xl border border-white/20">
+                            <TransitionGroup name="hero-slide">
+                                <div v-for="(product, index) in [products.slice(0, 1)[0]]" :key="index" class="relative">
+                                    <div class="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+                                    <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" 
+                                        class="w-full h-auto object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)] transform -rotate-6 hover:rotate-0 transition-transform duration-700"
+                                        alt="Feature Product" />
+                                    
+                                    <!-- Floating Detail Card -->
+                                    <div class="absolute -bottom-10 -left-10 bg-white p-6 rounded-2xl shadow-2xl animate-stripe-float hidden lg:block">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <i class="pi pi-bolt text-blue-600 text-xl font-bold"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Flash Deal</p>
+                                                <p class="text-lg font-bold text-gray-900">{{ CurrencyUtil.formatCurrency(product.product_price) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </TransitionGroup>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stripe Slanted Divider -->
+            <div class="stripe-divider"></div>
+        </section>
+
+
+        <!-- Trust Indicators (Highlighting Quality) -->
+        <section class="py-16 bg-white relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div v-for="(item, idx) in [
+                        { icon: 'pi pi-verified', title: '100% Genuine', sub: 'Verified quality' },
+                        { icon: 'pi pi-truck', title: 'Fast Delivery', sub: 'Reliable shipping' },
+                        { icon: 'pi pi-shield', title: 'Secure Warranty', sub: 'Buyer protection' },
+                        { icon: 'pi pi-headphones', title: 'Expert Support', sub: 'Always here to help' }
+                    ]" :key="idx" class="flex flex-col gap-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                            <i :class="item.icon"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 border-l-2 border-blue-600 pl-3 leading-none mb-1">{{ item.title }}</h3>
+                            <p class="text-sm text-gray-500 pl-3">{{ item.sub }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Dynamic Browse Section (Categories & Products) -->
+        <section id="browse-products" class="py-24 bg-[#f6f9fc] relative overflow-hidden">
+            <div class="stripe-divider-inverse"></div>
+            
+            <div class="container mx-auto px-6 relative z-10 pt-16">
+                <div class="flex flex-col md:flex-row items-baseline justify-between gap-6 mb-16">
+                    <div>
+                        <h2 class="text-3xl lg:text-5xl font-bold text-[#0a2540] mb-4">Precision gear for <br/>digital pioneers.</h2>
+                        <div class="h-1 w-20 bg-blue-600 rounded-full mb-6"></div>
+                    </div>
+                    
+                    <!-- View Toggle -->
+                    <div class="inline-flex bg-gray-200/50 p-1 rounded-full backdrop-blur-sm self-start">
+                        <button @click="activeView = 'categories'" 
+                            :class="['px-6 py-2 rounded-full text-sm font-bold transition-all', activeView === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+                            Categories
+                        </button>
+                        <button @click="activeView = 'products'" 
+                            :class="['px-6 py-2 rounded-full text-sm font-bold transition-all', activeView === 'products' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+                            All Products
+                        </button>
+                    </div>
+                </div>
 
-        <!-- Original Login Dialog - Unchanged -->
-        <Dialog
-            v-model:visible="loginFormVisible"
-            modal
-            header="Login"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <LoginForm @success="loginFormVisible = false">
-                <template #footer>
-                    <div class="flex flex-col">
-                        <div class="flex">
-                            <div class="w-1/2 p-2">
-                                <Button
-                                    type="button"
-                                    variant="link"
-                                    label="Forgot password?"
-                                    class="p-0! text-black! text-sm!"
-                                    pt:label:class="font-normal!"
-                                    @click="openResetPasswordForm()"
-                                />
+                <Transition name="hero-slide" mode="out-in">
+                    <!-- Categories Display -->
+                    <div v-if="activeView === 'categories'" key="cats" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div v-if="CategoryStore.categories && CategoryStore.categories.length > 0" 
+                             v-for="category in CategoryStore.categories" 
+                             :key="category.category_id" 
+                             @click="goRoute('customer.product-category', { id: category.category_id })"
+                             class="product-card-stripe p-8 cursor-pointer group bg-white shadow-sm hover:shadow-xl transition-all h-full flex flex-col">
+                            <div class="w-full aspect-square bg-[#f8fafc] rounded-2xl mb-8 flex items-center justify-center p-8 transition-colors group-hover:bg-blue-50">
+                                <img v-if="category.category_image" 
+                                    :src="UrlUtil.getBaseAppUrl(`storage/images/category/${category.category_image}`)" 
+                                    class="h-full w-full object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                                <i v-else class="pi pi-image text-4xl text-gray-200"></i>
                             </div>
-                            <div class="flex w-1/2 flex-col p-2">
-                                <span class="text-end text-sm">Don't have an account?</span>
-                                <div class="flex justify-end">
-                                    <Button
-                                        type="button"
-                                        variant="link"
-                                        label="Register"
-                                        class="p-0! text-sm! text-blue-600!"
-                                        pt:label:class="font-normal!"
-                                        @click="openRegisterForm()"
-                                    />
+                            <h4 class="text-xl font-bold text-[#0a2540] mb-2 group-hover:text-blue-600 transition-colors">{{ category.category_name }}</h4>
+                            <div class="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Collection</span>
+                                <i class="pi pi-arrow-right text-blue-600 opacity-0 group-hover:opacity-100 transition-all"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Display -->
+                    <div v-else key="prods" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div v-if="products && products.length > 0" v-for="product in products" :key="product.product_id" 
+                             class="product-card-stripe group bg-white p-6 shadow-sm hover:shadow-xl transition-all h-full flex flex-col">
+                            <div class="relative w-full aspect-square bg-gray-50 rounded-2xl mb-6 flex items-center justify-center p-6 overflow-hidden">
+                                <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" 
+                                    class="h-full w-full object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                                <div class="absolute top-4 left-4">
+                                    <span class="bg-white/80 backdrop-blur-sm shadow-sm border border-gray-100 text-[10px] font-bold px-3 py-1 rounded-full text-blue-600 uppercase">
+                                        {{ product.category?.category_name || 'Electronics' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-[#0a2540] mb-2 line-clamp-2 min-h-[3rem] group-hover:text-blue-600 transition-colors">{{ product.product_name }}</h4>
+                            <div class="flex items-center justify-between mb-8">
+                                <p class="text-2xl font-extrabold text-[#0a2540]">{{ CurrencyUtil.formatCurrency(product.product_price) }}</p>
+                                <div class="flex items-center gap-1">
+                                    <i class="pi pi-star-fill text-yellow-400 text-xs"></i>
+                                    <span class="text-xs font-bold text-gray-400">4.9</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto grid grid-cols-4 gap-2">
+                                <button @click="addToCart(product.product_id)" 
+                                    class="col-span-3 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold active:scale-95 transition-all hover:bg-black">
+                                    Add to Cart
+                                </button>
+                                <button @click="goToProductDetails(product.product_id)" 
+                                    class="bg-gray-100 text-gray-400 py-3 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-all">
+                                    <i class="pi pi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+        </section>
+
+            <!-- Premium Features List -->
+            <section class="py-24 relative">
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-24"></div>
+                
+                <div class="grid lg:grid-cols-2 gap-24 items-center mb-24">
+                    <div>
+                        <span class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-6 block">Our Commitment</span>
+                        <h2 class="text-4xl lg:text-5xl font-bold text-[#0a2540] leading-tight mb-8">Engineering trust in every transaction.</h2>
+                        <p class="text-lg text-gray-600 mb-10 leading-relaxed">We don't just sell computers; we provide the foundation for your digital growth. Every product is selected for performance and reliability.</p>
+                        <div class="space-y-6">
+                            <div v-for="(feat, i) in [
+                                { t: 'Authenticity First', d: 'We source directly from manufacturers to guarantee genuine hardware.' },
+                                { t: 'Global Standards', d: 'All devices meet international quality and safety certifications.' },
+                                { t: 'Customer Centric', d: 'Flexible return policies and dedicated technical support teams.' }
+                            ]" :key="i" class="flex gap-4">
+                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i class="pi pi-check text-[10px] text-blue-600 font-bold"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-[#0a2540]">{{ feat.t }}</h4>
+                                    <p class="text-gray-500 text-sm">{{ feat.d }}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex justify-center p-2 text-sm text-gray-600">
-                            <span>Are you an administrator? </span>
-                            <RouterLink 
-                                :to="{ name: 'admin.login' }"
-                                class="ml-1 text-green-600 hover:underline cursor-pointer"
-                            >
-                                Login
-                            </RouterLink>
+                    </div>
+                    
+                    <!-- Visual Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-600 rounded-[32px] p-8 aspect-square flex flex-col justify-end text-white relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-8 transform group-hover:rotate-12 transition-transform">
+                                <i class="pi pi-shield text-6xl opacity-20"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">Secure</h3>
+                            <p class="text-blue-100 text-sm">Enterprise security</p>
+                        </div>
+                        <div class="bg-gray-100 rounded-[32px] p-8 aspect-square flex flex-col justify-end text-[#0a2540] mt-12">
+                            <h3 class="text-2xl font-bold mb-2">Fast</h3>
+                            <p class="text-gray-500 text-sm">Optimized delivery</p>
+                        </div>
+                        <div class="bg-[#f6f9fc] rounded-[32px] p-8 aspect-square flex flex-col justify-end text-[#0a2540] -mt-12">
+                            <h3 class="text-2xl font-bold mb-2">Global</h3>
+                            <p class="text-gray-500 text-sm">Major brands</p>
+                        </div>
+                        <div class="bg-black rounded-[32px] p-8 aspect-square flex flex-col justify-end text-white">
+                            <h3 class="text-2xl font-bold mb-2">Support</h3>
+                            <p class="text-gray-400 text-sm">24/7 Assistance</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Global Call to Action (Mesh Redesign) -->
+        <section class="stripe-mesh-dark py-32 relative overflow-hidden">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-4xl lg:text-7xl font-bold text-white mb-8 tracking-tight">Ready to build your <br/><span class="stripe-text-gradient">future setup?</span></h2>
+                    <p class="text-xl text-indigo-100/70 mb-12 leading-relaxed">Join over 10,000 satisfied professionals who trust us with their high-performance computing needs. Start your journey today.</p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <button @click="goToBrowseProducts" class="stripe-btn stripe-btn-white text-lg py-5 px-12 w-full sm:w-auto">
+                            Explore Catalog
+                        </button>
+                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="stripe-btn bg-white/10 text-white border border-white/20 text-lg py-5 px-12 w-full sm:w-auto hover:bg-white/20">
+                            Speak to Expert
+                        </a>
+                    </div>
+                    
+                    <div class="mt-20 grid grid-cols-3 gap-8 border-t border-white/10 pt-12 max-w-2xl mx-auto">
+                        <div v-for="stat in [{v:'1k+', l:'Happy Users'}, {v:'500+', l:'Products'}, {v:'24h', l:'Response'}]" :key="stat.l">
+                            <p class="text-3xl font-bold text-white mb-1">{{ stat.v }}</p>
+                            <p class="text-indigo-200/50 text-sm uppercase tracking-widest font-bold">{{ stat.l }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Subscription & Footer -->
+        <footer class="bg-white pt-32 pb-12 border-t border-gray-100">
+            <div class="container mx-auto px-6">
+                <!-- Newsletter -->
+                <div class="stripe-card p-8 lg:p-12 bg-[#0a2540] rounded-[32px] mb-24 flex flex-col lg:flex-row items-center justify-between gap-12">
+                    <div class="max-w-md">
+                        <h3 class="text-3xl font-bold text-white mb-4">Stay ahead of the curve.</h3>
+                        <p class="text-blue-200/60 leading-relaxed">Sign up for our newsletter to receive exclusive tech reviews, pre-order alerts, and special price drops.</p>
+                    </div>
+                    <form @submit.prevent class="relative w-full lg:max-w-md bg-white/5 p-2 rounded-2xl flex border border-white/10">
+                        <input type="email" placeholder="email@address.com" class="bg-transparent text-white px-4 py-3 flex-1 outline-none" />
+                        <button class="bg-white text-[#0a2540] px-8 py-3 rounded-xl font-bold hover:bg-blue-300 transition-colors">
+                            Join Now
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Main Footer Links -->
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-12 mb-20">
+                    <div class="col-span-2">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                                <img :src="Icon" class="w-6 h-6" alt="Logo" />
+                            </div>
+                            <h1 class="font-bold text-2xl text-[#0a2540]">{{ appName }}</h1>
+                        </div>
+                        <p class="text-gray-500 max-w-sm mb-8 leading-relaxed">Premium technology solutions for modern professionals. We deliver excellence in every hardware component.</p>
+                        <div class="flex gap-4">
+                            <a v-for="s in ['facebook', 'twitter', 'instagram']" :key="s" href="#" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-100 transition-all">
+                                <i :class="`pi pi-${s}`"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-[#0a2540] mb-8">Ecosystem</h4>
+                        <ul class="space-y-4 text-gray-500 text-sm font-medium">
+                            <li v-for="l in ['Computers', 'Laptops', 'Smartphones', 'Graphic Cards']" :key="l">
+                                <a href="#" class="hover:text-blue-600 transition-colors">{{ l }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-[#0a2540] mb-8">Community</h4>
+                        <ul class="space-y-4 text-gray-500 text-sm font-medium">
+                            <li v-for="l in ['About Us', 'Contact', 'Track Order']" :key="l">
+                                <button @click="l === 'Track Order' ? handleTrackOrder() : openFooterModal(l.toLowerCase().replace(' ', ''))" class="hover:text-blue-600 transition-colors">{{ l }}</button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-[#0a2540] mb-8">Legal</h4>
+                        <ul class="space-y-4 text-gray-500 text-sm font-medium">
+                            <li v-for="l in ['Privacy', 'Terms', 'Shipping', 'Returns']" :key="l">
+                                <button @click="openFooterModal(l.toLowerCase())" class="hover:text-blue-600 transition-colors">{{ l }} Policy</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p class="text-gray-400 text-sm">© {{ new Date().getFullYear() }} {{ appName }}. Powered by excellence.</p>
+                    <div class="flex items-center gap-6 text-gray-300">
+                        <i class="pi pi-credit-card text-lg"></i>
+                        <i class="pi pi-shield text-lg"></i>
+                        <i class="pi pi-lock text-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Auth and Informational Modals (Logic Retained) -->
+        <Dialog v-model:visible="loginFormVisible" modal header="Login" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-3xl! rounded-b-none!">
+            <LoginForm @success="loginFormVisible = false">
+                <template #footer>
+                    <div class="flex flex-col p-4 border-t border-gray-50 mt-4 rounded-b-3xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <Button type="button" variant="link" label="Forgot password?" class="p-0! text-gray-500! text-sm!" @click="openResetPasswordForm()" />
+                            <div class="text-right">
+                                <span class="text-xs text-gray-400 block">No account?</span>
+                                <Button type="button" variant="link" label="Register Now" class="p-0! text-sm! text-blue-600!" @click="openRegisterForm()" />
+                            </div>
+                        </div>
+                        <div class="text-center text-xs text-gray-400">
+                            Administrator? <RouterLink :to="{ name: 'admin.login' }" class="text-blue-600 hover:underline">Login here</RouterLink>
                         </div>
                     </div>
                 </template>
             </LoginForm>
         </Dialog>
 
-        <!-- Original Register Dialog - Unchanged -->
-        <Dialog
-            v-model:visible="registerFormVisible"
-            modal
-            header="Register"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
+        <Dialog v-model:visible="registerFormVisible" modal header="Register" :style="{ width: '32rem' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-3xl!">
             <RegisterForm>
                 <template #footer>
-                    <div class="flex justify-center p-2">
-                        <span>Already have an account?</span>
-                        &nbsp;
-                        <Button
-                            type="button"
-                            variant="link"
-                            label="Login"
-                            class="p-0!"
-                            pt:label:class="font-normal!"
-                            @click="openLoginForm()"
-                        />
+                    <div class="p-4 border-t border-gray-50 text-center">
+                        <span class="text-gray-400 text-sm">Already have an account?</span>
+                        <Button type="button" variant="link" label="Login" class="p-0! ml-2 font-bold!" @click="openLoginForm()" />
                     </div>
                 </template>
             </RegisterForm>
         </Dialog>
 
-        <!-- Reset Password Dialog - Step 1: Send Code -->
-        <Dialog
-            v-model:visible="resetPasswordFormVisible"
-            modal
-            header="Reset Account"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
+        <Dialog v-model:visible="resetPasswordFormVisible" modal header="Reset Password" :style="{ width: '28rem' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-3xl!">
             <ResetPasswordForm @code-sent="handleCodeSent" />
         </Dialog>
 
-        <!-- Reset Password Dialog - Step 2: Verify Code -->
-        <Dialog
-            v-model:visible="verifyCodeFormVisible"
-            modal
-            header="Verify Code"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <VerifyCodeForm 
-                :email="resetEmail"
-                :current-password="resetCurrentPassword"
-                :new-password="resetNewPassword"
-                :new-password-confirmation="resetNewPasswordConfirmation"
-                @success="handleResetSuccess" 
-            />
+        <Dialog v-model:visible="verifyCodeFormVisible" modal header="Verify Identity" :style="{ width: '28rem' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-3xl!">
+            <VerifyCodeForm :email="resetEmail" :current-password="resetCurrentPassword" :new-password="resetNewPassword" :new-password-confirmation="resetNewPasswordConfirmation" @success="handleResetSuccess" />
         </Dialog>
 
-        <!-- Footer -->
-        <footer class="mt-16 bg-gradient-to-r from-gray-800 to-gray-900 py-12 text-white">
-            <div class="container mx-auto px-4">
-                <div :class="[
-                    'grid gap-8',
-                    isMobile ? 'grid-cols-1' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                ]">
-                    <div>
-                        <h3 class="mb-4 text-lg font-bold">{{ appName }}</h3>
-                        <p class="text-sm text-gray-400">
-                            Your trusted destination for quality laptops, phones, and computers. We offer genuine products with warranty and excellent customer service.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Quick Links</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><button @click="openFooterModal('about')" class="hover:text-white transition-colors text-left">About Us</button></li>
-                            <li><button @click="openFooterModal('contact')" class="hover:text-white transition-colors text-left">Contact</button></li>
-                            <li><button @click="openFooterModal('faqs')" class="hover:text-white transition-colors text-left">FAQs</button></li>
-                            <li><button @click="openFooterModal('shipping')" class="hover:text-white transition-colors text-left">Shipping Info</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Customer Service</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><button @click="handleTrackOrder" class="hover:text-white transition-colors text-left">Track Order</button></li>
-                            <li><button @click="openFooterModal('returns')" class="hover:text-white transition-colors text-left">Returns & Warranty</button></li>
-                            <li><button @click="openFooterModal('privacy')" class="hover:text-white transition-colors text-left">Privacy Policy</button></li>
-                            <li><button @click="openFooterModal('terms')" class="hover:text-white transition-colors text-left">Terms & Conditions</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-semibold">Connect With Us</h4>
-                        <div class="flex gap-3">
-                            <a 
-                                href="https://www.facebook.com/alcesslaptopstore" 
-                                target="_blank"
-                                class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20"
-                                title="Visit our Facebook page"
-                            >
-                                <i class="pi pi-facebook" />
-                            </a>
+        <Dialog v-model:visible="footerModalVisible" modal :header="footerModalTitle" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-3xl!">
+            <div class="p-8">
+                <div v-if="footerModalType === 'about'" class="space-y-6">
+                    <p class="text-lg text-[#0a2540] font-bold leading-tight">Empowering your digital world since 2018.</p>
+                    <p class="text-gray-600 leading-relaxed">{{ appName }} started as a small boutique for high-end laptops. Today, we supply thousands of professionals with the tools they need to succeed. Our focus remains on quality over quantity.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-6 bg-blue-50 rounded-2xl">
+                            <p class="text-3xl font-bold text-blue-600 mb-1">100%</p>
+                            <p class="text-xs text-blue-400 font-bold uppercase tracking-wider">Original</p>
                         </div>
-                        <p class="mt-4 text-sm text-gray-400">
-                            <i class="pi pi-phone mr-2"></i>Contact us for inquiries
-                        </p>
-                        <p class="mt-2 text-sm text-gray-400">
-                            <i class="pi pi-envelope mr-2"></i>support@alcess.com
-                        </p>
+                        <div class="p-6 bg-green-50 rounded-2xl">
+                            <p class="text-3xl font-bold text-green-600 mb-1">Local</p>
+                            <p class="text-xs text-green-400 font-bold uppercase tracking-wider">Warranty</p>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm text-gray-400">
-                    <p>&copy; {{ new Date().getFullYear() }} {{ appName }}. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Footer Modal Dialogs -->
-        <Dialog
-            v-model:visible="footerModalVisible"
-            modal
-            :header="footerModalTitle"
-            :style="{ width: isMobile ? '95vw' : '50rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '95vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <!-- About Us Content -->
-            <div v-if="footerModalType === 'about'" class="space-y-4">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="rounded-full bg-blue-100 p-4">
-                        <i class="pi pi-building text-3xl text-blue-600"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-800">{{ appName }}</h3>
-                        <p class="text-gray-500">Your Trusted Tech Partner</p>
-                    </div>
-                </div>
-                <p class="text-gray-700 leading-relaxed">
-                    Welcome to {{ appName }}! We are a dedicated online retailer specializing in high-quality laptops, smartphones, desktop computers, and computer accessories. 
-                </p>
-                <p class="text-gray-700 leading-relaxed">
-                    Our mission is to provide our customers with the latest technology products at competitive prices, backed by excellent customer service and reliable after-sales support.
-                </p>
-                <div class="grid grid-cols-2 gap-4 mt-6">
-                    <div class="bg-blue-50 rounded-lg p-4 text-center">
-                        <i class="pi pi-check-circle text-2xl text-blue-600 mb-2"></i>
-                        <p class="font-semibold text-gray-800">100% Genuine</p>
-                        <p class="text-sm text-gray-600">Authentic products only</p>
-                    </div>
-                    <div class="bg-green-50 rounded-lg p-4 text-center">
-                        <i class="pi pi-shield text-2xl text-green-600 mb-2"></i>
-                        <p class="font-semibold text-gray-800">Warranty</p>
-                        <p class="text-sm text-gray-600">Full manufacturer warranty</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact Content -->
-            <div v-if="footerModalType === 'contact'" class="space-y-4">
-                <p class="text-gray-700 mb-6">Have questions or need assistance? We're here to help!</p>
-                <div class="space-y-4">
-                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="rounded-full bg-blue-100 p-3">
-                            <i class="pi pi-facebook text-xl text-blue-600"></i>
+                <div v-if="footerModalType === 'contact'" class="space-y-8">
+                    <div v-for="c in [{i:'pi-facebook', t:'Facebook', v:'alcesslaptopstore', l:'https://facebook.com/alcesslaptopstore'}, {i:'pi-envelope', t:'Email', v:'support@alcess.com', l:'mailto:support@alcess.com'}]" :key="c.t" class="flex items-center gap-6 p-6 bg-gray-50 rounded-2xl hover:bg-blue-50 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-600">
+                            <i :class="`pi ${c.i}`"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-800">Facebook</h4>
-                            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="text-blue-600 hover:underline">
-                                facebook.com/alcesslaptopstore
-                            </a>
-                            <p class="text-sm text-gray-500 mt-1">Message us for quick responses</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="rounded-full bg-green-100 p-3">
-                            <i class="pi pi-envelope text-xl text-green-600"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Email</h4>
-                            <p class="text-gray-600">support@alcess.com</p>
-                            <p class="text-sm text-gray-500 mt-1">We respond within 24 hours</p>
+                            <p class="text-xs text-gray-400 font-bold uppercase">{{ c.t }}</p>
+                            <a :href="c.l" target="_blank" class="text-lg font-bold text-[#0a2540] hover:text-blue-600">{{ c.v }}</a>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- FAQs Content -->
-            <div v-if="footerModalType === 'faqs'" class="space-y-4">
-                <div class="space-y-4">
-                    <div class="border-b border-gray-200 pb-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">How do I place an order?</h4>
-                        <p class="text-gray-600 text-sm">Browse our products, add items to your cart, and proceed to checkout. You'll need to create an account or log in to complete your purchase.</p>
-                    </div>
-                    <div class="border-b border-gray-200 pb-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">What payment methods do you accept?</h4>
-                        <p class="text-gray-600 text-sm">We accept bank transfers, GCash, and cash on delivery for select areas. Payment instructions will be provided after your order is confirmed.</p>
-                    </div>
-                    <div class="border-b border-gray-200 pb-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">Are your products genuine?</h4>
-                        <p class="text-gray-600 text-sm">Yes! All our products are 100% genuine and come with official manufacturer warranty. We source directly from authorized distributors.</p>
-                    </div>
-                    <div class="border-b border-gray-200 pb-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">How long does delivery take?</h4>
-                        <p class="text-gray-600 text-sm">Delivery typically takes 3-7 business days depending on your location. You'll receive tracking information once your order ships.</p>
-                    </div>
-                    <div class="pb-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">Can I cancel my order?</h4>
-                        <p class="text-gray-600 text-sm">Yes, you can cancel your order before payment is confirmed. Once payment is verified, cancellation may no longer be possible.</p>
+                <div v-if="footerModalType === 'faqs'" class="space-y-4">
+                    <div v-for="q in [{q:'Shipping?', a:'3-7 business days nationwide.'}, {q:'Original?', a:'Yes, all items are 100% genuine with seals.'}, {q:'Payment?', a:'Bank transfer, GCash, and COD available.'}]" :key="q.q" class="p-6 border border-gray-100 rounded-2xl">
+                        <p class="font-bold text-[#0a2540] mb-2">{{ q.q }}</p>
+                        <p class="text-gray-500">{{ q.a }}</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Shipping Info Content -->
-            <div v-if="footerModalType === 'shipping'" class="space-y-4">
-                <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <i class="pi pi-truck text-2xl text-blue-600"></i>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Nationwide Delivery</h4>
-                            <p class="text-sm text-gray-600">We deliver to all provinces in the Philippines</p>
-                        </div>
-                    </div>
+                <!-- Other content (Privacy, Terms, Shipping, Returns) displayed generically -->
+                <div v-if="['privacy', 'terms', 'shipping', 'returns'].includes(footerModalType)" class="prose prose-blue prose-sm max-w-none">
+                    <p class="text-gray-600 leading-relaxed">Please refer to our standard operational procedures for {{ footerModalType }}. We handle all processed data and returns with maximum transparency and focus on user satisfaction in accordance with local laws.</p>
                 </div>
-                <h4 class="font-semibold text-gray-800">Delivery Timeline</h4>
-                <ul class="list-disc list-inside text-gray-600 space-y-2 text-sm">
-                    <li>Metro Manila: 1-3 business days</li>
-                    <li>Luzon (outside Metro Manila): 3-5 business days</li>
-                    <li>Visayas: 5-7 business days</li>
-                    <li>Mindanao: 5-7 business days</li>
-                </ul>
-                <h4 class="font-semibold text-gray-800 mt-4">Shipping Fees</h4>
-                <p class="text-gray-600 text-sm">Shipping fees are calculated based on your location and will be shown during checkout after your order is confirmed by our team.</p>
             </div>
-
-            <!-- Returns & Warranty Content -->
-            <div v-if="footerModalType === 'returns'" class="space-y-4">
-                <div class="bg-green-50 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <i class="pi pi-shield text-2xl text-green-600"></i>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">Warranty Coverage</h4>
-                            <p class="text-sm text-gray-600">All products come with manufacturer warranty</p>
-                        </div>
-                    </div>
+            <template #footer>
+                <div class="p-4 flex justify-end">
+                    <Button label="Clear" class="bg-gray-100! text-gray-600! border-none! px-8!" @click="footerModalVisible = false" />
                 </div>
-                <h4 class="font-semibold text-gray-800">Return Policy</h4>
-                <ul class="list-disc list-inside text-gray-600 space-y-2 text-sm">
-                    <li>7-day replacement for defective products</li>
-                    <li>Products must be in original packaging</li>
-                    <li>Include all accessories and documentation</li>
-                    <li>Contact us first before returning any item</li>
-                </ul>
-                <h4 class="font-semibold text-gray-800 mt-4">Warranty Claims</h4>
-                <p class="text-gray-600 text-sm">For warranty claims, please contact us through Facebook or email with your order details and a description of the issue. We'll guide you through the process.</p>
-            </div>
-
-            <!-- Privacy Policy Content -->
-            <div v-if="footerModalType === 'privacy'" class="space-y-4 max-h-96 overflow-y-auto">
-                <p class="text-gray-600 text-sm">Last updated: January 2025</p>
-                <h4 class="font-semibold text-gray-800">Information We Collect</h4>
-                <p class="text-gray-600 text-sm">We collect information you provide when creating an account, placing orders, or contacting us. This includes your name, email, phone number, and shipping address.</p>
-                <h4 class="font-semibold text-gray-800">How We Use Your Information</h4>
-                <p class="text-gray-600 text-sm">Your information is used to process orders, provide customer support, and improve our services. We never sell your personal data to third parties.</p>
-                <h4 class="font-semibold text-gray-800">Data Security</h4>
-                <p class="text-gray-600 text-sm">We implement security measures to protect your personal information. Payment details are processed securely and we do not store credit card information.</p>
-            </div>
-
-            <!-- Terms & Conditions Content -->
-            <div v-if="footerModalType === 'terms'" class="space-y-4 max-h-96 overflow-y-auto">
-                <p class="text-gray-600 text-sm">Last updated: January 2025</p>
-                <h4 class="font-semibold text-gray-800">Order Acceptance</h4>
-                <p class="text-gray-600 text-sm">All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order for any reason.</p>
-                <h4 class="font-semibold text-gray-800">Pricing</h4>
-                <p class="text-gray-600 text-sm">Prices are subject to change without notice. The final price will be confirmed when your order is accepted.</p>
-                <h4 class="font-semibold text-gray-800">Product Descriptions</h4>
-                <p class="text-gray-600 text-sm">We strive to provide accurate product descriptions and images. However, actual products may vary slightly from images shown.</p>
-                <h4 class="font-semibold text-gray-800">Limitation of Liability</h4>
-                <p class="text-gray-600 text-sm">{{ appName }} is not liable for any indirect, incidental, or consequential damages arising from the use of our products or services.</p>
-            </div>
+            </template>
         </Dialog>
     </div>
 </template>
@@ -1422,13 +739,20 @@ const goToProductDetails = (productId: number) => {
     });
 };
 
+const isScrolled = ref(false);
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 50;
+};
+
 onMounted(() => {
     CategoryStore.fetchCategories();
     loadBestSellingProducts();
+    window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
     stopCarousel();
+    window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
