@@ -75,125 +75,153 @@
         </header>
 
 
-        <!-- Dynamic Hero Carousel Section -->
-        <div class="relative mb-16">
+        <!-- Enhanced Hero Section with Modern Design -->
+        <div class="relative mb-16 overflow-hidden">
+            <!-- Animated Background Gradient -->
             <div :class="[
-                'relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100',
-                isMobile ? 'h-[300px]' : isTablet ? 'h-[400px]' : 'h-[500px]'
+                'relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800',
+                isMobile ? 'min-h-[400px]' : isTablet ? 'min-h-[450px]' : 'min-h-[550px]'
             ]">
-                <!-- Carousel with Best Selling Products -->
-                <div v-if="showCarousel" class="relative h-full">
+                <!-- Decorative Floating Elements -->
+                <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div class="absolute top-10 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse-slow"></div>
+                    <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+                    <div class="absolute top-1/2 left-1/3 w-48 h-48 bg-indigo-400/10 rounded-full blur-2xl animate-float"></div>
+                </div>
+                
+                <!-- Main Hero Content -->
+                <div v-if="showCarousel" class="relative h-full z-10">
                     <TransitionGroup name="hero-slide">
                         <div
                             v-for="(product, index) in [products.slice(0, 3)[currentSlide]]"
                             :key="currentSlide"
                             class="absolute inset-0"
                         >
-                            <div class="grid h-full grid-cols-2">
-                                <!-- Left Side - Product Info -->
+                            <div class="container mx-auto px-4 h-full">
                                 <div :class="[
-                                    'flex items-center justify-center',
-                                    isMobile ? 'p-3' : isTablet ? 'p-4' : 'p-8 md:p-12'
+                                    'grid h-full items-center',
+                                    isMobile ? 'grid-cols-1 gap-4 py-8' : 'grid-cols-2 gap-8'
                                 ]">
+                                    <!-- Left Side - Product Info -->
                                     <div :class="[
-                                        isMobile ? 'max-w-xs' : isTablet ? 'max-w-sm' : 'max-w-xl'
+                                        'flex flex-col justify-center',
+                                        isMobile ? 'text-center order-2' : 'text-left'
                                     ]">
+                                        <!-- Badge -->
                                         <div :class="[
-                                            'font-semibold',
-                                            isMobile ? 'text-xs mb-2' : isTablet ? 'text-sm mb-3' : 'text-lg md:text-xl mb-6'
+                                            'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20',
+                                            isMobile ? 'px-3 py-1.5 mb-3 mx-auto' : isTablet ? 'px-4 py-2 mb-4' : 'px-5 py-2.5 mb-6 self-start'
                                         ]">
-                                            <span class="text-blue-600">Top Selling</span>
-                                            <span class="text-gray-900"> Product!</span>
+                                            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                            <span :class="[
+                                                'font-medium text-white/90',
+                                                isMobile ? 'text-xs' : 'text-sm'
+                                            ]">🔥 Best Seller</span>
                                         </div>
+                                        
+                                        <!-- Product Name -->
                                         <h1 :class="[
-                                            'font-bold text-gray-900',
-                                            isMobile ? 'text-base mb-1' : isTablet ? 'text-lg mb-2' : 'text-2xl md:text-3xl lg:text-4xl mb-4'
+                                            'font-bold text-white leading-tight',
+                                            isMobile ? 'text-2xl mb-2' : isTablet ? 'text-3xl mb-3' : 'text-4xl lg:text-5xl mb-4'
                                         ]">
                                             {{ product.product_name }}
                                         </h1>
+                                        
+                                        <!-- Category -->
                                         <p :class="[
-                                            'text-gray-600',
-                                            isMobile ? 'mb-2 text-xs' : isTablet ? 'mb-3 text-sm' : 'mb-6 text-lg'
+                                            'text-blue-200',
+                                            isMobile ? 'text-sm mb-3' : isTablet ? 'text-base mb-4' : 'text-lg mb-6'
                                         ]">
-                                            {{ product.category?.category_name || 'Featured Product' }}
+                                            {{ product.category?.category_name || 'Premium Electronics' }}
                                         </p>
-                                        <div :class="isMobile ? 'mb-2' : isTablet ? 'mb-3' : 'mb-6'">
-                                            <span :class="[
-                                                'font-bold text-gray-900',
-                                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-4xl'
-                                            ]">
-                                                {{ CurrencyUtil.formatCurrency(product.product_price) }}
-                                            </span>
-                                        </div>
-                                        <!-- Rating -->
+                                        
+                                        <!-- Price Card -->
                                         <div :class="[
-                                            'flex items-center gap-1',
-                                            isMobile ? 'mb-3' : isTablet ? 'mb-4' : 'mb-8'
+                                            'inline-flex items-center bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20',
+                                            isMobile ? 'px-4 py-3 mb-4 mx-auto' : isTablet ? 'px-5 py-4 mb-5' : 'px-6 py-4 mb-8 self-start'
                                         ]">
-                                            <i v-for="i in 4" :key="i" :class="[
-                                                'pi pi-star-fill text-yellow-400',
-                                                isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-2xl'
-                                            ]" />
-                                            <i :class="[
-                                                'pi pi-star text-gray-300',
-                                                isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-2xl'
-                                            ]" />
+                                            <div>
+                                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Starting at</p>
+                                                <span :class="[
+                                                    'font-bold text-white',
+                                                    isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
+                                                ]">
+                                                    {{ CurrencyUtil.formatCurrency(product.product_price) }}
+                                                </span>
+                                            </div>
+                                            <div class="ml-4 pl-4 border-l border-white/20">
+                                                <div class="flex items-center gap-1 mb-1">
+                                                    <i v-for="i in 5" :key="i" :class="[
+                                                        i <= 4 ? 'pi pi-star-fill text-yellow-400' : 'pi pi-star text-white/30',
+                                                        isMobile ? 'text-xs' : 'text-sm'
+                                                    ]"></i>
+                                                </div>
+                                                <p :class="['text-white/70', isMobile ? 'text-xs' : 'text-sm']">Top Rated</p>
+                                            </div>
                                         </div>
-                                        <!-- Action Buttons -->
+                                        
+                                        <!-- CTA Buttons -->
                                         <div :class="[
                                             'flex',
-                                            isMobile ? 'gap-2' : isTablet ? 'gap-3' : 'gap-4'
+                                            isMobile ? 'gap-3 justify-center' : 'gap-4'
                                         ]">
                                             <button 
                                                 @click="addToCart(product.product_id)"
                                                 :disabled="addToCartService.request.loading"
                                                 :class="[
-                                                    'cursor-pointer rounded-full bg-blue-600 font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50',
-                                                    isMobile ? 'px-3 py-1.5 text-xs' : isTablet ? 'px-4 py-2 text-sm' : 'px-8 py-3'
+                                                    'group relative overflow-hidden rounded-full bg-white font-semibold text-blue-700 transition-all duration-300 hover:shadow-2xl hover:shadow-white/25 disabled:opacity-50',
+                                                    isMobile ? 'px-5 py-2.5 text-sm' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
                                                 ]"
                                             >
-                                                <i v-if="addToCartService.request.loading" class="pi pi-spin pi-spinner mr-2" />
-                                                Add to Cart
+                                                <span class="relative z-10 flex items-center gap-2">
+                                                    <i v-if="addToCartService.request.loading" class="pi pi-spin pi-spinner"></i>
+                                                    <i v-else class="pi pi-shopping-cart"></i>
+                                                    Add to Cart
+                                                </span>
                                             </button>
                                             <button 
                                                 @click="goToProductDetails(product.product_id)"
                                                 :class="[
-                                                    'cursor-pointer rounded-full bg-white text-gray-700 transition-all hover:shadow-lg border border-gray-200',
-                                                    isMobile ? 'px-3 py-1.5 text-xs' : isTablet ? 'px-4 py-2 text-sm' : 'px-8 py-3'
+                                                    'rounded-full border-2 border-white/30 text-white font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/50',
+                                                    isMobile ? 'px-5 py-2.5 text-sm' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
                                                 ]"
                                             >
-                                                Details
+                                                View Details
                                             </button>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Right Side - Product Image -->
-                                <div :class="[
-                                    'flex items-center justify-center',
-                                    isMobile ? 'p-2' : isTablet ? 'p-3' : 'p-8'
-                                ]">
-                                    <div class="relative">
-                                        <img
-                                            v-if="product.product_image"
-                                            :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
-                                            :alt="product.product_name"
-                                            :class="[
-                                                'w-auto object-contain drop-shadow-2xl',
-                                                isMobile ? 'max-h-[150px]' : isTablet ? 'max-h-[250px]' : 'max-h-[400px]'
-                                            ]"
-                                            @error="handleImageError"
-                                        />
-                                        <div
-                                            :class="[
-                                                'fallback-image flex items-center justify-center rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300',
-                                                isMobile ? 'h-[150px] w-[150px]' : isTablet ? 'h-[250px] w-[250px]' : 'h-[400px] w-[400px]'
-                                            ]"
-                                            :style="{ display: product.product_image ? 'none' : 'flex' }"
-                                        >
-                                            <i :class="[
-                                                'pi pi-image text-gray-400',
-                                                isMobile ? 'text-3xl' : isTablet ? 'text-5xl' : 'text-8xl'
-                                            ]" />
+                                    
+                                    <!-- Right Side - Product Image -->
+                                    <div :class="[
+                                        'flex items-center justify-center relative',
+                                        isMobile ? 'order-1' : ''
+                                    ]">
+                                        <!-- Glow Effect -->
+                                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-3xl"></div>
+                                        
+                                        <div class="relative">
+                                            <img
+                                                v-if="product.product_image"
+                                                :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
+                                                :alt="product.product_name"
+                                                :class="[
+                                                    'w-auto object-contain drop-shadow-2xl transform transition-transform duration-500 hover:scale-105',
+                                                    isMobile ? 'max-h-[180px]' : isTablet ? 'max-h-[280px]' : 'max-h-[400px]'
+                                                ]"
+                                                @error="handleImageError"
+                                            />
+                                            <div
+                                                :class="[
+                                                    'fallback-image flex items-center justify-center rounded-3xl bg-white/10 backdrop-blur-sm',
+                                                    isMobile ? 'h-[180px] w-[180px]' : isTablet ? 'h-[280px] w-[280px]' : 'h-[400px] w-[400px]'
+                                                ]"
+                                                :style="{ display: product.product_image ? 'none' : 'flex' }"
+                                            >
+                                                <i :class="[
+                                                    'pi pi-image text-white/50',
+                                                    isMobile ? 'text-4xl' : isTablet ? 'text-6xl' : 'text-8xl'
+                                                ]"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -201,42 +229,133 @@
                         </div>
                     </TransitionGroup>
                     
-                    <!-- Carousel Indicators -->
-                    <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                    <!-- Modern Carousel Indicators -->
+                    <div :class="[
+                        'absolute left-1/2 -translate-x-1/2 flex gap-2',
+                        isMobile ? 'bottom-4' : 'bottom-8'
+                    ]">
                         <button
                             v-for="(product, index) in products.slice(0, 3)"
                             :key="index"
                             @click="currentSlide = index"
                             :class="[
-                                'h-2 rounded-full transition-all',
-                                currentSlide === index ? 'w-8 bg-blue-600' : 'w-2 bg-gray-400 hover:bg-gray-500'
+                                'transition-all duration-300 rounded-full',
+                                currentSlide === index 
+                                    ? 'w-10 h-2 bg-white' 
+                                    : 'w-2 h-2 bg-white/40 hover:bg-white/60'
                             ]"
-                        />
+                        ></button>
                     </div>
                 </div>
 
                 <!-- Fallback Static Hero -->
-                <div v-else class="relative h-full">
-                    <img :src="HeroBg" class="h-full w-full object-cover" />
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+                <div v-else class="relative h-full min-h-[inherit] z-10">
                     <div class="absolute inset-0 flex items-center">
                         <div class="container mx-auto px-6">
-                            <div class="max-w-2xl text-white">
-                                <h1 class="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl animate-fade-in">
-                                    Welcome to {{ appName }}
+                            <div :class="[
+                                'text-white',
+                                isMobile ? 'text-center max-w-full' : 'max-w-2xl'
+                            ]">
+                                <div :class="[
+                                    'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6',
+                                    isMobile ? 'px-3 py-1.5' : 'px-4 py-2'
+                                ]">
+                                    <i class="pi pi-sparkles text-yellow-400"></i>
+                                    <span :class="['font-medium', isMobile ? 'text-xs' : 'text-sm']">Premium Tech Store</span>
+                                </div>
+                                <h1 :class="[
+                                    'font-bold leading-tight mb-4 animate-fade-in',
+                                    isMobile ? 'text-3xl' : isTablet ? 'text-4xl' : 'text-5xl lg:text-6xl'
+                                ]">
+                                    Welcome to <span class="text-blue-300">{{ appName }}</span>
                                 </h1>
-                                <p class="mb-6 text-lg md:text-xl text-gray-200">
-                                    Discover amazing products at unbeatable prices
+                                <p :class="[
+                                    'text-blue-100 mb-8',
+                                    isMobile ? 'text-base' : 'text-lg md:text-xl'
+                                ]">
+                                    Discover premium laptops, phones & computers at unbeatable prices with genuine warranty.
                                 </p>
-                                <button class="rounded-full bg-white px-8 py-3 font-semibold text-sky-800 transition-all hover:bg-sky-50 hover:shadow-xl">
-                                    Shop Now
+                                <button 
+                                    @click="goToBrowseProducts"
+                                    :class="[
+                                        'group inline-flex items-center gap-3 bg-white text-blue-700 font-semibold rounded-full transition-all hover:shadow-2xl hover:shadow-white/20',
+                                        isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
+                                    ]"
+                                >
+                                    <span>Shop Now</span>
+                                    <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Wave Divider -->
+            <div class="absolute bottom-0 left-0 right-0">
+                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                    <path d="M0 120L60 110C120 100 240 80 360 75C480 70 600 80 720 85C840 90 960 90 1080 85C1200 80 1320 70 1380 65L1440 60V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f9fafb"/>
+                </svg>
+            </div>
         </div>
+
+        <!-- Trust Indicators Section -->
+        <div class="container mx-auto px-4 -mt-8 mb-12 relative z-10">
+            <div :class="[
+                'grid bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100',
+                isMobile ? 'grid-cols-2 gap-4 p-4' : isTablet ? 'grid-cols-4 gap-4 p-5' : 'grid-cols-4 gap-6 p-6'
+            ]">
+                <div class="flex items-center gap-3 group">
+                    <div :class="[
+                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-green-50 to-green-100 transition-transform group-hover:scale-110',
+                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
+                    ]">
+                        <i :class="['pi pi-verified text-green-600', isMobile ? 'text-lg' : 'text-xl']"></i>
+                    </div>
+                    <div>
+                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">100% Genuine</p>
+                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Authentic Products</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 group">
+                    <div :class="[
+                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 transition-transform group-hover:scale-110',
+                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
+                    ]">
+                        <i :class="['pi pi-truck text-blue-600', isMobile ? 'text-lg' : 'text-xl']"></i>
+                    </div>
+                    <div>
+                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">Fast Delivery</p>
+                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Nationwide Shipping</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 group">
+                    <div :class="[
+                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 transition-transform group-hover:scale-110',
+                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
+                    ]">
+                        <i :class="['pi pi-shield text-purple-600', isMobile ? 'text-lg' : 'text-xl']"></i>
+                    </div>
+                    <div>
+                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">Warranty</p>
+                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">Official Coverage</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 group">
+                    <div :class="[
+                        'flex-shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 transition-transform group-hover:scale-110',
+                        isMobile ? 'w-10 h-10' : 'w-12 h-12'
+                    ]">
+                        <i :class="['pi pi-headphones text-orange-600', isMobile ? 'text-lg' : 'text-xl']"></i>
+                    </div>
+                    <div>
+                        <p :class="['font-semibold text-gray-800', isMobile ? 'text-xs' : 'text-sm']">24/7 Support</p>
+                        <p :class="['text-gray-500', isMobile ? 'text-xs' : 'text-xs']">We're Here to Help</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="container mx-auto px-4">
             <!-- Interactive Categories/Products Section -->
@@ -492,119 +611,240 @@
                 </Transition>
             </section>
 
-            <!-- Features Section -->
-            <section class="mb-12">
+            <!-- Enhanced Features Section -->
+            <section :class="['relative', isMobile ? 'mb-12' : isTablet ? 'mb-16' : 'mb-20']">
+                <!-- Section Header -->
+                <div :class="['text-center', isMobile ? 'mb-8' : 'mb-12']">
+                    <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
+                        Why Choose Us
+                    </span>
+                    <h2 :class="[
+                        'font-bold text-gray-800',
+                        isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
+                    ]">
+                        Shop with <span class="text-blue-600">Confidence</span>
+                    </h2>
+                </div>
+
                 <div :class="[
                     'grid gap-6',
-                    isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                    isMobile ? 'grid-cols-1' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
                 ]">
+                    <!-- Feature Card 1 -->
                     <div :class="[
-                        'rounded-2xl bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl',
-                        isMobile ? 'p-4' : isTablet ? 'p-5' : 'p-6'
+                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
+                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
                     ]">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
-                            'mb-3 flex items-center justify-center rounded-full bg-green-100',
-                            isMobile ? 'h-8 w-8' : isTablet ? 'h-10 w-10' : 'h-12 w-12'
+                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-green-100 to-green-50',
+                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-check-circle text-green-600',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
-                            ]" />
+                                isMobile ? 'text-2xl' : 'text-3xl'
+                            ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-semibold text-gray-800',
-                            isMobile ? 'text-sm' : isTablet ? 'text-base' : 'text-base'
+                            'mb-2 font-bold text-gray-800',
+                            isMobile ? 'text-base' : 'text-lg'
                         ]">
                             Quality Guarantee
                         </h3>
                         <p :class="[
-                            'text-gray-600',
-                            isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+                            'text-gray-500 leading-relaxed',
+                            isMobile ? 'text-sm' : 'text-sm'
                         ]">
-                            All products are carefully selected and verified
+                            All products are 100% genuine and carefully verified before shipping
                         </p>
                     </div>
+                    
+                    <!-- Feature Card 2 -->
                     <div :class="[
-                        'rounded-2xl bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl',
-                        isMobile ? 'p-4' : isTablet ? 'p-5' : 'p-6'
+                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
+                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
                     ]">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
-                            'mb-3 flex items-center justify-center rounded-full bg-blue-100',
-                            isMobile ? 'h-8 w-8' : isTablet ? 'h-10 w-10' : 'h-12 w-12'
+                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50',
+                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-truck text-blue-600',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
-                            ]" />
+                                isMobile ? 'text-2xl' : 'text-3xl'
+                            ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-semibold text-gray-800',
-                            isMobile ? 'text-sm' : isTablet ? 'text-base' : 'text-base'
+                            'mb-2 font-bold text-gray-800',
+                            isMobile ? 'text-base' : 'text-lg'
                         ]">
                             Fast Delivery
                         </h3>
                         <p :class="[
-                            'text-gray-600',
-                            isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+                            'text-gray-500 leading-relaxed',
+                            isMobile ? 'text-sm' : 'text-sm'
                         ]">
-                            Get your orders delivered quickly and safely
+                            Nationwide shipping with tracking. Get your orders delivered quickly
                         </p>
                     </div>
+                    
+                    <!-- Feature Card 3 -->
                     <div :class="[
-                        'rounded-2xl bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl',
-                        isMobile ? 'p-4' : isTablet ? 'p-5' : 'p-6'
+                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
+                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
                     ]">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
-                            'mb-3 flex items-center justify-center rounded-full bg-purple-100',
-                            isMobile ? 'h-8 w-8' : isTablet ? 'h-10 w-10' : 'h-12 w-12'
+                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50',
+                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-shield text-purple-600',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
-                            ]" />
+                                isMobile ? 'text-2xl' : 'text-3xl'
+                            ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-semibold text-gray-800',
-                            isMobile ? 'text-sm' : isTablet ? 'text-base' : 'text-base'
+                            'mb-2 font-bold text-gray-800',
+                            isMobile ? 'text-base' : 'text-lg'
                         ]">
                             Secure Payment
                         </h3>
                         <p :class="[
-                            'text-gray-600',
-                            isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+                            'text-gray-500 leading-relaxed',
+                            isMobile ? 'text-sm' : 'text-sm'
                         ]">
-                            Your payment information is always protected
+                            Multiple secure payment options. Your information is always protected
                         </p>
                     </div>
+                    
+                    <!-- Feature Card 4 -->
                     <div :class="[
-                        'rounded-2xl bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl',
-                        isMobile ? 'p-4' : isTablet ? 'p-5' : 'p-6'
+                        'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
+                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
                     ]">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
-                            'mb-3 flex items-center justify-center rounded-full bg-orange-100',
-                            isMobile ? 'h-8 w-8' : isTablet ? 'h-10 w-10' : 'h-12 w-12'
+                            'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50',
+                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-sync text-orange-600',
-                                isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'
-                            ]" />
+                                isMobile ? 'text-2xl' : 'text-3xl'
+                            ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-semibold text-gray-800',
-                            isMobile ? 'text-sm' : isTablet ? 'text-base' : 'text-base'
+                            'mb-2 font-bold text-gray-800',
+                            isMobile ? 'text-base' : 'text-lg'
                         ]">
                             Easy Returns
                         </h3>
                         <p :class="[
-                            'text-gray-600',
-                            isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+                            'text-gray-500 leading-relaxed',
+                            isMobile ? 'text-sm' : 'text-sm'
                         ]">
-                            30-day return policy for your peace of mind
+                            7-day replacement policy for defective items. Shop worry-free
                         </p>
                     </div>
                 </div>
             </section>
         </div>
+
+        <!-- Call to Action Section -->
+        <section class="relative overflow-hidden mb-16">
+            <div :class="[
+                'bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800',
+                isMobile ? 'py-12 px-4' : isTablet ? 'py-16 px-6' : 'py-20 px-8'
+            ]">
+                <!-- Decorative Elements -->
+                <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div class="absolute -top-24 -left-24 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/10 rounded-full"></div>
+                </div>
+
+                <div class="container mx-auto relative z-10">
+                    <div :class="[
+                        'flex flex-col items-center text-center',
+                        isMobile ? 'gap-6' : 'gap-8'
+                    ]">
+                        <!-- Badge -->
+                        <div :class="[
+                            'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20',
+                            isMobile ? 'px-3 py-1.5' : 'px-4 py-2'
+                        ]">
+                            <i class="pi pi-star-fill text-yellow-400"></i>
+                            <span class="text-white/90 font-medium text-sm">Special Offers Available</span>
+                        </div>
+
+                        <!-- Heading -->
+                        <div>
+                            <h2 :class="[
+                                'font-bold text-white mb-4',
+                                isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl lg:text-5xl'
+                            ]">
+                                Ready to Upgrade Your Tech?
+                            </h2>
+                            <p :class="[
+                                'text-blue-100 max-w-2xl mx-auto',
+                                isMobile ? 'text-base' : 'text-lg'
+                            ]">
+                                Explore our wide selection of laptops, phones, and computers. Find the perfect device for your needs at competitive prices.
+                            </p>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div :class="[
+                            'flex flex-wrap justify-center',
+                            isMobile ? 'gap-3' : 'gap-4'
+                        ]">
+                            <button 
+                                @click="goToBrowseProducts"
+                                :class="[
+                                    'group inline-flex items-center gap-2 bg-white text-blue-700 font-semibold rounded-full transition-all duration-300 hover:shadow-2xl hover:shadow-white/20',
+                                    isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
+                                ]"
+                            >
+                                <i class="pi pi-th-large"></i>
+                                Browse Products
+                                <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
+                            </button>
+                            <a 
+                                href="https://www.facebook.com/alcesslaptopstore"
+                                target="_blank"
+                                :class="[
+                                    'inline-flex items-center gap-2 border-2 border-white/30 text-white font-semibold rounded-full transition-all duration-300 hover:bg-white/10 hover:border-white/50',
+                                    isMobile ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
+                                ]"
+                            >
+                                <i class="pi pi-facebook"></i>
+                                Message Us
+                            </a>
+                        </div>
+
+                        <!-- Stats -->
+                        <div :class="[
+                            'grid bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20',
+                            isMobile ? 'grid-cols-3 gap-4 px-4 py-5 mt-4' : 'grid-cols-3 gap-8 px-8 py-6 mt-6'
+                        ]">
+                            <div class="text-center">
+                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">500+</p>
+                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Products</p>
+                            </div>
+                            <div class="text-center border-l border-r border-white/20">
+                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">1K+</p>
+                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Happy Customers</p>
+                            </div>
+                            <div class="text-center">
+                                <p :class="['font-bold text-white', isMobile ? 'text-2xl' : 'text-3xl']">4.8</p>
+                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Star Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
         <!-- Original Login Dialog - Unchanged -->
         <Dialog
