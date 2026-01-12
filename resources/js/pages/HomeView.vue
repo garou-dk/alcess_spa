@@ -1,51 +1,64 @@
 <template>
     <div class="min-h-screen bg-gray-50">
-        <!-- Improved Responsive Header -->
+        <!-- Unified Responsive Header - Uses CSS for responsiveness to prevent layout jumps -->
         <header class="bg-blue-600 sticky top-0 z-50 shadow-md">
-            <!-- Mobile Header (< 768px) -->
-            <nav v-if="isMobile">
-                <!-- Top row: Logo and Menu Toggle -->
-                <div class="flex items-center justify-between p-3">
-                    <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2">
-                        <div class="rounded-full bg-white p-1">
-                            <img :src="Icon" class="h-10 w-10" alt="Store Icon" />
+            <nav class="header-nav">
+                <div class="header-container">
+                    <!-- Left: Logo Section -->
+                    <RouterLink :to="{ name: 'home' }" class="header-logo-link">
+                        <div class="header-logo-wrapper">
+                            <img :src="Icon" class="header-logo-img" alt="Store Icon" />
                         </div>
-                        <h1 class="text-lg font-bold text-white">{{ appName }}</h1>
+                        <h1 class="header-title">{{ appName }}</h1>
                     </RouterLink>
                     
-                    <!-- Mobile action buttons -->
-                    <div class="flex items-center gap-2">
-                        <Button
-                            icon="pi pi-facebook"
-                            rounded
-                            as="a"
+                    <!-- Center: Search Bar (desktop/tablet only when on product page) -->
+                    <div v-if="isProductPage" class="header-search-container">
+                        <form @submit.prevent="handleSearch" class="w-full">
+                            <div class="relative">
+                                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <input
+                                    v-model="form.search"
+                                    type="text"
+                                    placeholder="Search for products..."
+                                    class="header-search-input"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Right: Action buttons (consistent sizing) -->
+                    <div class="header-actions">
+                        <a
                             href="https://www.facebook.com/alcesslaptopstore"
                             target="_blank"
-                            class="!bg-white !text-blue-600"
-                            size="small"
-                        />
-                        <Button
-                            icon="pi pi-th-large"
-                            rounded
-                            severity="secondary"
-                            size="small"
+                            class="header-action-btn header-action-btn-facebook"
+                            title="Visit our Facebook page"
+                        >
+                            <i class="pi pi-facebook"></i>
+                        </a>
+                        <button
+                            type="button"
+                            class="header-action-btn header-action-btn-secondary"
                             @click="goToBrowseProducts"
-                            v-tooltip.bottom="'Browse Products'"
-                        />
-                        <Button
+                            title="Browse All Products"
+                        >
+                            <i class="pi pi-th-large"></i>
+                        </button>
+                        <button
                             v-if="!Page.user"
-                            icon="pi pi-user"
-                            rounded
-                            severity="secondary"
-                            size="small"
+                            type="button"
+                            class="header-action-btn header-action-btn-secondary"
                             @click="openLoginForm()"
-                            v-tooltip.bottom="'Login'"
-                        />
+                            title="Login"
+                        >
+                            <i class="pi pi-user"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Bottom row: Search bar (only on product pages) -->
-                <div v-if="isProductPage" class="px-3 pb-3">
+                <!-- Mobile Search Bar (shown below main header on mobile when on product page) -->
+                <div v-if="isProductPage" class="header-mobile-search">
                     <form @submit.prevent="handleSearch">
                         <div class="relative">
                             <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -53,200 +66,14 @@
                                 v-model="form.search"
                                 type="text"
                                 placeholder="Search products..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all text-sm"
+                                class="header-search-input"
                             />
                         </div>
                     </form>
                 </div>
             </nav>
-
-            <!-- Tablet Header (768px - 1023px) -->
-            <nav v-if="isTablet">
-                <div class="flex items-center justify-between p-3">
-                    <!-- Left: Logo -->
-                    <RouterLink :to="{ name: 'home' }" class="flex items-center gap-3">
-                        <div class="rounded-full bg-white p-1">
-                            <img :src="Icon" class="h-12 w-12" alt="Store Icon" />
-                        </div>
-                        <h1 class="text-xl font-bold text-white">{{ appName }}</h1>
-                    </RouterLink>
-                    
-                    <!-- Center: Search (only on product pages) -->
-                    <div v-if="isProductPage" class="flex-1 max-w-md mx-6">
-                        <form @submit.prevent="handleSearch">
-                            <div class="relative">
-                                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                <input
-                                    v-model="form.search"
-                                    type="text"
-                                    placeholder="Search for products..."
-                                    class="w-full pl-10 pr-4 py-2 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
-                                />
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <!-- Right: Action buttons -->
-                    <div class="flex items-center gap-3">
-                        <Button
-                            icon="pi pi-facebook"
-                            rounded
-                            as="a"
-                            href="https://www.facebook.com/alcesslaptopstore"
-                            target="_blank"
-                            class="!bg-white !text-blue-600"
-                            v-tooltip.bottom="'Facebook'"
-                        />
-                        <Button
-                            icon="pi pi-th-large"
-                            rounded
-                            severity="secondary"
-                            @click="goToBrowseProducts"
-                            v-tooltip.bottom="'Browse Products'"
-                        />
-                        <Button
-                            v-if="!Page.user"
-                            icon="pi pi-user"
-                            rounded
-                            severity="secondary"
-                            @click="openLoginForm()"
-                            v-tooltip.bottom="'Login'"
-                        />
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Desktop Header (≥ 1024px) - Original Layout -->
-            <nav v-if="isDesktop" class="p-2">
-            <div class="flex items-center justify-between w-full">
-                    <div class="flex items-center gap-2">
-                        <RouterLink :to="{ name: 'home' }">
-                            <div class="flex">
-                                <div class="px-2">
-                                    <div class="rounded-full bg-white">
-                                        <img
-                                            :src="Icon"
-                                            class="h-16 w-16"
-                                            alt="Store Icon"
-                                        />
-                                    </div>
-                                </div>
-                                <div class="flex items-center px-2">
-                                    <h1 class="text-3xl font-bold text-white">
-                                        {{ appName }}
-                                    </h1>
-                                </div>
-                            </div>
-                        </RouterLink>
-                    </div>
-                    
-                    <div class="flex items-center w-full flex-1 justify-end">
-                        <div class="flex items-center w-full">
-                            <!-- Search Bar - Only show on product pages and hide on small screens -->
-                            <div v-if="isProductPage && !isMobile" class="flex-1 max-w-4xl mx-auto">
-                                <form @submit.prevent="handleSearch" class="w-full">
-                                    <div class="relative">
-                                        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            v-model="form.search"
-                                            type="text"
-                                            placeholder="Search for products..."
-                                            class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
-                                        />
-                                    </div>
-                                </form>
-                            </div>
-                            
-                            <!-- Right side icons - Responsive layout -->
-                            <div class="flex items-center" :class="isProductPage && !isMobile ? 'ml-6' : 'ml-auto'">
-                                <!-- Desktop layout -->
-                                <div v-if="!isMobile" class="flex gap-4 items-center">
-                                    <!-- Facebook Icon -->
-                                    <Button
-                                        icon="pi pi-facebook"
-                                        rounded
-                                        as="a"
-                                        href="https://www.facebook.com/alcesslaptopstore"
-                                        target="_blank"
-                                        class="!bg-white !text-blue-600"
-                                        v-tooltip.bottom="'Visit our Facebook page'"
-                                    />
-                                    <!-- Browse All Products -->
-                                    <Button
-                                        icon="pi pi-th-large"
-                                        rounded
-                                        severity="secondary"
-                                        @click="goToBrowseProducts"
-                                        v-tooltip.bottom="'Browse All Products'"
-                                    />
-                                    <!-- Login Button -->
-                                    <div v-if="!Page.user">
-                                        <Button
-                                            type="button"
-                                            icon="pi pi-user"
-                                            severity="secondary"
-                                            rounded
-                                            @click="openLoginForm()"
-                                            v-tooltip.bottom="'Login'"
-                                        />
-                                    </div>
-                                </div>
-
-                                <!-- Mobile/Tablet layout -->
-                                <div v-if="isMobile" class="flex gap-2 items-center">
-                                    <!-- Facebook Icon -->
-                                    <Button
-                                        icon="pi pi-facebook"
-                                        rounded
-                                        size="small"
-                                        as="a"
-                                        href="https://www.facebook.com/alcesslaptopstore"
-                                        target="_blank"
-                                        class="!bg-white !text-blue-600 !w-10 !h-10"
-                                    />
-                                    <!-- Browse All Products -->
-                                    <Button
-                                        icon="pi pi-th-large"
-                                        rounded
-                                        size="small"
-                                        severity="secondary"
-                                        @click="goToBrowseProducts"
-                                        class="!w-10 !h-10"
-                                    />
-                                    <!-- Login Button -->
-                                    <div v-if="!Page.user">
-                                        <Button
-                                            type="button"
-                                            icon="pi pi-user"
-                                            severity="secondary"
-                                            rounded
-                                            size="small"
-                                            @click="openLoginForm()"
-                                            class="!w-10 !h-10"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Mobile Search Bar - Show below header on small screens when on product pages -->
-                        <div v-if="isProductPage && isMobile" class="w-full mt-3">
-                            <form @submit.prevent="handleSearch">
-                                <div class="relative">
-                                    <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                                    <input
-                                        v-model="form.search"
-                                        type="text"
-                                        placeholder="Search for products..."
-                                        class="w-full pl-11 pr-4 py-2.5 rounded-lg border-2 border-white bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/50 transition-all"
-                                    />
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-            </div>
-            </nav>
         </header>
+
 
         <!-- Dynamic Hero Carousel Section -->
         <div class="relative mb-16">
@@ -901,47 +728,217 @@
                     <div>
                         <h3 class="mb-4 text-lg font-bold">{{ appName }}</h3>
                         <p class="text-sm text-gray-400">
-                            Your trusted online marketplace for quality products at great prices.
+                            Your trusted destination for quality laptops, phones, and computers. We offer genuine products with warranty and excellent customer service.
                         </p>
                     </div>
                     <div>
                         <h4 class="mb-4 font-semibold">Quick Links</h4>
                         <ul class="space-y-2 text-sm text-gray-400">
-                            <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">FAQs</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
+                            <li><button @click="openFooterModal('about')" class="hover:text-white transition-colors text-left">About Us</button></li>
+                            <li><button @click="openFooterModal('contact')" class="hover:text-white transition-colors text-left">Contact</button></li>
+                            <li><button @click="openFooterModal('faqs')" class="hover:text-white transition-colors text-left">FAQs</button></li>
+                            <li><button @click="openFooterModal('shipping')" class="hover:text-white transition-colors text-left">Shipping Info</button></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="mb-4 font-semibold">Customer Service</h4>
                         <ul class="space-y-2 text-sm text-gray-400">
-                            <li><a href="#" class="hover:text-white transition-colors">Track Order</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Terms & Conditions</a></li>
+                            <li><button @click="handleTrackOrder" class="hover:text-white transition-colors text-left">Track Order</button></li>
+                            <li><button @click="openFooterModal('returns')" class="hover:text-white transition-colors text-left">Returns & Warranty</button></li>
+                            <li><button @click="openFooterModal('privacy')" class="hover:text-white transition-colors text-left">Privacy Policy</button></li>
+                            <li><button @click="openFooterModal('terms')" class="hover:text-white transition-colors text-left">Terms & Conditions</button></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="mb-4 font-semibold">Connect With Us</h4>
                         <div class="flex gap-3">
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
+                            <a 
+                                href="https://www.facebook.com/alcesslaptopstore" 
+                                target="_blank"
+                                class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20"
+                                title="Visit our Facebook page"
+                            >
                                 <i class="pi pi-facebook" />
-                            </button>
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
-                                <i class="pi pi-twitter" />
-                            </button>
-                            <button class="rounded-full bg-white/10 p-3 transition-colors hover:bg-white/20">
-                                <i class="pi pi-instagram" />
-                            </button>
+                            </a>
                         </div>
+                        <p class="mt-4 text-sm text-gray-400">
+                            <i class="pi pi-phone mr-2"></i>Contact us for inquiries
+                        </p>
+                        <p class="mt-2 text-sm text-gray-400">
+                            <i class="pi pi-envelope mr-2"></i>support@alcess.com
+                        </p>
                     </div>
                 </div>
                 <div class="mt-8 border-t border-gray-700 pt-8 text-center text-sm text-gray-400">
-                    <p>&copy; 2025 {{ appName }}. All rights reserved.</p>
+                    <p>&copy; {{ new Date().getFullYear() }} {{ appName }}. All rights reserved.</p>
                 </div>
             </div>
         </footer>
+
+        <!-- Footer Modal Dialogs -->
+        <Dialog
+            v-model:visible="footerModalVisible"
+            modal
+            :header="footerModalTitle"
+            :style="{ width: isMobile ? '95vw' : '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '95vw' }"
+            :dismissableMask="true"
+            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
+        >
+            <!-- About Us Content -->
+            <div v-if="footerModalType === 'about'" class="space-y-4">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="rounded-full bg-blue-100 p-4">
+                        <i class="pi pi-building text-3xl text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">{{ appName }}</h3>
+                        <p class="text-gray-500">Your Trusted Tech Partner</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 leading-relaxed">
+                    Welcome to {{ appName }}! We are a dedicated online retailer specializing in high-quality laptops, smartphones, desktop computers, and computer accessories. 
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                    Our mission is to provide our customers with the latest technology products at competitive prices, backed by excellent customer service and reliable after-sales support.
+                </p>
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-blue-50 rounded-lg p-4 text-center">
+                        <i class="pi pi-check-circle text-2xl text-blue-600 mb-2"></i>
+                        <p class="font-semibold text-gray-800">100% Genuine</p>
+                        <p class="text-sm text-gray-600">Authentic products only</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 text-center">
+                        <i class="pi pi-shield text-2xl text-green-600 mb-2"></i>
+                        <p class="font-semibold text-gray-800">Warranty</p>
+                        <p class="text-sm text-gray-600">Full manufacturer warranty</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Content -->
+            <div v-if="footerModalType === 'contact'" class="space-y-4">
+                <p class="text-gray-700 mb-6">Have questions or need assistance? We're here to help!</p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="rounded-full bg-blue-100 p-3">
+                            <i class="pi pi-facebook text-xl text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Facebook</h4>
+                            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="text-blue-600 hover:underline">
+                                facebook.com/alcesslaptopstore
+                            </a>
+                            <p class="text-sm text-gray-500 mt-1">Message us for quick responses</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="rounded-full bg-green-100 p-3">
+                            <i class="pi pi-envelope text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Email</h4>
+                            <p class="text-gray-600">support@alcess.com</p>
+                            <p class="text-sm text-gray-500 mt-1">We respond within 24 hours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQs Content -->
+            <div v-if="footerModalType === 'faqs'" class="space-y-4">
+                <div class="space-y-4">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">How do I place an order?</h4>
+                        <p class="text-gray-600 text-sm">Browse our products, add items to your cart, and proceed to checkout. You'll need to create an account or log in to complete your purchase.</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">What payment methods do you accept?</h4>
+                        <p class="text-gray-600 text-sm">We accept bank transfers, GCash, and cash on delivery for select areas. Payment instructions will be provided after your order is confirmed.</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Are your products genuine?</h4>
+                        <p class="text-gray-600 text-sm">Yes! All our products are 100% genuine and come with official manufacturer warranty. We source directly from authorized distributors.</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">How long does delivery take?</h4>
+                        <p class="text-gray-600 text-sm">Delivery typically takes 3-7 business days depending on your location. You'll receive tracking information once your order ships.</p>
+                    </div>
+                    <div class="pb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Can I cancel my order?</h4>
+                        <p class="text-gray-600 text-sm">Yes, you can cancel your order before payment is confirmed. Once payment is verified, cancellation may no longer be possible.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Info Content -->
+            <div v-if="footerModalType === 'shipping'" class="space-y-4">
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <i class="pi pi-truck text-2xl text-blue-600"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Nationwide Delivery</h4>
+                            <p class="text-sm text-gray-600">We deliver to all provinces in the Philippines</p>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="font-semibold text-gray-800">Delivery Timeline</h4>
+                <ul class="list-disc list-inside text-gray-600 space-y-2 text-sm">
+                    <li>Metro Manila: 1-3 business days</li>
+                    <li>Luzon (outside Metro Manila): 3-5 business days</li>
+                    <li>Visayas: 5-7 business days</li>
+                    <li>Mindanao: 5-7 business days</li>
+                </ul>
+                <h4 class="font-semibold text-gray-800 mt-4">Shipping Fees</h4>
+                <p class="text-gray-600 text-sm">Shipping fees are calculated based on your location and will be shown during checkout after your order is confirmed by our team.</p>
+            </div>
+
+            <!-- Returns & Warranty Content -->
+            <div v-if="footerModalType === 'returns'" class="space-y-4">
+                <div class="bg-green-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <i class="pi pi-shield text-2xl text-green-600"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Warranty Coverage</h4>
+                            <p class="text-sm text-gray-600">All products come with manufacturer warranty</p>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="font-semibold text-gray-800">Return Policy</h4>
+                <ul class="list-disc list-inside text-gray-600 space-y-2 text-sm">
+                    <li>7-day replacement for defective products</li>
+                    <li>Products must be in original packaging</li>
+                    <li>Include all accessories and documentation</li>
+                    <li>Contact us first before returning any item</li>
+                </ul>
+                <h4 class="font-semibold text-gray-800 mt-4">Warranty Claims</h4>
+                <p class="text-gray-600 text-sm">For warranty claims, please contact us through Facebook or email with your order details and a description of the issue. We'll guide you through the process.</p>
+            </div>
+
+            <!-- Privacy Policy Content -->
+            <div v-if="footerModalType === 'privacy'" class="space-y-4 max-h-96 overflow-y-auto">
+                <p class="text-gray-600 text-sm">Last updated: January 2025</p>
+                <h4 class="font-semibold text-gray-800">Information We Collect</h4>
+                <p class="text-gray-600 text-sm">We collect information you provide when creating an account, placing orders, or contacting us. This includes your name, email, phone number, and shipping address.</p>
+                <h4 class="font-semibold text-gray-800">How We Use Your Information</h4>
+                <p class="text-gray-600 text-sm">Your information is used to process orders, provide customer support, and improve our services. We never sell your personal data to third parties.</p>
+                <h4 class="font-semibold text-gray-800">Data Security</h4>
+                <p class="text-gray-600 text-sm">We implement security measures to protect your personal information. Payment details are processed securely and we do not store credit card information.</p>
+            </div>
+
+            <!-- Terms & Conditions Content -->
+            <div v-if="footerModalType === 'terms'" class="space-y-4 max-h-96 overflow-y-auto">
+                <p class="text-gray-600 text-sm">Last updated: January 2025</p>
+                <h4 class="font-semibold text-gray-800">Order Acceptance</h4>
+                <p class="text-gray-600 text-sm">All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order for any reason.</p>
+                <h4 class="font-semibold text-gray-800">Pricing</h4>
+                <p class="text-gray-600 text-sm">Prices are subject to change without notice. The final price will be confirmed when your order is accepted.</p>
+                <h4 class="font-semibold text-gray-800">Product Descriptions</h4>
+                <p class="text-gray-600 text-sm">We strive to provide accurate product descriptions and images. However, actual products may vary slightly from images shown.</p>
+                <h4 class="font-semibold text-gray-800">Limitation of Liability</h4>
+                <p class="text-gray-600 text-sm">{{ appName }} is not liable for any indirect, incidental, or consequential damages arising from the use of our products or services.</p>
+            </div>
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -983,6 +980,36 @@ const products = ref<ProductInterface[]>([]);
 const currentSlide = ref<number>(0);
 let carouselInterval: number | null = null;
 const activeView = ref<'categories' | 'products'>('categories');
+
+// Footer modal state
+const footerModalVisible = ref<boolean>(false);
+const footerModalType = ref<string>('about');
+const footerModalTitle = computed(() => {
+    const titles: Record<string, string> = {
+        'about': 'About Us',
+        'contact': 'Contact Us',
+        'faqs': 'Frequently Asked Questions',
+        'shipping': 'Shipping Information',
+        'returns': 'Returns & Warranty',
+        'privacy': 'Privacy Policy',
+        'terms': 'Terms & Conditions'
+    };
+    return titles[footerModalType.value] || 'Information';
+});
+
+const openFooterModal = (type: string) => {
+    footerModalType.value = type;
+    footerModalVisible.value = true;
+};
+
+const handleTrackOrder = () => {
+    if (!Page.user) {
+        openLoginForm();
+        return;
+    }
+    // Navigate to customer orders page
+    router.push({ name: 'customer.order.index' });
+};
 
 // Computed property to dynamically change the category heading
 const categoriesHeading = computed(() => {

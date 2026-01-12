@@ -1,12 +1,12 @@
 <template>
-    <div class="flex">
+    <div class="flex overflow-x-hidden">
         <div
             v-if="!shouldUseMobileDrawer"
             class="fixed left-0 top-0 h-screen z-10 overflow-hidden transition-all duration-300"
             style="background-color: #2563EB;"
             :class="{
                 'opacity-100': sideBar,
-                'opacity-0': !sideBar,
+                'opacity-0 pointer-events-none': !sideBar,
             }"
             :style="getSidebarStyles()"
         >
@@ -47,9 +47,9 @@
         </Drawer>
         <div 
             id="main-content"
-            class="min-h-screen bg-gray-100 transition-all duration-300"
+            class="min-h-screen bg-gray-100 transition-all duration-300 overflow-x-hidden"
             :class="getMainContentClasses()"
-            style="width: 100%; scroll-behavior: smooth;"
+            :style="getMainContentStyles()"
         >
             <AdminNavBar />
             <div :class="responsive.getResponsivePadding()">
@@ -61,10 +61,19 @@
 <script setup lang="ts">
 import AdminNavBar from "@/components/admin/AdminNavBar.vue";
 import AdminSideBar from "@/components/admin/AdminSideBar.vue";
-import { onMounted, provide, ref, computed } from "vue";
+import { onMounted, onUnmounted, provide, ref, computed, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 
-const sideBar = ref<boolean>(false); // Start with false to prevent initial overlay
+// Determine initial sidebar state based on screen width synchronously
+const getInitialSidebarState = () => {
+    if (typeof window !== 'undefined') {
+        return window.innerWidth >= 1024; // Desktop: show sidebar
+    }
+    return false;
+};
+
+const sideBar = ref<boolean>(getInitialSidebarState());
+const isLayoutReady = ref<boolean>(false);
 provide("sideBar", sideBar);
 
 // Use responsive composable
@@ -77,26 +86,33 @@ const getResponsiveClasses = responsive.getResponsiveClasses;
 // Computed properties for responsive behavior
 const shouldUseMobileDrawer = computed(() => isMobile.value);
 
+const getSidebarWidth = () => {
+    if (!sideBar.value) return 0;
+    if (isTablet.value) return 260;
+    return 288; // Desktop width
+};
+
 const getSidebarStyles = () => {
-    if (!sideBar.value) {
-        return 'width: 0;';
-    }
-    
-    if (isTablet.value) {
-        return 'width: 260px;'; // Tablet width
-    }
-    return 'width: 288px;'; // Desktop width (original)
+    const width = getSidebarWidth();
+    return `width: ${width}px;`;
 };
 
 const getMainContentClasses = () => {
+    // Use flex-based layout for more reliable positioning
+    const baseClasses = 'flex-1 min-w-0';
+    
     if (shouldUseMobileDrawer.value || !sideBar.value) {
-        return 'ml-0';
+        return `${baseClasses} ml-0`;
     }
     
     if (isTablet.value) {
-        return 'ml-65'; // ml-65 = 260px
+        return `${baseClasses} ml-[260px]`;
     }
-    return 'ml-72'; // ml-72 = 288px (original desktop)
+    return `${baseClasses} ml-[288px]`;
+};
+
+const getMainContentStyles = () => {
+    return 'width: 100%; scroll-behavior: smooth;';
 };
 
 const setSideBar = () => {
@@ -104,16 +120,27 @@ const setSideBar = () => {
     if (isMobile.value) {
         sideBar.value = false;
     } else {
-        // Only open on tablet/desktop after responsive detection is complete
+        // Open sidebar on tablet/desktop
         sideBar.value = true;
     }
 };
 
+// Watch for responsive changes and adjust sidebar accordingly
+watch([isMobile, isTablet, isDesktop], () => {
+    setSideBar();
+}, { immediate: false });
+
 onMounted(() => {
-    // Add a small delay to ensure responsive detection is complete
-    setTimeout(() => {
+    // Set initial state after mount to ensure proper SSR/CSR consistency
+    requestAnimationFrame(() => {
         setSideBar();
-        window.addEventListener("resize", setSideBar);
-    }, 100);
+        isLayoutReady.value = true;
+    });
+    
+    window.addEventListener("resize", setSideBar);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", setSideBar);
 });
 </script>

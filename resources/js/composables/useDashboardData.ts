@@ -32,14 +32,19 @@ const isUpdating = ref(false); // Visual indicator for real-time updates
 
 // WebSocket connection for real-time updates
 let echoConnection: any = null;
+let orderNotificationConnection: any = null;
 let refreshInterval: number | null = null;
 
 export function useDashboardData() {
     const loadService = useAxiosUtil<null, DashboardData>();
 
-    const loadDashboardData = async () => {
-        if (isLoaded.value) {
-            return; // Data already loaded, use cached version
+    const loadDashboardData = async (forceRefresh: boolean = false) => {
+        // Force refresh pending_orders_list even if other data is cached
+        // This ensures new orders always appear
+        if (isLoaded.value && !forceRefresh) {
+            // Still refresh pending orders list in the background
+            refreshPendingOrders();
+            return; // Return cached data for other items
         }
 
         isLoading.value = true;
@@ -47,14 +52,17 @@ export function useDashboardData() {
 
         try {
             await loadService.get('admin/dashboard/aggregated');
-            
+
             if (loadService.request.status === 200 && loadService.request.data) {
                 Object.assign(dashboardData, loadService.request.data);
                 isLoaded.value = true;
-                
+
                 // Setup WebSocket listeners after initial load
                 setupWebSocketListeners();
-                
+
+                // Setup order notification listener for real-time order updates
+                setupOrderNotificationListener();
+
                 // Setup periodic refresh as backup (every 2 minutes)
                 setupPeriodicRefresh();
             } else {
@@ -67,9 +75,23 @@ export function useDashboardData() {
         }
     };
 
+    // Separate function to refresh just pending orders
+    const refreshPendingOrders = async () => {
+        try {
+            const pendingService = useAxiosUtil<null, any[]>();
+            await pendingService.get('admin/dashboard/pending');
+
+            if (pendingService.request.status === 200 && pendingService.request.data) {
+                dashboardData.pending_orders_list = pendingService.request.data;
+            }
+        } catch (err) {
+            console.warn('Failed to refresh pending orders:', err);
+        }
+    };
+
     const refreshDashboardData = async () => {
         isLoaded.value = false;
-        await loadDashboardData();
+        await loadDashboardData(true);
     };
 
     const setupWebSocketListeners = () => {
@@ -86,10 +108,10 @@ export function useDashboardData() {
                     (data: any) => {
                         // Show update indicator
                         isUpdating.value = true;
-                        
+
                         // Update dashboard data in real-time
                         Object.assign(dashboardData, data);
-                        
+
                         // Hide update indicator after 2 seconds
                         setTimeout(() => {
                             isUpdating.value = false;
@@ -103,6 +125,33 @@ export function useDashboardData() {
         }
     };
 
+    // Setup listener for order notifications to update pending orders in real-time
+    const setupOrderNotificationListener = () => {
+        if (orderNotificationConnection) {
+            return; // Already setup
+        }
+
+        try {
+            if (typeof getCurrentInstance === 'function' && getCurrentInstance()) {
+                orderNotificationConnection = useEcho(
+                    'admin-order-notification',
+                    ['.admin-order-notification.event'],
+                    (_data: any) => {
+                        // New order notification received - refresh pending orders
+                        isUpdating.value = true;
+                        refreshPendingOrders();
+
+                        setTimeout(() => {
+                            isUpdating.value = false;
+                        }, 2000);
+                    }
+                );
+            }
+        } catch (err) {
+            console.warn('Order notification WebSocket failed:', err);
+        }
+    };
+
     const setupPeriodicRefresh = () => {
         if (refreshInterval) {
             return; // Already setup
@@ -113,7 +162,7 @@ export function useDashboardData() {
             try {
                 const statsService = useAxiosUtil<null, DashboardData>();
                 await statsService.get('admin/dashboard/aggregated');
-                
+
                 if (statsService.request.status === 200 && statsService.request.data) {
                     // Update all dashboard data
                     Object.assign(dashboardData, statsService.request.data);
@@ -129,7 +178,12 @@ export function useDashboardData() {
             echoConnection.leave();
             echoConnection = null;
         }
-        
+
+        if (orderNotificationConnection && orderNotificationConnection.leave) {
+            orderNotificationConnection.leave();
+            orderNotificationConnection = null;
+        }
+
         if (refreshInterval) {
             clearInterval(refreshInterval);
             refreshInterval = null;
@@ -144,6 +198,8 @@ export function useDashboardData() {
         error,
         loadDashboardData,
         refreshDashboardData,
+        refreshPendingOrders,
         cleanup,
     };
 }
+

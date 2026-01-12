@@ -136,3 +136,229 @@ body {
     background-color: #f5f5f5;
     font-family: 'Poppins', sans-serif;
 }
+
+/* ============================================
+   Unified Responsive Header Styles
+   Uses CSS for responsiveness to prevent layout jumps
+   ============================================ */
+
+.header-nav {
+    padding: 0.5rem;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.header-logo-wrapper {
+    background-color: white;
+    border-radius: 9999px;
+    padding: 0.125rem;
+}
+
+.header-logo-img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.header-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+}
+
+/* Search container - hidden on mobile, shown on tablet/desktop */
+.header-search-container {
+    display: none;
+    flex: 1;
+    max-width: 32rem;
+    margin: 0 1rem;
+}
+
+.header-search-input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid white;
+    background-color: white;
+    color: #111827;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.header-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.header-search-input:focus {
+    outline: none;
+    border-color: white;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Action buttons container */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.header-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.header-action-btn i {
+    font-size: 1rem;
+}
+
+.header-action-btn-facebook {
+    background-color: white;
+    color: #2563eb;
+}
+
+.header-action-btn-facebook:hover {
+    background-color: #f3f4f6;
+}
+
+.header-action-btn-secondary {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.header-action-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile search - shown on mobile only */
+.header-mobile-search {
+    display: block;
+    padding: 0 0.75rem 0.75rem;
+}
+
+/* ============================================
+   Tablet Styles (768px - 1023px)
+   ============================================ */
+@media (min-width: 768px) {
+    .header-nav {
+        padding: 0.75rem;
+    }
+    
+    .header-container {
+        gap: 1.5rem;
+    }
+    
+    .header-logo-link {
+        gap: 0.75rem;
+    }
+    
+    .header-logo-img {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .header-title {
+        font-size: 1.25rem;
+    }
+    
+    .header-search-container {
+        display: block;
+    }
+    
+    .header-search-input {
+        padding: 0.625rem 1rem 0.625rem 2.5rem;
+        font-size: 1rem;
+    }
+    
+    .header-actions {
+        gap: 0.75rem;
+    }
+    
+    .header-action-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .header-action-btn i {
+        font-size: 1.125rem;
+    }
+    
+    /* Hide mobile search on tablet/desktop */
+    .header-mobile-search {
+        display: none;
+    }
+}
+
+/* ============================================
+   Desktop Styles (1024px+)
+   ============================================ */
+@media (min-width: 1024px) {
+    .header-nav {
+        padding: 0.5rem 1rem;
+    }
+    
+    .header-container {
+        gap: 2rem;
+    }
+    
+    .header-logo-link {
+        gap: 1rem;
+    }
+    
+    .header-logo-wrapper {
+        padding: 0.25rem;
+    }
+    
+    .header-logo-img {
+        width: 4rem;
+        height: 4rem;
+    }
+    
+    .header-title {
+        font-size: 1.875rem;
+    }
+    
+    .header-search-container {
+        max-width: 48rem;
+        margin: 0 2rem;
+    }
+    
+    .header-search-input {
+        padding: 0.625rem 1rem 0.625rem 2.75rem;
+    }
+    
+    .header-actions {
+        gap: 1rem;
+    }
+    
+    .header-action-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+    
+    .header-action-btn i {
+        font-size: 1.25rem;
+    }
+}
