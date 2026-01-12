@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-gray-50">
         <!-- Unified Responsive Header - Uses CSS for responsiveness to prevent layout jumps -->
-        <header class="bg-blue-600 sticky top-0 z-50 shadow-md">
+        <header class="bg-blue-600 sticky top-0 z-[100] shadow-md">
             <nav class="header-nav">
                 <div class="header-container">
                     <!-- Left: Logo Section -->
@@ -100,29 +100,29 @@
                             <div class="container mx-auto px-4 h-full">
                                 <div :class="[
                                     'grid h-full items-center',
-                                    isMobile ? 'grid-cols-1 gap-4 py-8' : 'grid-cols-2 gap-8'
+                                    isMobile ? 'grid-cols-1 gap-4 py-6' : 'grid-cols-2 gap-8'
                                 ]">
                                     <!-- Left Side - Product Info -->
                                     <div :class="[
                                         'flex flex-col justify-center',
-                                        isMobile ? 'text-center order-2' : 'text-left'
+                                        isMobile ? 'text-center order-2 -mt-4' : 'text-left'
                                     ]">
                                         <!-- Badge -->
                                         <div :class="[
                                             'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20',
-                                            isMobile ? 'px-3 py-1.5 mb-3 mx-auto' : isTablet ? 'px-4 py-2 mb-4' : 'px-5 py-2.5 mb-6 self-start'
+                                            isMobile ? 'px-2.5 py-1 mb-2 mx-auto' : isTablet ? 'px-4 py-2 mb-4' : 'px-5 py-2.5 mb-6 self-start'
                                         ]">
-                                            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
                                             <span :class="[
                                                 'font-medium text-white/90',
-                                                isMobile ? 'text-xs' : 'text-sm'
+                                                isMobile ? 'text-[10px]' : 'text-sm'
                                             ]">🔥 Best Seller</span>
                                         </div>
                                         
                                         <!-- Product Name -->
                                         <h1 :class="[
                                             'font-bold text-white leading-tight',
-                                            isMobile ? 'text-2xl mb-2' : isTablet ? 'text-3xl mb-3' : 'text-4xl lg:text-5xl mb-4'
+                                            isMobile ? 'text-xl mb-1' : isTablet ? 'text-3xl mb-3' : 'text-4xl lg:text-5xl mb-4'
                                         ]">
                                             {{ product.product_name }}
                                         </h1>
@@ -130,7 +130,7 @@
                                         <!-- Category -->
                                         <p :class="[
                                             'text-blue-200',
-                                            isMobile ? 'text-sm mb-3' : isTablet ? 'text-base mb-4' : 'text-lg mb-6'
+                                            isMobile ? 'text-xs mb-3' : isTablet ? 'text-base mb-4' : 'text-lg mb-6'
                                         ]">
                                             {{ product.category?.category_name || 'Premium Electronics' }}
                                         </p>
@@ -138,42 +138,42 @@
                                         <!-- Price Card -->
                                         <div :class="[
                                             'inline-flex items-center bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20',
-                                            isMobile ? 'px-4 py-3 mb-4 mx-auto' : isTablet ? 'px-5 py-4 mb-5' : 'px-6 py-4 mb-8 self-start'
+                                            isMobile ? 'px-3 py-2 mb-4 mx-auto' : isTablet ? 'px-5 py-4 mb-5' : 'px-6 py-4 mb-8 self-start'
                                         ]">
                                             <div>
-                                                <p :class="['text-blue-200', isMobile ? 'text-xs' : 'text-sm']">Starting at</p>
+                                                <p :class="['text-blue-200', isMobile ? 'text-[10px]' : 'text-sm']">Starting at</p>
                                                 <span :class="[
                                                     'font-bold text-white',
-                                                    isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
+                                                    isMobile ? 'text-xl' : isTablet ? 'text-3xl' : 'text-4xl'
                                                 ]">
                                                     {{ CurrencyUtil.formatCurrency(product.product_price) }}
                                                 </span>
                                             </div>
-                                            <div class="ml-4 pl-4 border-l border-white/20">
-                                                <div class="flex items-center gap-1 mb-1">
+                                            <div class="ml-3 pl-3 border-l border-white/20">
+                                                <div class="flex items-center gap-0.5 mb-0.5">
                                                     <i v-for="i in 5" :key="i" :class="[
                                                         i <= 4 ? 'pi pi-star-fill text-yellow-400' : 'pi pi-star text-white/30',
-                                                        isMobile ? 'text-xs' : 'text-sm'
+                                                        isMobile ? 'text-[8px]' : 'text-sm'
                                                     ]"></i>
                                                 </div>
-                                                <p :class="['text-white/70', isMobile ? 'text-xs' : 'text-sm']">Top Rated</p>
+                                                <p :class="['text-white/70', isMobile ? 'text-[10px]' : 'text-sm']">Top Rated</p>
                                             </div>
                                         </div>
                                         
                                         <!-- CTA Buttons -->
                                         <div :class="[
-                                            'flex',
-                                            isMobile ? 'gap-3 justify-center' : 'gap-4'
+                                            'flex flex-wrap items-center',
+                                            isMobile ? 'gap-2 justify-center' : 'gap-4'
                                         ]">
                                             <button 
                                                 @click="addToCart(product.product_id)"
                                                 :disabled="addToCartService.request.loading"
                                                 :class="[
-                                                    'group relative overflow-hidden rounded-full bg-white font-semibold text-blue-700 transition-all duration-300 hover:shadow-2xl hover:shadow-white/25 disabled:opacity-50',
-                                                    isMobile ? 'px-5 py-2.5 text-sm' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
+                                                    'group shrink-0 relative overflow-hidden rounded-full bg-white font-semibold text-blue-700 transition-all duration-300 hover:shadow-2xl hover:shadow-white/25 disabled:opacity-50',
+                                                    isMobile ? 'px-4 py-2 text-xs' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
                                                 ]"
                                             >
-                                                <span class="relative z-10 flex items-center gap-2">
+                                                <span class="relative z-10 flex items-center gap-1.5">
                                                     <i v-if="addToCartService.request.loading" class="pi pi-spin pi-spinner"></i>
                                                     <i v-else class="pi pi-shopping-cart"></i>
                                                     Add to Cart
@@ -182,11 +182,11 @@
                                             <button 
                                                 @click="goToProductDetails(product.product_id)"
                                                 :class="[
-                                                    'rounded-full border-2 border-white/30 text-white font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/50',
-                                                    isMobile ? 'px-5 py-2.5 text-sm' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
+                                                    'rounded-full shrink-0 border-2 border-white/30 text-white font-semibold transition-all duration-300 hover:bg-white/10 hover:border-white/50',
+                                                    isMobile ? 'px-4 py-2 text-xs' : isTablet ? 'px-6 py-3 text-base' : 'px-8 py-4 text-lg'
                                                 ]"
                                             >
-                                                View Details
+                                                Details
                                             </button>
                                         </div>
                                     </div>
@@ -194,7 +194,7 @@
                                     <!-- Right Side - Product Image -->
                                     <div :class="[
                                         'flex items-center justify-center relative',
-                                        isMobile ? 'order-1' : ''
+                                        isMobile ? 'order-1 scale-90 -mb-4' : ''
                                     ]">
                                         <!-- Glow Effect -->
                                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-3xl"></div>
@@ -206,20 +206,20 @@
                                                 :alt="product.product_name"
                                                 :class="[
                                                     'w-auto object-contain drop-shadow-2xl transform transition-transform duration-500 hover:scale-105',
-                                                    isMobile ? 'max-h-[180px]' : isTablet ? 'max-h-[280px]' : 'max-h-[400px]'
+                                                    isMobile ? 'max-h-[160px]' : isTablet ? 'max-h-[280px]' : 'max-h-[400px]'
                                                 ]"
                                                 @error="handleImageError"
                                             />
                                             <div
                                                 :class="[
                                                     'fallback-image flex items-center justify-center rounded-3xl bg-white/10 backdrop-blur-sm',
-                                                    isMobile ? 'h-[180px] w-[180px]' : isTablet ? 'h-[280px] w-[280px]' : 'h-[400px] w-[400px]'
+                                                    isMobile ? 'h-[160px] w-[160px]' : isTablet ? 'h-[280px] w-[280px]' : 'h-[400px] w-[400px]'
                                                 ]"
                                                 :style="{ display: product.product_image ? 'none' : 'flex' }"
                                             >
                                                 <i :class="[
                                                     'pi pi-image text-white/50',
-                                                    isMobile ? 'text-4xl' : isTablet ? 'text-6xl' : 'text-8xl'
+                                                    isMobile ? 'text-3xl' : isTablet ? 'text-6xl' : 'text-8xl'
                                                 ]"></i>
                                             </div>
                                         </div>
@@ -400,64 +400,49 @@
                     mode="out-in"
                 >
                     <div v-if="activeView === 'categories'" key="categories" class="relative">
-                        <!-- Categories List -->
+                        <!-- Categories List - Uniform Design -->
                         <div v-if="CategoryStore.categories && CategoryStore.categories.length > 0" :class="[
-                            'overflow-x-auto category-scroll',
-                            isMobile ? 'pb-6 pt-3' : isTablet ? 'pb-7 pt-3' : 'pb-8 pt-4'
+                            'grid gap-6 py-6',
+                            isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-3' : 'grid-cols-4 lg:grid-cols-6'
                         ]">
-                            <div :class="[
-                                'flex px-4',
-                                isMobile ? 'gap-4 pb-6' : isTablet ? 'gap-6 pb-7' : 'gap-8 pb-8',
-                                CategoryStore.categories.length <= 5 ? 'justify-center' : 'justify-start'
-                            ]" style="min-width: min-content;">
                             <button
                                 v-for="(category, index) in CategoryStore.categories"
                                 :key="index"
                                 :class="[
-                                    'group flex flex-col items-center gap-3 transition-transform duration-300 hover:-translate-y-2 flex-shrink-0',
-                                    isMobile ? 'gap-2' : isTablet ? 'gap-2.5' : 'gap-3'
+                                    'group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden'
                                 ]"
-                                :style="{ 
-                                    minWidth: isMobile ? '120px' : isTablet ? '150px' : '180px', 
-                                    width: isMobile ? '120px' : isTablet ? '150px' : '180px' 
-                                }"
                                 @click="goRoute('customer.product-category', { id: category.category_id })"
                             >
-                                <!-- Category Image Container -->
-                                <div :class="[
-                                    'flex items-center justify-center',
-                                    isMobile ? 'h-20 w-20' : isTablet ? 'h-24 w-24' : 'h-32 w-32'
-                                ]">
-                                    <img
-                                        v-if="category.category_image"
-                                        :src="
-                                            UrlUtil.getBaseAppUrl(
-                                                `storage/images/category/${category.category_image}`,
-                                            )
-                                        "
-                                        :alt="category.category_name"
-                                        class="h-full w-full object-contain"
-                                    />
-                                    <div
-                                        v-else
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200"
-                                    >
-                                        <i :class="[
-                                            'pi pi-image text-gray-400',
-                                            isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
-                                        ]" />
+                                <!-- Decorative background -->
+                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                                
+                                <div class="relative flex flex-col items-center gap-3">
+                                    <!-- Category Image Container -->
+                                    <div :class="[
+                                        'flex items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-blue-50 transition-colors',
+                                        isMobile ? 'h-16 w-16' : 'h-24 w-24'
+                                    ]">
+                                        <img
+                                            v-if="category.category_image"
+                                            :src="UrlUtil.getBaseAppUrl(`storage/images/category/${category.category_image}`)"
+                                            :alt="category.category_name"
+                                            class="h-full w-full object-contain transform transition-transform group-hover:scale-110"
+                                        />
+                                        <i v-else :class="['pi pi-image text-gray-300', isMobile ? 'text-2xl' : 'text-4xl']"></i>
+                                    </div>
+                                    
+                                    <!-- Category Info -->
+                                    <div class="text-center">
+                                        <h3 :class="[
+                                            'font-bold text-gray-800 line-clamp-1 transition-colors group-hover:text-blue-600',
+                                            isMobile ? 'text-xs' : 'text-sm'
+                                        ]">
+                                            {{ category.category_name }}
+                                        </h3>
+                                        <p class="text-[10px] text-blue-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity">View Products</p>
                                     </div>
                                 </div>
-                                
-                                <!-- Category Name with Underline on Hover -->
-                                <span :class="[
-                                    'text-center font-medium text-gray-800 transition-all duration-300 group-hover:underline group-hover:decoration-blue-600 group-hover:decoration-2 group-hover:underline-offset-4',
-                                    isMobile ? 'text-sm' : isTablet ? 'text-sm' : 'text-base'
-                                ]">
-                                    {{ category.category_name }}
-                                </span>
                             </button>
-                            </div>
                         </div>
                         
                         <!-- Empty State for Categories -->
@@ -499,76 +484,60 @@
 
                     <!-- Products View with Transition -->
                     <div v-else-if="activeView === 'products'" key="products" class="relative">
-                        <!-- Products List -->
+                        <!-- Products List - Uniform Design -->
                         <div v-if="products && products.length > 0" :class="[
-                            'overflow-x-auto category-scroll',
-                            isMobile ? 'pb-6 pt-3' : isTablet ? 'pb-7 pt-3' : 'pb-8 pt-4'
+                            'grid gap-6 py-6',
+                            isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-3' : 'grid-cols-4 lg:grid-cols-5'
                         ]">
-                            <div :class="[
-                                'flex px-4',
-                                isMobile ? 'gap-4 pb-6' : isTablet ? 'gap-6 pb-7' : 'gap-8 pb-8',
-                                products.length <= 5 ? 'justify-center' : 'justify-start'
-                            ]" style="min-width: min-content;">
-                        <div
-                            v-for="(product, index) in products"
-                            :key="index"
-                            :class="[
-                                'group flex flex-col items-center transition-transform duration-300 hover:-translate-y-2 flex-shrink-0',
-                                isMobile ? 'gap-2' : isTablet ? 'gap-2.5' : 'gap-3'
-                            ]"
-                            :style="{ 
-                                minWidth: isMobile ? '120px' : isTablet ? '150px' : '180px', 
-                                width: isMobile ? '120px' : isTablet ? '150px' : '180px' 
-                            }"
-                        >
-                            <!-- Product Image Container -->
-                            <div :class="[
-                                'flex items-center justify-center',
-                                isMobile ? 'h-20 w-20' : isTablet ? 'h-24 w-24' : 'h-32 w-32'
-                            ]">
-                                <img
-                                    v-if="product.product_image"
-                                    :src="
-                                        UrlUtil.getBaseAppUrl(
-                                            `storage/images/product/${product.product_image}`,
-                                        )
-                                    "
-                                    :alt="product.product_name"
-                                    class="h-full w-full object-contain"
-                                />
-                                <div
-                                    v-else
-                                    class="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200"
-                                >
-                                    <i :class="[
-                                        'pi pi-image text-gray-400',
-                                        isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'
-                                    ]" />
-                                </div>
-                            </div>
-                            
-                            <!-- Product Name -->
-                            <span :class="[
-                                'text-center font-medium text-gray-800 line-clamp-2',
-                                isMobile ? 'text-sm' : isTablet ? 'text-sm' : 'text-base'
-                            ]">
-                                {{ product.product_name }}
-                            </span>
-
-                            <!-- View Details Button -->
-                            <RouterLink
-                                :to="{
-                                    name: 'customer.product-info.index',
-                                    params: { id: product.product_id },
-                                }"
+                            <div
+                                v-for="(product, index) in products"
+                                :key="index"
                                 :class="[
-                                    'text-blue-600 hover:underline hover:decoration-blue-600 hover:decoration-2 hover:underline-offset-4 transition-all duration-300',
-                                    isMobile ? 'text-xs' : isTablet ? 'text-sm' : 'text-sm'
+                                    'group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden'
                                 ]"
                             >
-                                View Details
-                            </RouterLink>
-                        </div>
+                                <!-- Decorative background -->
+                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-indigo-50 to-transparent rounded-bl-full opacity-50"></div>
+                                
+                                <div class="relative flex flex-col items-center gap-3">
+                                    <!-- Product Image Container -->
+                                    <div :class="[
+                                        'flex items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-indigo-50 transition-colors',
+                                        isMobile ? 'h-24 w-full' : 'h-32 w-full'
+                                    ]">
+                                        <img
+                                            v-if="product.product_image"
+                                            :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)"
+                                            :alt="product.product_name"
+                                            class="h-full w-full object-contain transform transition-transform group-hover:scale-110"
+                                        />
+                                        <i v-else :class="['pi pi-image text-gray-300', isMobile ? 'text-2xl' : 'text-4xl']"></i>
+                                    </div>
+                                    
+                                    <!-- Product Info -->
+                                    <div class="text-center w-full">
+                                        <h3 :class="[
+                                            'font-bold text-gray-800 line-clamp-2 min-h-[2.5rem] mb-2',
+                                            isMobile ? 'text-xs' : 'text-sm'
+                                        ]">
+                                            {{ product.product_name }}
+                                        </h3>
+                                        
+                                        <!-- View Details Button -->
+                                        <RouterLink
+                                            :to="{
+                                                name: 'customer.product-info.index',
+                                                params: { id: product.product_id },
+                                            }"
+                                            :class="[
+                                                'inline-flex items-center justify-center w-full py-2 px-4 rounded-lg bg-blue-50 text-blue-600 font-semibold transition-all hover:bg-blue-600 hover:text-white',
+                                                isMobile ? 'text-[10px]' : 'text-xs'
+                                            ]"
+                                        >
+                                            View Details
+                                        </RouterLink>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -594,19 +563,9 @@
                                 'text-gray-500 text-center max-w-md',
                                 isMobile ? 'text-sm' : isTablet ? 'text-sm' : 'text-base'
                             ]">
-                                Our store is being stocked with amazing products. Stay tuned for our latest offerings!
+                                Stay tuned for our latest offerings!
                             </p>
                         </div>
-                        
-                        <!-- Fade overlays -->
-                        <div v-if="products && products.length > 0" :class="[
-                            'pointer-events-none absolute left-0 top-0 bg-gradient-to-r from-gray-50 to-transparent',
-                            isMobile ? 'bottom-6 w-12' : isTablet ? 'bottom-7 w-16' : 'bottom-8 w-20'
-                        ]"></div>
-                        <div v-if="products && products.length > 0" :class="[
-                            'pointer-events-none absolute right-0 top-0 bg-gradient-to-l from-gray-50 to-transparent',
-                            isMobile ? 'bottom-6 w-12' : isTablet ? 'bottom-7 w-16' : 'bottom-8 w-20'
-                        ]"></div>
                     </div>
                 </Transition>
             </section>
@@ -628,121 +587,121 @@
 
                 <div :class="[
                     'grid gap-6',
-                    isMobile ? 'grid-cols-1' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                    isMobile ? 'grid-cols-2' : isTablet ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
                 ]">
                     <!-- Feature Card 1 -->
                     <div :class="[
                         'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
+                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
                     ]">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
                             'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-green-100 to-green-50',
-                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
+                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-check-circle text-green-600',
-                                isMobile ? 'text-2xl' : 'text-3xl'
+                                isMobile ? 'text-xl' : 'text-3xl'
                             ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-bold text-gray-800',
-                            isMobile ? 'text-base' : 'text-lg'
+                            'mb-1.5 font-bold text-gray-800',
+                            isMobile ? 'text-xs' : 'text-lg'
                         ]">
                             Quality Guarantee
                         </h3>
                         <p :class="[
                             'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-sm' : 'text-sm'
+                            isMobile ? 'text-[10px]' : 'text-sm'
                         ]">
-                            All products are 100% genuine and carefully verified before shipping
+                            100% genuine and verified products
                         </p>
                     </div>
                     
                     <!-- Feature Card 2 -->
                     <div :class="[
                         'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
+                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
                     ]">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
                             'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50',
-                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
+                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-truck text-blue-600',
-                                isMobile ? 'text-2xl' : 'text-3xl'
+                                isMobile ? 'text-xl' : 'text-3xl'
                             ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-bold text-gray-800',
-                            isMobile ? 'text-base' : 'text-lg'
+                            'mb-1.5 font-bold text-gray-800',
+                            isMobile ? 'text-xs' : 'text-lg'
                         ]">
                             Fast Delivery
                         </h3>
                         <p :class="[
                             'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-sm' : 'text-sm'
+                            isMobile ? 'text-[10px]' : 'text-sm'
                         ]">
-                            Nationwide shipping with tracking. Get your orders delivered quickly
+                            Quick nationwide shipping
                         </p>
                     </div>
                     
                     <!-- Feature Card 3 -->
                     <div :class="[
                         'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
+                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
                     ]">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
                             'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50',
-                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
+                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-shield text-purple-600',
-                                isMobile ? 'text-2xl' : 'text-3xl'
+                                isMobile ? 'text-xl' : 'text-3xl'
                             ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-bold text-gray-800',
-                            isMobile ? 'text-base' : 'text-lg'
+                            'mb-1.5 font-bold text-gray-800',
+                            isMobile ? 'text-xs' : 'text-lg'
                         ]">
                             Secure Payment
                         </h3>
                         <p :class="[
                             'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-sm' : 'text-sm'
+                            isMobile ? 'text-[10px]' : 'text-sm'
                         ]">
-                            Multiple secure payment options. Your information is always protected
+                            Protected payment information
                         </p>
                     </div>
                     
                     <!-- Feature Card 4 -->
                     <div :class="[
                         'group relative rounded-2xl bg-white border border-gray-100 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden',
-                        isMobile ? 'p-5' : isTablet ? 'p-6' : 'p-8'
+                        isMobile ? 'p-4' : isTablet ? 'p-6' : 'p-8'
                     ]">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-50 to-transparent rounded-bl-full opacity-50"></div>
                         <div :class="[
                             'relative mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50',
-                            isMobile ? 'h-14 w-14' : 'h-16 w-16'
+                            isMobile ? 'h-10 w-10' : 'h-16 w-16'
                         ]">
                             <i :class="[
                                 'pi pi-sync text-orange-600',
-                                isMobile ? 'text-2xl' : 'text-3xl'
+                                isMobile ? 'text-xl' : 'text-3xl'
                             ]"></i>
                         </div>
                         <h3 :class="[
-                            'mb-2 font-bold text-gray-800',
-                            isMobile ? 'text-base' : 'text-lg'
+                            'mb-1.5 font-bold text-gray-800',
+                            isMobile ? 'text-xs' : 'text-lg'
                         ]">
                             Easy Returns
                         </h3>
                         <p :class="[
                             'text-gray-500 leading-relaxed',
-                            isMobile ? 'text-sm' : 'text-sm'
+                            isMobile ? 'text-[10px]' : 'text-sm'
                         ]">
-                            7-day replacement policy for defective items. Shop worry-free
+                            7-day replacements for defects
                         </p>
                     </div>
                 </div>
