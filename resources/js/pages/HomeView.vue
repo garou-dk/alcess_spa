@@ -271,7 +271,6 @@
                     </div>
                 </div>
             </section>
-        </div>
 
         <!-- Global Call to Action (Mesh Redesign) -->
         <section class="stripe-mesh-dark py-32 relative overflow-hidden">
