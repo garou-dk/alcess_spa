@@ -65,6 +65,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     403 => 'Access denied.',
                     404 => 'Resource not found.',
                     419 => 'Session expired. Please refresh and try again.',
+                    422 => $e->getMessage() ?: 'Validation error.', // Preserve stock validation messages
                     429 => 'Too many requests. Please slow down.',
                     500 => app()->environment('production') 
                         ? 'An unexpected error occurred.' 

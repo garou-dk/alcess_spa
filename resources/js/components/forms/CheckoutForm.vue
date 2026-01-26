@@ -1,5 +1,45 @@
 <template>
     <div class="py-3 sm:py-4 px-2 sm:px-0">
+        <!-- Sold Out / Insufficient Stock Modal -->
+        <Dialog
+            v-model:visible="showSoldOutModal"
+            modal
+            header="Items Unavailable"
+            :style="{ width: '90vw', maxWidth: '500px' }"
+            :breakpoints="{ '575px': '95vw' }"
+            :pt="{
+                header: {
+                    class: '!bg-red-600 !text-white !border-b-2 !border-red-700 !rounded-t-lg'
+                },
+                headerTitle: {
+                    class: '!text-white !font-bold'
+                },
+                closeButton: {
+                    class: 'hover:!bg-red-700 !text-white'
+                }
+            }"
+        >
+            <div class="py-4">
+                <!-- Warning Icon -->
+                <div class="text-center mb-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">
+                        <i class="pi pi-exclamation-triangle text-4xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Sorry, Some Items Are No Longer Available</h3>
+                    <p class="text-sm text-gray-600">{{ soldOutMessage }}</p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-center gap-3 mt-6">
+                    <Button
+                        label="Return to Cart"
+                        icon="pi pi-shopping-cart"
+                        class="!bg-blue-600 hover:!bg-blue-700 !border-blue-600 text-white"
+                        @click="handleReturnToCart"
+                    />
+                </div>
+            </div>
+        </Dialog>
         <div v-if="!loadAddressService.request.loading">
             <form @submit.prevent="handleSubmit()" v-if="locationSelected" class="space-y-4 sm:space-y-6">
                 <!-- Customer Information Card -->
@@ -247,6 +287,7 @@
 </template>
 
 <script setup lang="ts">
+import Dialog from 'primevue/dialog';
 import { IAddress } from '@/interfaces/IAddress';
 import { IOrder } from '@/interfaces/IOrder';
 import { ProductInterface } from '@/interfaces/ProductInterface';
@@ -409,6 +450,14 @@ const validate = () => {
     return hasErrors.includes(true) ? false : form;
 }
 
+const showSoldOutModal = ref<boolean>(false);
+const soldOutMessage = ref<string>('');
+
+const handleReturnToCart = () => {
+    showSoldOutModal.value = false;
+    emit('cb'); // This will refresh the cart
+};
+
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
@@ -420,13 +469,20 @@ const handleSubmit = async () => {
                 toast.success(submitService.request.message ?? "Order placed successfully.");
                 router.push({ name: "customer-order" });
             } else {
-                toast.error(
-                    submitService.request.message ?? "Please try again",
-                );
-                if (submitService.request.errors) {
-                    Object.keys(submitService.request.errors).forEach((key) => {
-                        errors[key] = submitService.request.errors[key];
-                    });
+                // Check if this is a stock-related error (status 422 with sold out message)
+                const message = submitService.request.message ?? "Please try again";
+                
+                if (message.includes('sold out') || message.includes('Insufficient stock') || message.includes('no longer available')) {
+                    // Show the sold-out modal instead of a toast
+                    soldOutMessage.value = message;
+                    showSoldOutModal.value = true;
+                } else {
+                    toast.error(message);
+                    if (submitService.request.errors) {
+                        Object.keys(submitService.request.errors).forEach((key) => {
+                            errors[key] = submitService.request.errors[key];
+                        });
+                    }
                 }
             }
         });

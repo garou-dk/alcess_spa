@@ -672,7 +672,11 @@
                                     :options="[
                                         { label: 'Home Credit', value: 'Home Credit' },
                                         { label: 'Credit Card', value: 'Credit Card' },
-                                        { label: 'Kiro', value: 'Kiro' },
+                                        { label: 'Skyro', value: 'Skyro' },
+                                        { label: 'Debit Card', value: 'Debit Card' },
+                                        { label: 'Salmon', value: 'Salmon' },
+                                        { label: 'GGives', value: 'GGives' },
+                                        { label: 'GCredit', value: 'GCredit' },
                                     ]"
                                     placeholder="Select Installment Type"
                                     id="installment-type"
@@ -1331,6 +1335,47 @@
                 </div>
             </div>
         </Dialog>
+
+        <!-- Sold Out / Insufficient Stock Modal for POS -->
+        <Dialog
+            v-model:visible="showSoldOutModal"
+            modal
+            header="Items Unavailable"
+            :style="{ width: '90vw', maxWidth: '500px' }"
+            :breakpoints="{ '575px': '95vw' }"
+            :pt="{
+                header: {
+                    class: '!bg-red-600 !text-white !border-b-2 !border-red-700 !rounded-t-lg'
+                },
+                headerTitle: {
+                    class: '!text-white !font-bold'
+                },
+                closeButton: {
+                    class: 'hover:!bg-red-700 !text-white'
+                }
+            }"
+        >
+            <div class="py-4">
+                <!-- Warning Icon -->
+                <div class="text-center mb-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">
+                        <i class="pi pi-exclamation-triangle text-4xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Stock Issue Detected</h3>
+                    <p class="text-sm text-gray-600">{{ soldOutMessage }}</p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-center gap-3 mt-6">
+                    <Button
+                        label="Update Cart"
+                        icon="pi pi-refresh"
+                        class="!bg-blue-600 hover:!bg-blue-700 !border-blue-600 text-white"
+                        @click="showSoldOutModal = false"
+                    />
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -1635,6 +1680,10 @@ const validate = () => {
 const submitService = useAxiosUtil<IForm, ISale>();
 const router = useRouter();
 
+// Sold out modal state
+const showSoldOutModal = ref<boolean>(false);
+const soldOutMessage = ref<string>('');
+
 const handleSubmit = async () => {
     const validated = validate();
     if (validated) {
@@ -1648,17 +1697,36 @@ const handleSubmit = async () => {
             clearErrors();
             toast.success(submitService.request.message);
             
+            // Clear the cart after successful sale
+            selectedProducts.products = [];
+            form.customer_name = null;
+            form.customer_address = null;
+            form.prepared_by = null;
+            form.payment_method = null;
+            form.installment_type = null;
+            
             // Refresh daily statistics after successful sale
             await fetchDailyStats();
+            // Refresh sales history
+            await loadSalesHistory();
             
             await router.push({ name: "admin.pos.find", params: { id: submitService.request.data.sale_id } });
         }
         else {
-            toast.error(submitService.request.message ?? "Please try again");
-            if (submitService.request.errors) {
-                Object.keys(submitService.request.errors).forEach((key) => {
-                    errors[key] = submitService.request.errors[key];
-                });
+            // Check if this is a stock-related error
+            const message = submitService.request.message ?? "Please try again";
+            
+            if (message.includes('sold out') || message.includes('Insufficient stock') || message.includes('no longer available')) {
+                // Show the sold-out modal instead of a toast
+                soldOutMessage.value = message;
+                showSoldOutModal.value = true;
+            } else {
+                toast.error(message);
+                if (submitService.request.errors) {
+                    Object.keys(submitService.request.errors).forEach((key) => {
+                        errors[key] = submitService.request.errors[key];
+                    });
+                }
             }
         }
     }

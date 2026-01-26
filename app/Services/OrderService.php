@@ -31,19 +31,74 @@ class OrderService
             abort_if(empty($address), 404, 'Address not found for the user.');
 
             $products = [];
+            $outOfStockItems = [];
+            $insufficientStockItems = [];
 
             $product_ids = collect($data['products'])->pluck('product_id')->all();
 
+            // Lock the products for update to prevent race conditions
+            // This ensures that concurrent orders don't oversell inventory
             $productSelected = Product::query()
                 ->whereIn('product_id', $product_ids)
+                ->lockForUpdate()
                 ->get();
 
+            // Validate stock for each product before proceeding
             foreach ($data['products'] as $value) {
+                $product = $productSelected->where('product_id', $value['product_id'])->first();
+                
+                if (!$product) {
+                    continue; // Product doesn't exist, will be caught by validation
+                }
+                
+                // Check if product is completely out of stock
+                if ($product->product_quantity <= 0) {
+                    $outOfStockItems[] = [
+                        'product_id' => $product->product_id,
+                        'product_name' => $product->product_name,
+                        'requested_quantity' => $value['quantity'],
+                        'available_quantity' => 0
+                    ];
+                    continue;
+                }
+                
+                // Check if requested quantity exceeds available stock
+                if ($value['quantity'] > $product->product_quantity) {
+                    $insufficientStockItems[] = [
+                        'product_id' => $product->product_id,
+                        'product_name' => $product->product_name,
+                        'requested_quantity' => $value['quantity'],
+                        'available_quantity' => $product->product_quantity
+                    ];
+                    continue;
+                }
+                
                 $products[] = [
                     'product_id' => $value['product_id'],
                     'quantity' => $value['quantity'],
-                    'price' => $productSelected->where('product_id', $value['product_id'])->value('product_price')
+                    'price' => $product->product_price
                 ];
+            }
+
+            // If any items are out of stock, abort with detailed error
+            if (!empty($outOfStockItems)) {
+                $itemNames = collect($outOfStockItems)->pluck('product_name')->implode(', ');
+                abort(422, "The following items are sold out: {$itemNames}. Please remove them from your cart and try again.");
+            }
+
+            // If any items have insufficient stock, abort with detailed error
+            if (!empty($insufficientStockItems)) {
+                $itemDetails = collect($insufficientStockItems)->map(function ($item) {
+                    return "{$item['product_name']} (only {$item['available_quantity']} available)";
+                })->implode(', ');
+                abort(422, "Insufficient stock for: {$itemDetails}. Please reduce the quantity and try again.");
+            }
+
+            // All stock validation passed, now deduct inventory
+            foreach ($data['products'] as $value) {
+                Product::query()
+                    ->where('product_id', $value['product_id'])
+                    ->decrement('product_quantity', $value['quantity']);
             }
 
             $orderInsert = [
@@ -198,6 +253,7 @@ class OrderService
 
     /**
      * Admin declines order - sets status to Cancelled with reason
+     * Restores inventory since stock was deducted at order placement
      */
     public function declineOrder(array $data) {
         return DB::transaction(function() use ($data) {
@@ -209,6 +265,13 @@ class OrderService
             abort_if(empty($order), 404, 'Order not found.');
             abort_if($order->status != OrderStatusEnum::PROCESSING->value, 400, 'Order must be in Processing status.');
             abort_if($order->admin_accepted, 400, 'Cannot decline an already accepted order.');
+
+            // Restore inventory for each product in the order
+            foreach ($order->productOrders as $productOrder) {
+                Product::query()
+                    ->where('product_id', $productOrder->product_id)
+                    ->increment('product_quantity', $productOrder->quantity);
+            }
 
             // Set to cancelled with reason
             $order->status = OrderStatusEnum::CANCELLED->value;
@@ -277,10 +340,12 @@ class OrderService
      * 1. Processing status and NOT yet accepted by admin
      * 2. Processing status and accepted by admin (before payment confirmation)
      * Once payment is confirmed (Confirmed status), order cannot be cancelled
+     * Restores inventory since stock was deducted at order placement
      */
     public function cancelOrder(array $data) {
         return DB::transaction(function () use ($data) {
-            $order = Order::query();
+            $order = Order::query()
+                ->with(['productOrders']);
 
             if (!empty($data['user_id'])) {
                 $order = $order->where('user_id', $data['user_id']);
@@ -298,6 +363,13 @@ class OrderService
                 400,
                 'Order cannot be cancelled. It has already been confirmed or is being processed.'
             );
+
+            // Restore inventory for each product in the order
+            foreach ($order->productOrders as $productOrder) {
+                Product::query()
+                    ->where('product_id', $productOrder->product_id)
+                    ->increment('product_quantity', $productOrder->quantity);
+            }
 
             $order->status = OrderStatusEnum::CANCELLED->value;
             $order->save();
@@ -398,12 +470,8 @@ class OrderService
         
             abort_unless(empty($order->date_paid_confirmed), 422, 'This order is already been paid.');
 
-            // Reduce product stock for each product in the order
-            foreach ($order->productOrders as $productOrder) {
-                Product::query()
-                    ->where('product_id', $productOrder->product_id)
-                    ->decrement('product_quantity', $productOrder->quantity);
-            }
+            // Note: Stock is already deducted at order placement time to prevent overselling
+            // No need to deduct here again
 
             $order->date_paid_confirmed = now();
             

@@ -173,7 +173,7 @@
                         </span>
                     </template>
                 </Column>
-                <Column field="sales_revenue" header="POS Revenue" :sortable="true">
+                <Column field="sales_revenue" header="Walk-in Revenue" :sortable="true">
                     <template #body="slotProps">
                         <span class="font-semibold text-green-600">
                             {{ CurrencyUtil.formatCurrency(slotProps.data.sales_revenue) }}
@@ -231,7 +231,7 @@
                             </div>
                         </div>
                         <div class="text-center p-2 bg-green-50 rounded-lg">
-                            <div class="text-xs text-green-600 font-medium mb-1">POS</div>
+                            <div class="text-xs text-green-600 font-medium mb-1">Walk-in</div>
                             <div class="font-semibold text-green-600 text-sm">
                                 {{ CurrencyUtil.formatCurrency(category.sales_revenue) }}
                             </div>
