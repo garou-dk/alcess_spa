@@ -29,8 +29,8 @@
                                         <p>{{ data.payment_method }}</p>
                                     </div>
                                     <div class="p-2 grow">
-                                        <p class="font-semibold text-gray-600">Recorded By</p>
-                                        <p>{{ data.prepared_by }}</p>
+                                        <p class="font-semibold text-gray-600">Prepared By</p>
+                                        <p>Blademier S. Canalita</p>
                                     </div>
                                     <div class="flex items-center justify-center">
                                         <Button type="button" label="Print" icon="pi pi-print" class="!bg-blue-600 hover:!bg-blue-700 !text-white"
@@ -152,12 +152,12 @@
                                             mobile: 'text-xs font-medium text-gray-700 mb-1',
                                             tablet: 'text-sm font-medium text-gray-700 mb-1',
                                             desktop: 'text-sm font-medium text-gray-700 mb-1'
-                                        })">Recorded By</p>
+                                        })">Prepared By</p>
                                         <p :class="getResponsiveClasses({
                                             mobile: 'text-sm text-gray-900',
                                             tablet: 'text-base text-gray-900',
                                             desktop: 'text-base text-gray-900'
-                                        })">{{ data.prepared_by }}</p>
+                                        })">Blademier S. Canalita</p>
                                     </div>
                                 </div>
                                 <!-- Print Button for Mobile/Tablet -->
@@ -442,15 +442,15 @@
 
                 <div style="position: relative; margin-top: 30px;">
                     <div style="float: left; width: 45%;">
-                        <h2 style="font-size: 16px;">Approved by:</h2>
+                        <h2 style="font-size: 16px;">Prepared by:</h2>
                         <div style="text-align: center;">
                             <span style="display: block; margin-top: 5px;">Blademier S. Canalita</span>
                         </div>
                     </div>
                     <div style="float: right; width: 45%;">
-                        <h2 style="font-size: 16px;">Prepared by:</h2>
+                        <h2 style="font-size: 16px;">Approved by:</h2>
                         <div style="text-align: center;">
-                            <span style="display: block; margin-top: 5px;">{{ data.prepared_by }}</span>
+                            <span style="display: block; margin-top: 5px;">Albert Von Daligdigan</span>
                         </div>
                     </div>
                     <div style="clear: both;"></div>
