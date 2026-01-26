@@ -43,14 +43,12 @@
         </header>
 
         <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-bg"></div>
-            <!-- Davao Branch Watermark -->
-            <div class="hero-watermark">DAVAO BRANCH</div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
                         <div class="hero-text">
+                            <!-- Davao Branch Watermark -->
+                            <div class="hero-watermark">DAVAO BRANCH</div>
                             <span class="hero-badge">Featured Product</span>
                             <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
                             <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
@@ -528,17 +526,13 @@ onUnmounted(() => stopCarousel());
 .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 50%); }
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
-.hero-text { text-align: center; position: relative; z-index: 2; }
-.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; }
-.hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
-.hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
-.hero-price { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
-.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-.hero-image-container { display: flex; justify-content: center; position: relative; }
-.hero-image-wrapper { position: relative; z-index: 2; }
-.hero-image { max-height: 280px; width: auto; object-fit: contain; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.3)); }
-.hero-image-placeholder { width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 3rem; }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.07); text-transform: uppercase; letter-spacing: 0.2em; white-space: nowrap; z-index: 1; filter: blur(2px); pointer-events: none; user-select: none; }
+.hero-text { text-align: center; position: relative; z-index: 5; }
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; position: relative; z-index: 2; }
+.hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; }
+.hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; position: relative; z-index: 2; }
+.hero-price { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; position: relative; z-index: 2; }
+.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
 .dot.active { width: 24px; background: #fff; }
@@ -708,6 +702,7 @@ onUnmounted(() => stopCarousel());
     .nav-btn { width: 40px; height: 40px; }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .hero-text { text-align: left; }
+    .hero-watermark { font-size: clamp(5rem, 10vw, 8rem); justify-content: flex-start; left: 0; transform: translateY(-50%); }
     .hero-buttons { justify-content: flex-start; }
     .hero-product-name { font-size: 2.5rem; }
     .hero-price { font-size: 2rem; }
@@ -729,8 +724,8 @@ onUnmounted(() => stopCarousel());
     .nav-btn { width: 42px; height: 42px; }
     .hero-content { padding: 4rem 2rem; }
     .hero-product-name { font-size: 3rem; }
+    .hero-watermark { font-size: clamp(8rem, 12vw, 12rem); }
     .hero-image { max-height: 400px; }
-    .hero-watermark { font-size: 12rem; }
     .product-grid { grid-template-columns: repeat(5, 1fr); }
     .footer-grid { grid-template-columns: repeat(4, 1fr); }
     .cta-section { padding: 4rem 2rem; }

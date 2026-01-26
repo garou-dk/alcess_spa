@@ -3,12 +3,12 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-bg"></div>
-            <!-- Davao Branch Watermark -->
-            <div class="hero-watermark">DAVAO BRANCH</div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
                         <div class="hero-text">
+                            <!-- Davao Branch Watermark -->
+                            <div class="hero-watermark">DAVAO BRANCH</div>
                             <span class="hero-badge">Featured Product</span>
                             <h2 class="hero-title">{{ products[currentSlide]?.product_name }}</h2>
                             <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
@@ -264,20 +264,20 @@ onUnmounted(() => stopCarousel());
 /* Hero */
 .hero { position: relative; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 420px; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 50%); }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.07); text-transform: uppercase; letter-spacing: 0.2em; white-space: nowrap; z-index: 1; filter: blur(2px); pointer-events: none; user-select: none; }
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2.5rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
-.hero-text { text-align: center; }
-.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 0.75rem; }
-.hero-title { font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
-.hero-category { color: #94a3b8; font-size: 0.8125rem; margin-bottom: 0.75rem; }
-.hero-price { font-size: 1.375rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; }
-.hero-rating { display: flex; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; }
+.hero-text { text-align: center; position: relative; z-index: 5; }
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 0.75rem; position: relative; z-index: 2; }
+.hero-title { font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; }
+.hero-category { color: #94a3b8; font-size: 0.8125rem; margin-bottom: 0.75rem; position: relative; z-index: 2; }
+.hero-price { font-size: 1.375rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; position: relative; z-index: 2; }
+.hero-rating { display: flex; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; position: relative; z-index: 2; }
 .hero-rating i { font-size: 0.75rem; }
 .hero-rating i.pi-star-fill { color: #f59e0b; }
 .hero-rating i.pi-star { color: #475569; }
 .hero-rating span { font-size: 0.75rem; color: #94a3b8; margin-left: 0.5rem; }
-.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
 .hero-image-container { display: flex; justify-content: center; }
 .hero-image { max-height: 220px; width: auto; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
 .hero-placeholder { width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 2.5rem; }
@@ -427,6 +427,7 @@ onUnmounted(() => stopCarousel());
     .hero-content { padding: 3rem 1.5rem; }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .hero-text { text-align: left; }
+    .hero-watermark { font-size: clamp(5rem, 10vw, 8rem); justify-content: flex-start; left: 0; transform: translateY(-50%); }
     .hero-title { font-size: 2rem; }
     .hero-price { font-size: 1.75rem; }
     .hero-rating { justify-content: flex-start; }
@@ -443,7 +444,7 @@ onUnmounted(() => stopCarousel());
 /* Desktop */
 @media (min-width: 1024px) {
     .hero-content { padding: 4rem 2rem; }
-    .hero-watermark { font-size: 12rem; }
+    .hero-watermark { font-size: clamp(8rem, 12vw, 12rem); }
     .hero-title { font-size: 2.5rem; }
     .hero-image { max-height: 360px; }
     .product-grid { grid-template-columns: repeat(5, 1fr); }
