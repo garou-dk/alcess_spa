@@ -1,47 +1,45 @@
 <template>
     <div class="home-page">
         <!-- Header -->
-        <header class="header">
-            <nav class="header-nav">
-                <div class="header-container">
-                    <RouterLink :to="{ name: 'home' }" class="header-logo-link">
-                        <div class="header-logo-wrapper">
-                            <img :src="Icon" class="header-logo-img" alt="Store Icon" />
-                        </div>
-                        <h1 class="header-title">{{ appName }}</h1>
-                    </RouterLink>
-                    
-                    <div v-if="isProductPage" class="header-search-container">
-                        <form @submit.prevent="handleSearch" class="w-full">
-                            <div class="search-wrapper">
-                                <i class="pi pi-search search-icon" />
-                                <input v-model="form.search" type="text" placeholder="Search for products..." class="header-search-input" />
-                            </div>
-                        </form>
+        <header class="nav-header">
+            <div class="nav-container">
+                <RouterLink :to="{ name: 'home' }" class="nav-brand">
+                    <div class="nav-logo">
+                        <img :src="Icon" alt="Store Icon" />
                     </div>
-                    
-                    <div class="header-actions">
-                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="header-action-btn header-action-btn-facebook" title="Visit our Facebook page">
-                            <i class="pi pi-facebook"></i>
-                        </a>
-                        <button type="button" class="header-action-btn header-action-btn-secondary" @click="goToBrowseProducts" title="Browse All Products">
-                            <i class="pi pi-th-large"></i>
-                        </button>
-                        <button v-if="!Page.user" type="button" class="header-action-btn header-action-btn-secondary" @click="openLoginForm()" title="Login">
-                            <i class="pi pi-user"></i>
-                        </button>
-                    </div>
-                </div>
+                    <span class="nav-title">{{ appName }}</span>
+                </RouterLink>
                 
-                <div v-if="isProductPage" class="header-mobile-search">
+                <div v-if="isProductPage" class="nav-search">
                     <form @submit.prevent="handleSearch">
-                        <div class="search-wrapper">
-                            <i class="pi pi-search search-icon" />
-                            <input v-model="form.search" type="text" placeholder="Search products..." class="header-search-input" />
+                        <div class="nav-search-box">
+                            <i class="pi pi-search" />
+                            <input v-model="form.search" type="text" placeholder="Search products..." />
                         </div>
                     </form>
                 </div>
-            </nav>
+                
+                <div class="nav-actions">
+                    <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="nav-btn nav-btn-fb" title="Facebook">
+                        <i class="pi pi-facebook"></i>
+                    </a>
+                    <button type="button" class="nav-btn" @click="goToBrowseProducts" title="Browse Products">
+                        <i class="pi pi-th-large"></i>
+                    </button>
+                    <button v-if="!Page.user" type="button" class="nav-btn" @click="openLoginForm()" title="Login">
+                        <i class="pi pi-user"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div v-if="isProductPage" class="nav-mobile-search">
+                <form @submit.prevent="handleSearch">
+                    <div class="nav-search-box">
+                        <i class="pi pi-search" />
+                        <input v-model="form.search" type="text" placeholder="Search products..." />
+                    </div>
+                </form>
+            </div>
         </header>
 
         <!-- Hero Section -->
@@ -69,8 +67,8 @@
                             <div class="hero-image-wrapper">
                                 <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
                                 <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
-                                <div class="watermark">Davao Branch</div>
                             </div>
+                            <div class="hero-watermark">Davao Branch</div>
                         </div>
                     </div>
                     <div class="hero-dots">
@@ -144,7 +142,6 @@
                             <div class="product-image-box">
                                 <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name" />
                                 <i v-else class="pi pi-image"></i>
-                                <div class="product-watermark">Davao Branch</div>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-name">{{ product.product_name }}</h3>
@@ -185,6 +182,67 @@
                             <div class="feature-icon feature-icon-amber"><i class="pi pi-sync"></i></div>
                             <h3>Easy Returns</h3>
                             <p>7-day replacements for defects</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Customer Testimonials -->
+                <section class="testimonials-section">
+                    <div class="section-header">
+                        <p class="section-label">Customer Reviews</p>
+                        <h2 class="section-title">What Our Customers Say</h2>
+                    </div>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                            </div>
+                            <p class="testimonial-text">"Excellent service! Got my laptop delivered in just 2 days. The product is 100% genuine and works perfectly. Highly recommended!"</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">JD</div>
+                                <div class="author-info">
+                                    <span class="author-name">Juan Dela Cruz</span>
+                                    <span class="author-location">Davao City</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                            </div>
+                            <p class="testimonial-text">"Best prices in Davao! I compared with other stores and Alcess has the most competitive rates. Great customer support too."</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">MR</div>
+                                <div class="author-info">
+                                    <span class="author-name">Maria Reyes</span>
+                                    <span class="author-location">Tagum City</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star-fill"></i>
+                                <i class="pi pi-star"></i>
+                            </div>
+                            <p class="testimonial-text">"Bought a gaming laptop for my son. The warranty claim process was smooth when we needed it. Very trustworthy store!"</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">PS</div>
+                                <div class="author-info">
+                                    <span class="author-name">Pedro Santos</span>
+                                    <span class="author-location">Digos City</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -442,27 +500,43 @@ onUnmounted(() => stopCarousel());
 .home-page { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
-/* Header */
-.header { background: #1e40af; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.search-wrapper { position: relative; }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+/* Navigation Header */
+.nav-header { background: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-bottom: 1px solid #e5e7eb; }
+.nav-container { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; gap: 1rem; max-width: 1280px; margin: 0 auto; }
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0; }
+.nav-logo { width: 40px; height: 40px; border-radius: 10px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+.nav-logo img { width: 100%; height: 100%; object-fit: cover; }
+.nav-title { font-size: 1.125rem; font-weight: 700; color: #1e293b; white-space: nowrap; }
+.nav-search { flex: 1; max-width: 400px; display: none; }
+.nav-search-box { position: relative; }
+.nav-search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.875rem; }
+.nav-search-box input { width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; background: #f8fafc; transition: all 0.2s; }
+.nav-search-box input:focus { outline: none; border-color: #2563eb; background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.nav-search-box input::placeholder { color: #94a3b8; }
+.nav-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.nav-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.nav-btn:hover { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+.nav-btn i { font-size: 1rem; }
+.nav-btn-fb { background: #1877f2; border-color: #1877f2; color: #fff; }
+.nav-btn-fb:hover { background: #166fe5; border-color: #166fe5; color: #fff; }
+.nav-mobile-search { display: block; padding: 0 1rem 0.75rem; }
 
 /* Hero */
 .hero { position: relative; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 500px; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 50%); }
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
-.hero-text { text-align: center; }
+.hero-text { text-align: center; position: relative; z-index: 2; }
 .hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; }
 .hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
 .hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
 .hero-price { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
 .hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-.hero-image-container { display: flex; justify-content: center; }
-.hero-image-wrapper { position: relative; }
+.hero-image-container { display: flex; justify-content: center; position: relative; }
+.hero-image-wrapper { position: relative; z-index: 2; }
 .hero-image { max-height: 280px; width: auto; object-fit: contain; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.3)); }
 .hero-image-placeholder { width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 3rem; }
-.watermark { position: absolute; bottom: 10px; right: 10px; background: rgba(30,64,175,0.9); color: #fff; font-size: 0.625rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; font-weight: 800; color: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: 1; filter: blur(1px); pointer-events: none; user-select: none; }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
 .dot.active { width: 24px; background: #fff; }
@@ -520,7 +594,6 @@ onUnmounted(() => stopCarousel());
 .product-image-box { position: relative; height: 120px; background: #f8fafc; display: flex; align-items: center; justify-content: center; }
 .product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .product-image-box i { font-size: 2rem; color: #cbd5e1; }
-.product-watermark { position: absolute; bottom: 6px; right: 6px; background: rgba(30,64,175,0.9); color: #fff; font-size: 0.5rem; font-weight: 600; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
 .product-info { padding: 0.75rem; }
 .product-name { font-size: 0.75rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.25rem; }
 
@@ -546,6 +619,20 @@ onUnmounted(() => stopCarousel());
 .feature-icon-amber { background: #fffbeb; color: #d97706; }
 .feature-card h3 { font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem; }
 .feature-card p { font-size: 0.75rem; color: #64748b; }
+
+/* Testimonials */
+.testimonials-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; }
+.testimonials-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.testimonial-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.25rem; }
+.testimonial-rating { display: flex; gap: 0.125rem; margin-bottom: 0.75rem; }
+.testimonial-rating i { font-size: 0.75rem; color: #f59e0b; }
+.testimonial-rating i.pi-star { color: #d1d5db; }
+.testimonial-text { font-size: 0.8125rem; color: #475569; line-height: 1.6; margin-bottom: 1rem; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
+.author-avatar { width: 36px; height: 36px; border-radius: 9999px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.author-info { display: flex; flex-direction: column; }
+.author-name { font-size: 0.8125rem; font-weight: 600; color: #1e293b; }
+.author-location { font-size: 0.6875rem; color: #64748b; }
 
 /* CTA */
 .cta-section { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 3rem 1rem; text-align: center; }
@@ -610,24 +697,38 @@ onUnmounted(() => stopCarousel());
 
 /* Tablet */
 @media (min-width: 768px) {
+    .nav-container { padding: 0.875rem 1.5rem; }
+    .nav-logo { width: 44px; height: 44px; }
+    .nav-title { font-size: 1.25rem; }
+    .nav-search { display: block; }
+    .nav-mobile-search { display: none; }
+    .nav-btn { width: 40px; height: 40px; }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .hero-text { text-align: left; }
     .hero-buttons { justify-content: flex-start; }
     .hero-product-name { font-size: 2.5rem; }
     .hero-price { font-size: 2rem; }
     .hero-image { max-height: 350px; }
+    .hero-watermark { font-size: 5rem; }
     .trust-grid { grid-template-columns: repeat(4, 1fr); }
     .category-grid { grid-template-columns: repeat(3, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .features-grid { grid-template-columns: repeat(4, 1fr); }
+    .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Desktop */
 @media (min-width: 1024px) {
+    .nav-container { padding: 1rem 2rem; }
+    .nav-logo { width: 48px; height: 48px; }
+    .nav-title { font-size: 1.375rem; }
+    .nav-search { max-width: 500px; }
+    .nav-btn { width: 42px; height: 42px; }
     .hero-content { padding: 4rem 2rem; }
     .hero-product-name { font-size: 3rem; }
     .hero-image { max-height: 400px; }
+    .hero-watermark { font-size: 6rem; }
     .category-grid { grid-template-columns: repeat(6, 1fr); }
     .product-grid { grid-template-columns: repeat(5, 1fr); }
     .footer-grid { grid-template-columns: repeat(4, 1fr); }
