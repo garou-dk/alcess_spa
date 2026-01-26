@@ -45,6 +45,11 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-bg"></div>
+            <!-- Davao Branch Banner -->
+            <div class="branch-banner">
+                <i class="pi pi-map-marker"></i>
+                <span>Davao Branch</span>
+            </div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
@@ -68,7 +73,6 @@
                                 <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
                                 <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
                             </div>
-                            <div class="hero-watermark">Davao Branch</div>
                         </div>
                     </div>
                     <div class="hero-dots">
@@ -501,25 +505,26 @@ onUnmounted(() => stopCarousel());
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
 /* Navigation Header */
-.nav-header { background: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-bottom: 1px solid #e5e7eb; }
-.nav-container { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; gap: 1rem; max-width: 1280px; margin: 0 auto; }
+.nav-header { background: #2563eb; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.nav-container { display: flex; align-items: center; justify-content: space-between; padding: 0.625rem 1rem; gap: 1rem; max-width: 1280px; margin: 0 auto; }
 .nav-brand { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0; }
-.nav-logo { width: 40px; height: 40px; border-radius: 10px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
-.nav-logo img { width: 100%; height: 100%; object-fit: cover; }
-.nav-title { font-size: 1.125rem; font-weight: 700; color: #1e293b; white-space: nowrap; }
+.nav-logo { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; padding: 2px; }
+.nav-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.nav-title { font-size: 1.125rem; font-weight: 700; color: #fff; white-space: nowrap; }
 .nav-search { flex: 1; max-width: 400px; display: none; }
 .nav-search-box { position: relative; }
-.nav-search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.875rem; }
-.nav-search-box input { width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem; background: #f8fafc; transition: all 0.2s; }
-.nav-search-box input:focus { outline: none; border-color: #2563eb; background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.nav-search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.875rem; }
+.nav-search-box input { width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 2px solid #fff; border-radius: 8px; font-size: 0.875rem; background: #fff; transition: all 0.2s; }
+.nav-search-box input:focus { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,0.3); }
 .nav-search-box input::placeholder { color: #94a3b8; }
 .nav-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-.nav-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; color: #64748b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; text-decoration: none; }
-.nav-btn:hover { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+.nav-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.nav-btn:hover { background: rgba(255,255,255,0.3); }
 .nav-btn i { font-size: 1rem; }
-.nav-btn-fb { background: #1877f2; border-color: #1877f2; color: #fff; }
-.nav-btn-fb:hover { background: #166fe5; border-color: #166fe5; color: #fff; }
-.nav-mobile-search { display: block; padding: 0 1rem 0.75rem; }
+.nav-btn-fb { background: #fff; color: #2563eb; }
+.nav-btn-fb:hover { background: #f1f5f9; color: #1d4ed8; }
+.nav-mobile-search { display: block; padding: 0 1rem 0.625rem; background: #2563eb; }
+.nav-mobile-search .nav-search-box input { border-color: rgba(255,255,255,0.3); }
 
 /* Hero */
 .hero { position: relative; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 500px; overflow: hidden; }
@@ -536,7 +541,8 @@ onUnmounted(() => stopCarousel());
 .hero-image-wrapper { position: relative; z-index: 2; }
 .hero-image { max-height: 280px; width: auto; object-fit: contain; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.3)); }
 .hero-image-placeholder { width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 3rem; }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; font-weight: 800; color: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: 1; filter: blur(1px); pointer-events: none; user-select: none; }
+.branch-banner { background: rgba(255,255,255,0.95); color: #1e40af; text-align: center; padding: 0.625rem 1rem; font-size: 0.875rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; position: relative; z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.branch-banner i { font-size: 1rem; color: #dc2626; }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
 .dot.active { width: 24px; background: #fff; }
@@ -709,7 +715,7 @@ onUnmounted(() => stopCarousel());
     .hero-product-name { font-size: 2.5rem; }
     .hero-price { font-size: 2rem; }
     .hero-image { max-height: 350px; }
-    .hero-watermark { font-size: 5rem; }
+    .branch-banner { font-size: 1rem; padding: 0.75rem 1.5rem; }
     .trust-grid { grid-template-columns: repeat(4, 1fr); }
     .category-grid { grid-template-columns: repeat(3, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
@@ -720,7 +726,7 @@ onUnmounted(() => stopCarousel());
 
 /* Desktop */
 @media (min-width: 1024px) {
-    .nav-container { padding: 1rem 2rem; }
+    .nav-container { padding: 0.75rem 2rem; }
     .nav-logo { width: 48px; height: 48px; }
     .nav-title { font-size: 1.375rem; }
     .nav-search { max-width: 500px; }
@@ -728,7 +734,7 @@ onUnmounted(() => stopCarousel());
     .hero-content { padding: 4rem 2rem; }
     .hero-product-name { font-size: 3rem; }
     .hero-image { max-height: 400px; }
-    .hero-watermark { font-size: 6rem; }
+    .branch-banner { font-size: 1.125rem; }
     .category-grid { grid-template-columns: repeat(6, 1fr); }
     .product-grid { grid-template-columns: repeat(5, 1fr); }
     .footer-grid { grid-template-columns: repeat(4, 1fr); }
