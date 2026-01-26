@@ -43,6 +43,8 @@
         </header>
 
         <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-bg"></div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
