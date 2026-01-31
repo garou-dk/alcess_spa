@@ -343,6 +343,7 @@ Route::middleware(['guest-only'])
         // Password reset with strict rate limiting (3 attempts per minute)
         Route::prefix('password')->middleware(['throttle:password-reset'])->group(function () {
             Route::post('send-code', [App\Http\Controllers\PasswordResetController::class, 'sendCode']);
+            Route::post('verify-code', [App\Http\Controllers\PasswordResetController::class, 'verify']);
             Route::post('reset', [App\Http\Controllers\PasswordResetController::class, 'reset']);
         });
     });

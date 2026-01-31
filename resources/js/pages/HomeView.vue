@@ -342,8 +342,8 @@
             <ResetPasswordForm @code-sent="handleCodeSent" />
         </Dialog>
 
-        <Dialog v-model:visible="verifyCodeFormVisible" modal header="Verify Code" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <VerifyCodeForm :email="resetEmail" :current-password="resetCurrentPassword" :new-password="resetNewPassword" :new-password-confirmation="resetNewPasswordConfirmation" @success="handleResetSuccess" />
+        <Dialog v-model:visible="verifyCodeFormVisible" modal header="Verify & Reset" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
+            <VerifyCodeForm :email="resetEmail" :current-password="resetCurrentPassword" @success="handleResetSuccess" />
         </Dialog>
 
         <Dialog v-model:visible="footerModalVisible" modal :header="footerModalTitle" :style="{ width: isMobile ? '95vw' : '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '95vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
@@ -460,8 +460,8 @@ watch(() => form.search, (newValue) => {
     }
 });
 
-const handleCodeSent = (data: { email: string; current_password: string; new_password: string; new_password_confirmation: string }) => {
-    resetEmail.value = data.email; resetCurrentPassword.value = data.current_password; resetNewPassword.value = data.new_password; resetNewPasswordConfirmation.value = data.new_password_confirmation;
+const handleCodeSent = (data: { email: string; current_password: string }) => {
+    resetEmail.value = data.email; resetCurrentPassword.value = data.current_password;
     resetPasswordFormVisible.value = false; verifyCodeFormVisible.value = true;
 };
 

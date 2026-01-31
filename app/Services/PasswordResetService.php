@@ -26,19 +26,6 @@ class PasswordResetService
             );
         }
 
-        // Validate new password
-        abort_if(
-            $data['new_password'] !== $data['new_password_confirmation'],
-            422,
-            'New passwords do not match.'
-        );
-
-        abort_if(
-            strlen($data['new_password']) < 8,
-            422,
-            'New password must be at least 8 characters.'
-        );
-
         // Generate 6-digit code
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $expiration = now()->addMinutes(15);
@@ -63,15 +50,46 @@ class PasswordResetService
         Cache::put($cacheKey, [
             'user_id' => $user->user_id,
             'code' => $code,
-            'new_password' => Hash::make($data['new_password']),
             'tries' => $tries,
             'verification_attempts' => 0,
             'expiration' => $expiration,
+            'current_password_verified' => !empty($data['current_password']),
         ], $expiration);
 
         // Send email with code
         $formattedDate = Carbon::parse($expiration)->format('F j, Y \a\t h:i A');
         Mail::queue(new SendPasswordResetMail($user->email, $code, $formattedDate));
+
+        return true;
+    }
+
+    public function verifyCode(array $data)
+    {
+        $user = User::where('email', $data['email'])->first();
+        abort_if(empty($user), 404, 'User not found.');
+
+        $cacheKey = "password-reset-{$user->user_id}";
+        abort_unless(Cache::has($cacheKey), 404, 'Reset code expired or not found.');
+
+        $resetData = Cache::get($cacheKey);
+
+        if ($resetData['verification_attempts'] >= 3) {
+            Cache::forget($cacheKey);
+            abort(429, 'Maximum verification attempts exceeded. Please request a new code.');
+        }
+
+        if ($resetData['code'] !== $data['code']) {
+            $resetData['verification_attempts']++;
+            $remainingAttempts = 3 - $resetData['verification_attempts'];
+            Cache::put($cacheKey, $resetData, Carbon::parse($resetData['expiration']));
+            
+            if ($remainingAttempts > 0) {
+                abort(401, "Invalid verification code. You have {$remainingAttempts} attempt(s) remaining.");
+            } else {
+                Cache::forget($cacheKey);
+                abort(429, 'Maximum verification attempts exceeded. Please request a new code.');
+            }
+        }
 
         return true;
     }
@@ -84,41 +102,18 @@ class PasswordResetService
 
         $cacheKey = "password-reset-{$user->user_id}";
         
-        abort_unless(Cache::has($cacheKey), 404, 'Reset code expired or not found.');
+        abort_unless(Cache::has($cacheKey), 404, 'Reset session expired or not found.');
 
         $resetData = Cache::get($cacheKey);
 
-        // Initialize verification attempts if not set
-        if (!isset($resetData['verification_attempts'])) {
-            $resetData['verification_attempts'] = 0;
-        }
-
-        // Check if maximum verification attempts exceeded (3 attempts)
-        if ($resetData['verification_attempts'] >= 3) {
-            Cache::forget($cacheKey);
-            abort(429, 'Maximum verification attempts exceeded. Please request a new code.');
-        }
-
-        // Verify code
+        // Verify code again to be sure (and it's passed in the final request)
         if ($resetData['code'] !== $data['code']) {
-            // Increment verification attempts
-            $resetData['verification_attempts']++;
-            $remainingAttempts = 3 - $resetData['verification_attempts'];
-            
-            // Update cache with new attempt count
-            Cache::put($cacheKey, $resetData, Carbon::parse($resetData['expiration']));
-            
-            if ($remainingAttempts > 0) {
-                abort(401, "Invalid verification code. You have {$remainingAttempts} attempt(s) remaining.");
-            } else {
-                Cache::forget($cacheKey);
-                abort(429, 'Maximum verification attempts exceeded. Please request a new code.');
-            }
+            abort(401, "Invalid verification code.");
         }
 
         // Update password
         $user->update([
-            'password' => $resetData['new_password'],
+            'password' => Hash::make($data['new_password']),
         ]);
 
         // Clear cache

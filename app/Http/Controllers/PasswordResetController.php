@@ -26,4 +26,18 @@ class PasswordResetController extends Controller
             'message' => 'Password reset successfully.',
         ]);
     }
+
+    public function verify(\Illuminate\Http\Request $request, PasswordResetService $service): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $service->verifyCode($data);
+
+        return response()->json([
+            'message' => 'Code verified successfully.',
+        ]);
+    }
 }

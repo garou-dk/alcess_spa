@@ -24,8 +24,6 @@ class SendPasswordResetCodeRequest extends FormRequest
         return [
             'email' => ['required', 'email', 'exists:users,email'],
             'current_password' => ['nullable', 'string'],
-            'new_password' => ['required', 'string', 'min:8'],
-            'new_password_confirmation' => ['required', 'string', 'same:new_password'],
         ];
     }
 }
