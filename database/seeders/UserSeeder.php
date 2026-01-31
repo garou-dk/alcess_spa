@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             [
                 'full_name' => 'Administrator',
                 'email' => 'admin@gmail.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('Admin@123'),
+                'password' => 'Admin@123',
                 'role_id' => Role::query()->where('role_name', 'Admin')->valueOrFail('role_id'),
                 'image' => null,
                 'email_verified_at' => now(),
@@ -25,10 +25,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $account) {
-            User::updateOrCreate(
-                ['email' => $account['email']],
-                $account
-            );
+            User::create($account);
         }
     }
 }

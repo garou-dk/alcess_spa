@@ -123,29 +123,6 @@ class UserController extends Controller
             ->response();
     }
 
-    public function updateSecuritySettings(string $id, Request $request)
-    {
-        $data = $request->validate([
-            'security_question' => ['nullable', 'string'],
-            'security_answer' => ['nullable', 'string'],
-            'regenerate_recovery_key' => ['nullable', 'boolean'],
-        ]);
-
-        $data['user_id'] = $id;
-
-        return ApiResponse::success()
-            ->data($this->service->updateSecuritySettings($data))
-            ->message('Security settings updated successfully')
-            ->response();
-    }
-
-    public function getSecurityQuestions()
-    {
-        return ApiResponse::success()
-            ->data($this->service->getSecurityQuestions())
-            ->response();
-    }
-
     public function customerList(Request $request) {
         $data = $request->validate([
             'start_date' => ['nullable', 'date', 'date_format:Y-m-d'],

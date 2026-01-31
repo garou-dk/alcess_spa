@@ -26,7 +26,15 @@
                     <button type="button" class="nav-btn" @click="goToBrowseProducts" title="Browse Products">
                         <i class="pi pi-th-large"></i>
                     </button>
-                    <button v-if="!Page.user" type="button" class="nav-btn" @click="openLoginForm()" title="Login">
+                    <template v-if="Page.user">
+                        <button type="button" class="nav-btn" @click="goRoute('customer.profile')" title="Security & Profile">
+                            <i class="pi pi-shield"></i>
+                        </button>
+                        <button type="button" class="nav-btn nav-btn-logout" @click="handleLogout" title="Logout">
+                            <i class="pi pi-sign-out"></i>
+                        </button>
+                    </template>
+                    <button v-else type="button" class="nav-btn" @click="openLoginForm()" title="Login">
                         <i class="pi pi-user"></i>
                     </button>
                 </div>
@@ -339,7 +347,11 @@
         </Dialog>
 
         <Dialog v-model:visible="resetPasswordFormVisible" modal header="Reset Account" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <ResetPasswordForm @code-sent="handleCodeSent" />
+            <ResetPasswordForm @code-sent="handleCodeSent" @lost-email="handleLostEmail" />
+        </Dialog>
+
+        <Dialog v-model:visible="accountRecoveryVisible" modal header="Account Recovery" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-orange-600! text-white! rounded-t-lg! rounded-b-none!">
+            <AccountRecoveryForm @back="handleRecoveryBack" @recovered="handleRecovered" />
         </Dialog>
 
         <Dialog v-model:visible="verifyCodeFormVisible" modal header="Verify & Reset" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
@@ -392,7 +404,9 @@ import LoginForm from "@/components/forms/LoginForm.vue";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import ResetPasswordForm from "@/components/forms/ResetPasswordForm.vue";
 import VerifyCodeForm from "@/components/forms/VerifyCodeForm.vue";
+import AccountRecoveryForm from "@/components/forms/AccountRecoveryForm.vue";
 import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/SearchProductInterface";
+import { useSettingsStore } from "@/stores/SettingsStore";
 import Page from "@/stores/Page";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
@@ -410,6 +424,7 @@ const loginFormVisible = ref(false);
 const registerFormVisible = ref(false);
 const resetPasswordFormVisible = ref(false);
 const verifyCodeFormVisible = ref(false);
+const accountRecoveryVisible = ref(false);
 const resetEmail = ref<string | null>(null);
 const resetCurrentPassword = ref<string | null>(null);
 const resetNewPassword = ref<string | null>(null);
@@ -467,6 +482,17 @@ const handleCodeSent = (data: { email: string; current_password: string }) => {
 
 const handleResetSuccess = () => { verifyCodeFormVisible.value = false; resetPasswordFormVisible.value = false; loginFormVisible.value = true; };
 
+const handleLostEmail = () => { resetPasswordFormVisible.value = false; accountRecoveryVisible.value = true; };
+
+const handleRecoveryBack = () => { accountRecoveryVisible.value = false; resetPasswordFormVisible.value = true; };
+
+const handleRecovered = (email: string) => { 
+    accountRecoveryVisible.value = false; 
+    resetPasswordFormVisible.value = true; 
+    // We can potentially pre-fill the email here if ResetPasswordForm exposed a way, 
+    // but for now, just finding the email is a huge help for the user.
+};
+
 const loadBestSellingProducts = async () => {
     await loadBestSellingService.get("best-selling").then(() => {
         if (loadBestSellingService.request.status === 200 && loadBestSellingService.request.data) {
@@ -482,8 +508,16 @@ const startCarousel = () => {
 };
 
 const stopCarousel = () => { if (carouselInterval) { clearInterval(carouselInterval); carouselInterval = null; } };
-const goRoute = (route: string, params: Record<string, string>) => router.push({ name: route, params });
+const goRoute = (route: string, params: Record<string, string> = {}) => router.push({ name: route, params });
 const handleImageError = (event: Event) => { (event.target as HTMLImageElement).style.display = 'none'; };
+
+const handleLogout = async () => {
+    await useAxiosUtil().post('logout').then(() => {
+        Page.user = null;
+        router.push({ name: 'home' });
+        toast.success("Logged out successfully");
+    });
+};
 
 const addToCart = async (productId: number) => {
     if (!Page.user) { openLoginForm(); return; }
@@ -520,6 +554,7 @@ onUnmounted(() => stopCarousel());
 .nav-btn i { font-size: 1rem; }
 .nav-btn-fb { background: #fff; color: #2563eb; }
 .nav-btn-fb:hover { background: #f1f5f9; color: #1d4ed8; }
+.nav-btn-logout:hover { background: #fee2e2; color: #dc2626; }
 .nav-mobile-search { display: block; padding: 0 1rem 0.625rem; background: #2563eb; }
 .nav-mobile-search .nav-search-box input { border-color: rgba(255,255,255,0.3); }
 

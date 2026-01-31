@@ -40,43 +40,4 @@ class PasswordResetController extends Controller
             'message' => 'Code verified successfully.',
         ]);
     }
-
-    public function verifyRecoveryKey(\Illuminate\Http\Request $request, PasswordResetService $service): JsonResponse
-    {
-        $data = $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
-            'recovery_key' => ['required', 'string'],
-        ]);
-
-        $service->verifyRecoveryKey($data);
-
-        return response()->json([
-            'message' => 'Recovery key verified successfully.',
-        ]);
-    }
-
-    public function getSecurityQuestion(\Illuminate\Http\Request $request, PasswordResetService $service): JsonResponse
-    {
-        $data = $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
-        ]);
-
-        return response()->json([
-            'question' => $service->getSecurityQuestionForEmail($data['email']),
-        ]);
-    }
-
-    public function verifySecurityAnswer(\Illuminate\Http\Request $request, PasswordResetService $service): JsonResponse
-    {
-        $data = $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
-            'answer' => ['required', 'string'],
-        ]);
-
-        $service->verifySecurityAnswer($data);
-
-        return response()->json([
-            'message' => 'Security answer verified successfully.',
-        ]);
-    }
 }

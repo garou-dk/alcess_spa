@@ -1,89 +1,102 @@
 <template>
     <form @submit.prevent="handleSubmit()">
         <div class="p-2 mb-4">
-            <div v-if="!codeVerified" class="text-sm text-gray-600">
-                <p v-if="method === 'email'">A verification code has been sent to your email. Please enter it below.</p>
-                <p v-else-if="method === 'recovery_key'">Please enter your account recovery code below.</p>
-                <p v-else-if="method === 'security_question'">Please answer your security question below.</p>
-            </div>
+            <p v-if="!codeVerified" class="text-sm text-gray-600">
+                A verification code has been sent to your email. Please enter it below to verify your account.
+            </p>
             <div v-else class="flex flex-col items-center gap-2 p-3 rounded-lg bg-green-50 text-green-700">
                 <div class="flex items-center gap-2">
                     <i class="pi pi-check-circle" />
-                    <span class="text-sm font-semibold">Identity Verified Successfully!</span>
+                    <span class="text-sm font-semibold">Code Verified Successfully!</span>
                 </div>
                 <p class="text-xs">Now you can set your new password below.</p>
             </div>
         </div>
 
         <div v-if="!codeVerified">
-            <!-- Email Method (Code Verification) -->
-            <div v-if="method === 'email'" class="space-y-4">
-                <!-- Countdown Timer -->
-                <div class="p-2 mb-2">
-                    <div class="flex items-center justify-center gap-2 rounded-lg bg-blue-50 p-3">
-                        <i class="pi pi-clock text-blue-600" />
-                        <span class="text-sm font-semibold" :class="timeRemaining <= 60 ? 'text-red-600' : 'text-blue-600'">
-                            Code expires in: {{ formatTime(timeRemaining) }}
-                        </span>
-                    </div>
+            <!-- Countdown Timer -->
+            <div class="p-2 mb-2">
+                <div class="flex items-center justify-center gap-2 rounded-lg bg-blue-50 p-3">
+                    <i class="pi pi-clock text-blue-600" />
+                    <span class="text-sm font-semibold" :class="timeRemaining <= 60 ? 'text-red-600' : 'text-blue-600'">
+                        Code expires in: {{ formatTime(timeRemaining) }}
+                    </span>
                 </div>
-                
-                <div class="p-2">
-                    <InputForm :errors="errors.code" id="code" labelName="Verification Code*" tag="label">
-                        <InputText v-model="form.code" placeholder="Enter 6-digit code" fluid id="code" autocomplete="off" />
-                    </InputForm>
+                <div v-if="timeRemaining === 0" class="mt-2 text-center text-sm text-red-600">
+                    The verification code has expired. Please request a new one.
                 </div>
-
-                <div class="flex justify-center p-2">
-                    <Button type="submit" label="Verify Code" fluid :loading="verifyService.request.loading" pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!" />
-                </div>
-
-                <!-- Resend Code Button -->
-                <div class="flex flex-col items-center p-2">
-                    <Button type="button" :label="resendCooldown > 0 ? `Resend Code (${resendCooldown}s)` : 'Resend Code'" text :loading="resendCodeService.request.loading" :disabled="resendCooldown > 0 || resendAttempts >= maxResendAttempts" @click="resendCode()" pt:root:class="text-blue-600! hover:text-blue-700!" />
-                    <span class="text-xs text-gray-500 mt-1">{{ resendAttempts }}/{{ maxResendAttempts }} resend attempts used</span>
+            </div>
+            
+            <div class="p-2">
+                <InputForm
+                    :errors="errors.code"
+                    id="code"
+                    labelName="Verification Code*"
+                    tag="label"
+                >
+                    <InputText
+                        type="text"
+                        v-model="form.code"
+                        :invalid="errors.code.length > 0"
+                        placeholder="Enter 6-digit code"
+                        fluid
+                        id="code"
+                        autocomplete="off"
+                        :disabled="timeRemaining === 0 || verificationAttempts >= maxVerificationAttempts"
+                    />
+                </InputForm>
+                <div v-if="verificationAttempts > 0" class="mt-2 text-center">
+                    <span class="text-xs" :class="verificationAttempts >= maxVerificationAttempts ? 'text-red-600' : 'text-orange-600'">
+                        {{ verificationAttempts }}/{{ maxVerificationAttempts }} verification attempts used
+                    </span>
                 </div>
             </div>
 
-            <!-- Recovery Key Method -->
-            <div v-else-if="method === 'recovery_key'" class="space-y-4">
-                <div class="p-2">
-                    <InputForm :errors="errors.recovery_key" id="recovery_key" labelName="Recovery Code*" tag="label">
-                        <InputText v-model="form.recovery_key" placeholder="XXXX-XXXX-XXXX-XXXX" fluid id="recovery_key" autocomplete="off" />
-                    </InputForm>
-                    <p class="text-[10px] text-gray-500 mt-1 text-center">Enter the recovery code that was provided to you in your profile settings or email.</p>
-                </div>
-                <div class="flex justify-center p-2">
-                    <Button type="submit" label="Verify Recovery Code" fluid :loading="verifyService.request.loading" pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!" />
-                </div>
+            <div class="flex justify-center p-2">
+                <Button
+                    type="submit"
+                    label="Verify Code"
+                    fluid
+                    :loading="verifyService.request.loading"
+                    :disabled="timeRemaining === 0 || verificationAttempts >= maxVerificationAttempts"
+                    pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!"
+                />
             </div>
 
-            <!-- Security Question Method -->
-            <div v-else-if="method === 'security_question'" class="space-y-4">
-                <div v-if="loadingQuestion" class="flex flex-col items-center p-4">
-                    <i class="pi pi-spin pi-spinner text-2xl text-blue-600 mb-2" />
-                    <p class="text-sm text-gray-500">Loading your security question...</p>
-                </div>
-                <div v-else class="p-2">
-                    <div class="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                        <span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Your Question:</span>
-                        <p class="text-sm font-medium text-gray-800">{{ securityQuestion }}</p>
-                    </div>
-                    <InputForm :errors="errors.answer" id="answer" labelName="Your Answer*" tag="label">
-                        <InputText v-model="form.answer" type="password" placeholder="Type your answer here..." fluid id="answer" autocomplete="off" />
-                    </InputForm>
-                </div>
-                <div class="flex justify-center p-2">
-                    <Button type="submit" label="Verify Answer" fluid :loading="verifyService.request.loading" pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!" />
-                </div>
+            <!-- Resend Code Button -->
+            <div class="flex flex-col items-center p-2">
+                <Button
+                    type="button"
+                    :label="resendCooldown > 0 ? `Resend Code (${resendCooldown}s)` : 'Resend Code'"
+                    text
+                    :loading="resendCodeService.request.loading"
+                    :disabled="resendCooldown > 0 || resendCodeService.request.loading || resendAttempts >= maxResendAttempts"
+                    @click="resendCode()"
+                    pt:root:class="text-blue-600! hover:text-blue-700!"
+                />
+                <span class="text-xs text-gray-500 mt-1">
+                    {{ resendAttempts }}/{{ maxResendAttempts }} resend attempts used
+                </span>
             </div>
         </div>
 
-        <!-- Password Reset Section (Only shown after successful verification) -->
+        <!-- Password Reset Section (Only shown after code verification) -->
         <div v-else class="fade-in">
             <div class="p-2">
-                <InputForm :errors="errors.new_password" id="new_password" labelName="New Password*" tag="label">
-                    <Password v-model="form.new_password" :invalid="errors.new_password.length > 0" placeholder="New Password" fluid :toggleMask="true" input-id="new_password">
+                <InputForm
+                    :errors="errors.new_password"
+                    id="new_password"
+                    labelName="New Password*"
+                    tag="label"
+                >
+                    <Password
+                        v-model="form.new_password"
+                        :invalid="errors.new_password.length > 0"
+                        placeholder="New Password"
+                        fluid
+                        :toggleMask="true"
+                        input-id="new_password"
+                    >
                         <template #footer>
                             <div class="flex flex-col gap-1">
                                 <span v-if="!hasLowercase" class="text-sm text-red-500">At least one lowercase letter</span>
@@ -97,12 +110,31 @@
                 </InputForm>
             </div>
             <div class="p-2">
-                <InputForm :errors="errors.new_password_confirmation" id="new_password_confirmation" labelName="Confirm New Password*" tag="label">
-                    <Password v-model="form.new_password_confirmation" :invalid="errors.new_password_confirmation.length > 0" placeholder="Confirm New Password" fluid :feedback="false" :toggleMask="true" input-id="new_password_confirmation" />
+                <InputForm
+                    :errors="errors.new_password_confirmation"
+                    id="new_password_confirmation"
+                    labelName="Confirm New Password*"
+                    tag="label"
+                >
+                    <Password
+                        v-model="form.new_password_confirmation"
+                        :invalid="errors.new_password_confirmation.length > 0"
+                        placeholder="Confirm New Password"
+                        fluid
+                        :feedback="false"
+                        :toggleMask="true"
+                        input-id="new_password_confirmation"
+                    />
                 </InputForm>
             </div>
             <div class="flex justify-center p-2 mt-4">
-                <Button type="submit" label="Reset Password" fluid :loading="resetService.request.loading" pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!" />
+                <Button
+                    type="submit"
+                    label="Reset Password"
+                    fluid
+                    :loading="resetService.request.loading"
+                    pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!"
+                />
             </div>
         </div>
     </form>
@@ -116,7 +148,6 @@ import { useToast } from "vue-toastification";
 interface Props {
     email: string | null;
     currentPassword: string | null;
-    method?: 'email' | 'recovery_key' | 'security_question';
 }
 
 interface VerifyCodeForm {
@@ -125,8 +156,6 @@ interface VerifyCodeForm {
     new_password: string | null;
     new_password_confirmation: string | null;
     code: string | null;
-    recovery_key: string | null;
-    answer: string | null;
 }
 
 const props = defineProps<Props>();
@@ -137,8 +166,6 @@ const resetService = useAxiosUtil<VerifyCodeForm, any>();
 const resendCodeService = useAxiosUtil<any, any>();
 
 const codeVerified = ref(false);
-const securityQuestion = ref<string | null>(null);
-const loadingQuestion = ref(false);
 
 // Countdown timer (15 minutes = 900 seconds)
 const timeRemaining = ref(900);
@@ -162,14 +189,10 @@ const form: VerifyCodeForm = reactive({
     new_password: null,
     new_password_confirmation: null,
     code: null,
-    recovery_key: null,
-    answer: null,
 });
 
 const errors = reactive({
     code: [] as string[],
-    recovery_key: [] as string[],
-    answer: [] as string[],
     new_password: [] as string[],
     new_password_confirmation: [] as string[],
 });
@@ -182,8 +205,6 @@ const hasEightLength = computed(() => form.new_password && form.new_password.len
 
 const clearErrors = () => {
     errors.code = [];
-    errors.recovery_key = [];
-    errors.answer = [];
     errors.new_password = [];
     errors.new_password_confirmation = [];
 };
@@ -217,20 +238,6 @@ const stopResendCooldown = () => {
     if (resendCooldownInterval) { clearInterval(resendCooldownInterval); resendCooldownInterval = null; }
 };
 
-const fetchSecurityQuestion = async () => {
-    if (!props.email || props.method !== 'security_question') return;
-    
-    loadingQuestion.value = true;
-    try {
-        const response = await verifyService.axios.post("password/fetch-security-question", { email: props.email });
-        securityQuestion.value = response.data.question;
-    } catch (e: any) {
-        toast.error(e.response?.data?.message || "Failed to fetch security question.");
-    } finally {
-        loadingQuestion.value = false;
-    }
-};
-
 const resendCode = async () => {
     if (resendAttempts.value >= maxResendAttempts) {
         toast.error("Maximum resend attempts reached.");
@@ -259,7 +266,7 @@ const resendCode = async () => {
     });
 };
 
-const handleVerifyCode = async () => {
+const handleVerify = async () => {
     if (!form.code) {
         errors.code = ["Verification code is required"];
         return;
@@ -274,42 +281,6 @@ const handleVerifyCode = async () => {
             toast.error(verifyService.request.message ?? "Invalid code.");
             if (verifyService.request.errors?.code) {
                 errors.code = verifyService.request.errors.code;
-            }
-        }
-    });
-};
-
-const handleVerifyRecoveryKey = async () => {
-    if (!form.recovery_key) {
-        errors.recovery_key = ["Recovery code is required"];
-        return;
-    }
-
-    await verifyService.post("password/verify-recovery-key", { email: props.email, recovery_key: form.recovery_key }).then(() => {
-        if (verifyService.request.status === 200) {
-            codeVerified.value = true;
-        } else {
-            toast.error(verifyService.request.message ?? "Invalid recovery code.");
-            if (verifyService.request.errors?.recovery_key) {
-                errors.recovery_key = verifyService.request.errors.recovery_key;
-            }
-        }
-    });
-};
-
-const handleVerifySecurityAnswer = async () => {
-    if (!form.answer) {
-        errors.answer = ["Answer is required"];
-        return;
-    }
-
-    await verifyService.post("password/verify-security-answer", { email: props.email, answer: form.answer }).then(() => {
-        if (verifyService.request.status === 200) {
-            codeVerified.value = true;
-        } else {
-            toast.error(verifyService.request.message ?? "Incorrect answer.");
-            if (verifyService.request.errors?.answer) {
-                errors.answer = verifyService.request.errors.answer;
             }
         }
     });
@@ -342,22 +313,13 @@ const handleReset = async () => {
 };
 
 const handleSubmit = () => {
-    if (!codeVerified.value) {
-        if (props.method === 'email') handleVerifyCode();
-        else if (props.method === 'recovery_key') handleVerifyRecoveryKey();
-        else if (props.method === 'security_question') handleVerifySecurityAnswer();
-    } else {
-        handleReset();
-    }
+    if (!codeVerified.value) handleVerify();
+    else handleReset();
 };
 
 onMounted(() => {
-    if (props.method === 'email') {
-        startCountdown();
-        startResendCooldown();
-    } else if (props.method === 'security_question') {
-        fetchSecurityQuestion();
-    }
+    startCountdown();
+    startResendCooldown();
 });
 
 onUnmounted(() => {

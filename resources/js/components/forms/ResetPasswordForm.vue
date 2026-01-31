@@ -46,46 +46,22 @@
                 />
             </div>
         </div>
-        <div v-else class="p-2 space-y-4">
+        <div v-else class="p-2">
             <div class="flex items-center gap-2 p-3 mb-2 rounded-lg bg-blue-50 text-blue-700 text-xs">
                 <i class="pi pi-info-circle" />
-                <span>Choose a method to verify your identity and reset your password.</span>
+                <span>We'll send a verification code to your email to reset your password.</span>
             </div>
-            
-            <div class="space-y-2">
+            <div class="flex justify-between items-center mb-2 px-1">
                 <Button 
                     type="button" 
-                    label="Send Code to Email" 
-                    icon="pi pi-envelope" 
-                    fluid 
-                    @click="chooseMethod('email')" 
-                    outlined
-                    pt:root:class="!border-blue-200 !text-blue-600 hover:!bg-blue-50"
+                    label="Lost access to email?" 
+                    variant="link" 
+                    class="p-0! text-xs! text-orange-600! font-normal!" 
+                    @click="$emit('lost-email')" 
                 />
                 <Button 
                     type="button" 
-                    label="Use Recovery Code" 
-                    icon="pi pi-id-card" 
-                    fluid 
-                    @click="chooseMethod('recovery_key')" 
-                    outlined
-                    pt:root:class="!border-blue-200 !text-blue-600 hover:!bg-blue-50"
-                />
-                <Button 
-                    type="button" 
-                    label="Answer Security Question" 
-                    icon="pi pi-question-circle" 
-                    fluid 
-                    @click="chooseMethod('security_question')" 
-                    outlined
-                    pt:root:class="!border-blue-200 !text-blue-600 hover:!bg-blue-50"
-                />
-            </div>
-
-            <div class="flex justify-center">
-                <Button 
-                    type="button" 
-                    label="Back to standard reset" 
+                    label="Back to standard" 
                     variant="link" 
                     class="p-0! text-xs! text-gray-500! font-normal!" 
                     @click="forgotMode = false" 
@@ -93,7 +69,7 @@
             </div>
         </div>
 
-        <div v-if="!forgotMode" class="flex justify-center p-2 mt-4">
+        <div class="flex justify-center p-2 mt-4">
             <Button
                 type="submit"
                 label="Send Code"
@@ -120,7 +96,7 @@ interface ResetPasswordErrors {
     current_password: string[];
 }
 
-const emit = defineEmits(['code-sent']);
+const emit = defineEmits(['code-sent', 'lost-email']);
 const toast = useToast();
 const sendCodeService = useAxiosUtil<any, any>();
 const forgotMode = ref(false);
@@ -157,27 +133,6 @@ const validateSendCode = () => {
     return hasErrors.includes(true) ? false : true;
 };
 
-const chooseMethod = async (method: 'email' | 'recovery_key' | 'security_question') => {
-    clearErrors();
-    if (!form.email) {
-        errors.email.push("Email is required to proceed");
-        toast.error("Please enter your email first");
-        return;
-    }
-
-    if (method === 'email') {
-        await sendCode();
-        return;
-    }
-
-    // For other methods, we just emit and move to the next screen
-    emit('code-sent', {
-        email: form.email!,
-        current_password: null,
-        method: method
-    });
-};
-
 const sendCode = async () => {
     if (!validateSendCode()) {
         toast.error("Please fill in all required fields correctly.");
@@ -195,7 +150,6 @@ const sendCode = async () => {
             emit('code-sent', {
                 email: form.email!,
                 current_password: data.current_password,
-                method: 'email'
             });
         } else {
             toast.error(sendCodeService.request.message ?? "Failed to send code.");

@@ -1,11 +1,11 @@
-import ProfileView from "@/pages/user/ProfileView.vue";
+import ProfileView from "@/pages/customer/ProfileView.vue";
 
 export default {
     path: "profile",
     name: "customer.profile",
     component: ProfileView,
     meta: {
-        pageName: "Profile Settings",
-        pageSubName: "Manage your account and security",
+        pageName: "Profile",
+        pageSubName: "Manage your account security",
     },
 };

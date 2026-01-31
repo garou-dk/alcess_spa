@@ -28,7 +28,7 @@ class User extends Authenticatable
         'image',
         'is_active',
         'current_session_id',
-        'recovery_key',
+        'recovery_codes',
         'security_question',
         'security_answer',
     ];
@@ -41,6 +41,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'recovery_codes',
         'security_answer',
     ];
 
@@ -54,6 +55,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'recovery_codes' => 'array',
+            'security_answer' => 'hashed',
         ];
     }
 
