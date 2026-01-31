@@ -29,7 +29,10 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $key => $value) {
-            Category::create($value);
+            Category::updateOrCreate(
+                ['category_name' => $value['category_name']],
+                $value
+            );
         }
     }
 }

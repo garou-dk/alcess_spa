@@ -19,7 +19,10 @@ class UnitSeeder extends Seeder
         ];
 
         foreach ($units as $key => $value) {
-            Unit::create($value);
+            Unit::updateOrCreate(
+                ['unit_name' => $value['unit_name']],
+                $value
+            );
         }
     }
 }
