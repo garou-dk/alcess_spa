@@ -699,6 +699,17 @@
         >
             <AddressForm />
         </Dialog>
+        <Dialog
+            v-model:visible="securityForm"
+            modal
+            header="Security Settings"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :dismissableMask="true"
+            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
+        >
+            <SecurityForm />
+        </Dialog>
     </div>
 </template>
 
@@ -720,6 +731,7 @@ import LoginForm from "@/components/forms/LoginForm.vue";
 import ResetPasswordForm from "@/components/forms/ResetPasswordForm.vue";
 import VerifyCodeForm from "@/components/forms/VerifyCodeForm.vue";
 import AddressForm from "@/components/forms/AddressForm.vue";
+import SecurityForm from "@/components/forms/SecurityForm.vue";
 import { useRouter } from "vue-router";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
@@ -794,6 +806,7 @@ const resetCurrentPassword = ref<string | null>(null);
 const resetNewPassword = ref<string | null>(null);
 const resetNewPasswordConfirmation = ref<string | null>(null);
 const addressForm = ref<boolean>(false);
+const securityForm = ref<boolean>(false);
 const router = useRouter();
 
 // Check if current route is a product-related page or home page
@@ -974,7 +987,10 @@ const goToInvoice = () => {
 };
 
 const goToProfile = () => {
-    router.push({ name: "customer.profile" });
+    loginFormVisible.value = false;
+    registerFormVisible.value = false;
+    addressForm.value = false;
+    securityForm.value = true;
     avatarElement.value?.hide();
 };
 
