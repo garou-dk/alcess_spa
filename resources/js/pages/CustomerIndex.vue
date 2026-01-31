@@ -571,7 +571,7 @@
                         label="Security"
                         icon="pi pi-shield"
                         fluid
-                        @click="goToProfile()"
+                        @click.stop="openSecurityForm()"
                     />
                 </div>
                 <div class="border-t border-gray-200"></div>
@@ -718,7 +718,7 @@ import {
     SearchErrorInterface,
     SearchProductInterface,
 } from "@/interfaces/SearchProductInterface";
-import { reactive, ref, computed, onMounted, onUnmounted, provide, watch } from "vue";
+import { reactive, ref, computed, onMounted, onUnmounted, provide, watch, nextTick } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 import Icon from "@/../img/logo.png";
 import Page from "@/stores/Page";
@@ -986,12 +986,14 @@ const goToInvoice = () => {
     avatarElement.value?.hide();
 };
 
-const goToProfile = () => {
+const openSecurityForm = () => {
     loginFormVisible.value = false;
     registerFormVisible.value = false;
     addressForm.value = false;
-    securityForm.value = true;
     avatarElement.value?.hide();
+    nextTick(() => {
+        securityForm.value = true;
+    });
 };
 
 const goToBrowseProducts = () => {
