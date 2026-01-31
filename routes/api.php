@@ -97,6 +97,12 @@ Route::middleware(['throttle:public'])->group(function () {
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('check', [AuthController::class, 'checkAuth']);
     Route::post('logout', [AuthController::class, 'logoutUser']);
+    Route::controller(UserController::class)
+        ->prefix('user')->group(function () {
+            Route::get('/security-questions', 'getSecurityQuestions');
+            Route::patch('/update-security-settings/{id}', 'updateSecuritySettings');
+        });
+
     Route::prefix('admin')->group(function () {
         // Admin-only routes (user management)
         Route::middleware(['role:'.RoleEnum::ADMIN->value])->group(function () {
@@ -344,6 +350,9 @@ Route::middleware(['guest-only'])
         Route::prefix('password')->middleware(['throttle:password-reset'])->group(function () {
             Route::post('send-code', [App\Http\Controllers\PasswordResetController::class, 'sendCode']);
             Route::post('verify-code', [App\Http\Controllers\PasswordResetController::class, 'verify']);
+            Route::post('verify-recovery-key', [App\Http\Controllers\PasswordResetController::class, 'verifyRecoveryKey']);
+            Route::post('fetch-security-question', [App\Http\Controllers\PasswordResetController::class, 'getSecurityQuestion']);
+            Route::post('verify-security-answer', [App\Http\Controllers\PasswordResetController::class, 'verifySecurityAnswer']);
             Route::post('reset', [App\Http\Controllers\PasswordResetController::class, 'reset']);
         });
     });

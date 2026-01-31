@@ -27,6 +27,7 @@ import ProductSearchRoute from "@/routes/ProductSearchRoute";
 import RateRoute from "@/routes/RateRoute";
 import SalesWalkInRoute from "@/routes/SalesWalkInRoute";
 import SalesOnlineRoute from "@/routes/SalesOnlineRoute";
+import ProfileRoute from "@/routes/ProfileRoute";
 
 const authService = useAxiosUtil<null, UserInterface>();
 
@@ -102,6 +103,7 @@ const router = createRouter({
                 { ...CustomerInvoiceRoute },
                 { ...ProductCategoryRoute },
                 { ...ProductSearchRoute },
+                { ...ProfileRoute },
             ],
         },
         {
@@ -154,7 +156,7 @@ router.beforeEach(async (to, _from, next) => {
                 return;
             }
         }
-        
+
         if (
             Array.isArray(to.meta.access) &&
             to.meta.access.includes(Page.user.role.role_name)

@@ -526,6 +526,20 @@
                             '!bg-transparent !text-black !font-normal !border-none hover:!bg-gray-100 !transition-colors',
                             isMobile || isTablet ? '!text-sm' : ''
                         ]"
+                        label="Profile"
+                        icon="pi pi-user"
+                        fluid
+                        @click="router.push({ name: 'customer.profile' })"
+                    />
+                </div>
+                <div class="border-t border-gray-200"></div>
+                <div>
+                    <Button
+                        type="button"
+                        :class="[
+                            '!bg-transparent !text-black !font-normal !border-none hover:!bg-gray-100 !transition-colors',
+                            isMobile || isTablet ? '!text-sm' : ''
+                        ]"
                         label="Orders"
                         icon="pi pi-truck"
                         fluid
@@ -659,7 +673,7 @@
         <Dialog
             v-model:visible="verifyCodeFormVisible"
             modal
-            header="Verify Code"
+            header="Identity Verification"
             :style="{ width: '28rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
             :dismissableMask="true"
@@ -668,8 +682,7 @@
             <VerifyCodeForm 
                 :email="resetEmail"
                 :current-password="resetCurrentPassword"
-                :new-password="resetNewPassword"
-                :new-password-confirmation="resetNewPasswordConfirmation"
+                :method="recoveryMethod"
                 @success="handleResetSuccess" 
             />
         </Dialog>
@@ -776,8 +789,7 @@ const resetPasswordFormVisible = ref<boolean>(false);
 const verifyCodeFormVisible = ref<boolean>(false);
 const resetEmail = ref<string | null>(null);
 const resetCurrentPassword = ref<string | null>(null);
-const resetNewPassword = ref<string | null>(null);
-const resetNewPasswordConfirmation = ref<string | null>(null);
+const recoveryMethod = ref<'email' | 'recovery_key' | 'security_question'>('email');
 const addressForm = ref<boolean>(false);
 const router = useRouter();
 
@@ -920,11 +932,10 @@ const openResetPasswordForm = () => {
     resetPasswordFormVisible.value = true;
 };
 
-const handleCodeSent = (data: { email: string; current_password: string; new_password: string; new_password_confirmation: string }) => {
+const handleCodeSent = (data: { email: string; current_password: string; method: 'email' | 'recovery_key' | 'security_question' }) => {
     resetEmail.value = data.email;
     resetCurrentPassword.value = data.current_password;
-    resetNewPassword.value = data.new_password;
-    resetNewPasswordConfirmation.value = data.new_password_confirmation;
+    recoveryMethod.value = data.method;
     resetPasswordFormVisible.value = false;
     verifyCodeFormVisible.value = true;
 };

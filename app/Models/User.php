@@ -28,6 +28,9 @@ class User extends Authenticatable
         'image',
         'is_active',
         'current_session_id',
+        'recovery_key',
+        'security_question',
+        'security_answer',
     ];
 
     /**
@@ -38,6 +41,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'security_answer',
     ];
 
     /**

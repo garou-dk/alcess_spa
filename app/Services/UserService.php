@@ -16,6 +16,9 @@ class UserService
         $user->email = $data['email'];
         $user->password = $data['password'];
         $user->role_id = $data['role_id'] ?? 3;
+        
+        // Generate a default recovery key for new users
+        $user->recovery_key = strtoupper(bin2hex(random_bytes(8)));
 
         if (isset($data['image'])) {
             $manageService = new ManageFileService;
@@ -30,6 +33,44 @@ class UserService
         $mailer->sendEmailVerification($user);
 
         return $user;
+    }
+
+    public function updateSecuritySettings(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        abort_if(empty($user), 404, 'User not found');
+
+        if (isset($data['security_question'])) {
+            $user->security_question = $data['security_question'];
+        }
+
+        if (isset($data['security_answer'])) {
+            $user->security_answer = \Illuminate\Support\Facades\Hash::make(strtolower(trim($data['security_answer'])));
+        }
+
+        if (isset($data['regenerate_recovery_key']) && $data['regenerate_recovery_key']) {
+            $user->recovery_key = strtoupper(bin2hex(random_bytes(8)));
+            \Illuminate\Support\Facades\Mail::to($user->email)->queue(new \App\Mail\SendRecoveryKeyMail($user->email, $user->recovery_key));
+        }
+
+        $user->save();
+
+        return $user;
+    }
+
+    public function getSecurityQuestions()
+    {
+        return [
+            'What was the name of your first pet?',
+            'What is your mother\'s maiden name?',
+            'What was the name of your elementary school?',
+            'In what city were you born?',
+            'What is your favorite book?',
+            'What was the make and model of your first car?',
+        ];
     }
 
     public function verifyEmail(array $data)

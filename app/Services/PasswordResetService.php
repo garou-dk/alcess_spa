@@ -91,6 +91,65 @@ class PasswordResetService
             }
         }
 
+        // Set a verified flag in the cache so resetPassword knows the code was indeed verified recently
+        $resetData['verified'] = true;
+        Cache::put($cacheKey, $resetData, Carbon::parse($resetData['expiration']));
+
+        return true;
+    }
+
+    public function verifyRecoveryKey(array $data)
+    {
+        $user = User::where('email', $data['email'])->first();
+        abort_if(empty($user), 404, 'User not found.');
+        abort_unless($user->recovery_key, 400, 'No recovery key set for this account.');
+
+        if ($user->recovery_key !== strtoupper($data['recovery_key'])) {
+            abort(401, 'Invalid recovery key.');
+        }
+
+        // Create a temporary session in cache to allow password reset
+        $expiration = now()->addMinutes(15);
+        $cacheKey = "password-reset-{$user->user_id}";
+        Cache::put($cacheKey, [
+            'user_id' => $user->user_id,
+            'verified' => true,
+            'expiration' => $expiration,
+            'method' => 'recovery_key'
+        ], $expiration);
+
+        return true;
+    }
+
+    public function getSecurityQuestionForEmail(string $email)
+    {
+        $user = User::where('email', $email)->first();
+        abort_if(empty($user), 404, 'User not found.');
+        abort_unless($user->security_question, 400, 'No security question set for this account.');
+
+        return $user->security_question;
+    }
+
+    public function verifySecurityAnswer(array $data)
+    {
+        $user = User::where('email', $data['email'])->first();
+        abort_if(empty($user), 404, 'User not found.');
+        abort_unless($user->security_answer, 400, 'No security question set for this account.');
+
+        if (!Hash::check(strtolower(trim($data['answer'])), $user->security_answer)) {
+            abort(401, 'Incorrect answer to security question.');
+        }
+
+        // Create a temporary session in cache to allow password reset
+        $expiration = now()->addMinutes(15);
+        $cacheKey = "password-reset-{$user->user_id}";
+        Cache::put($cacheKey, [
+            'user_id' => $user->user_id,
+            'verified' => true,
+            'expiration' => $expiration,
+            'method' => 'security_question'
+        ], $expiration);
+
         return true;
     }
 
@@ -106,9 +165,9 @@ class PasswordResetService
 
         $resetData = Cache::get($cacheKey);
 
-        // Verify code again to be sure (and it's passed in the final request)
-        if ($resetData['code'] !== $data['code']) {
-            abort(401, "Invalid verification code.");
+        // Verify that the session was actually verified
+        if (!isset($resetData['verified']) || !$resetData['verified']) {
+            abort(401, "Session not verified.");
         }
 
         // Update password
