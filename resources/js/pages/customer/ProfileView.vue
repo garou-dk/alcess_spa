@@ -119,6 +119,7 @@ import Page from '@/stores/Page';
 import useAxiosUtil from '@/utils/AxiosUtil';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from "primevue/useconfirm";
+import { Card, Button, Dialog, Select, InputText, Password, ConfirmDialog } from 'primevue';
 
 const toast = useToast();
 const confirm = useConfirm();
