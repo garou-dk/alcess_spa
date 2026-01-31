@@ -1,83 +1,85 @@
 <template>
-    <div class="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Account Security</h1>
-            <p class="text-gray-600">Manage your recovery options and security settings.</p>
+    <div class="p-3 sm:p-5 bg-gray-50 min-h-screen">
+        <!-- Breadcrumb / Header Card -->
+        <div class="card mb-4 bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3">
+                <Button icon="pi pi-arrow-left" text rounded @click="$router.back()" />
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 leading-none">Account Security</h1>
+                    <p class="text-xs text-gray-500 mt-1">Manage your recovery options and security settings</p>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <!-- Security Question Section -->
-            <Card class="shadow-sm border border-gray-200 overflow-hidden">
+            <Card class="shadow-sm border-none">
                 <template #title>
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <i class="pi pi-question-circle text-blue-600 text-xl" />
-                        </div>
-                        <span class="text-xl font-semibold">Security Question</span>
+                    <div class="flex items-center gap-2 text-lg">
+                        <i class="pi pi-question-circle text-blue-600" />
+                        <span>Security Question</span>
                     </div>
                 </template>
                 <template #content>
-                    <p class="text-gray-600 mb-6">
-                        Security questions help you recover your account if you forget your email and password.
+                    <p class="text-sm text-gray-600 mb-4">
+                        Used to recover your account if you forget your email and password.
                     </p>
                     
-                    <div class="space-y-4">
-                        <div v-if="Page.user?.security_question" class="p-4 bg-green-50 rounded-lg border border-green-100 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
+                    <div class="space-y-3">
+                        <div v-if="Page.user?.security_question" class="p-3 bg-green-50 rounded-lg border border-green-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
                                 <i class="pi pi-check-circle text-green-600" />
                                 <div>
-                                    <p class="text-sm font-medium text-green-800">Security question is active</p>
-                                    <p class="text-xs text-green-600">You can use this to recover your account.</p>
+                                    <p class="text-xs font-semibold text-green-800">Active</p>
+                                    <p class="text-[10px] text-green-600">Question is set</p>
                                 </div>
                             </div>
                             <Button label="Change" icon="pi pi-pencil" text size="small" @click="showQuestionDialog = true" />
                         </div>
-                        <div v-else class="p-4 bg-orange-50 rounded-lg border border-orange-100 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
+                        <div v-else class="p-3 bg-orange-50 rounded-lg border border-orange-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
                                 <i class="pi pi-exclamation-triangle text-orange-600" />
                                 <div>
-                                    <p class="text-sm font-medium text-orange-800">Security question not set</p>
-                                    <p class="text-xs text-orange-600">Setting this up is highly recommended.</p>
+                                    <p class="text-xs font-semibold text-orange-800">Not Set</p>
+                                    <p class="text-[10px] text-orange-600">Recommended for security</p>
                                 </div>
                             </div>
-                            <Button label="Setup Now" icon="pi pi-plus" severity="warning" size="small" @click="showQuestionDialog = true" />
+                            <Button label="Setup" icon="pi pi-plus" severity="warning" size="small" @click="showQuestionDialog = true" />
                         </div>
                     </div>
                 </template>
             </Card>
 
             <!-- Backup Codes Section -->
-            <Card class="shadow-sm border border-gray-200 overflow-hidden">
+            <Card class="shadow-sm border-none">
                 <template #title>
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-purple-100 rounded-lg">
-                            <i class="pi pi-shield text-purple-600 text-xl" />
-                        </div>
-                        <span class="text-xl font-semibold">Backup Recovery Codes</span>
+                    <div class="flex items-center gap-2 text-lg">
+                        <i class="pi pi-shield text-purple-600" />
+                        <span>Recovery Codes</span>
                     </div>
                 </template>
                 <template #content>
-                    <p class="text-gray-600 mb-6">
-                        Recovery codes are a one-time use code that can restore access to your account if you lose everything else. Keep them in a safe place.
+                    <p class="text-sm text-gray-600 mb-4">
+                        One-time use codes to restore access to your account.
                     </p>
 
-                    <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                    <div class="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div v-if="recoveryCodes.length > 0" class="w-full">
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div v-for="(code, index) in recoveryCodes" :key="index" class="bg-white p-3 rounded border border-gray-200 flex items-center justify-between">
-                                    <span class="font-mono text-sm font-bold tracking-widest text-gray-700">{{ code }}</span>
-                                    <i class="pi pi-copy text-gray-400 cursor-pointer hover:text-blue-500" @click="copyToClipboard(code)" />
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <div v-for="(code, index) in recoveryCodes" :key="index" class="bg-white p-2 rounded border border-gray-100 flex items-center justify-between">
+                                    <span class="font-mono text-[10px] font-bold tracking-widest text-gray-700 uppercase">{{ code }}</span>
+                                    <i class="pi pi-copy text-gray-400 cursor-pointer hover:text-blue-500 text-xs" @click="copyToClipboard(code)" />
                                 </div>
                             </div>
-                            <div class="flex gap-3 justify-center">
-                                <Button label="Download PDF" icon="pi pi-download" outlined @click="downloadCodes()" />
-                                <Button label="Generate New Codes" icon="pi pi-refresh" severity="danger" outlined @click="confirmRegenerate()" />
+                            <div class="flex gap-2 justify-center">
+                                <Button label="Download" icon="pi pi-download" size="small" outlined @click="downloadCodes()" />
+                                <Button label="New Codes" icon="pi pi-refresh" severity="danger" size="small" outlined @click="confirmRegenerate()" />
                             </div>
                         </div>
-                        <div v-else class="text-center">
-                            <i class="pi pi-lock text-4xl text-gray-300 mb-4" />
-                            <p class="text-gray-500 mb-6 italic">No active backup codes visible.</p>
-                            <Button label="Generate Backup Codes" icon="pi pi-key" severity="help" @click="generateCodes()" />
+                        <div v-else class="text-center py-2">
+                            <i class="pi pi-lock text-3xl text-gray-300 mb-2" />
+                            <p class="text-xs text-gray-500 mb-4 italic">No active codes visible</p>
+                            <Button label="Generate Codes" icon="pi pi-key" severity="help" size="small" @click="generateCodes()" />
                         </div>
                     </div>
                 </template>
