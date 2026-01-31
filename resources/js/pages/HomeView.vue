@@ -27,9 +27,6 @@
                         <i class="pi pi-th-large"></i>
                     </button>
                     <template v-if="Page.user">
-                        <button type="button" class="nav-btn" @click="goRoute('customer.profile')" title="Security & Profile">
-                            <i class="pi pi-shield"></i>
-                        </button>
                         <button type="button" class="nav-btn nav-btn-logout" @click="handleLogout" title="Logout">
                             <i class="pi pi-sign-out"></i>
                         </button>

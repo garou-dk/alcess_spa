@@ -556,7 +556,22 @@
                         ]"
                         label="Address"
                         icon="pi pi-map-marker"
+                        fluid
                         @click="openAddressForm()"
+                    />
+                </div>
+                <div class="border-t border-gray-200"></div>
+                <div>
+                    <Button
+                        type="button"
+                        :class="[
+                            '!bg-transparent !text-black !font-normal !border-none hover:!bg-gray-100 !transition-colors',
+                            isMobile || isTablet ? '!text-sm' : ''
+                        ]"
+                        label="Security"
+                        icon="pi pi-shield"
+                        fluid
+                        @click="goToProfile()"
                     />
                 </div>
                 <div class="border-t border-gray-200"></div>
@@ -955,6 +970,11 @@ const goToInvoice = () => {
     registerFormVisible.value = false;
     addressForm.value = false;
     router.push({ name: "customer-invoice" });
+    avatarElement.value?.hide();
+};
+
+const goToProfile = () => {
+    router.push({ name: "customer.profile" });
     avatarElement.value?.hide();
 };
 
