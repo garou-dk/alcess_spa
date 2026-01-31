@@ -17,12 +17,14 @@ class PasswordResetService
         $user = User::where('email', $data['email'])->first();
         abort_if(empty($user), 404, 'User not found.');
 
-        // Verify current password
-        abort_unless(
-            Hash::check($data['current_password'], $user->password),
-            401,
-            'Current password is incorrect.'
-        );
+        // Verify current password if provided
+        if (!empty($data['current_password'])) {
+            abort_unless(
+                Hash::check($data['current_password'], $user->password),
+                401,
+                'Current password is incorrect.'
+            );
+        }
 
         // Validate new password
         abort_if(

@@ -18,7 +18,7 @@
                 />
             </InputForm>
         </div>
-        <div class="p-2">
+        <div v-if="!forgotMode" class="p-2">
             <InputForm
                 :errors="errors.current_password"
                 id="current_password"
@@ -35,6 +35,30 @@
                     input-id="current_password"
                 />
             </InputForm>
+            <div class="flex justify-end mt-1">
+                <Button 
+                    type="button" 
+                    label="Forgot password? Try other way" 
+                    variant="link" 
+                    class="p-0! text-xs! text-blue-600! font-normal!" 
+                    @click="forgotMode = true" 
+                />
+            </div>
+        </div>
+        <div v-else class="p-2">
+            <div class="flex items-center gap-2 p-3 mb-2 rounded-lg bg-blue-50 text-blue-700 text-xs">
+                <i class="pi pi-info-circle" />
+                <span>We'll send a verification code to your email to reset your password.</span>
+            </div>
+            <div class="flex justify-end mb-2">
+                <Button 
+                    type="button" 
+                    label="Back to standard reset" 
+                    variant="link" 
+                    class="p-0! text-xs! text-gray-500! font-normal!" 
+                    @click="forgotMode = false" 
+                />
+            </div>
         </div>
         <div class="p-2">
             <InputForm
@@ -50,7 +74,27 @@
                     fluid
                     :toggleMask="true"
                     input-id="new_password"
-                />
+                >
+                    <template #footer>
+                        <div class="flex flex-col gap-1">
+                            <span v-if="!hasLowercase" class="text-sm text-red-500">
+                                At least one lowercase letter
+                            </span>
+                            <span v-if="!hasUppercase" class="text-sm text-red-500">
+                                At least one uppercase letter
+                            </span>
+                            <span v-if="!hasNumber" class="text-sm text-red-500">
+                                At least one number
+                            </span>
+                            <span v-if="!hasSymbol" class="text-sm text-red-500">
+                                At least one special character
+                            </span>
+                            <span v-if="!hasEightLength" class="text-sm text-red-500">
+                                At least 8 characters
+                            </span>
+                        </div>
+                    </template>
+                </Password>
             </InputForm>
         </div>
         <div class="p-2">
@@ -85,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref, computed } from "vue";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { useToast } from "vue-toastification";
 
@@ -106,6 +150,7 @@ interface ResetPasswordErrors {
 const emit = defineEmits(['code-sent']);
 const toast = useToast();
 const sendCodeService = useAxiosUtil<any, any>();
+const forgotMode = ref(false);
 
 const form: ResetPasswordForm = reactive({
     email: null,
@@ -121,6 +166,12 @@ const errors: ResetPasswordErrors = reactive({
     new_password_confirmation: [],
 });
 
+const hasLowercase = computed(() => /[a-z]/.test(form.new_password || ''));
+const hasUppercase = computed(() => /[A-Z]/.test(form.new_password || ''));
+const hasNumber = computed(() => /\d/.test(form.new_password || ''));
+const hasSymbol = computed(() => /[\W_]/.test(form.new_password || ''));
+const hasEightLength = computed(() => form.new_password && form.new_password.length >= 8);
+
 const clearErrors = () => {
     errors.email = [];
     errors.current_password = [];
@@ -133,11 +184,13 @@ const validateSendCode = () => {
     if (!form.email) {
         errors.email.push("Email is required");
     }
-    if (!form.current_password) {
+    if (!forgotMode.value && !form.current_password) {
         errors.current_password.push("Current password is required");
     }
     if (!form.new_password) {
         errors.new_password.push("New password is required");
+    } else if (form.new_password.length < 8) {
+        errors.new_password.push("Password must be at least 8 characters");
     }
     if (!form.new_password_confirmation) {
         errors.new_password_confirmation.push("Password confirmation is required");
@@ -148,7 +201,7 @@ const validateSendCode = () => {
 
     const hasErrors = [
         errors.email.length > 0,
-        errors.current_password.length > 0,
+        !forgotMode.value && errors.current_password.length > 0,
         errors.new_password.length > 0,
         errors.new_password_confirmation.length > 0,
     ];
@@ -164,7 +217,7 @@ const sendCode = async () => {
 
     const data = {
         email: form.email,
-        current_password: form.current_password,
+        current_password: forgotMode.value ? null : form.current_password,
         new_password: form.new_password,
         new_password_confirmation: form.new_password_confirmation,
     };
@@ -174,7 +227,7 @@ const sendCode = async () => {
             toast.success("Verification code sent to your email!");
             emit('code-sent', {
                 email: form.email!,
-                current_password: form.current_password!,
+                current_password: data.current_password,
                 new_password: form.new_password!,
                 new_password_confirmation: form.new_password_confirmation!,
             });
