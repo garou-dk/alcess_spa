@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             [
                 'full_name' => 'Administrator',
                 'email' => 'admin@gmail.com',
-                'password' => 'Admin@123',
+                'password' => \Illuminate\Support\Facades\Hash::make('Admin@123'),
                 'role_id' => Role::query()->where('role_name', 'Admin')->valueOrFail('role_id'),
                 'image' => null,
                 'email_verified_at' => now(),
