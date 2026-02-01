@@ -59,7 +59,7 @@
                             <button @click="openAvatar" class="cursor-pointer">
                                 <Avatar
                                     v-if="Page.user && Page.user.image"
-                                    :image="UrlUtil.getBaseApiUrl(`profile/${Page.user.image}`)"
+                                    :image="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)"
                                     shape="circle"
                                     style="width: 32px; height: 32px;"
                                 />
@@ -170,7 +170,7 @@
                             <button @click="openAvatar" class="cursor-pointer">
                                 <Avatar
                                     v-if="Page.user && Page.user.image"
-                                    :image="UrlUtil.getBaseApiUrl(`profile/${Page.user.image}`)"
+                                    :image="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)"
                                     shape="circle"
                                     style="width: 40px; height: 40px;"
                                 />
@@ -281,7 +281,7 @@
                                         <button @click="openAvatar" class="cursor-pointer">
                                             <Avatar
                                                 v-if="Page.user && Page.user.image"
-                                                :image="UrlUtil.getBaseApiUrl(`profile/${Page.user.image}`)"
+                                                :image="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)"
                                                 shape="circle"
                                                 style="width: 40px; height: 40px;"
                                             />

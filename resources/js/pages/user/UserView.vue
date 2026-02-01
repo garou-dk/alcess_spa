@@ -238,7 +238,7 @@
                                 <Avatar
                                     v-if="data.image"
                                     shape="circle"
-                                    :image="UrlUtil.getBaseApiUrl(`profile/${data.image}`)"
+                                    :image="UrlUtil.getBaseAppUrl(`storage/images/profile/${data.image}`)"
                                     class="w-10 h-10"
                                     size="large"
                                 />
@@ -381,7 +381,7 @@
                                         <Avatar
                                             v-if="user.image"
                                             shape="circle"
-                                            :image="UrlUtil.getBaseApiUrl(`profile/${user.image}`)"
+                                            :image="UrlUtil.getBaseAppUrl(`storage/images/profile/${user.image}`)"
                                             :class="responsive.getResponsiveClasses({
                                                 mobile: 'w-10 h-10',
                                                 tablet: 'w-12 h-12',

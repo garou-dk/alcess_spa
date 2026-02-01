@@ -375,8 +375,8 @@
                         <Avatar
                             v-if="Page.user && Page.user.image"
                             :image="
-                                UrlUtil.getBaseApiUrl(
-                                    `profile/${Page.user.image}`,
+                                UrlUtil.getBaseAppUrl(
+                                    `storage/images/profile/${Page.user.image}`,
                                 )
                             "
                             :size="getResponsiveClasses({

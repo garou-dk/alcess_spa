@@ -15,7 +15,37 @@
             </div>
             <div class="container welcome-container">
                 <div class="welcome-content">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-sm font-medium border border-blue-500/30 mb-4 backdrop-blur-sm">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                        New Arrivals Available
+                    </div>
                     <h1 class="welcome-headline">Welcome Back, <span class="text-accent">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
+                    <p class="welcome-subheadline">Ready for your next upgrade? Browse our latest collection of premium tech.</p>
+                    
+                    <div class="welcome-actions">
+                        <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
+                            Browse Products <i class="pi pi-arrow-right"></i>
+                        </button>
+                        <button @click="goToOrders" class="btn-secondary btn-lg">
+                            Track Order <i class="pi pi-truck"></i>
+                        </button>
+                    </div>
+
+                    <!-- Minimal Features / Quick Stats chips -->
+                    <div class="welcome-stats mt-8 flex justify-center gap-4 flex-wrap">
+                         <div v-if="stats.pending_orders > 0" class="stat-chip bg-amber-500/20 text-amber-200 border border-amber-500/30">
+                            <i class="pi pi-clock"></i> {{ stats.pending_orders }} Pending Orders
+                        </div>
+                         <div v-else class="stat-chip bg-emerald-500/20 text-emerald-200 border border-emerald-500/30">
+                            <i class="pi pi-check-circle"></i> All Orders Completed
+                        </div>
+                        <div class="stat-chip bg-purple-500/20 text-purple-200 border border-purple-500/30">
+                            <i class="pi pi-star"></i> Loyalty Member
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -385,8 +415,11 @@ onUnmounted(() => stopCarousel())
 .welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
 .welcome-container { position: relative; z-index: 10; padding: 2rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
-.welcome-headline { font-size: clamp(2rem, 6vw, 3rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 0; }
-.text-accent { color: #60a5fa; }
+.welcome-headline { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.welcome-subheadline { font-size: 1.125rem; color: #cbd5e1; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+.stat-chip { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; rounded-full; font-size: 0.875rem; font-weight: 500; backdrop-filter: blur(4px); }
+.text-accent { color: #60a5fa; background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* Watermark Animation */
 .welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
