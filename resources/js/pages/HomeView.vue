@@ -52,8 +52,11 @@
             <div class="welcome-overlay"></div>
             <div class="welcome-watermark-container">
                 <div class="moving-watermark">
-                    <div class="watermark-row" v-for="n in 10" :key="n">
-                        <span v-for="m in 20" :key="m">DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <div class="watermark-row" v-for="n in 12" :key="n">
+                        <span v-for="m in 15" :key="m" class="watermark-item">
+                            <img :src="Icon" alt="logo" class="watermark-logo" />
+                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
                     </div>
                 </div>
             </div>
@@ -644,10 +647,12 @@ onUnmounted(() => stopCarousel());
 .w-feature i { color: #2563eb; font-size: 1.125rem; }
 
 /* Moving Watermark Style */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.04; pointer-events: none; z-index: 5; }
-.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 200%; height: 200%; position: absolute; top: -50%; left: -50%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 60s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 2rem; font-weight: 900; color: #fff; letter-spacing: 0.5rem; }
-.watermark-row:nth-child(even) { margin-left: -5rem; }
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
+.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
+.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2rem; display: flex; align-items: center; }
+.watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
+.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) brightness(2); }
+.watermark-row:nth-child(even) { margin-left: -8rem; }
 
 @keyframes moveWatermark {
     0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
