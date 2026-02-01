@@ -526,6 +526,20 @@
                             '!bg-transparent !text-black !font-normal !border-none hover:!bg-gray-100 !transition-colors',
                             isMobile || isTablet ? '!text-sm' : ''
                         ]"
+                        label="My Profile"
+                        icon="pi pi-user"
+                        fluid
+                        @click="goToProfile()"
+                    />
+                </div>
+                <div class="border-t border-gray-200"></div>
+                <div>
+                    <Button
+                        type="button"
+                        :class="[
+                            '!bg-transparent !text-black !font-normal !border-none hover:!bg-gray-100 !transition-colors',
+                            isMobile || isTablet ? '!text-sm' : ''
+                        ]"
                         label="Orders"
                         icon="pi pi-truck"
                         fluid
@@ -1000,6 +1014,11 @@ const goToBrowseProducts = () => {
     router.push({ name: "customer.browse-products" });
 };
 
+const goToProfile = () => {
+    router.push({ name: "customer.profile" });
+    avatarElement.value?.hide();
+};
+
 const handleSearch = () => {
     console.log('🔎 CustomerIndex handleSearch called:', {
         formSearch: form.search,
@@ -1075,6 +1094,7 @@ onMounted(() => {
     }
     window.addEventListener('open-security-form', openSecurityForm);
     window.addEventListener('open-address-form', openAddressForm);
+    window.addEventListener('go-to-profile', goToProfile);
 });
 
 onUnmounted(() => {
@@ -1087,5 +1107,6 @@ onUnmounted(() => {
     }
     window.removeEventListener('open-security-form', openSecurityForm);
     window.removeEventListener('open-address-form', openAddressForm);
+    window.removeEventListener('go-to-profile', goToProfile);
 });
 </script>

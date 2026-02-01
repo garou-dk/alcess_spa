@@ -144,9 +144,9 @@
                                 <i class="pi pi-file-pdf bg-emerald-100 text-emerald-600"></i>
                                 <span>Invoices</span>
                             </button>
-                            <button @click="goToSecurity" class="action-btn">
-                                <i class="pi pi-shield bg-purple-100 text-purple-600"></i>
-                                <span>Security</span>
+                            <button @click="goToProfile" class="action-btn">
+                                <i class="pi pi-user bg-purple-100 text-purple-600"></i>
+                                <span>Profile</span>
                             </button>
                             <button @click="goToAddress" class="action-btn">
                                 <i class="pi pi-map-marker bg-amber-100 text-amber-600"></i>
@@ -303,6 +303,7 @@ const getStatusClass = (status: string) => {
 // Navigation
 const goToOrders = () => router.push({ name: 'customer.order.index' })
 const goToInvoices = () => router.push({ name: 'customer-invoice' })
+const goToProfile = () => router.push({ name: 'customer.profile' })
 const goToSecurity = () => {
     // Current design is modal-based for security
     // We can emit or call a global to open the security dialog

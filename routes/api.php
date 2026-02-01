@@ -315,6 +315,14 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                 });
 
             Route::get('/dashboard', [\App\Http\Controllers\CustomerDashboardController::class, 'index']);
+
+            Route::controller(\App\Http\Controllers\Customer\ProfileController::class)
+                ->prefix('profile')
+                ->group(function () {
+                    Route::patch('/name', 'updateName');
+                    Route::patch('/password', 'updatePassword');
+                    Route::patch('/image', 'updateImage');
+                });
         });
 
     Route::controller(FileController::class)
