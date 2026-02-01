@@ -47,45 +47,80 @@
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-bg"></div>
-            <div class="hero-content">
-                <div v-if="showCarousel && products.length > 0" class="hero-carousel">
-                    <div class="hero-grid">
-                        <div class="hero-text">
-                            <!-- Davao Branch Watermark -->
-                            <div class="hero-watermark">DAVAO BRANCH</div>
-                            <span class="hero-badge">Featured Product</span>
-                            <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
-                            <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
-                            <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
-                            <div class="hero-buttons">
-                                <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-primary">
-                                    <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
-                                    Add to Cart
-                                </button>
-                                <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-secondary">
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
-                        <div class="hero-image-container">
-                            <div class="hero-image-wrapper">
-                                <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
-                                <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
-                            </div>
-                        </div>
+        <!-- Welcome Hero Section -->
+        <section class="welcome-hero">
+            <div class="welcome-overlay"></div>
+            <div class="container welcome-container">
+                <div class="welcome-content">
+                    <div class="welcome-badge-wrapper">
+                        <span class="welcome-badge">Premium Tech Destination</span>
                     </div>
-                    <div class="hero-dots">
-                        <button v-for="(_, index) in products.slice(0, 3)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
+                    <h1 class="welcome-headline">Welcome to <span class="text-accent">{{ appName }}</span></h1>
+                    <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
+                    <p class="welcome-description">Experience the future with Davao's premier choice for high-performance laptops, cutting-edge smartphones, and genuine tech accessories. Quality you can feel, service you can trust.</p>
+                    <div class="welcome-actions">
+                        <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
+                            Explore Collection <i class="pi pi-arrow-right"></i>
+                        </button>
+                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
+                            <i class="pi pi-facebook"></i> Message Us
+                        </a>
+                    </div>
+                    <div class="welcome-features">
+                        <div class="w-feature">
+                            <i class="pi pi-verified"></i>
+                            <span>100% Genuine</span>
+                        </div>
+                        <div class="w-feature">
+                            <i class="pi pi-shield"></i>
+                            <span>Official Warranty</span>
+                        </div>
+                        <div class="w-feature">
+                            <i class="pi pi-truck"></i>
+                            <span>Fast Delivery</span>
+                        </div>
                     </div>
                 </div>
-                <div v-else class="hero-static">
-                    <span class="hero-badge">Premium Tech Store</span>
-                    <h2 class="hero-headline">Welcome to <span class="text-accent">{{ appName }}</span></h2>
-                    <p class="hero-subtext">Discover premium laptops, phones & computers at unbeatable prices with genuine warranty.</p>
-                    <button @click="goToBrowseProducts" class="btn-primary btn-lg">Shop Now <i class="pi pi-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section v-if="showCarousel && products.length > 0" class="featured-products">
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-label">Top Picks</p>
+                    <h2 class="section-title">Featured Products</h2>
+                </div>
+                <div class="featured-carousel-wrapper">
+                    <div class="hero-carousel">
+                        <div class="hero-grid">
+                            <div class="hero-text">
+                                <div class="hero-watermark">PREMIUM</div>
+                                <span class="hero-badge">BEST SELLER</span>
+                                <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
+                                <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
+                                <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
+                                <div class="hero-buttons">
+                                    <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-primary">
+                                        <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
+                                        Add to Cart
+                                    </button>
+                                    <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-secondary">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="hero-image-container">
+                                <div class="hero-image-wrapper">
+                                    <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
+                                    <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-dots">
+                            <button v-for="(_, index) in products.slice(0, 3)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -587,6 +622,37 @@ onUnmounted(() => stopCarousel());
 .btn-view { display: block; background: #1e293b; color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: background 0.2s; }
 .btn-view:hover { background: #334155; }
 
+/* Welcome Hero */
+.welcome-hero { position: relative; background: #0f172a; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
+.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
+.welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
+.welcome-badge-wrapper { margin-bottom: 1.5rem; }
+.welcome-badge { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1.5rem; }
+.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #94a3b8; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
+.welcome-description { font-size: 1.125rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2.5rem; max-width: 650px; margin-left: auto; margin-right: auto; }
+.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+.welcome-features { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; }
+.w-feature { display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
+.w-feature i { color: #2563eb; font-size: 1.125rem; }
+
+/* Featured Products Section */
+.featured-products { padding: 4rem 0; background: #fff; }
+.featured-carousel-wrapper { background: #1e293b; border-radius: 2rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+.hero-carousel { padding: 3rem; position: relative; }
+
+/* Hero Typography Refinements */
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12rem; font-weight: 900; color: rgba(255,255,255,0.03); text-transform: uppercase; letter-spacing: 0.2em; z-index: 1; pointer-events: none; }
+.hero-text { position: relative; z-index: 5; }
+.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 1rem; }
+.hero-price { color: #60a5fa; font-size: 2rem; }
+
+/* Shine Effect for Primary Button */
+.shine-effect { position: relative; overflow: hidden; }
+.shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%); transform: rotate(45deg); animation: shine 3s infinite; }
+@keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+
 /* Trust Bar */
 .trust-bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 0; }
 .trust-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -609,24 +675,25 @@ onUnmounted(() => stopCarousel());
 .grid-section { min-height: 200px; }
 
 /* Categories */
-.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-.category-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; }
-.category-card:hover { border-color: #2563eb; box-shadow: 0 12px 30px rgba(37, 99, 235, 0.1); transform: translateY(-4px); }
-.category-image-box { width: 100px; height: 100px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1rem; transition: transform 0.3s; }
-.category-card:hover .category-image-box { transform: scale(1.1); }
-.category-image-box img { max-width: 80%; max-height: 80%; object-fit: contain; }
-.category-image-box i { font-size: 2.5rem; color: #cbd5e1; }
-.category-name { font-size: 1.25rem; font-weight: 700; color: #1e293b; display: block; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.category-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.category-card:hover { border-color: #2563eb; box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); transform: translateY(-8px); }
+.category-image-box { width: 180px; height: 180px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1.5rem; transition: all 0.4s; }
+.category-card:hover .category-image-box { transform: scale(1.05) rotate(2deg); background: #eff6ff; }
+.category-image-box img { max-width: 85%; max-height: 85%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); }
+.category-image-box i { font-size: 4rem; color: #cbd5e1; }
+.category-name { font-size: 1.5rem; font-weight: 700; color: #1e293b; display: block; }
 
 /* Products */
-.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-.product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden; transition: all 0.2s; }
-.product-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.product-image-box { position: relative; height: 120px; background: #f8fafc; display: flex; align-items: center; justify-content: center; }
-.product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.product-image-box i { font-size: 2rem; color: #cbd5e1; }
-.product-info { padding: 0.75rem; }
-.product-name { font-size: 0.75rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.25rem; }
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.product-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(0,0,0,0.08); transform: translateY(-4px); }
+.product-image-box { position: relative; height: 200px; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
+.product-card:hover .product-image-box img { transform: scale(1.05); }
+.product-image-box i { font-size: 3rem; color: #cbd5e1; }
+.product-info { padding: 1.25rem; }
+.product-name { font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5rem; }
 
 /* Empty State */
 .empty-state { text-align: center; padding: 3rem 1rem; }
@@ -738,10 +805,10 @@ onUnmounted(() => stopCarousel());
     .hero-text { text-align: left; }
     .hero-watermark { font-size: clamp(5rem, 10vw, 8rem); justify-content: flex-start; left: 0; transform: translateY(-50%); }
     .hero-buttons { justify-content: flex-start; }
-    .hero-product-name { font-size: 2.5rem; }
-    .hero-price { font-size: 2rem; }
-    .hero-image { max-height: 350px; }
-    .hero-watermark { font-size: 8rem; }
+    .hero-product-name { font-size: 3.5rem; }
+    .hero-price { font-size: 2.5rem; }
+    .hero-image { max-height: 450px; }
+    .hero-watermark { font-size: 15rem; }
     .trust-grid { grid-template-columns: repeat(4, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .features-grid { grid-template-columns: repeat(4, 1fr); }
