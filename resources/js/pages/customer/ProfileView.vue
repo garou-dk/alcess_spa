@@ -527,7 +527,7 @@ onMounted(() => {
 
 <style scoped>
 .form-input {
-    width: 100%; bg-color: #fff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
+    width: 100%; background-color: #fff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
     padding: 0.75rem 1rem; font-weight: 500; color: #111827; transition: all 0.2s ease;
 }
 .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
