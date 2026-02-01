@@ -129,6 +129,26 @@ class OrderController extends Controller
             ->response();
     }
 
+    /**
+     * Admin cancels payment (e.g. scam) - cancels order with reason and notifies customer
+     */
+    public function cancelPayment(string $id, Request $request) {
+        $validated = $request->validate([
+            'remarks' => ['required', 'string', 'max:500'],
+        ]);
+
+        $data = $validated + ['order_id' => $id];
+
+        $result = $this->service->cancelPayment($data);
+
+        $this->dashboardService->broadcastDashboardStatsUpdate();
+
+        return ApiResponse::success()
+            ->data($result)
+            ->message('Payment cancelled. Order has been cancelled.')
+            ->response();
+    }
+
     public function cancelOrder(string $id) {
         $authService = new AuthService();
         $user = $authService->getAuth();

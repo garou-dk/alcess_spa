@@ -336,6 +336,54 @@ class OrderService
     }
 
     /**
+     * Admin cancels payment (e.g. scam) - rejects the uploaded payment, cancels the order with reason.
+     * Allowed only when: Processing, admin_accepted, payment proof uploaded, not yet confirmed.
+     * Restores inventory and notifies the customer.
+     */
+    public function cancelPayment(array $data) {
+        return DB::transaction(function () use ($data) {
+            $order = Order::query()
+                ->where('order_id', $data['order_id'])
+                ->with(['productOrders.product'])
+                ->first();
+
+            abort_if(empty($order), 404, 'Order not found.');
+            abort_if($order->status != OrderStatusEnum::PROCESSING->value, 400, 'Order must be in Processing status.');
+            abort_if(!$order->admin_accepted, 400, 'Order must be accepted by admin first.');
+            abort_if(empty($order->proof_of_payment), 400, 'No payment proof uploaded.');
+            abort_if(!empty($order->date_paid_confirmed), 400, 'Payment already confirmed. Cannot cancel.');
+
+            // Restore inventory
+            foreach ($order->productOrders as $productOrder) {
+                Product::query()
+                    ->where('product_id', $productOrder->product_id)
+                    ->increment('product_quantity', $productOrder->quantity);
+            }
+
+            $order->status = OrderStatusEnum::CANCELLED->value;
+            $order->remarks = $data['remarks'] ?? null;
+            $order->save();
+
+            $order->refresh();
+            $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
+
+            $reason = !empty($data['remarks']) ? " Reason: {$data['remarks']}" : '';
+
+            $notification = OrderNotification::create([
+                'user_id' => $order->user_id,
+                'notification_type' => 'Cancelled Order',
+                'notification_to' => 'Customer',
+                'message' => "Your payment was rejected and the order has been cancelled.{$reason}",
+            ]);
+
+            CustomerOrderEvent::dispatch($notification->toArray(), $order->user_id);
+            DetectOrderChangeEvent::dispatch($notification->toArray(), $order->user_id);
+
+            return $order;
+        });
+    }
+
+    /**
      * Cancel order - allowed in two scenarios:
      * 1. Processing status and NOT yet accepted by admin
      * 2. Processing status and accepted by admin (before payment confirmation)

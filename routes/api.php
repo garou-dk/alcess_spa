@@ -185,6 +185,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                     Route::patch('/accept/{id}', 'acceptOrder');
                     Route::patch('/decline/{id}', 'declineOrder');
                     Route::patch('/confirm-payment-status/{id}', 'confirmPaymentStatus');
+                    Route::patch('/cancel-payment/{id}', 'cancelPayment');
                     Route::get('/payment-image/{id}', 'fetchPaymentImage');
                     Route::post('/set-delivery/{id}', 'setDeliveryWithProof');
                     Route::post('/generate-invoice/{id}', 'generateInvoice');
