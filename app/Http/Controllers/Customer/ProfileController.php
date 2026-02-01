@@ -46,4 +46,15 @@ class ProfileController extends Controller
             ->message('Profile image updated successfully')
             ->response();
     }
+
+    public function updateCover(ChangeProfileRequest $request)
+    {
+        $userId = $request->user()->user_id;
+        $data = $request->validated() + ['user_id' => $userId];
+
+        return ApiResponse::success()
+            ->data($this->service->changeCover($data))
+            ->message('Cover image updated successfully')
+            ->response();
+    }
 }

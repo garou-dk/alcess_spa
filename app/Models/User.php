@@ -31,6 +31,7 @@ class User extends Authenticatable
         'recovery_codes',
         'security_question',
         'security_answer',
+        'cover_image',
     ];
 
     /**

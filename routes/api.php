@@ -322,6 +322,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                     Route::patch('/name', 'updateName');
                     Route::patch('/password', 'updatePassword');
                     Route::patch('/image', 'updateImage');
+                    Route::patch('/cover', 'updateCover');
                 });
         });
 

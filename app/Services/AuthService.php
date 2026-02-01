@@ -48,7 +48,10 @@ class AuthService
     {
         abort_unless(Auth::check(), 401, 'Unauthorized');
 
-        $user = Auth::guard('web')->user()->load(['role']);
+        $user = Auth::guard('web')->user()->load([
+            'role',
+            'address.barangay.municity.province.region.islandGroup'
+        ]);
 
         return $user;
     }

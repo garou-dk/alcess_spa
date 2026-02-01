@@ -126,6 +126,29 @@ class UserService
         return $user;
     }
 
+    public function changeCover(array $data)
+    {
+        $user = User::query()
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+        abort_if(empty($user), 404, 'User not found');
+
+        $oldImage = $user->cover_image;
+        $manageService = new ManageFileService;
+        $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value); // Reusing Profile directory or specialized directory if exists
+
+        $user->cover_image = $result['file_name'];
+
+        $saved = $user->save();
+
+        if ($saved && $oldImage) {
+            $manageService->removeFile(FileDirectoryEnum::PROFILE_IMAGE->value, $oldImage);
+        }
+
+        return $user;
+    }
+
     public function changeRole(array $data)
     {
         $user = User::query()
