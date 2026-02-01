@@ -166,6 +166,7 @@
                         :options="predefinedQuestions" 
                         placeholder="Choose a question" 
                         class="w-full"
+                        panelClass="security-question-panel"
                     />
                 </div>
 
@@ -359,3 +360,22 @@ const downloadCodes = () => {
     toast.success("Codes downloaded.");
 };
 </script>
+
+<style scoped>
+:deep(.security-question-panel) {
+    max-width: calc(100vw - 2rem) !important;
+}
+
+:deep(.security-question-panel .p-select-option) {
+    white-space: normal !important;
+    word-break: break-word !important;
+    font-size: 0.875rem !important;
+    padding: 0.75rem 1rem !important;
+}
+
+@media (min-width: 640px) {
+    :deep(.security-question-panel) {
+        max-width: 24rem !important;
+    }
+}
+</style>
