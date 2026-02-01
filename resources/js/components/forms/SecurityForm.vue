@@ -35,36 +35,106 @@
             <!-- Security Question Card -->
             <div class="rounded-lg sm:rounded-xl bg-white border border-gray-200 shadow-sm">
                 <div class="border-b border-gray-200 px-3 sm:px-4 py-3">
-                    <div class="flex items-center gap-2">
-                        <i class="pi pi-question-circle text-blue-600 text-lg"></i>
-                        <h2 class="text-base sm:text-lg font-bold text-gray-800">Security Question</h2>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-question-circle text-blue-600 text-lg"></i>
+                            <h2 class="text-base sm:text-lg font-bold text-gray-800">Security Question</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500">{{ isEditingQuestion ? 'Editing' : 'View' }}</span>
+                            <ToggleSwitch v-model="isEditingQuestion" />
+                        </div>
                     </div>
                 </div>
                 <div class="p-3 sm:p-4">
                     <p class="text-xs text-gray-500 mb-3">Used for account recovery if you forget your email and password.</p>
                     
-                    <div v-if="Page.user?.security_question" class="p-3 bg-green-50 rounded-lg border border-green-200 mb-3">
+                    <!-- Status Badge -->
+                    <div v-if="Page.user?.security_question && !isEditingQuestion" class="p-3 bg-green-50 rounded-lg border border-green-200 mb-3">
                         <div class="flex items-center gap-2">
                             <i class="pi pi-check-circle text-green-600"></i>
                             <span class="text-sm font-medium text-green-800">Configured</span>
                         </div>
-                        <p class="text-xs text-green-700 mt-1">Your security question is active.</p>
+                        <p class="text-xs text-green-700 mt-1 break-words">{{ Page.user.security_question }}</p>
                     </div>
-                    <div v-else class="p-3 bg-yellow-50 rounded-lg border border-yellow-200 mb-3">
+                    <div v-else-if="!isEditingQuestion" class="p-3 bg-yellow-50 rounded-lg border border-yellow-200 mb-3">
                         <div class="flex items-center gap-2">
                             <i class="pi pi-exclamation-circle text-yellow-600"></i>
                             <span class="text-sm font-medium text-yellow-800">Not Configured</span>
                         </div>
-                        <p class="text-xs text-yellow-700 mt-1">Set up a security question for account recovery.</p>
+                        <p class="text-xs text-yellow-700 mt-1">Toggle edit mode to set up a security question.</p>
                     </div>
 
-                    <Button 
-                        :label="Page.user?.security_question ? 'Update Question' : 'Setup Question'" 
-                        :icon="Page.user?.security_question ? 'pi pi-pencil' : 'pi pi-plus'"
-                        :severity="Page.user?.security_question ? 'secondary' : 'primary'"
-                        class="w-full"
-                        @click="showQuestionSetup = true" 
-                    />
+                    <!-- Edit Form -->
+                    <div v-if="isEditingQuestion" class="space-y-3">
+                        <div class="p-2 bg-blue-50 rounded border-l-4 border-blue-500 mb-3">
+                            <p class="text-xs text-blue-800">
+                                <i class="pi pi-info-circle mr-1"></i>
+                                Choose a question only you can answer.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-semibold text-gray-700">Select a Question</label>
+                            <Select 
+                                v-model="questionForm.question" 
+                                :options="predefinedQuestions" 
+                                placeholder="Choose a question" 
+                                class="w-full text-sm"
+                                panelClass="security-question-panel"
+                            />
+                        </div>
+
+                        <div class="relative">
+                            <Divider align="center">
+                                <span class="text-[10px] text-gray-400 bg-white px-2">OR</span>
+                            </Divider>
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-semibold text-gray-700">Custom Question</label>
+                            <InputText 
+                                v-model="questionForm.customQuestion" 
+                                placeholder="Enter your own question" 
+                                class="w-full text-sm"
+                            />
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-semibold text-gray-700">Your Answer <span class="text-red-500">*</span></label>
+                            <Password 
+                                v-model="questionForm.answer" 
+                                placeholder="Enter your secret answer" 
+                                :feedback="false" 
+                                toggleMask 
+                                class="w-full"
+                                inputClass="text-sm"
+                            />
+                            <p class="text-[10px] text-gray-500">
+                                <i class="pi pi-info-circle mr-1"></i>
+                                Answers are case-insensitive and encrypted.
+                            </p>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <Button 
+                                label="Cancel" 
+                                severity="secondary" 
+                                outlined
+                                size="small"
+                                class="flex-1"
+                                @click="cancelEditQuestion()" 
+                            />
+                            <Button 
+                                label="Save Question" 
+                                icon="pi pi-check"
+                                size="small"
+                                class="flex-1"
+                                :loading="savingQuestion" 
+                                @click="saveQuestion()" 
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -144,82 +214,7 @@
             </div>
         </div>
 
-        <!-- Security Question Setup Dialog -->
-        <Dialog 
-            v-model:visible="showQuestionSetup" 
-            modal 
-            header="Security Question Setup" 
-            :style="{ width: '26rem' }"
-            :breakpoints="{ '575px': '90vw' }"
-        >
-            <div class="flex flex-col gap-4 pt-2">
-                <div class="p-2 bg-blue-50 rounded border-l-4 border-blue-500">
-                    <p class="text-xs text-blue-800">
-                        Choose a question only you can answer.
-                    </p>
-                </div>
-                
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm font-semibold text-gray-700">Select a Question</label>
-                    <Select 
-                        v-model="questionForm.question" 
-                        :options="predefinedQuestions" 
-                        placeholder="Choose a question" 
-                        class="w-full"
-                        panelClass="security-question-panel"
-                    />
-                </div>
 
-                <div class="relative">
-                    <Divider align="center">
-                        <span class="text-xs text-gray-400 bg-white px-2">OR</span>
-                    </Divider>
-                </div>
-                
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm font-semibold text-gray-700">Custom Question</label>
-                    <InputText 
-                        v-model="questionForm.customQuestion" 
-                        placeholder="Enter your own question" 
-                        class="w-full"
-                    />
-                </div>
-                
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm font-semibold text-gray-700">Your Answer <span class="text-red-500">*</span></label>
-                    <Password 
-                        v-model="questionForm.answer" 
-                        placeholder="Enter your secret answer" 
-                        :feedback="false" 
-                        toggleMask 
-                        class="w-full"
-                    />
-                    <p class="text-[10px] text-gray-500">
-                        <i class="pi pi-info-circle mr-1"></i>
-                        Answers are case-insensitive and encrypted.
-                    </p>
-                </div>
-            </div>
-
-            <template #footer>
-                <div class="flex justify-end gap-2">
-                    <Button 
-                        label="Cancel" 
-                        severity="secondary" 
-                        outlined
-                        size="small"
-                        @click="showQuestionSetup = false" 
-                    />
-                    <Button 
-                        label="Save" 
-                        icon="pi pi-check"
-                        size="small"
-                        :loading="savingQuestion" 
-                        @click="saveQuestion()" 
-                    />
-                </div>
-            </template>
-        </Dialog>
 
         <ConfirmDialog />
     </div>
@@ -233,8 +228,8 @@ import useAxiosUtil from '@/utils/AxiosUtil';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from "primevue/useconfirm";
 import { 
-    Button, Dialog, Select, InputText, Password, 
-    ConfirmDialog, Avatar, Divider 
+    Button, Select, InputText, Password, 
+    ConfirmDialog, Avatar, Divider, ToggleSwitch 
 } from 'primevue';
 
 const toast = useToast();
@@ -242,7 +237,7 @@ const confirm = useConfirm();
 const securityService = useAxiosUtil<any, any>();
 
 const recoveryCodes = ref<string[]>([]);
-const showQuestionSetup = ref(false);
+const isEditingQuestion = ref(false);
 const savingQuestion = ref(false);
 const generatingCodes = ref(false);
 
@@ -309,7 +304,7 @@ const saveQuestion = async () => {
         savingQuestion.value = false;
         if (securityService.request.status === 200) {
             toast.success("Security question saved successfully.");
-            showQuestionSetup.value = false;
+            isEditingQuestion.value = false;
             questionForm.question = null;
             questionForm.customQuestion = '';
             questionForm.answer = '';
@@ -320,6 +315,13 @@ const saveQuestion = async () => {
             toast.error(securityService.request.message || "Failed to save.");
         }
     });
+};
+
+const cancelEditQuestion = () => {
+    isEditingQuestion.value = false;
+    questionForm.question = null;
+    questionForm.customQuestion = '';
+    questionForm.answer = '';
 };
 
 const copyToClipboard = (text: string) => {
