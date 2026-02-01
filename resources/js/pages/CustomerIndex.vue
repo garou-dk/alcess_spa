@@ -1073,6 +1073,8 @@ onMounted(() => {
     if (Page.user) {
         loadNotifications();
     }
+    window.addEventListener('open-security-form', openSecurityForm);
+    window.addEventListener('open-address-form', openAddressForm);
 });
 
 onUnmounted(() => {
@@ -1083,5 +1085,7 @@ onUnmounted(() => {
         document.removeEventListener('click', clickOutsideListener);
         clickOutsideListener = null;
     }
+    window.removeEventListener('open-security-form', openSecurityForm);
+    window.removeEventListener('open-address-form', openAddressForm);
 });
 </script>

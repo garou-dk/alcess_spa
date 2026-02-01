@@ -313,6 +313,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                     Route::patch('/mark-as-read/{id}', 'markAsRead');
                     Route::patch('/mark-all-as-read', 'markAllAsRead');
                 });
+
+            Route::get('/dashboard', [\App\Http\Controllers\CustomerDashboardController::class, 'index']);
         });
 
     Route::controller(FileController::class)

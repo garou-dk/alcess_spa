@@ -1,5 +1,5 @@
 import { RoleEnum } from "@/enums/RoleEnum";
-import HomeIndexView from "@/pages/home/HomeIndexView.vue";
+import CustomerDashboardView from "@/pages/customer/CustomerDashboardView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 const route: RouteRecordRaw = {
@@ -10,7 +10,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "customer.home.index",
-            component: HomeIndexView,
+            component: CustomerDashboardView,
             meta: {
                 access: [RoleEnum.CUSTOMER],
                 pageName: "Home",
