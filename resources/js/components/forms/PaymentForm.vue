@@ -80,12 +80,14 @@
                     labelName="E-Wallet*"
                     tag="label"
                 >
-                    <InputText
+                    <Select
                         v-model="form.bank_name"
+                        :options="eWalletOptions"
                         id="bank_name"
-                        type="text"
-                        placeholder="Enter e-wallet name"
-                        fluid
+                        placeholder="Select e-wallet"
+                        option-label="label"
+                        option-value="value"
+                        class="w-full"
                         :invalid="errors.bank_name.length > 0"
                     />
                 </InputForm>
@@ -188,6 +190,11 @@ interface IFormError {
 const props = defineProps<Props>();
 const emit = defineEmits(["cb", "closePopup"]);
 const toast = useToast();
+
+const eWalletOptions = [
+    { label: 'Gcash', value: 'Gcash' },
+    { label: 'Paymaya', value: 'Paymaya' },
+];
 
 const currentDate = computed(() => {
     return DateUtil.formatToMonthDayYear(new Date().toISOString());
