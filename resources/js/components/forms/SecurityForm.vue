@@ -75,27 +75,10 @@
                         </div>
 
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-semibold text-gray-700">Select a Question</label>
-                            <Select 
-                                v-model="questionForm.question" 
-                                :options="predefinedQuestions" 
-                                placeholder="Choose a question" 
-                                class="w-full text-sm"
-                                panelClass="security-question-panel"
-                            />
-                        </div>
-
-                        <div class="relative">
-                            <Divider align="center">
-                                <span class="text-[10px] text-gray-400 bg-white px-2">OR</span>
-                            </Divider>
-                        </div>
-                        
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-semibold text-gray-700">Custom Question</label>
+                            <label class="text-xs font-semibold text-gray-700">Security Question</label>
                             <InputText 
                                 v-model="questionForm.customQuestion" 
-                                placeholder="Enter your own question" 
+                                placeholder="Enter your secret question" 
                                 class="w-full text-sm"
                             />
                         </div>
@@ -107,6 +90,7 @@
                                 placeholder="Enter your secret answer" 
                                 :feedback="false" 
                                 toggleMask 
+                                fluid
                                 class="w-full"
                                 inputClass="text-sm"
                             />
@@ -228,8 +212,8 @@ import useAxiosUtil from '@/utils/AxiosUtil';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from "primevue/useconfirm";
 import { 
-    Button, Select, InputText, Password, 
-    ConfirmDialog, Avatar, Divider, ToggleSwitch 
+    Button, InputText, Password, 
+    ConfirmDialog, Avatar, ToggleSwitch 
 } from 'primevue';
 
 const toast = useToast();
@@ -241,18 +225,7 @@ const isEditingQuestion = ref(false);
 const savingQuestion = ref(false);
 const generatingCodes = ref(false);
 
-const predefinedQuestions = [
-    "What was the name of your first pet?",
-    "In what city were you born?",
-    "What is your mother's maiden name?",
-    "What was the name of your first school?",
-    "What is the name of your favorite childhood friend?",
-    "What was the make of your first car?",
-    "What is your favorite book?",
-];
-
 const questionForm = reactive({
-    question: null as string | null,
     customQuestion: '',
     answer: '',
 });
@@ -290,9 +263,9 @@ const saveQuestion = async () => {
         return;
     }
 
-    const finalQuestion = questionForm.customQuestion || questionForm.question;
+    const finalQuestion = questionForm.customQuestion;
     if (!finalQuestion) {
-        toast.error("Please select or enter a question.");
+        toast.error("Please enter a question.");
         return;
     }
 
@@ -305,7 +278,6 @@ const saveQuestion = async () => {
         if (securityService.request.status === 200) {
             toast.success("Security question saved successfully.");
             isEditingQuestion.value = false;
-            questionForm.question = null;
             questionForm.customQuestion = '';
             questionForm.answer = '';
             if (Page.user) {
@@ -319,7 +291,6 @@ const saveQuestion = async () => {
 
 const cancelEditQuestion = () => {
     isEditingQuestion.value = false;
-    questionForm.question = null;
     questionForm.customQuestion = '';
     questionForm.answer = '';
 };
