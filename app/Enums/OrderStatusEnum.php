@@ -7,7 +7,7 @@ enum OrderStatusEnum : string
     case PROCESSING = 'Processing';
     case CONFIRMED = 'Confirmed';
     case SHIPPED = 'Shipped';
-    case COMPLETED = 'Completed';
+    case COMPLETED = 'Delivered';
     case CANCELLED = 'Cancelled';
 
     public static function all(): array

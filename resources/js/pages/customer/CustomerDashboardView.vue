@@ -353,7 +353,8 @@ const stopCarousel = () => { if (carouselInterval) { clearInterval(carouselInter
 // Helpers
 const getStatusTimelineClass = (status: string) => {
     switch (status) {
-        case 'Completed': return 'status-completed'
+        case 'Completed':
+        case 'Delivered': return 'status-completed'
         case 'Processing': return 'status-processing'
         case 'Shipped': return 'status-shipped'
         case 'Cancelled': return 'status-cancelled'
@@ -363,7 +364,8 @@ const getStatusTimelineClass = (status: string) => {
 
 const getStatusIcon = (status: string) => {
     switch (status) {
-        case 'Completed': return 'pi pi-check'
+        case 'Completed':
+        case 'Delivered': return 'pi pi-check'
         case 'Processing': return 'pi pi-spin pi-cog'
         case 'Shipped': return 'pi pi-truck'
         case 'Cancelled': return 'pi pi-times'
@@ -373,7 +375,8 @@ const getStatusIcon = (status: string) => {
 
 const getStatusTextColor = (status: string) => {
     switch (status) {
-        case 'Completed': return 'text-completed'
+        case 'Completed':
+        case 'Delivered': return 'text-completed'
         case 'Processing': return 'text-processing'
         case 'Shipped': return 'text-shipped'
         case 'Cancelled': return 'text-cancelled'
