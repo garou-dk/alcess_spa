@@ -16,8 +16,6 @@ class CustomerDashboardService
             'monthly_spend' => $this->getMonthlySpend($userId),
             'recent_orders' => $this->getRecentOrders($userId),
             'featured_products' => $this->getFeaturedProducts(),
-            'cart_summary' => $this->getCartSummary($userId),
-            'top_categories' => $this->getTopCategories($userId),
         ];
     }
 
@@ -32,33 +30,6 @@ class CustomerDashboardService
             'pending_orders' => $orders->where('status', OrderStatusEnum::PROCESSING->value)->count(),
             'completed_orders' => $orders->where('status', OrderStatusEnum::COMPLETED->value)->count(),
         ];
-    }
-
-    private function getCartSummary($userId)
-    {
-        $cartItems = \App\Models\Cart::where('user_id', $userId)->with('product')->get();
-        return [
-            'count' => $cartItems->sum('quantity'),
-            'total' => $cartItems->sum(function($item) {
-                return ($item->product->product_price ?? 0) * $item->quantity;
-            }),
-            'items' => $cartItems->take(3)
-        ];
-    }
-
-    private function getTopCategories($userId)
-    {
-        return \App\Models\Category::whereHas('products.productOrders.order', function($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-        ->withCount(['products as orders_count' => function($q) use ($userId) {
-            $q->whereHas('productOrders.order', function($sq) use ($userId) {
-                $sq->where('user_id', $userId);
-            });
-        }])
-        ->orderBy('orders_count', 'desc')
-        ->limit(3)
-        ->get();
     }
 
     private function getMonthlySpend($userId)
@@ -95,7 +66,6 @@ class CustomerDashboardService
     private function getRecentOrders($userId)
     {
         return Order::where('user_id', $userId)
-            ->with(['productOrders.product'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
