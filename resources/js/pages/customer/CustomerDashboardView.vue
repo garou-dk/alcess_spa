@@ -314,7 +314,7 @@ onMounted(() => { fetchDashboardData() })
 .welcome-slogan { font-size: 1.125rem; font-weight: 500; color: #94a3b8; letter-spacing: 0.025em; }
 
 /* Stat Chips */
-.stat-chip { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.25rem; rounded-full; color: white; rounded-radius: 9999px; font-weight: 700; font-size: 0.8125rem; border-radius: 9999px; }
+.stat-chip { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.25rem; color: white; font-weight: 700; font-size: 0.8125rem; border-radius: 9999px; }
 .stat-chip i { color: #60a5fa; }
 .stat-chip.active { background: #2563eb; border-color: #3b82f6; box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
 .stat-chip.active i { color: white; }
