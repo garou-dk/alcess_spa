@@ -76,20 +76,6 @@
                             <i class="pi pi-facebook"></i> Message Us
                         </a>
                     </div>
-                    <div class="welcome-features">
-                        <div class="w-feature">
-                            <i class="pi pi-verified"></i>
-                            <span>100% Genuine</span>
-                        </div>
-                        <div class="w-feature">
-                            <i class="pi pi-shield"></i>
-                            <span>Official Warranty</span>
-                        </div>
-                        <div class="w-feature">
-                            <i class="pi pi-truck"></i>
-                            <span>Fast Delivery</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -206,33 +192,19 @@
                     </div>
                 </div>
 
-                <!-- Features -->
-                <section class="features-section">
+                <!-- Shop by Brand -->
+                <section class="brands-section">
                     <div class="section-header">
-                        <p class="section-label">Why Choose Us</p>
-                        <h2 class="section-title">Built for Trust</h2>
+                        <p class="section-label">Partnerships</p>
+                        <h2 class="section-title">Shop by Brand</h2>
                     </div>
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon feature-icon-green"><i class="pi pi-check-circle"></i></div>
-                            <h3>Quality Guarantee</h3>
-                            <p>100% genuine and verified products</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon feature-icon-blue"><i class="pi pi-truck"></i></div>
-                            <h3>Fast Delivery</h3>
-                            <p>Quick nationwide shipping</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon feature-icon-purple"><i class="pi pi-shield"></i></div>
-                            <h3>Secure Payment</h3>
-                            <p>Protected payment information</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon feature-icon-amber"><i class="pi pi-sync"></i></div>
-                            <h3>Easy Returns</h3>
-                            <p>7-day replacements for defects</p>
-                        </div>
+                    <div class="brands-grid">
+                        <div class="brand-item"><i class="pi pi-apple"></i><span>Apple</span></div>
+                        <div class="brand-item"><i class="pi pi-microsoft"></i><span>Microsoft</span></div>
+                        <div class="brand-item"><span class="brand-text">DELL</span></div>
+                        <div class="brand-item"><span class="brand-text">HP</span></div>
+                        <div class="brand-item"><span class="brand-text">ASUS</span></div>
+                        <div class="brand-item"><span class="brand-text">LENOVO</span></div>
                     </div>
                 </section>
 
@@ -305,13 +277,24 @@
                 <h2>Ready to upgrade your tech?</h2>
                 <p>Explore our wide selection of laptops, phones, and computers at competitive prices.</p>
                 <div class="cta-buttons">
-                    <button @click="goToBrowseProducts" class="btn-primary btn-lg">Browse Products <i class="pi pi-arrow-right"></i></button>
+                    <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">Browse Products <i class="pi pi-arrow-right"></i></button>
                     <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-outline"><i class="pi pi-facebook"></i> Message Us</a>
                 </div>
-                <div class="cta-stats">
-                    <div><span class="stat-number">500+</span><span class="stat-label">Products</span></div>
-                    <div><span class="stat-number">1K+</span><span class="stat-label">Happy Customers</span></div>
-                    <div><span class="stat-number">4.8</span><span class="stat-label">Star Rating</span></div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter-section">
+            <div class="container">
+                <div class="newsletter-card">
+                    <div class="newsletter-content">
+                        <h3>Join the Tech Community</h3>
+                        <p>Subscribe to get notified about new arrivals, exclusive deals, and tech tips.</p>
+                    </div>
+                    <form class="newsletter-form" @submit.prevent>
+                        <input type="email" placeholder="Enter your email address" required />
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -642,7 +625,7 @@ onUnmounted(() => stopCarousel());
 .welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #94a3b8; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
 .welcome-description { font-size: 1.125rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2.5rem; max-width: 650px; margin-left: auto; margin-right: auto; }
 .welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
-.welcome-features { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; }
+.welcome-features { display: none; }
 .w-feature { display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
 .w-feature i { color: #2563eb; font-size: 1.125rem; }
 
@@ -658,6 +641,24 @@ onUnmounted(() => stopCarousel());
     0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
     100% { transform: rotate(-25deg) translate(-10%, -10%) scale(1.5); }
 }
+
+/* Brands Section */
+.brands-section { margin-top: 6rem; padding-bottom: 4rem; border-bottom: 1px solid #e2e8f0; }
+.brands-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.brand-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: #fff; border-radius: 1rem; border: 1px solid #f1f5f9; transition: all 0.3s; color: #64748b; }
+.brand-item:hover { transform: translateY(-5px); border-color: #cbd5e1; color: #1e293b; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+.brand-item i { font-size: 2.5rem; }
+.brand-text { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; color: #94a3b8; transition: color 0.3s; }
+.brand-item:hover .brand-text { color: #1e293b; }
+
+/* Newsletter */
+.newsletter-section { padding: 4rem 0; background: #f8fafc; }
+.newsletter-card { background: #1e293b; border-radius: 2rem; padding: 3rem; display: flex; flex-direction: column; gap: 2rem; align-items: center; text-align: center; color: #fff; }
+.newsletter-content h3 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+.newsletter-content p { color: #94a3b8; font-size: 1rem; }
+.newsletter-form { display: flex; width: 100%; max-width: 500px; gap: 0.5rem; }
+.newsletter-form input { flex: 1; padding: 0.75rem 1.25rem; border-radius: 0.5rem; border: none; background: rgba(255,255,255,0.1); color: #fff; outline: none; border: 1px solid rgba(255,255,255,0.2); }
+.newsletter-form input:focus { border-color: #2563eb; background: rgba(255,255,255,0.15); }
 
 /* Featured Products Section */
 .featured-products { padding: 4rem 0; background: #fff; }
@@ -834,6 +835,9 @@ onUnmounted(() => stopCarousel());
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .features-grid { grid-template-columns: repeat(4, 1fr); }
     .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+    .brands-grid { grid-template-columns: repeat(6, 1fr); }
+    .newsletter-card { flex-direction: row; text-align: left; justify-content: space-between; padding: 4rem; }
+    .newsletter-form { max-width: 400px; }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
