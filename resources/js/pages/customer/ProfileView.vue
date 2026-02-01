@@ -413,7 +413,7 @@ const uploadCroppedImage = async () => {
             ? 'customer/profile/image' 
             : 'customer/profile/cover'
 
-        await profileService.post(`${endpoint}?_method=PATCH`, formData).then(() => {
+        await profileService.patchFormData(endpoint, formData).then(() => {
             uploadingImage.value = false
             if (profileService.request.status === 200) {
                 toast.success(`${cropMode.value === 'avatar' ? 'Profile' : 'Cover'} updated successfully.`)

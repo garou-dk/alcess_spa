@@ -22,7 +22,7 @@ class ChangeProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['bail', 'required', 'file', 'mimetypes:image/jpeg,image/png', 'max:2048'],
+            'image' => ['bail', 'required', 'file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp', 'max:5120'],
         ];
     }
 }

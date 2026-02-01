@@ -1,35 +1,29 @@
 <template>
     <div class="customer-dashboard">
-        <!-- Dashboard Hero: Mimicking Landing Page -->
+        <!-- Welcome Hero Section (Like HomeView but personalized) -->
         <section class="welcome-hero">
             <div class="welcome-overlay"></div>
-            <!-- Dynamic User Cover Image -->
-            <img 
-                v-if="Page.user?.cover_image" 
-                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
-                class="absolute inset-0 w-full h-full object-cover opacity-30 z-0"
-            >
             <div class="welcome-watermark-container">
                 <div class="moving-watermark">
-                    <div class="watermark-row" v-for="n in 8" :key="n">
-                        <span v-for="m in 10" :key="m" class="watermark-item">
+                    <div class="watermark-row" v-for="n in 12" :key="n">
+                        <span v-for="m in 15" :key="m" class="watermark-item">
                             <img :src="Logo" alt="logo" class="watermark-logo" />
-                            ALCESS CUSTOMER &nbsp;&nbsp;&nbsp;&nbsp;
+                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
                         </span>
                     </div>
                 </div>
             </div>
-            
-            <div class="container welcome-container relative z-10">
+            <div class="container welcome-container">
                 <div class="welcome-content">
                     <div class="welcome-badge-wrapper">
-                        <span class="welcome-badge">Account Hub</span>
+                        <span class="welcome-badge">Customer Dashboard</span>
                     </div>
                     <h1 class="welcome-headline">Welcome Back, <span class="text-accent">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
-                    <p class="welcome-slogan">Everything you need to manage your tech lifestyle.</p>
+                    <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
+                    <p class="welcome-description">Manage your orders, explore new products, and stay updated with the latest tech. Everything you need, all in one place.</p>
                     
                     <!-- Quick Stats Activity Hub -->
-                    <div class="flex flex-wrap justify-center gap-4 mt-8">
+                    <div class="stat-chips">
                         <div class="stat-chip">
                             <i class="pi pi-shopping-bag"></i>
                             <span>{{ stats.total_orders || 0 }} Total Orders</span>
@@ -44,26 +38,93 @@
                         </div>
                     </div>
 
-                    <div class="welcome-actions mt-10">
+                    <div class="welcome-actions">
                         <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
                             Continue Shopping <i class="pi pi-shopping-cart"></i>
                         </button>
+                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
+                            <i class="pi pi-facebook"></i> Message Us
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Quick Actions: Mimicking Landing Page Layout -->
-        <section class="quick-actions-section py-16 bg-white">
+        <!-- Featured Products Section (Like HomeView) -->
+        <section v-if="featuredProducts.length > 0" class="featured-products">
             <div class="container">
-                <div class="section-header mb-12 text-center">
+                <div class="section-header">
+                    <p class="section-label">Top Picks</p>
+                    <h2 class="section-title">Featured Products</h2>
+                </div>
+                <div class="featured-carousel-wrapper">
+                    <div class="hero-carousel">
+                        <div class="hero-grid">
+                            <div class="hero-text">
+                                <span class="hero-badge">RECOMMENDED</span>
+                                <h2 class="hero-product-name">{{ featuredProducts[currentSlide]?.product_name }}</h2>
+                                <p class="hero-category">{{ featuredProducts[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
+                                <div class="hero-price">{{ CurrencyUtil.formatCurrency(featuredProducts[currentSlide]?.product_price) }}</div>
+                                <div class="hero-buttons">
+                                    <button @click="viewProduct(featuredProducts[currentSlide]?.product_id)" class="btn-primary">
+                                        <i class="pi pi-eye"></i>
+                                        View Details
+                                    </button>
+                                    <button @click="goToProducts" class="btn-secondary">
+                                        Browse All
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="hero-image-container">
+                                <div class="hero-image-wrapper">
+                                    <img v-if="featuredProducts[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${featuredProducts[currentSlide]?.product_image}`)" :alt="featuredProducts[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
+                                    <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-dots">
+                            <button v-for="(_, index) in featuredProducts.slice(0, 4)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Bar -->
+        <section class="trust-bar">
+            <div class="container">
+                <div class="trust-grid">
+                    <div class="trust-item">
+                        <div class="trust-icon trust-icon-green"><i class="pi pi-verified"></i></div>
+                        <div><p class="trust-title">100% Genuine</p><p class="trust-sub">Authentic Products</p></div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon trust-icon-blue"><i class="pi pi-truck"></i></div>
+                        <div><p class="trust-title">Fast Delivery</p><p class="trust-sub">Nationwide Shipping</p></div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon trust-icon-purple"><i class="pi pi-shield"></i></div>
+                        <div><p class="trust-title">Warranty</p><p class="trust-sub">Official Coverage</p></div>
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-icon trust-icon-amber"><i class="pi pi-headphones"></i></div>
+                        <div><p class="trust-title">24/7 Support</p><p class="trust-sub">We're Here to Help</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions: Management Suite -->
+        <section class="quick-actions-section">
+            <div class="container">
+                <div class="section-header">
                     <p class="section-label">Quick Control</p>
                     <h2 class="section-title">Your Management Suite</h2>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div @click="goToOrders" class="action-card group">
-                        <div class="action-icon bg-blue-50 text-blue-600">
+                <div class="action-grid">
+                    <div @click="goToOrders" class="action-card">
+                        <div class="action-icon action-icon-blue">
                             <i class="pi pi-truck"></i>
                         </div>
                         <h3>My Orders</h3>
@@ -71,8 +132,8 @@
                         <i class="pi pi-arrow-right action-arrow"></i>
                     </div>
 
-                    <div @click="goToProfile" class="action-card group">
-                        <div class="action-icon bg-purple-50 text-purple-600">
+                    <div @click="goToProfile" class="action-card">
+                        <div class="action-icon action-icon-purple">
                             <i class="pi pi-user"></i>
                         </div>
                         <h3>Identity</h3>
@@ -80,8 +141,8 @@
                         <i class="pi pi-arrow-right action-arrow"></i>
                     </div>
 
-                    <div @click="goToInvoices" class="action-card group">
-                        <div class="action-icon bg-emerald-50 text-emerald-600">
+                    <div @click="goToInvoices" class="action-card">
+                        <div class="action-icon action-icon-green">
                             <i class="pi pi-file-pdf"></i>
                         </div>
                         <h3>Invoices</h3>
@@ -89,8 +150,8 @@
                         <i class="pi pi-arrow-right action-arrow"></i>
                     </div>
 
-                    <div @click="goToAddress" class="action-card group">
-                        <div class="action-icon bg-amber-50 text-amber-600">
+                    <div @click="goToAddress" class="action-card">
+                        <div class="action-icon action-icon-amber">
                             <i class="pi pi-map-marker"></i>
                         </div>
                         <h3>Addresses</h3>
@@ -101,117 +162,156 @@
             </div>
         </section>
 
-        <!-- Featured & History: Hybrid Design -->
-        <section class="py-16 bg-gray-50">
+        <!-- Main Content with Categories and Best Sellers -->
+        <main class="main-content">
             <div class="container">
-                <div class="lg:grid lg:grid-cols-12 lg:gap-12">
-                    
-                    <!-- Featured Section -->
-                    <div class="lg:col-span-7 mb-12 lg:mb-0">
-                        <div class="section-header text-left mb-8">
+                <!-- Section Tabs -->
+                <div class="section-tabs">
+                    <button @click="activeView = 'categories'" :class="['tab-btn', { active: activeView === 'categories' }]">Categories</button>
+                    <button @click="activeView = 'products'" :class="['tab-btn', { active: activeView === 'products' }]">Best Sellers</button>
+                </div>
+
+                <!-- Categories -->
+                <div v-if="activeView === 'categories'" class="grid-section">
+                    <div v-if="categories?.length" class="category-grid">
+                        <button v-for="category in categories" :key="category.category_id" class="category-card" @click="goToCategory(category.category_id)">
+                            <div class="category-image-box">
+                                <img v-if="category.category_image" :src="UrlUtil.getBaseAppUrl(`storage/images/category/${category.category_image}`)" :alt="category.category_name" />
+                                <i v-else class="pi pi-image"></i>
+                            </div>
+                            <span class="category-name">{{ category.category_name }}</span>
+                        </button>
+                    </div>
+                    <div v-else class="empty-state">
+                        <div class="empty-icon"><i class="pi pi-th-large"></i></div>
+                        <h3>No Categories Available</h3>
+                        <p>Check back soon for new product categories.</p>
+                    </div>
+                </div>
+
+                <!-- Best Sellers Products -->
+                <div v-else class="grid-section">
+                    <div v-if="bestSellers?.length" class="product-grid">
+                        <div v-for="product in bestSellers" :key="product.product_id" class="product-card" @click="viewProduct(product.product_id)">
+                            <div class="product-image-box">
+                                <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name" />
+                                <i v-else class="pi pi-image"></i>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">{{ product.product_name }}</h3>
+                                <p class="product-price">{{ CurrencyUtil.formatCurrency(product.product_price) }}</p>
+                                <span class="btn-view">View Details</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="empty-state">
+                        <div class="empty-icon"><i class="pi pi-shopping-bag"></i></div>
+                        <h3>No Products Available</h3>
+                        <p>Stay tuned for our latest offerings!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Recommendations & Order Timeline Section -->
+        <section class="recommendations-section">
+            <div class="container">
+                <div class="recommendations-grid">
+                    <!-- Recommendations -->
+                    <div class="recommendations-column">
+                        <div class="section-header-left">
                             <p class="section-label">Recommendations</p>
                             <h2 class="section-title">Picked for You</h2>
                         </div>
                         
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div v-if="featuredProducts.length > 0" class="recommendation-cards">
                             <div 
-                                v-for="product in featuredProducts" 
+                                v-for="product in featuredProducts.slice(0, 4)" 
                                 :key="product.product_id"
-                                class="product-item-card group"
+                                class="recommendation-card"
                                 @click="viewProduct(product.product_id)"
                             >
-                                <div class="product-img-box">
-                                    <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" class="group-hover:scale-110 transition-transform duration-500">
-                                    <i v-else class="pi pi-image text-gray-200 text-3xl"></i>
+                                <div class="recommendation-img">
+                                    <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name">
+                                    <i v-else class="pi pi-image"></i>
                                 </div>
-                                <div class="p-5">
-                                    <h4 class="font-bold text-gray-900 line-clamp-1">{{ product.product_name }}</h4>
-                                    <div class="flex items-center justify-between mt-3">
-                                        <span class="text-blue-600 font-black">{{ CurrencyUtil.formatCurrency(product.product_price) }}</span>
-                                        <div class="flex items-center gap-1 text-[10px] text-gray-400 font-bold uppercase">
+                                <div class="recommendation-info">
+                                    <h4>{{ product.product_name }}</h4>
+                                    <div class="recommendation-meta">
+                                        <span class="recommendation-price">{{ CurrencyUtil.formatCurrency(product.product_price) }}</span>
+                                        <span class="recommendation-category">
                                             <i class="pi pi-tag"></i>
                                             {{ product.category?.category_name }}
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div v-else class="empty-state">
+                            <div class="empty-icon"><i class="pi pi-star"></i></div>
+                            <h3>No Recommendations Yet</h3>
+                            <p>Browse our products to get personalized picks!</p>
+                        </div>
                     </div>
 
-                    <!-- History Timeline -->
-                    <div class="lg:col-span-5">
-                        <div class="section-header text-left mb-8">
+                    <!-- Order Timeline -->
+                    <div class="timeline-column">
+                        <div class="section-header-left">
                             <p class="section-label">Activity</p>
                             <h2 class="section-title">Order Timeline</h2>
                         </div>
 
-                        <div class="timeline-container bg-white rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden">
-                            <div v-if="recentOrders.length > 0" class="space-y-8 relative">
-                                <div v-for="(order, index) in recentOrders" :key="order.order_id" class="timeline-item flex gap-4">
-                                    <div class="flex flex-col items-center">
+                        <div class="timeline-container">
+                            <div v-if="recentOrders.length > 0" class="timeline-list">
+                                <div v-for="(order, index) in recentOrders" :key="order.order_id" class="timeline-item">
+                                    <div class="timeline-dot-wrapper">
                                         <div class="timeline-dot" :class="getStatusTimelineClass(order.status)">
                                             <i :class="getStatusIcon(order.status)"></i>
                                         </div>
                                         <div v-if="index !== recentOrders.length - 1" class="timeline-line"></div>
                                     </div>
-                                    <div class="flex-1 pb-2">
-                                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ new Date(order.created_at).toLocaleDateString() }}</span>
-                                        <h4 class="text-sm font-bold text-gray-900 mt-1">Order #{{ order.order_public_id }}</h4>
-                                        <p class="text-[11px] text-gray-500 line-clamp-1 italic">{{ order.product_orders?.[0]?.product?.product_name || 'Electronics' }}</p>
-                                        <div class="mt-2" :class="getStatusTextColor(order.status)">
-                                            <span class="text-[9px] font-black uppercase bg-gray-50 px-2 py-1 rounded-md">{{ order.status }}</span>
+                                    <div class="timeline-content">
+                                        <span class="timeline-date">{{ new Date(order.created_at).toLocaleDateString() }}</span>
+                                        <h4 class="timeline-order-id">Order #{{ order.order_public_id }}</h4>
+                                        <p class="timeline-product">{{ order.product_orders?.[0]?.product?.product_name || 'Electronics' }}</p>
+                                        <div class="timeline-status" :class="getStatusTextColor(order.status)">
+                                            <span>{{ order.status }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div v-else class="text-center py-12">
-                                <i class="pi pi-history text-4xl text-gray-100 mb-4 block"></i>
-                                <p class="text-gray-400 text-sm font-medium">No recent orders found.</p>
+                            <div v-else class="empty-state">
+                                <div class="empty-icon"><i class="pi pi-history"></i></div>
+                                <h3>No Recent Orders</h3>
+                                <p>Your order history will appear here.</p>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
 
-        <!-- Spending insight (Floating Minimalist) -->
-        <div class="container py-16">
-            <div class="bg-gray-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full"></div>
-                <div class="flex flex-col md:flex-row justify-between items-center gap-10">
-                    <div class="md:w-1/3">
-                        <h2 class="text-2xl font-bold mb-4">Investment Tracking</h2>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-6">Total investment in your tech suite across the last 6 months.</p>
-                        <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Lifetime Managed</span>
-                            <p class="text-2xl font-black text-blue-400 mt-1">{{ CurrencyUtil.formatCurrency(stats.total_spend || 0) }}</p>
-                        </div>
-                    </div>
-                    <div class="flex-1 w-full h-64">
-                         <VueApexCharts
-                            type="area"
-                            height="100%"
-                            :options="chartOptions"
-                            :series="chartSeries"
-                            v-if="chartSeries[0].data.length > 0"
-                        />
-                    </div>
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to upgrade your tech?</h2>
+                <p>Explore our wide selection of laptops, phones, and computers at competitive prices.</p>
+                <div class="cta-buttons">
+                    <button @click="goToProducts" class="btn-primary btn-lg shine-effect">Browse Products <i class="pi pi-arrow-right"></i></button>
+                    <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-outline"><i class="pi pi-facebook"></i> Message Us</a>
                 </div>
             </div>
-        </div>
-
+        </section>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Page from '@/stores/Page'
 import useAxiosUtil from '@/utils/AxiosUtil'
 import CurrencyUtil from '@/utils/CurrencyUtil'
 import UrlUtil from '@/utils/UrlUtil'
-import VueApexCharts from 'vue3-apexcharts'
 import Logo from "@/../img/logo.png";
 
 const router = useRouter()
@@ -221,19 +321,11 @@ const dashboardService = useAxiosUtil()
 const stats = ref<any>({})
 const recentOrders = ref<any[]>([])
 const featuredProducts = ref<any[]>([])
+const bestSellers = ref<any[]>([])
 const categories = ref<any[]>([])
-const chartSeries = ref<any[]>([{ name: 'Spend', data: [] }])
-
-const chartOptions = computed(() => ({
-    chart: { type: 'area', toolbar: { show: false }, sparkline: { enabled: false } },
-    colors: ['#3B82F6'],
-    stroke: { curve: 'smooth', width: 4 },
-    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0 } },
-    grid: { show: false },
-    xaxis: { labels: { show: false }, axisBorder: { show: false }, axisTicks: { show: false } },
-    yaxis: { labels: { show: false } },
-    tooltip: { theme: 'dark', y: { formatter: (val: number) => CurrencyUtil.formatCurrency(val) } }
-}))
+const currentSlide = ref(0)
+const activeView = ref<'categories' | 'products'>('categories')
+let carouselInterval: number | null = null
 
 // Fetch Data
 const fetchDashboardData = async () => {
@@ -243,20 +335,29 @@ const fetchDashboardData = async () => {
             stats.value = data.stats
             recentOrders.value = data.recent_orders
             featuredProducts.value = data.featured_products
+            bestSellers.value = data.best_sellers || []
             categories.value = data.categories
-            chartSeries.value = [{ name: 'Spent', data: data.monthly_spend.data }]
+            startCarousel()
         }
     })
 }
 
+// Carousel
+const startCarousel = () => {
+    const count = Math.min(featuredProducts.value.length, 4)
+    if (count > 1) carouselInterval = window.setInterval(() => { currentSlide.value = (currentSlide.value + 1) % count }, 5000)
+}
+
+const stopCarousel = () => { if (carouselInterval) { clearInterval(carouselInterval); carouselInterval = null } }
+
 // Helpers
 const getStatusTimelineClass = (status: string) => {
     switch (status) {
-        case 'Completed': return 'bg-emerald-500 text-white'
-        case 'Processing': return 'bg-blue-500 text-white animate-pulse'
-        case 'Shipped': return 'bg-purple-500 text-white'
-        case 'Cancelled': return 'bg-red-500 text-white'
-        default: return 'bg-gray-200 text-gray-500'
+        case 'Completed': return 'status-completed'
+        case 'Processing': return 'status-processing'
+        case 'Shipped': return 'status-shipped'
+        case 'Cancelled': return 'status-cancelled'
+        default: return 'status-default'
     }
 }
 
@@ -272,13 +373,15 @@ const getStatusIcon = (status: string) => {
 
 const getStatusTextColor = (status: string) => {
     switch (status) {
-        case 'Completed': return 'text-emerald-500'
-        case 'Processing': return 'text-blue-500'
-        case 'Shipped': return 'text-purple-500'
-        case 'Cancelled': return 'text-red-500'
-        default: return 'text-gray-400'
+        case 'Completed': return 'text-completed'
+        case 'Processing': return 'text-processing'
+        case 'Shipped': return 'text-shipped'
+        case 'Cancelled': return 'text-cancelled'
+        default: return 'text-default'
     }
 }
+
+const handleImageError = (event: Event) => { (event.target as HTMLImageElement).style.display = 'none' }
 
 // Navigation
 const goToOrders = () => router.push({ name: 'customer.order.index' })
@@ -287,73 +390,239 @@ const goToProfile = () => router.push({ name: 'customer.profile' })
 const goToAddress = () => { window.dispatchEvent(new CustomEvent('open-address-form')) }
 const goToProducts = () => router.push({ name: 'customer.browse-products' })
 const viewProduct = (id: number) => router.push({ name: 'customer.product-info.index', params: { id } })
-const viewOrder = (id: number) => router.push({ name: 'customer.order.index', hash: `#order-${id}` })
+const goToCategory = (id: number) => router.push({ name: 'customer.product-category', params: { id } })
 
 onMounted(() => { fetchDashboardData() })
+onUnmounted(() => stopCarousel())
 </script>
 
 <style scoped>
-/* Mimicking HomeView Style */
-.customer-dashboard { background-color: #f8fafc; overflow-x: hidden; }
+/* Base */
+.customer-dashboard { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
-/* Hero Wrapper (Mimicking welcome-hero) */
-.welcome-hero { position: relative; background: #0f172a; min-height: 500px; display: flex; align-items: center; overflow: hidden; padding: 4rem 0; }
+/* Welcome Hero */
+.welcome-hero { position: relative; background: #0f172a; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
 .welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.03; pointer-events: none; z-index: 5; }
-.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 60s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2rem; display: flex; align-items: center; }
-.watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
-.watermark-logo { width: 32px; height: 32px; filter: grayscale(1) brightness(2); }
-
-@keyframes moveWatermark { 0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); } 100% { transform: rotate(-25deg) translate(-10%, -10%) scale(1.5); } }
-
+.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
-.welcome-badge { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2rem; display: inline-block; }
-.welcome-headline { font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1rem; }
+.welcome-badge-wrapper { margin-bottom: 1.5rem; }
+.welcome-badge { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1.5rem; }
 .text-accent { color: #60a5fa; }
-.welcome-slogan { font-size: 1.125rem; font-weight: 500; color: #94a3b8; letter-spacing: 0.025em; }
+.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #94a3b8; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
+.welcome-description { font-size: 1.125rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto; }
+.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
 /* Stat Chips */
-.stat-chip { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.25rem; color: white; font-weight: 700; font-size: 0.8125rem; border-radius: 9999px; }
+.stat-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+.stat-chip { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.25rem; color: white; font-weight: 600; font-size: 0.875rem; border-radius: 9999px; }
 .stat-chip i { color: #60a5fa; }
 .stat-chip.active { background: #2563eb; border-color: #3b82f6; box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
 .stat-chip.active i { color: white; }
 .stat-chip.highlight { border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+.stat-chip.highlight i { color: #10b981; }
+
+/* Watermark Animation */
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
+.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
+.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2rem; display: flex; align-items: center; }
+.watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
+.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) brightness(2); }
+.watermark-row:nth-child(even) { margin-left: -8rem; }
+
+@keyframes moveWatermark {
+    0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
+    100% { transform: rotate(-25deg) translate(-10%, -10%) scale(1.5); }
+}
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 700; padding: 1rem 2rem; border-radius: 1rem; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.875rem; transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+.btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+.btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+.btn-view { display: block; background: #1e293b; color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+.btn-view:hover { background: #334155; }
+
+/* Shine Effect */
 .shine-effect { position: relative; overflow: hidden; }
-.shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.2) 50%, transparent 55%); transform: rotate(45deg); animation: shine 4s infinite; }
+.shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%); transform: rotate(45deg); animation: shine 3s infinite; }
 @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
 
-/* Quick Action Cards */
-.action-card { background: #fff; padding: 2.5rem; border-radius: 2rem; border: 1px solid #f1f5f9; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+/* Featured Products Section */
+.featured-products { padding: 4rem 0; background: #fff; }
+.featured-carousel-wrapper { background: #1e293b; border-radius: 2rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+.hero-carousel { padding: 3rem; position: relative; }
+.hero-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+.hero-text { text-align: center; position: relative; z-index: 5; }
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; }
+.hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
+.hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
+.hero-price { font-size: 1.5rem; font-weight: 700; color: #60a5fa; margin-bottom: 1.5rem; }
+.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.hero-image-container { display: flex; align-items: center; justify-content: center; }
+.hero-image-wrapper { max-width: 300px; }
+.hero-image { max-width: 100%; max-height: 250px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
+.hero-image-placeholder { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); font-size: 4rem; }
+.hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
+.dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
+.dot.active { width: 24px; background: #fff; }
+
+/* Trust Bar */
+.trust-bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 0; }
+.trust-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.trust-item { display: flex; align-items: center; gap: 0.75rem; }
+.trust-icon { width: 36px; height: 36px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.trust-icon i { font-size: 0.875rem; }
+.trust-icon-green { background: #ecfdf5; color: #059669; }
+.trust-icon-blue { background: #eff6ff; color: #2563eb; }
+.trust-icon-purple { background: #f5f3ff; color: #7c3aed; }
+.trust-icon-amber { background: #fffbeb; color: #d97706; }
+.trust-title { font-size: 0.75rem; font-weight: 600; color: #1e293b; }
+.trust-sub { font-size: 0.625rem; color: #64748b; }
+
+/* Quick Actions Section */
+.quick-actions-section { padding: 4rem 0; background: #fff; }
+.action-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.5rem; }
+.action-card { background: #fff; padding: 2rem; border-radius: 1.5rem; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
 .action-card:hover { transform: translateY(-8px); border-color: #2563eb; box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); }
-.action-icon { width: 3.5rem; height: 3.5rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem; transition: transform 0.4s; }
+.action-icon { width: 3rem; height: 3rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 1.25rem; transition: transform 0.4s; }
 .action-card:hover .action-icon { transform: scale(1.1) rotate(5deg); }
-.action-card h3 { font-size: 1.125rem; font-weight: 800; color: #111827; margin-bottom: 0.5rem; }
+.action-icon-blue { background: #eff6ff; color: #2563eb; }
+.action-icon-purple { background: #f5f3ff; color: #7c3aed; }
+.action-icon-green { background: #ecfdf5; color: #059669; }
+.action-icon-amber { background: #fffbeb; color: #d97706; }
+.action-card h3 { font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem; }
 .action-card p { font-size: 0.875rem; color: #6b7280; font-weight: 500; line-height: 1.5; padding-right: 1.5rem; }
 .action-arrow { position: absolute; bottom: 2rem; right: 2rem; color: #2563eb; opacity: 0; transform: translateX(-10px); transition: all 0.3s; font-size: 0.75rem; }
 .action-card:hover .action-arrow { opacity: 1; transform: translateX(0); }
 
-/* Product Item Cards */
-.product-item-card { background: #fff; border-radius: 1.5rem; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; transition: all 0.3s; }
-.product-item-card:hover { transform: translateY(-5px); border-color: #2563eb; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-.product-img-box { height: 180px; background: #fafafa; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-.product-img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+/* Section Headers */
+.section-header { text-align: center; margin-bottom: 2rem; }
+.section-header-left { text-align: left; margin-bottom: 1.5rem; }
+.section-label { font-size: 0.75rem; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.section-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
 
-/* Timeline Stylings */
-.timeline-item { position: relative; }
-.timeline-dot { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 2; font-size: 0.875rem; }
-.timeline-line { position: absolute; top: 2.5rem; left: 1.25rem; bottom: -1rem; width: 1px; background-color: #f1f5f9; z-index: 1; }
-.timeline-container { min-height: 400px; }
+/* Main Content */
+.main-content { padding: 3rem 0; background: #f8fafc; }
+.section-tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }
+.tab-btn { padding: 0.5rem 1rem; border-radius: 9999px; border: none; background: transparent; color: #64748b; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+.tab-btn.active { background: #1e293b; color: #fff; }
+.tab-btn:hover:not(.active) { background: #f1f5f9; color: #1e293b; }
+.grid-section { min-height: 200px; }
 
-/* Label Styling */
-.section-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #2563eb; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-.section-title { font-size: 1.75rem; font-weight: 900; color: #0f172a; }
+/* Categories */
+.category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.category-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.4s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }
+.category-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.08); transform: translateY(-5px); }
+.category-image-box { width: 100px; height: 100px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1rem; }
+.category-card:hover .category-image-box { background: #eff6ff; }
+.category-image-box img { max-width: 85%; max-height: 85%; object-fit: contain; }
+.category-image-box i { font-size: 2.5rem; color: #cbd5e1; }
+.category-name { font-size: 1rem; font-weight: 700; color: #1e293b; display: block; }
 
-@media (max-width: 640px) {
-    .container { padding: 0 1.5rem; }
+/* Products */
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+.product-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(0,0,0,0.08); transform: translateY(-4px); }
+.product-image-box { position: relative; height: 160px; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
+.product-card:hover .product-image-box img { transform: scale(1.05); }
+.product-image-box i { font-size: 2.5rem; color: #cbd5e1; }
+.product-info { padding: 1rem; }
+.product-name { font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5rem; }
+.product-price { font-size: 1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.75rem; }
+
+/* Empty State */
+.empty-state { text-align: center; padding: 3rem 1rem; }
+.empty-icon { width: 48px; height: 48px; background: #f1f5f9; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+.empty-icon i { font-size: 1.25rem; color: #94a3b8; }
+.empty-state h3 { font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.25rem; }
+.empty-state p { font-size: 0.75rem; color: #64748b; }
+
+/* Recommendations Section */
+.recommendations-section { padding: 4rem 0; background: #fff; }
+.recommendations-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+.recommendations-column { }
+.timeline-column { }
+
+/* Recommendation Cards */
+.recommendation-cards { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1rem; }
+.recommendation-card { background: #f8fafc; border-radius: 1rem; overflow: hidden; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border: 1px solid #e2e8f0; }
+.recommendation-card:hover { background: #fff; border-color: #2563eb; box-shadow: 0 10px 25px rgba(0,0,0,0.05); transform: translateX(5px); }
+.recommendation-img { width: 80px; height: 80px; background: #fff; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.recommendation-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+.recommendation-img i { font-size: 2rem; color: #cbd5e1; }
+.recommendation-info { flex: 1; min-width: 0; }
+.recommendation-info h4 { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recommendation-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+.recommendation-price { font-size: 0.875rem; font-weight: 700; color: #2563eb; }
+.recommendation-category { font-size: 0.625rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 0.25rem; }
+
+/* Timeline Container */
+.timeline-container { background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; min-height: 300px; }
+.timeline-list { display: flex; flex-direction: column; gap: 0; }
+.timeline-item { display: flex; gap: 1rem; }
+.timeline-dot-wrapper { display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.75rem; }
+.timeline-dot.status-completed { background: #10b981; color: #fff; }
+.timeline-dot.status-processing { background: #3b82f6; color: #fff; animation: pulse 2s infinite; }
+.timeline-dot.status-shipped { background: #8b5cf6; color: #fff; }
+.timeline-dot.status-cancelled { background: #ef4444; color: #fff; }
+.timeline-dot.status-default { background: #e2e8f0; color: #64748b; }
+.timeline-line { width: 2px; flex: 1; min-height: 2rem; background: #e2e8f0; }
+.timeline-content { flex: 1; padding-bottom: 1.5rem; }
+.timeline-date { font-size: 0.625rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+.timeline-order-id { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin: 0.25rem 0; }
+.timeline-product { font-size: 0.75rem; color: #64748b; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.timeline-status { margin-top: 0.5rem; }
+.timeline-status span { font-size: 0.625rem; font-weight: 700; text-transform: uppercase; background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+.text-completed { color: #10b981; }
+.text-processing { color: #3b82f6; }
+.text-shipped { color: #8b5cf6; }
+.text-cancelled { color: #ef4444; }
+.text-default { color: #64748b; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* CTA Section */
+.cta-section { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 3rem 1rem; text-align: center; }
+.cta-section h2 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+.cta-section > .container > p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.875rem; }
+.cta-buttons { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
+
+/* Tablet */
+@media (min-width: 640px) {
+    .action-grid { grid-template-columns: repeat(2, 1fr); }
+    .category-grid { grid-template-columns: repeat(3, 1fr); }
+    .recommendation-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tablet Large */
+@media (min-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr 1fr; }
+    .hero-text { text-align: left; }
+    .hero-buttons { justify-content: flex-start; }
+    .hero-product-name { font-size: 2.5rem; }
+    .hero-price { font-size: 2rem; }
+    .hero-image { max-height: 350px; }
+    .trust-grid { grid-template-columns: repeat(4, 1fr); }
+    .product-grid { grid-template-columns: repeat(3, 1fr); }
+    .recommendations-grid { grid-template-columns: 7fr 5fr; }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .action-grid { grid-template-columns: repeat(4, 1fr); }
+    .category-grid { grid-template-columns: repeat(4, 1fr); }
+    .product-grid { grid-template-columns: repeat(3, 1fr); }
+    .cta-section { padding: 4rem 2rem; }
+    .cta-section h2 { font-size: 2rem; }
 }
 </style>

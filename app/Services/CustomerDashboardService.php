@@ -16,8 +16,22 @@ class CustomerDashboardService
             'monthly_spend' => $this->getMonthlySpend($userId),
             'recent_orders' => $this->getRecentOrders($userId),
             'featured_products' => $this->getFeaturedProducts(),
-            'categories' => \App\Models\Category::where('is_active', true)->limit(6)->get(),
+            'best_sellers' => $this->getBestSellingProducts(),
+            'categories' => \App\Models\Category::where('is_active', true)->limit(8)->get(),
         ];
+    }
+
+    private function getBestSellingProducts()
+    {
+        return Product::query()
+            ->with(['category', 'rates'])
+            ->withAvg('rates', 'rate')
+            ->withCount('productOrders')
+            ->where('is_active', true)
+            ->where('available_online', true)
+            ->orderBy('product_orders_count', 'desc')
+            ->limit(6)
+            ->get();
     }
 
     private function getStats($userId)
