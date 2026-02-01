@@ -50,7 +50,7 @@ class Product extends Model
         return $this->hasMany(Specification::class, 'product_id', 'product_id');
     }
 
-    public function featuredImages()
+    public function featured_images()
     {
         return $this->hasMany(FeaturedImage::class, 'product_id', 'product_id');
     }

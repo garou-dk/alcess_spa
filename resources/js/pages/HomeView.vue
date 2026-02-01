@@ -47,11 +47,64 @@
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-bg"></div>
-            <div class="hero-content">
-                <div v-if="showCarousel && products.length > 0" class="hero-carousel">
+        <!-- Hero Brand Section - Always Visible -->
+        <section class="hero-brand">
+            <div class="hero-brand-bg">
+                <div class="hero-brand-gradient"></div>
+                <div class="hero-brand-pattern"></div>
+            </div>
+            <div class="hero-brand-content">
+                <div class="hero-brand-badge">
+                    <i class="pi pi-verified"></i>
+                    <span>Trusted Tech Partner Since 2020</span>
+                </div>
+                <h1 class="hero-brand-title">
+                    Welcome to <span class="hero-brand-accent">{{ appName }}</span>
+                </h1>
+                <p class="hero-brand-tagline">Your One-Stop Destination for Premium Tech</p>
+                <p class="hero-brand-description">
+                    Discover an extensive collection of genuine laptops, smartphones, and computers. 
+                    We deliver quality products with official warranty, competitive prices, and exceptional customer service.
+                </p>
+                <div class="hero-brand-highlights">
+                    <div class="hero-highlight">
+                        <i class="pi pi-check-circle"></i>
+                        <span>100% Authentic Products</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <i class="pi pi-shield"></i>
+                        <span>Official Warranty</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <i class="pi pi-truck"></i>
+                        <span>Nationwide Delivery</span>
+                    </div>
+                </div>
+                <div class="hero-brand-actions">
+                    <button @click="goToBrowseProducts" class="btn-hero-primary">
+                        <i class="pi pi-shopping-bag"></i>
+                        Shop Now
+                    </button>
+                    <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-hero-secondary">
+                        <i class="pi pi-facebook"></i>
+                        Connect With Us
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products Section - Shown when products exist -->
+        <section v-if="showCarousel && products.length > 0" class="hero-featured">
+            <div class="hero-featured-bg"></div>
+            <div class="hero-featured-content">
+                <div class="featured-header">
+                    <span class="featured-badge">
+                        <i class="pi pi-star-fill"></i>
+                        Featured Products
+                    </span>
+                    <h2 class="featured-title">Best Sellers</h2>
+                </div>
+                <div class="hero-carousel">
                     <div class="hero-grid">
                         <div class="hero-text">
                             <!-- Davao Branch Watermark -->
@@ -80,12 +133,6 @@
                     <div class="hero-dots">
                         <button v-for="(_, index) in products.slice(0, 3)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
                     </div>
-                </div>
-                <div v-else class="hero-static">
-                    <span class="hero-badge">Premium Tech Store</span>
-                    <h2 class="hero-headline">Welcome to <span class="text-accent">{{ appName }}</span></h2>
-                    <p class="hero-subtext">Discover premium laptops, phones & computers at unbeatable prices with genuine warranty.</p>
-                    <button @click="goToBrowseProducts" class="btn-primary btn-lg">Shop Now <i class="pi pi-arrow-right"></i></button>
                 </div>
             </div>
         </section>
@@ -414,6 +461,9 @@ import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const { isMobile } = useResponsive();
 const appName = import.meta.env.VITE_APP_NAME;
@@ -555,10 +605,39 @@ onUnmounted(() => stopCarousel());
 .nav-mobile-search { display: block; padding: 0 1rem 0.625rem; background: #2563eb; }
 .nav-mobile-search .nav-search-box input { border-color: rgba(255,255,255,0.3); }
 
-/* Hero */
-.hero { position: relative; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 500px; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 50%); }
-.hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
+/* Hero Brand Section - Always Visible */
+.hero-brand { position: relative; overflow: hidden; }
+.hero-brand-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
+.hero-brand-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.2) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%); }
+.hero-brand-pattern { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
+.hero-brand-content { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 4rem 1.5rem; text-align: center; }
+.hero-brand-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; font-size: 0.75rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; margin-bottom: 1.5rem; animation: pulse-glow 2s infinite; }
+.hero-brand-badge i { font-size: 0.875rem; }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.3); } 50% { box-shadow: 0 0 20px 5px rgba(34, 197, 94, 0.1); } }
+.hero-brand-title { font-size: 2.25rem; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+.hero-brand-accent { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-brand-tagline { font-size: 1.125rem; font-weight: 500; color: #94a3b8; margin-bottom: 1rem; }
+.hero-brand-description { font-size: 0.9375rem; color: #64748b; line-height: 1.7; max-width: 700px; margin: 0 auto 2rem; }
+.hero-brand-highlights { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+.hero-highlight { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.625rem 1rem; border-radius: 9999px; }
+.hero-highlight i { color: #22c55e; font-size: 0.875rem; }
+.hero-highlight span { color: #e2e8f0; font-size: 0.8125rem; font-weight: 500; }
+.hero-brand-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+.btn-hero-primary { display: inline-flex; align-items: center; gap: 0.625rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; font-weight: 600; padding: 0.875rem 1.75rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.9375rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+.btn-hero-secondary { display: inline-flex; align-items: center; gap: 0.625rem; background: rgba(255,255,255,0.1); color: #fff; font-weight: 500; padding: 0.875rem 1.75rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; font-size: 0.9375rem; transition: all 0.3s; }
+.btn-hero-secondary:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+
+/* Featured Products Section */
+.hero-featured { position: relative; background: linear-gradient(180deg, #1e3a5f 0%, #0f172a 100%); overflow: hidden; }
+.hero-featured-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at bottom right, rgba(59,130,246,0.1) 0%, transparent 60%); }
+.hero-featured-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
+.featured-header { text-align: center; margin-bottom: 2rem; }
+.featured-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24; font-size: 0.75rem; font-weight: 600; padding: 0.375rem 0.875rem; border-radius: 9999px; margin-bottom: 0.75rem; }
+.featured-badge i { font-size: 0.75rem; }
+.featured-title { font-size: 1.75rem; font-weight: 700; color: #fff; }
+
+/* Hero Carousel (Featured Products) */
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
 .hero-text { text-align: center; position: relative; z-index: 5; }
 .hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
@@ -570,10 +649,11 @@ onUnmounted(() => stopCarousel());
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
 .dot.active { width: 24px; background: #fff; }
-.hero-static { text-align: center; padding: 2rem 0; }
-.hero-headline { font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
-.text-accent { color: #60a5fa; }
-.hero-subtext { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+.hero-image-container { display: flex; justify-content: center; }
+.hero-image-wrapper { position: relative; }
+.hero-image { max-height: 280px; width: auto; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
+.hero-image-placeholder { width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; }
+.hero-image-placeholder i { font-size: 3rem; color: rgba(255,255,255,0.2); }
 
 /* Buttons */
 .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: background 0.2s; }
@@ -734,6 +814,15 @@ onUnmounted(() => stopCarousel());
     .nav-search { display: block; }
     .nav-mobile-search { display: none; }
     .nav-btn { width: 40px; height: 40px; }
+    /* Hero Brand */
+    .hero-brand-content { padding: 5rem 2rem; }
+    .hero-brand-title { font-size: 3rem; }
+    .hero-brand-tagline { font-size: 1.25rem; }
+    .hero-brand-description { font-size: 1rem; }
+    .hero-brand-highlights { gap: 1.25rem; }
+    /* Featured Products */
+    .hero-featured-content { padding: 4rem 2rem; }
+    .featured-title { font-size: 2rem; }
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .hero-text { text-align: left; }
     .hero-watermark { font-size: clamp(5rem, 10vw, 8rem); justify-content: flex-start; left: 0; transform: translateY(-50%); }
@@ -741,7 +830,7 @@ onUnmounted(() => stopCarousel());
     .hero-product-name { font-size: 2.5rem; }
     .hero-price { font-size: 2rem; }
     .hero-image { max-height: 350px; }
-    .hero-watermark { font-size: 8rem; }
+    /* Other */
     .trust-grid { grid-template-columns: repeat(4, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .features-grid { grid-template-columns: repeat(4, 1fr); }
@@ -756,10 +845,21 @@ onUnmounted(() => stopCarousel());
     .nav-title { font-size: 1.375rem; }
     .nav-search { max-width: 500px; }
     .nav-btn { width: 42px; height: 42px; }
-    .hero-content { padding: 4rem 2rem; }
+    /* Hero Brand */
+    .hero-brand-content { padding: 6rem 2rem; }
+    .hero-brand-title { font-size: 3.5rem; }
+    .hero-brand-tagline { font-size: 1.375rem; }
+    .hero-brand-description { font-size: 1.0625rem; }
+    .hero-highlight { padding: 0.75rem 1.25rem; }
+    .hero-highlight span { font-size: 0.875rem; }
+    .btn-hero-primary, .btn-hero-secondary { padding: 1rem 2rem; font-size: 1rem; }
+    /* Featured Products */
+    .hero-featured-content { padding: 5rem 2rem; }
+    .featured-title { font-size: 2.25rem; }
     .hero-product-name { font-size: 3rem; }
     .hero-watermark { font-size: clamp(8rem, 12vw, 12rem); }
     .hero-image { max-height: 400px; }
+    /* Other */
     .product-grid { grid-template-columns: repeat(5, 1fr); }
     .footer-grid { grid-template-columns: repeat(4, 1fr); }
     .cta-section { padding: 4rem 2rem; }

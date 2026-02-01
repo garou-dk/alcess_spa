@@ -86,7 +86,7 @@ class ProductService
     public function index(array $data)
     {
         $products = Product::query();
-        $products->with(['category', 'unit', 'specifications', 'featuredImages', 'batch']);
+        $products->with(['category', 'unit', 'specifications', 'featured_images', 'batch']);
 
         if (isset($data['category_id'])) {
             $products->where('category_id', $data['category_id']);
@@ -183,7 +183,7 @@ class ProductService
         $product->available_online = $data['available_online'];
         $product->save();
 
-        $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
+        $product->load(['specifications', 'featured_images', 'category', 'unit', 'batch']);
 
         ProductEvent::dispatch($product->toArray());
         ProductCountEvent::dispatch($this->countAllProduct()['result']);
@@ -214,7 +214,7 @@ class ProductService
             $manageFileService->removeFile(FileDirectoryEnum::PRODUCT_IMAGE->value, $oldImage);
         }
 
-        $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
+        $product->load(['specifications', 'featured_images', 'category', 'unit', 'batch']);
 
         return $product;
     }
@@ -241,7 +241,7 @@ class ProductService
         $product->is_active = $data['is_active'];
         $product->save();
 
-        $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
+        $product->load(['specifications', 'featured_images', 'category', 'unit', 'batch']);
 
         return $product;
     }
@@ -302,7 +302,7 @@ class ProductService
     public function fetchAvailableProduct(array $data)
     {
         $product = Product::query()
-            ->with(['category', 'unit', 'specifications', 'featuredImages', 'batch'])
+            ->with(['category', 'unit', 'specifications', 'featured_images', 'batch'])
             ->withAvg('rates', 'rate')
             ->where('available_online', true)
             ->where('is_active', true)
@@ -600,7 +600,7 @@ class ProductService
             $product->save();
 
             // Load relationships including the new batch
-            $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
+            $product->load(['specifications', 'featured_images', 'category', 'unit', 'batch']);
 
             // Dispatch events
             ProductEvent::dispatch($product->toArray());
@@ -670,7 +670,7 @@ class ProductService
                 $manageFileService = new ManageFileService;
                 foreach ($data['featured_images'] as $image) {
                     $result = $manageFileService->saveFile($image, FileDirectoryEnum::FEATURED_IMAGE->value, 'public');
-                    $product->featuredImages()->create([
+                    $product->featured_images()->create([
                         'featured_image' => $result['file_name'],
                         'thumbnail' => $result['file_name']
                     ]);
@@ -678,7 +678,7 @@ class ProductService
             }
 
             // Load all relationships
-            $product->load(['category', 'unit', 'batch', 'specifications', 'featuredImages']);
+            $product->load(['category', 'unit', 'batch', 'specifications', 'featured_images']);
 
             // Dispatch events
             ProductEvent::dispatch($product->toArray());

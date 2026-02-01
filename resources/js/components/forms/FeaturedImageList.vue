@@ -95,7 +95,8 @@ const deletingId = ref<number | null>(null);
 const formKey = ref(0);
 
 const featuredImages = computed(() => {
-    return props.data.featured_images || (props.data as any).featuredImages || [];
+    // Backend returns 'featured_images' (snake_case) after relationship rename
+    return props.data?.featured_images || (props.data as any)?.featuredImages || [];
 });
 
 const remainingSlots = computed(() => {
