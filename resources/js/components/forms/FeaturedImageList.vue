@@ -32,7 +32,7 @@
                 class="relative group"
             >
                 <img
-                    :src="UrlUtil.getBaseAppUrl(`storage/images/thumbnail/${image.thumbnail}`)"
+                    :src="getFeaturedImageUrl(image)"
                     alt="Featured Image"
                     class="w-32 h-32 object-cover rounded-lg border-2 border-gray-300"
                 />
@@ -95,12 +95,24 @@ const deletingId = ref<number | null>(null);
 const formKey = ref(0);
 
 const featuredImages = computed(() => {
-    return props.data.featured_images || [];
+    return props.data.featured_images || (props.data as any).featuredImages || [];
 });
 
 const remainingSlots = computed(() => {
     return 6 - featuredImages.value.length;
 });
+
+function getFeaturedImageUrl(image: { thumbnail?: string; featured_image?: string }) {
+    const thumb = image.thumbnail ?? (image as any).thumbnail;
+    const full = image.featured_image ?? (image as any).featured_image;
+    if (thumb) {
+        return UrlUtil.getBaseAppUrl(`storage/images/thumbnail/${thumb}`);
+    }
+    if (full) {
+        return UrlUtil.getBaseAppUrl(`storage/images/featured/${full}`);
+    }
+    return '';
+}
 
 const setDataCb = (data: ProductInterface) => {
     formKey.value++; // Force re-render of form to allow another upload
@@ -119,9 +131,8 @@ const deleteImage = async (imageId: number) => {
         deletingId.value = null;
     });
 };
-</script>
 
 const saveProduct = () => {
-    // Close the modal and refresh the product list
     emit("cb", props.data, true);
 };
+</script>
