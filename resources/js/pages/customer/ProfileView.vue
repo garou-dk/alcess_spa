@@ -1,13 +1,23 @@
 <template>
     <div class="profile-view min-h-screen bg-gray-50 pb-10">
         <!-- Profile Header with Cover Image -->
-        <div class="relative h-48 md:h-64 bg-slate-800 overflow-hidden group">
+        <div class="relative h-48 md:h-64 bg-slate-900 overflow-hidden group">
             <img 
                 v-if="Page.user?.cover_image" 
                 :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             >
-            <div v-else class="w-full h-full bg-gradient-to-r from-blue-600 to-indigo-700 opacity-80"></div>
+            <!-- Default Davao Branch Watermark Pattern -->
+            <div v-else class="profile-watermark-container">
+                <div class="profile-moving-watermark">
+                    <div class="profile-watermark-row" v-for="n in 8" :key="n">
+                        <span v-for="m in 12" :key="m" class="profile-watermark-item">
+                            <img :src="Logo" alt="logo" class="profile-watermark-logo" />
+                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                    </div>
+                </div>
+            </div>
             
             <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
             
@@ -344,6 +354,7 @@ import {
     ConfirmDialog
 } from 'primevue'
 import DateUtil from '@/utils/DateUtil'
+import Logo from "@/../img/logo.png"
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -532,4 +543,58 @@ onMounted(() => {
 }
 .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
+
+/* Profile Cover Watermark Styles */
+.profile-watermark-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    opacity: 0.15;
+}
+
+.profile-moving-watermark {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    animation: profile-watermark-scroll 30s linear infinite;
+    transform: rotate(-12deg) translateX(-10%);
+}
+
+.profile-watermark-row {
+    display: flex;
+    white-space: nowrap;
+    gap: 1.5rem;
+}
+
+.profile-watermark-row:nth-child(even) {
+    animation: profile-watermark-scroll-reverse 25s linear infinite;
+}
+
+.profile-watermark-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.profile-watermark-logo {
+    width: 18px;
+    height: 18px;
+    opacity: 0.8;
+    filter: brightness(0) invert(1);
+}
+
+@keyframes profile-watermark-scroll {
+    0% { transform: rotate(-12deg) translateX(-10%); }
+    100% { transform: rotate(-12deg) translateX(-30%); }
+}
+
+@keyframes profile-watermark-scroll-reverse {
+    0% { transform: translateX(-20%); }
+    100% { transform: translateX(0%); }
+}
 </style>

@@ -36,14 +36,30 @@ class CustomerDashboardService
 
     private function getStats($userId)
     {
-        $orders = Order::where('user_id', $userId)->get();
+        // Use direct database queries for accurate counts
+        $totalOrders = Order::where('user_id', $userId)->count();
+        
+        $pendingOrders = Order::where('user_id', $userId)
+            ->where('status', OrderStatusEnum::PROCESSING->value)
+            ->count();
+        
+        $completedOrders = Order::where('user_id', $userId)
+            ->where('status', OrderStatusEnum::COMPLETED->value)
+            ->count();
+        
+        $totalSpend = Order::where('user_id', $userId)
+            ->whereIn('status', [
+                OrderStatusEnum::CONFIRMED->value, 
+                OrderStatusEnum::SHIPPED->value, 
+                OrderStatusEnum::COMPLETED->value
+            ])
+            ->sum('total_amount');
 
         return [
-            'total_spend' => $orders->whereIn('status', [OrderStatusEnum::CONFIRMED->value, OrderStatusEnum::SHIPPED->value, OrderStatusEnum::COMPLETED->value])
-                                   ->sum('total_amount'),
-            'total_orders' => $orders->count(),
-            'pending_orders' => $orders->where('status', OrderStatusEnum::PROCESSING->value)->count(),
-            'completed_orders' => $orders->where('status', OrderStatusEnum::COMPLETED->value)->count(),
+            'total_spend' => $totalSpend,
+            'total_orders' => $totalOrders,
+            'pending_orders' => $pendingOrders,
+            'completed_orders' => $completedOrders,
         ];
     }
 
