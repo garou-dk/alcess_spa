@@ -85,6 +85,7 @@
             <div class="flex w-full justify-center">
                 <VueApexCharts 
                     v-if="series[0] > 0" 
+                    :key="chartKey"
                     type="pie" 
                     :options="chartOptions" 
                     :series="series" 
@@ -289,14 +290,23 @@ const loadService = useAxiosUtil()
 const { dashboardData } = useDashboardData()
 const responsive = useResponsive()
 
-// Local data state for filtered results
-const filteredData = ref({
+// Local data state for filtered results (used when date filter is applied)
+const filteredData = ref<{
+    orders_count: number
+    sales_count: number
+    product_orders_revenue: number
+    sale_items_revenue: number
+    total_revenue: number
+}>({
     orders_count: 0,
     sales_count: 0,
     product_orders_revenue: 0,
     sale_items_revenue: 0,
     total_revenue: 0
 })
+
+// Key to force chart re-render when filter/data changes so ApexCharts picks up new series
+const chartKey = ref(0)
 
 // Chart configuration
 const chartOptions = ref({
@@ -371,27 +381,46 @@ const openModal = () => {
 }
 
 const applyDateFilter = async () => {
-    if (!dateRange.value || dateRange.value.length === 0) {
+    const range = dateRange.value
+    if (!range || (Array.isArray(range) && range.length === 0)) {
         toast.error('Please select a date range')
         return
     }
 
+    const startDate = Array.isArray(range) ? range[0] : range
+    const endDate = Array.isArray(range) && range.length > 1 ? range[1] : startDate
+    if (!startDate || !(startDate instanceof Date)) {
+        toast.error('Please select a valid date range')
+        return
+    }
+
     isLoading.value = true
-    
+
     try {
-        const [startDate, endDate] = dateRange.value
         const params = {
             start_date: startDate.toISOString().split('T')[0],
-            end_date: (endDate || startDate).toISOString().split('T')[0]
+            end_date: (endDate && endDate instanceof Date ? endDate : startDate).toISOString().split('T')[0]
         }
 
         await loadService.get('admin/dashboard/monthly-report', params)
-        
+
         if (loadService.request.status === 200 && loadService.request.data) {
-            filteredData.value = loadService.request.data
+            const res = loadService.request.data as typeof filteredData.value
+            filteredData.value = {
+                orders_count: res.orders_count ?? 0,
+                sales_count: res.sales_count ?? 0,
+                product_orders_revenue: res.product_orders_revenue ?? 0,
+                sale_items_revenue: res.sale_items_revenue ?? 0,
+                total_revenue: res.total_revenue ?? 0
+            }
+            series.value = [
+                filteredData.value.product_orders_revenue,
+                filteredData.value.sale_items_revenue
+            ]
+            chartKey.value += 1
             toast.success('Date filter applied successfully')
         } else {
-            toast.error('Failed to apply date filter')
+            toast.error(loadService.request.message ?? 'Failed to apply date filter')
         }
     } catch (error) {
         toast.error('Error applying date filter')
@@ -409,6 +438,16 @@ const clearDateFilter = () => {
         sale_items_revenue: 0,
         total_revenue: 0
     }
+    const fallback = dashboardData.monthly_report
+    if (fallback) {
+        series.value = [
+            fallback.product_orders_revenue ?? 0,
+            fallback.sale_items_revenue ?? 0
+        ]
+    } else {
+        series.value = [0, 0]
+    }
+    chartKey.value += 1
     toast.success('Date filter cleared')
 }
 
