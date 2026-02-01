@@ -39,7 +39,7 @@ class FeaturedImageService
         $featuredImage->product_id = $data['product_id'];
         $featuredImage->save();
 
-        $product->load(['specifications', 'featured_images', 'category', 'unit']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         ProductEvent::dispatch($product->toArray());
 
@@ -66,7 +66,7 @@ class FeaturedImageService
             ->where('product_id', $productId)
             ->first();
 
-        $product->load(['specifications', 'featured_images', 'category', 'unit']);
+        $product->load(['specifications', 'featuredImages', 'category', 'unit']);
 
         ProductEvent::dispatch($product->toArray());
 

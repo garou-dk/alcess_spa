@@ -28,7 +28,7 @@ class SpecificationService
         $specification->specification_value = $data['specification_value'];
         $specification->save();
 
-        $product->load(['specifications', 'featured_images']);
+        $product->load(['specifications', 'featuredImages']);
 
         return $product;
     }
@@ -50,7 +50,7 @@ class SpecificationService
         $specification->specification_value = $data['specification_value'];
         $specification->save();
 
-        $product->load(['specifications', 'featured_images']);
+        $product->load(['specifications', 'featuredImages']);
 
         return $product;
     }
@@ -70,7 +70,7 @@ class SpecificationService
 
         $specification->delete();
 
-        $product->load(['specifications', 'featured_images']);
+        $product->load(['specifications', 'featuredImages']);
 
         return $product;
     }
