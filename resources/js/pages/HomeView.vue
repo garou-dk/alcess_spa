@@ -192,19 +192,25 @@
                     </div>
                 </div>
 
-                <!-- Shop by Brand -->
+                <!-- Available Brands -->
                 <section class="brands-section">
                     <div class="section-header">
-                        <p class="section-label">Partnerships</p>
-                        <h2 class="section-title">Shop by Brand</h2>
+                        <p class="section-label">Authorized Reseller</p>
+                        <h2 class="section-title">Available Brands</h2>
                     </div>
                     <div class="brands-grid">
-                        <div class="brand-item"><i class="pi pi-apple"></i><span>Apple</span></div>
-                        <div class="brand-item"><i class="pi pi-microsoft"></i><span>Microsoft</span></div>
-                        <div class="brand-item"><span class="brand-text">DELL</span></div>
-                        <div class="brand-item"><span class="brand-text">HP</span></div>
-                        <div class="brand-item"><span class="brand-text">ASUS</span></div>
-                        <div class="brand-item"><span class="brand-text">LENOVO</span></div>
+                        <div class="brand-item">
+                            <img :src="AsusLogo" alt="ASUS" class="brand-img" />
+                        </div>
+                        <div class="brand-item">
+                            <img :src="DellLogo" alt="DELL" class="brand-img" />
+                        </div>
+                        <div class="brand-item">
+                            <img :src="HpLogo" alt="HP" class="brand-img" />
+                        </div>
+                        <div class="brand-item">
+                            <img :src="LenovoLogo" alt="LENOVO" class="brand-img" />
+                        </div>
                     </div>
                 </section>
 
@@ -424,6 +430,10 @@
 
 <script setup lang="ts">
 import Icon from "@/../img/logo.png";
+import AsusLogo from "@/../img/brands/asus.png";
+import DellLogo from "@/../img/brands/dell.png";
+import HpLogo from "@/../img/brands/hp.png";
+import LenovoLogo from "@/../img/brands/lenovo.png";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import ResetPasswordForm from "@/components/forms/ResetPasswordForm.vue";
@@ -644,12 +654,12 @@ onUnmounted(() => stopCarousel());
 
 /* Brands Section */
 .brands-section { margin-top: 6rem; padding-bottom: 4rem; border-bottom: 1px solid #e2e8f0; }
-.brands-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-.brand-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: #fff; border-radius: 1rem; border: 1px solid #f1f5f9; transition: all 0.3s; color: #64748b; }
-.brand-item:hover { transform: translateY(-5px); border-color: #cbd5e1; color: #1e293b; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
-.brand-item i { font-size: 2.5rem; }
-.brand-text { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.1em; color: #94a3b8; transition: color 0.3s; }
-.brand-item:hover .brand-text { color: #1e293b; }
+.brands-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.brand-item { display: flex; align-items: center; justify-content: center; padding: 2.5rem; background: #fff; border-radius: 1.5rem; border: 1px solid #f1f5f9; transition: all 0.4s; }
+.brand-item:hover { transform: translateY(-5px); border-color: #2563eb; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.05); }
+.brand-img { max-width: 100%; max-height: 50px; object-fit: contain; filter: grayscale(1) opacity(0.7); transition: all 0.4s; }
+.brand-item:hover .brand-img { filter: grayscale(0) opacity(1); }
+.brand-text { display: none; }
 
 /* Newsletter */
 .newsletter-section { padding: 4rem 0; background: #f8fafc; }
@@ -835,7 +845,7 @@ onUnmounted(() => stopCarousel());
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .features-grid { grid-template-columns: repeat(4, 1fr); }
     .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
-    .brands-grid { grid-template-columns: repeat(6, 1fr); }
+    .brands-grid { grid-template-columns: repeat(4, 1fr); }
     .newsletter-card { flex-direction: row; text-align: left; justify-content: space-between; padding: 4rem; }
     .newsletter-form { max-width: 400px; }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
