@@ -369,7 +369,7 @@ const downloadCodes = () => {
 :deep(.security-question-panel .p-select-option) {
     white-space: normal !important;
     word-break: break-word !important;
-    font-size: 0.875rem !important;
+    font-size: 0.75rem !important;
     padding: 0.75rem 1rem !important;
 }
 
