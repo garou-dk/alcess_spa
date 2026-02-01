@@ -1,84 +1,40 @@
 <template>
     <form @submit.prevent="handleSubmit()" :class="responsive.getResponsiveClasses({
-        mobile: 'p-3 w-full',
-        tablet: 'p-4 max-w-4xl mx-auto',
-        desktop: 'p-6 max-w-7xl mx-auto'
+        mobile: 'p-4 w-full',
+        tablet: 'p-5 max-w-4xl mx-auto',
+        desktop: 'p-6 max-w-5xl mx-auto'
     })">
-        <!-- Header Section -->
-        <div :class="responsive.getResponsiveClasses({
-            mobile: 'mb-4',
-            tablet: 'mb-6',
-            desktop: 'mb-8'
-        })">
-            <h2 :class="responsive.getResponsiveClasses({
-                mobile: 'text-lg font-bold text-gray-800 mb-2',
-                tablet: 'text-xl font-bold text-gray-800 mb-2',
-                desktop: 'text-2xl font-bold text-gray-800 mb-2'
-            })">Product Information</h2>
-            <p :class="responsive.getResponsiveClasses({
-                mobile: 'text-xs text-gray-600',
-                tablet: 'text-sm text-gray-600',
-                desktop: 'text-sm text-gray-600'
-            })">Fill in the details below to add a new product</p>
-        </div>
-
-        <!-- Basic Information Card -->
-        <div :class="responsive.getResponsiveClasses({
-            mobile: 'bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4',
-            tablet: 'bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6',
-            desktop: 'bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6'
-        })">
-            <h3 :class="responsive.getResponsiveClasses({
-                mobile: 'text-base font-semibold text-gray-800 mb-3 flex items-center',
-                tablet: 'text-lg font-semibold text-gray-800 mb-4 flex items-center',
-                desktop: 'text-lg font-semibold text-gray-800 mb-4 flex items-center'
-            })">
-                <i class="pi pi-info-circle mr-2 text-blue-600"></i>
-                Basic Information
+        <!-- Section: Basic details -->
+        <section class="border-b border-gray-200 pb-6 mb-6">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="pi pi-box text-gray-400"></i>
+                Basic details
             </h3>
             <div :class="responsive.getResponsiveClasses({
                 mobile: 'space-y-4',
-                tablet: 'flex flex-wrap -mx-2',
-                desktop: 'flex flex-wrap -mx-2'
+                tablet: 'grid grid-cols-1 md:grid-cols-3 gap-4',
+                desktop: 'grid grid-cols-1 md:grid-cols-3 gap-5'
             })">
-                <div :class="responsive.getResponsiveClasses({
-                    mobile: 'w-full',
-                    tablet: 'p-2 max-lg:w-full lg:w-1/3',
-                    desktop: 'p-2 max-lg:w-full lg:w-1/3'
-                })">
-                    <InputForm
-                        :errors="errors.product_name"
-                        tag="label"
-                        label-name="Product Name*"
-                        id="product_name"
-                    >
+                <div class="md:col-span-2 md:col-start-1">
+                    <InputForm :errors="errors.product_name" tag="label" label-name="Product name *" id="product_name">
                         <InputText
                             v-model="form.product_name"
                             id="product_name"
                             type="text"
-                            placeholder="Enter product name"
+                            placeholder="e.g. Organic Rice 1kg"
                             fluid
                             :invalid="errors.product_name.length > 0"
                             class="transition-all duration-200"
                         />
                     </InputForm>
                 </div>
-                <div :class="responsive.getResponsiveClasses({
-                    mobile: 'w-full',
-                    tablet: 'p-2 max-lg:w-full lg:w-1/3',
-                    desktop: 'p-2 max-lg:w-full lg:w-1/3'
-                })">
-                    <InputForm
-                        :errors="errors.category_id"
-                        tag="span"
-                        label-name="Category*"
-                        id="category_id"
-                    >
+                <div>
+                    <InputForm :errors="errors.category_id" tag="span" label-name="Category *" id="category_id">
                         <Select
                             v-model="form.category_id"
                             label-id="category_id"
                             :options="categoryState.categories"
-                            placeholder="Select Category"
+                            placeholder="Select category"
                             fluid
                             :invalid="errors.category_id.length > 0"
                             option-label="category_name"
@@ -89,18 +45,42 @@
                         />
                     </InputForm>
                 </div>
-                <div class="p-2 max-lg:w-full lg:w-1/3">
-                    <InputForm
-                        :errors="errors.unit_id"
-                        tag="span"
-                        label-name="Unit*"
-                        id="unit_id"
-                    >
+                <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+                    <div class="md:col-span-2">
+                        <InputForm :errors="errors.description" tag="label" label-name="Description *" id="description">
+                            <Textarea
+                                v-model="form.description"
+                                id="description"
+                                placeholder="Describe the product for customers"
+                                fluid
+                                :invalid="errors.description.length > 0"
+                                rows="3"
+                                class="transition-all duration-200"
+                            />
+                        </InputForm>
+                    </div>
+                    <div>
+                        <InputForm :errors="errors.sku" tag="label" label-name="SKU (optional)" id="sku">
+                            <InputText
+                                v-model="form.sku"
+                                id="sku"
+                                type="text"
+                                placeholder="Numbers only"
+                                fluid
+                                class="transition-all duration-200"
+                                @keydown="validateSkuInput"
+                                @paste="handleSkuPaste"
+                            />
+                        </InputForm>
+                    </div>
+                </div>
+                <div>
+                    <InputForm :errors="errors.unit_id" tag="span" label-name="Unit *" id="unit_id">
                         <Select
                             v-model="form.unit_id"
                             label-id="unit_id"
                             :options="unitState.units"
-                            placeholder="Select Unit"
+                            placeholder="Select unit"
                             fluid
                             :invalid="errors.unit_id.length > 0"
                             option-label="unit_name"
@@ -112,59 +92,21 @@
                     </InputForm>
                 </div>
             </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.description"
-                    tag="label"
-                    label-name="Description*"
-                    id="description"
-                >
-                    <Textarea
-                        v-model="form.description"
-                        id="description"
-                        placeholder="Enter product description"
-                        fluid
-                        :invalid="errors.description.length > 0"
-                        rows="4"
-                        class="transition-all duration-200"
-                    />
-                </InputForm>
-            </div>
-            <div class="p-2">
-                <InputForm
-                    :errors="errors.sku"
-                    tag="label"
-                    label-name="SKU (Stock Keeping Unit)"
-                    id="sku"
-                >
-                    <InputText
-                        v-model="form.sku"
-                        id="sku"
-                        type="text"
-                        placeholder="Enter SKU (Numbers only)"
-                        fluid
-                        class="transition-all duration-200"
-                        @keydown="validateSkuInput"
-                        @paste="handleSkuPaste"
-                    />
-                </InputForm>
-            </div>
-        </div>
+        </section>
 
-        <!-- Pricing & Inventory Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="pi pi-dollar mr-2 text-green-600"></i>
-                Pricing & Inventory
+        <!-- Section: Pricing & inventory -->
+        <section class="border-b border-gray-200 pb-6 mb-6">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="pi pi-wallet text-gray-400"></i>
+                Pricing & inventory
             </h3>
-            <div class="flex flex-wrap -mx-2">
-                <div class="p-2 max-lg:w-full lg:w-1/3">
-                    <InputForm
-                        :errors="errors.product_price"
-                        tag="label"
-                        label-name="Product Price*"
-                        id="product_price"
-                    >
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'space-y-4',
+                tablet: 'grid grid-cols-1 sm:grid-cols-3 gap-4',
+                desktop: 'grid grid-cols-1 sm:grid-cols-3 gap-5'
+            })">
+                <div>
+                    <InputForm :errors="errors.product_price" tag="label" label-name="Price *" id="product_price">
                         <InputNumber
                             v-model="form.product_price"
                             input-id="product_price"
@@ -177,13 +119,8 @@
                         />
                     </InputForm>
                 </div>
-                <div class="p-2 max-lg:w-full lg:w-1/3">
-                    <InputForm
-                        :errors="errors.product_quantity"
-                        tag="label"
-                        label-name="Product Quantity*"
-                        id="product_quantity"
-                    >
+                <div>
+                    <InputForm :errors="errors.product_quantity" tag="label" label-name="Quantity in stock *" id="product_quantity">
                         <InputNumber
                             v-model="form.product_quantity"
                             input-id="product_quantity"
@@ -194,17 +131,11 @@
                         />
                     </InputForm>
                 </div>
-                <div class="p-2 max-lg:w-full lg:w-1/3">
-                    <InputForm
-                        :errors="errors.low_stock_threshold"
-                        tag="label"
-                        label-name="Low Stock Threshold*"
-                        id="low_stock_threshold"
-                    >
+                <div>
+                    <InputForm :errors="errors.low_stock_threshold" tag="label" label-name="Low stock alert at *" id="low_stock_threshold">
                         <InputNumber
                             v-model="form.low_stock_threshold"
                             input-id="low_stock_threshold"
-                            type="number"
                             placeholder="0"
                             fluid
                             :invalid="errors.low_stock_threshold.length > 0"
@@ -213,22 +144,21 @@
                     </InputForm>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Settings Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="pi pi-cog mr-2 text-purple-600"></i>
-                Product Settings
+        <!-- Section: Visibility & status -->
+        <section class="pb-6 mb-6">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="pi pi-eye text-gray-400"></i>
+                Visibility & status
             </h3>
-            <div class="flex flex-wrap -mx-2">
-                <div class="p-2 max-lg:w-full lg:w-1/2">
-                    <InputForm
-                        :errors="errors.is_active"
-                        tag="span"
-                        label-name="Status*"
-                        id="is_active"
-                    >
+            <div :class="responsive.getResponsiveClasses({
+                mobile: 'space-y-4',
+                tablet: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+                desktop: 'grid grid-cols-1 sm:grid-cols-2 gap-5'
+            })">
+                <div>
+                    <InputForm :errors="errors.is_active" tag="span" label-name="Status *" id="is_active">
                         <Select
                             v-model="form.is_active"
                             label-id="is_active"
@@ -236,7 +166,7 @@
                                 { label: 'Active', value: 1 },
                                 { label: 'Inactive', value: 0 },
                             ]"
-                            placeholder="Select Status"
+                            placeholder="Select status"
                             fluid
                             :invalid="errors.is_active.length > 0"
                             option-label="label"
@@ -245,13 +175,8 @@
                         />
                     </InputForm>
                 </div>
-                <div class="p-2 max-lg:w-full lg:w-1/2">
-                    <InputForm
-                        :errors="errors.available_online"
-                        tag="span"
-                        label-name="Available Online*"
-                        id="available_online"
-                    >
+                <div>
+                    <InputForm :errors="errors.available_online" tag="span" label-name="Available online *" id="available_online">
                         <Select
                             v-model="form.available_online"
                             label-id="available_online"
@@ -259,7 +184,7 @@
                                 { label: 'Yes', value: 1 },
                                 { label: 'No', value: 0 },
                             ]"
-                            placeholder="Select Availability"
+                            placeholder="Show on store"
                             fluid
                             :invalid="errors.available_online.length > 0"
                             option-label="label"
@@ -269,16 +194,16 @@
                     </InputForm>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
+        <!-- Actions -->
+        <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
                 type="submit"
-                label="Next"
+                label="Next: Add image"
                 icon="pi pi-arrow-right"
                 iconPos="right"
-                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
+                class="!bg-blue-600 hover:!bg-blue-700 !text-white w-full sm:w-auto"
                 :loading="submitService.request.loading"
             />
         </div>

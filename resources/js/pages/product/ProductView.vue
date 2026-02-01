@@ -829,7 +829,7 @@
         <Dialog
             v-model:visible="showProductDialog.visible"
             modal
-            header="Product Details"
+            :header="showProductDialog.selectedItem ? 'Edit Product' : 'Add Product'"
             :style="responsive.getResponsiveClasses({
                 mobile: '{ width: \'100vw\', height: \'100svh\' }',
                 tablet: '{ width: \'95vw\', height: \'95vh\' }',
