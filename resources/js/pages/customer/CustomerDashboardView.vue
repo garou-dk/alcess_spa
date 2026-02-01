@@ -1,6 +1,6 @@
 <template>
     <div class="customer-dashboard">
-        <!-- Welcome Hero Section (Like HomeView but personalized) -->
+        <!-- Welcome Hero Section -->
         <section class="welcome-hero">
             <div class="welcome-overlay"></div>
             <div class="welcome-watermark-container">
@@ -15,42 +15,12 @@
             </div>
             <div class="container welcome-container">
                 <div class="welcome-content">
-                    <div class="welcome-badge-wrapper">
-                        <span class="welcome-badge">Customer Dashboard</span>
-                    </div>
                     <h1 class="welcome-headline">Welcome Back, <span class="text-accent">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
-                    <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
-                    <p class="welcome-description">Manage your orders, explore new products, and stay updated with the latest tech. Everything you need, all in one place.</p>
-                    
-                    <!-- Quick Stats Activity Hub -->
-                    <div class="stat-chips">
-                        <div class="stat-chip">
-                            <i class="pi pi-shopping-bag"></i>
-                            <span>{{ stats.total_orders || 0 }} Total Orders</span>
-                        </div>
-                        <div class="stat-chip active" v-if="stats.pending_orders > 0">
-                            <i class="pi pi-clock"></i>
-                            <span>{{ stats.pending_orders }} Processing</span>
-                        </div>
-                        <div class="stat-chip highlight">
-                            <i class="pi pi-verified"></i>
-                            <span>Verified Member</span>
-                        </div>
-                    </div>
-
-                    <div class="welcome-actions">
-                        <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
-                            Continue Shopping <i class="pi pi-shopping-cart"></i>
-                        </button>
-                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
-                            <i class="pi pi-facebook"></i> Message Us
-                        </a>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Featured Products Section (Like HomeView) -->
+        <!-- Featured Products Section -->
         <section v-if="featuredProducts.length > 0" class="featured-products">
             <div class="container">
                 <div class="section-header">
@@ -162,17 +132,16 @@
             </div>
         </section>
 
-        <!-- Main Content with Categories and Best Sellers -->
+        <!-- Categories & Best Sellers (Stacked) -->
         <main class="main-content">
             <div class="container">
-                <!-- Section Tabs -->
-                <div class="section-tabs">
-                    <button @click="activeView = 'categories'" :class="['tab-btn', { active: activeView === 'categories' }]">Categories</button>
-                    <button @click="activeView = 'products'" :class="['tab-btn', { active: activeView === 'products' }]">Best Sellers</button>
-                </div>
-
+                
                 <!-- Categories -->
-                <div v-if="activeView === 'categories'" class="grid-section">
+                <div class="mb-16">
+                    <div class="section-header mb-8">
+                        <p class="section-label">Explore</p>
+                        <h2 class="section-title">Shop by Category</h2>
+                    </div>
                     <div v-if="categories?.length" class="category-grid">
                         <button v-for="category in categories" :key="category.category_id" class="category-card" @click="goToCategory(category.category_id)">
                             <div class="category-image-box">
@@ -189,8 +158,12 @@
                     </div>
                 </div>
 
-                <!-- Best Sellers Products -->
-                <div v-else class="grid-section">
+                <!-- Best Sellers -->
+                <div class="mb-16">
+                    <div class="section-header mb-8">
+                        <p class="section-label">Trending Now</p>
+                        <h2 class="section-title">Best Selling Products</h2>
+                    </div>
                     <div v-if="bestSellers?.length" class="product-grid">
                         <div v-for="product in bestSellers" :key="product.product_id" class="product-card" @click="viewProduct(product.product_id)">
                             <div class="product-image-box">
@@ -210,6 +183,7 @@
                         <p>Stay tuned for our latest offerings!</p>
                     </div>
                 </div>
+
             </div>
         </main>
 
@@ -258,7 +232,8 @@
                     <div class="timeline-column">
                         <div class="section-header-left">
                             <p class="section-label">Activity</p>
-                            <h2 class="section-title">Order Timeline</h2>
+                            <!-- Stats displayed here -->
+                            <h2 class="section-title">Order Timeline <span v-if="stats.total_orders" class="text-sm font-normal text-gray-500 ml-2">({{ stats.total_orders }} orders)</span></h2>
                         </div>
 
                         <div class="timeline-container">
@@ -324,7 +299,6 @@ const featuredProducts = ref<any[]>([])
 const bestSellers = ref<any[]>([])
 const categories = ref<any[]>([])
 const currentSlide = ref(0)
-const activeView = ref<'categories' | 'products'>('categories')
 let carouselInterval: number | null = null
 
 // Fetch Data
@@ -403,28 +377,16 @@ onUnmounted(() => stopCarousel())
 /* Base */
 .customer-dashboard { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+.mb-16 { margin-bottom: 4rem; }
+.mb-8 { margin-bottom: 2rem; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #0f172a; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
+.welcome-hero { position: relative; background: #0f172a; min-height: 400px; display: flex; align-items: center; overflow: hidden; }
 .welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
+.welcome-container { position: relative; z-index: 10; padding: 2rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
-.welcome-badge-wrapper { margin-bottom: 1.5rem; }
-.welcome-badge { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
-.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1.5rem; }
+.welcome-headline { font-size: clamp(2rem, 6vw, 3rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 0; }
 .text-accent { color: #60a5fa; }
-.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #94a3b8; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
-.welcome-description { font-size: 1.125rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto; }
-.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-/* Stat Chips */
-.stat-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
-.stat-chip { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.25rem; color: white; font-weight: 600; font-size: 0.875rem; border-radius: 9999px; }
-.stat-chip i { color: #60a5fa; }
-.stat-chip.active { background: #2563eb; border-color: #3b82f6; box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
-.stat-chip.active i { color: white; }
-.stat-chip.highlight { border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
-.stat-chip.highlight i { color: #10b981; }
 
 /* Watermark Animation */
 .welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
@@ -511,32 +473,27 @@ onUnmounted(() => stopCarousel())
 
 /* Main Content */
 .main-content { padding: 3rem 0; background: #f8fafc; }
-.section-tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }
-.tab-btn { padding: 0.5rem 1rem; border-radius: 9999px; border: none; background: transparent; color: #64748b; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
-.tab-btn.active { background: #1e293b; color: #fff; }
-.tab-btn:hover:not(.active) { background: #f1f5f9; color: #1e293b; }
-.grid-section { min-height: 200px; }
 
-/* Categories */
-.category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-.category-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.4s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }
-.category-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.08); transform: translateY(-5px); }
-.category-image-box { width: 100px; height: 100px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1rem; }
-.category-card:hover .category-image-box { background: #eff6ff; }
-.category-image-box img { max-width: 85%; max-height: 85%; object-fit: contain; }
-.category-image-box i { font-size: 2.5rem; color: #cbd5e1; }
-.category-name { font-size: 1rem; font-weight: 700; color: #1e293b; display: block; }
+/* Categories (Styled like HomeView) */
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.category-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.category-card:hover { border-color: #2563eb; box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08); transform: translateY(-8px); }
+.category-image-box { width: 180px; height: 180px; margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1.5rem; transition: all 0.4s; }
+.category-card:hover .category-image-box { transform: scale(1.05) rotate(2deg); background: #eff6ff; }
+.category-image-box img { max-width: 85%; max-height: 85%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); }
+.category-image-box i { font-size: 4rem; color: #cbd5e1; }
+.category-name { font-size: 1.5rem; font-weight: 700; color: #1e293b; display: block; }
 
-/* Products */
+/* Products (Styled like HomeView) */
 .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-.product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+.product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 .product-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(0,0,0,0.08); transform: translateY(-4px); }
-.product-image-box { position: relative; height: 160px; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.product-image-box { position: relative; height: 200px; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1rem; }
 .product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
 .product-card:hover .product-image-box img { transform: scale(1.05); }
-.product-image-box i { font-size: 2.5rem; color: #cbd5e1; }
-.product-info { padding: 1rem; }
-.product-name { font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5rem; }
+.product-image-box i { font-size: 3rem; color: #cbd5e1; }
+.product-info { padding: 1.25rem; }
+.product-name { font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5rem; }
 .product-price { font-size: 1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.75rem; }
 
 /* Empty State */
@@ -549,8 +506,6 @@ onUnmounted(() => stopCarousel())
 /* Recommendations Section */
 .recommendations-section { padding: 4rem 0; background: #fff; }
 .recommendations-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-.recommendations-column { }
-.timeline-column { }
 
 /* Recommendation Cards */
 .recommendation-cards { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1rem; }
@@ -603,7 +558,6 @@ onUnmounted(() => stopCarousel())
 /* Tablet */
 @media (min-width: 640px) {
     .action-grid { grid-template-columns: repeat(2, 1fr); }
-    .category-grid { grid-template-columns: repeat(3, 1fr); }
     .recommendation-cards { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -623,7 +577,6 @@ onUnmounted(() => stopCarousel())
 /* Desktop */
 @media (min-width: 1024px) {
     .action-grid { grid-template-columns: repeat(4, 1fr); }
-    .category-grid { grid-template-columns: repeat(4, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
     .cta-section { padding: 4rem 2rem; }
     .cta-section h2 { font-size: 2rem; }

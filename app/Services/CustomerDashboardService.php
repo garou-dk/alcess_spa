@@ -9,42 +9,20 @@ use Illuminate\Support\Facades\DB;
 
 class CustomerDashboardService
 {
+    public function __construct(protected ProductService $productService) {}
+
     public function getDashboardData($userId)
     {
+        $bestSelling = $this->productService->bestSelling();
+
         return [
             'stats' => $this->getStats($userId),
             'monthly_spend' => $this->getMonthlySpend($userId),
             'recent_orders' => $this->getRecentOrders($userId),
-            'featured_products' => $this->getFeaturedProducts(),
-            'best_sellers' => $this->getBestSellingProducts(),
+            'featured_products' => $bestSelling->take(4)->values(), // Top 4 for carousel
+            'best_sellers' => $bestSelling->values(), // All (fallback is limited/ordered in ProductService)
             'categories' => \App\Models\Category::limit(8)->get(),
         ];
-    }
-
-    private function getBestSellingProducts()
-    {
-        $products = Product::query()
-            ->with(['category', 'rates'])
-            ->withAvg('rates', 'rate')
-            ->withCount('productOrders')
-            ->where('is_active', true)
-            ->where('available_online', true)
-            ->orderBy('product_orders_count', 'desc')
-            ->limit(6)
-            ->get();
-
-        if ($products->isEmpty()) {
-            return Product::query()
-                ->with(['category', 'rates'])
-                ->withAvg('rates', 'rate')
-                ->where('is_active', true)
-                ->where('available_online', true)
-                ->orderBy('created_at', 'desc')
-                ->limit(6)
-                ->get();
-        }
-
-        return $products;
     }
 
     private function getStats($userId)
@@ -113,19 +91,6 @@ class CustomerDashboardService
             ->with(['productOrders.product'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
-            ->get();
-    }
-
-    private function getFeaturedProducts()
-    {
-        // Reuse best selling logic from ProductService if possible, or replicate it
-        return Product::query()
-            ->with(['category', 'rates'])
-            ->withAvg('rates', 'rate')
-            ->where('is_active', true)
-            ->where('available_online', true)
-            ->orderBy('created_at', 'desc')
-            ->limit(4)
             ->get();
     }
 }
