@@ -363,19 +363,15 @@ const downloadCodes = () => {
 
 <style scoped>
 :deep(.security-question-panel) {
-    max-width: calc(100vw - 2rem) !important;
+    max-width: min(20rem, calc(100vw - 3rem)) !important;
+    width: auto !important;
 }
 
 :deep(.security-question-panel .p-select-option) {
     white-space: normal !important;
     word-break: break-word !important;
     font-size: 0.75rem !important;
-    padding: 0.75rem 1rem !important;
-}
-
-@media (min-width: 640px) {
-    :deep(.security-question-panel) {
-        max-width: 24rem !important;
-    }
+    padding: 0.625rem 0.75rem !important;
+    line-height: 1.3 !important;
 }
 </style>
