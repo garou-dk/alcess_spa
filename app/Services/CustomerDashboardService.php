@@ -16,6 +16,7 @@ class CustomerDashboardService
             'monthly_spend' => $this->getMonthlySpend($userId),
             'recent_orders' => $this->getRecentOrders($userId),
             'featured_products' => $this->getFeaturedProducts(),
+            'categories' => \App\Models\Category::where('is_active', true)->limit(6)->get(),
         ];
     }
 
@@ -66,6 +67,7 @@ class CustomerDashboardService
     private function getRecentOrders($userId)
     {
         return Order::where('user_id', $userId)
+            ->with(['productOrders.product'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

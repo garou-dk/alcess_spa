@@ -13,7 +13,7 @@
             
             <button 
                 @click="triggerCoverUpload" 
-                class="absolute bottom-4 right-4 bg-white/90 hover:bg-white text-gray-800 px-4 py-2 rounded-lg shadow-sm border border-gray-200 flex items-center gap-2 text-sm font-bold transition-all active:scale-95"
+                class="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-800 px-4 py-2 rounded-lg shadow-sm border border-gray-200 flex items-center gap-2 text-sm font-bold transition-all active:scale-95"
             >
                 <i class="pi pi-camera"></i>
                 <span>Update Cover</span>
