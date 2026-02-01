@@ -4,7 +4,7 @@
         <div class="relative h-48 md:h-64 bg-slate-800 overflow-hidden group">
             <img 
                 v-if="Page.user?.cover_image" 
-                :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.cover_image}`)" 
+                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             >
             <div v-else class="w-full h-full bg-gradient-to-r from-blue-600 to-indigo-700 opacity-80"></div>

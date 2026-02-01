@@ -14,4 +14,5 @@ enum FileDirectoryEnum: string
     case DELIVERY_PROOF = 'images/delivery-proof';
     case CONFIGURATION_IMAGE = 'images/configuration';
     case RATE_IMAGE = 'images/rate_images';
+    case COVER_IMAGE = 'images/cover';
 }
