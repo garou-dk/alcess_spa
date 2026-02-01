@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <!-- Add flow: only one specification allowed — hide Add button after 1 is added -->
-        <div v-if="specifications.length < 1" class="flex justify-end mb-4">
+        <div class="flex justify-end mb-4">
             <Button
                 type="button"
                 icon="pi pi-plus"

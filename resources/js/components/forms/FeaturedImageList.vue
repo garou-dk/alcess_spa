@@ -105,6 +105,12 @@ const remainingSlots = computed(() => {
 function getFeaturedImageUrl(image: { thumbnail?: string; featured_image?: string }) {
     const thumb = image.thumbnail ?? (image as any).thumbnail;
     const full = image.featured_image ?? (image as any).featured_image;
+
+    // If thumb is the same as full, it's likely stored in the featured directory
+    if (thumb && thumb === full) {
+        return UrlUtil.getBaseAppUrl(`storage/images/featured/${thumb}`);
+    }
+
     if (thumb) {
         return UrlUtil.getBaseAppUrl(`storage/images/thumbnail/${thumb}`);
     }

@@ -670,9 +670,16 @@ class ProductService
                 $manageFileService = new ManageFileService;
                 foreach ($data['featured_images'] as $image) {
                     $result = $manageFileService->saveFile($image, FileDirectoryEnum::FEATURED_IMAGE->value, 'public');
+                    $extension = $manageFileService->fileExtension($image);
+
+                    $thumbnail = match ($extension) {
+                        'mp4' => $manageFileService->createVideoThumbnail($result['file_path']),
+                        default => $manageFileService->createImageThumbnail($result['file_path']),
+                    };
+
                     $product->featuredImages()->create([
                         'featured_image' => $result['file_name'],
-                        'thumbnail' => $result['file_name']
+                        'thumbnail' => $thumbnail
                     ]);
                 }
             }
