@@ -50,6 +50,13 @@
         <!-- Welcome Hero Section -->
         <section class="welcome-hero">
             <div class="welcome-overlay"></div>
+            <div class="welcome-watermark-container">
+                <div class="moving-watermark">
+                    <div class="watermark-row" v-for="n in 10" :key="n">
+                        <span v-for="m in 20" :key="m">DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                </div>
+            </div>
             <div class="container welcome-container">
                 <div class="welcome-content">
                     <div class="welcome-badge-wrapper">
@@ -95,7 +102,6 @@
                     <div class="hero-carousel">
                         <div class="hero-grid">
                             <div class="hero-text">
-                                <div class="hero-watermark">PREMIUM</div>
                                 <span class="hero-badge">BEST SELLER</span>
                                 <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
                                 <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
@@ -637,13 +643,23 @@ onUnmounted(() => stopCarousel());
 .w-feature { display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
 .w-feature i { color: #2563eb; font-size: 1.125rem; }
 
+/* Moving Watermark Style */
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.04; pointer-events: none; z-index: 5; }
+.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 200%; height: 200%; position: absolute; top: -50%; left: -50%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 60s linear infinite; }
+.watermark-row { white-space: nowrap; font-size: 2rem; font-weight: 900; color: #fff; letter-spacing: 0.5rem; }
+.watermark-row:nth-child(even) { margin-left: -5rem; }
+
+@keyframes moveWatermark {
+    0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
+    100% { transform: rotate(-25deg) translate(-10%, -10%) scale(1.5); }
+}
+
 /* Featured Products Section */
 .featured-products { padding: 4rem 0; background: #fff; }
 .featured-carousel-wrapper { background: #1e293b; border-radius: 2rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
 .hero-carousel { padding: 3rem; position: relative; }
 
 /* Hero Typography Refinements */
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12rem; font-weight: 900; color: rgba(255,255,255,0.03); text-transform: uppercase; letter-spacing: 0.2em; z-index: 1; pointer-events: none; }
 .hero-text { position: relative; z-index: 5; }
 .hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 1rem; }
 .hero-price { color: #60a5fa; font-size: 2rem; }
