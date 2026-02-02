@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0b1426]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
+    <header :class="['w-full z-50 sticky top-0 transition-all duration-300', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0b1426]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
@@ -10,10 +10,10 @@
                     </button>
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer group" @click="goHome">
-                        <div class="group-hover:scale-105 transition-transform">
-                            <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10" />
+                        <div class="bg-blue-600 p-2 rounded-2xl shadow-lg shadow-blue-500/40 group-hover:shadow-blue-500/60 ring-4 ring-blue-500/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95">
+                            <img :src="Logo" alt="Alcess Logo" class="h-7 w-auto sm:h-9 filter brightness-0 invert" />
                         </div>
-                        <span :class="['ml-3 text-xl font-extrabold tracking-tight hidden sm:block', transparent && !isScrolled ? 'text-white' : 'text-white']">
+                        <span :class="['ml-4 text-xl font-extrabold tracking-tight hidden sm:block transition-colors', transparent && !isScrolled ? 'text-white' : 'text-white hover:text-blue-400']">
                             Alcess
                         </span>
                     </div>
@@ -165,10 +165,20 @@
                                     leave-from-class="transform opacity-100 scale-100"
                                     leave-to-class="transform -translate-y-2 opacity-0"
                                 >
-                                    <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-1 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden z-50">
-                                        <div class="px-4 py-3 border-b border-gray-100">
-                                            <p class="text-sm font-bold text-gray-900 truncate">{{ Page.user.full_name }}</p>
-                                            <p class="text-xs text-gray-500 truncate">{{ Page.user.email }}</p>
+                                    <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl py-2 ring-1 ring-black/5 focus:outline-none overflow-hidden z-50">
+                                        <div class="px-4 py-4 border-b border-gray-100 bg-gray-50/50">
+                                            <div class="flex items-center gap-3">
+                                                <Avatar 
+                                                    :image="userImage" 
+                                                    :label="userInitials" 
+                                                    shape="circle" 
+                                                    class="!w-10 !h-10 shadow-sm ring-2 ring-white bg-blue-500 text-white"
+                                                />
+                                                <div class="min-w-0">
+                                                    <p class="text-sm font-bold text-gray-900 truncate">{{ Page.user.full_name }}</p>
+                                                    <p class="text-[11px] text-gray-500 truncate font-medium">{{ Page.user.email }}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                         <template v-if="mode === 'admin'">
                                              <router-link :to="{ name: 'admin.dashboard.index' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
