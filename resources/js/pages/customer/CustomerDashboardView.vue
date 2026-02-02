@@ -413,7 +413,7 @@ onUnmounted(() => stopCarousel())
 /* Welcome Hero */
 .welcome-hero { position: relative; background: #0f172a; min-height: 400px; display: flex; align-items: center; overflow: hidden; }
 .welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-.welcome-container { position: relative; z-index: 10; padding: 2rem 1rem; }
+.welcome-container { position: relative; z-index: 10; padding: 6rem 1rem 2rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
 .welcome-headline { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.02em; }
 .welcome-subheadline { font-size: 1.125rem; color: #cbd5e1; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }

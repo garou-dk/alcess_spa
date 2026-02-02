@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 sticky top-0 transition-all duration-300', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0b1426]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0b1426]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
