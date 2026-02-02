@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#1e293b] border-b border-[#2d3a4f] shadow-xl shadow-black/10']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0f172a] border-b border-white/5 shadow-2xl shadow-black/20']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
@@ -29,7 +29,7 @@
                             </div>
                             <input id="search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
                                 :class="['block w-full pl-10 pr-3 py-2.5 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 sm:text-sm transition-all duration-300 backdrop-blur-md', 
-                                    transparent && !isScrolled ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-[#2d3a4f]/50 text-white placeholder-slate-400 focus:bg-[#2d3a4f]/80 focus:ring-blue-500/30 ring-1 ring-slate-600/50']"
+                                    transparent && !isScrolled ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-white/5 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-blue-500/30 ring-1 ring-white/10']"
                                 placeholder="Search products..." type="search" />
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                             <button @click="toggleNotification" 
                                 :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white']">
                                 <i class="pi pi-bell text-xl font-bold"></i>
-                                <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#1e293b] shadow-sm">
+                                <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0f172a] shadow-sm">
                                     {{ unreadCount }}
                                 </span>
                             </button>
@@ -106,7 +106,7 @@
                         <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
                             :class="['relative group p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white']">
                             <i class="pi pi-shopping-cart text-xl font-bold"></i>
-                            <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#1e293b] shadow-sm">
+                            <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0f172a] shadow-sm">
                                 {{ cartCount }}
                             </span>
                         </button>
@@ -211,10 +211,10 @@
             leave-from-class="transform translate-y-0 opacity-100"
             leave-to-class="transform -translate-y-4 opacity-0"
         >
-            <div v-if="isMobileMenuOpen" class="md:hidden bg-[#1e293b] shadow-xl border-t border-[#2d3a4f]">
+            <div v-if="isMobileMenuOpen" class="md:hidden bg-[#0f172a] shadow-xl border-t border-white/5">
                 <div class="px-4 py-6 space-y-4">
                     <template v-if="Page.user">
-                        <div class="flex items-center gap-3 px-2 pb-4 border-b border-[#2d3a4f]">
+                        <div class="flex items-center gap-3 px-2 pb-4 border-b border-white/5">
                             <Avatar :image="userImage" :label="userInitials" shape="circle" size="large" class="bg-blue-500 text-white" />
                             <div>
                                 <p class="font-bold text-white">{{ Page.user.full_name }}</p>
