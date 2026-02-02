@@ -1,6 +1,6 @@
 <template>
     <div class="auth-page">
-        <NavBar mode="guest" :transparent="true" />
+        <NavBar mode="guest" />
 
         <!-- Background Decoration -->
         <div class="bg-decoration">

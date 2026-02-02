@@ -1,19 +1,19 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent && !isScrolled ? 'absolute top-0 left-0 bg-transparent' : 'sticky top-0 bg-blue-700 shadow-lg shadow-blue-900/20']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent && !isScrolled ? 'absolute top-0 left-0 bg-transparent' : 'sticky top-0 bg-white border-b border-gray-200 shadow-sm']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
                 <div class="flex items-center gap-4">
                     <button v-if="mode === 'admin'" @click="toggleSidebar" 
-                        class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors focus:outline-none">
+                        :class="['p-2 rounded-lg transition-colors focus:outline-none', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100']">
                         <i class="pi pi-bars text-xl md:text-2xl font-bold"></i>
                     </button>
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer group" @click="goHome">
-                        <div class="bg-white p-1.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform">
-                            <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10" />
+                        <div class="bg-blue-600 p-1.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform">
+                            <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10 filter brightness-0 invert" />
                         </div>
-                        <span class="ml-3 text-xl font-extrabold tracking-tight text-white hidden sm:block">
+                        <span :class="['ml-3 text-xl font-extrabold tracking-tight hidden sm:block', transparent && !isScrolled ? 'text-white' : 'text-gray-800']">
                             Alcess
                         </span>
                     </div>
@@ -25,10 +25,11 @@
                         <label for="search" class="sr-only">Search</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="pi pi-search text-white/60 group-focus-within:text-blue-200"></i>
+                                <i :class="['pi pi-search transition-colors', transparent && !isScrolled ? 'text-white/60' : 'text-gray-400 group-focus-within:text-blue-600']"></i>
                             </div>
                             <input id="search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
-                                class="block w-full pl-10 pr-3 py-2.5 border-0 rounded-xl leading-5 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 sm:text-sm transition-all duration-300 backdrop-blur-md"
+                                :class="['block w-full pl-10 pr-3 py-2.5 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 sm:text-sm transition-all duration-300 backdrop-blur-md', 
+                                    transparent && !isScrolled ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-gray-200']"
                                 placeholder="Search products..." type="search" />
                         </div>
                     </div>
@@ -36,14 +37,14 @@
 
                 <!-- Desktop Navigation Links -->
                 <nav class="hidden md:flex items-center space-x-6 ml-4">
-                    <template v-if="(mode === 'customer' || mode === 'guest') && (isScrolled || !isAuthPage)">
+                    <template v-if="mode === 'customer' || mode === 'guest'">
                          <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
-                           class="flex items-center gap-2 font-semibold text-white hover:text-blue-100 transition-colors">
+                           :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
                             <i class="pi pi-facebook text-xl"></i>
                             <span class="hidden lg:inline">Support</span>
                         </a>
                         <button @click="goToBrowse" 
-                            class="flex items-center gap-2 font-semibold text-white hover:text-blue-100 transition-colors">
+                            :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
                             <i class="pi pi-th-large text-xl"></i>
                             <span class="hidden lg:inline">Browse</span>
                         </button>
@@ -56,15 +57,16 @@
                             
                             <!-- Notifications -->
                             <div v-if="mode === 'customer' || mode === 'admin'" class="relative">
-                                <button @click="toggleNotification" class="relative p-2 rounded-full text-white hover:bg-white/10 transition-colors">
+                                <button @click="toggleNotification" 
+                                    :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
                                     <i class="pi pi-bell text-xl font-bold"></i>
-                                    <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-blue-600 shadow-sm animate-pulse">
+                                    <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm animate-pulse">
                                         {{ unreadCount }}
                                     </span>
                                 </button>
                                 
                                 <!-- Notification Popover -->
-                                <Popover ref="notificationElement" class="w-80 sm:w-96 !bg-white !shadow-2xl !border-0 !p-0 overflow-hidden !rounded-2xl">
+                                <Popover ref="notificationElement" appendTo="body" class="w-80 sm:w-96 !bg-white !shadow-2xl !border-0 !p-0 overflow-hidden !rounded-2xl mt-2">
                                     <div class="flex flex-col max-h-[480px]">
                                         <!-- Header -->
                                         <div class="flex items-center justify-between p-4 bg-gray-50/80 border-b border-gray-100">
@@ -116,30 +118,32 @@
                                 </Popover>
                             </div>
 
-                             <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" class="relative group p-2 rounded-full text-white hover:bg-white/10 transition-colors">
+                             <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
+                                :class="['relative group p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
                                 <i class="pi pi-shopping-cart text-xl font-bold"></i>
-                                <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-blue-600 shadow-sm">
+                                <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                                     {{ cartCount }}
                                 </span>
                             </button>
 
                             <div class="relative ml-2" ref="userMenuRef">
-                                <button @click="toggleUserMenu" class="flex items-center gap-3 p-1 pr-3 rounded-2xl text-white hover:bg-white/10 transition-colors focus:outline-none border border-transparent hover:border-white/20">
+                                <button @click="toggleUserMenu" 
+                                    :class="['flex items-center gap-3 p-1 pr-3 rounded-2xl transition-colors focus:outline-none border', transparent && !isScrolled ? 'text-white hover:bg-white/10 border-transparent hover:border-white/20' : 'text-gray-700 hover:bg-gray-100 border-transparent hover:border-gray-200']">
                                     <Avatar 
                                         :image="userImage" 
                                         :label="userInitials" 
                                         shape="circle" 
-                                        class="cursor-pointer border-2 border-white/50 shadow-md !w-9 !h-9"
+                                        class="cursor-pointer border-2 border-white shadow-md !w-9 !h-9 bg-blue-100 text-blue-600"
                                     />
                                     <div class="hidden lg:block text-left">
                                         <p class="text-sm font-bold leading-tight">
                                             {{ Page.user.full_name }}
                                         </p>
-                                        <p class="text-[10px] font-semibold text-blue-100 uppercase tracking-wider">
+                                        <p :class="['text-[10px] font-semibold uppercase tracking-wider', transparent && !isScrolled ? 'text-blue-100' : 'text-blue-600']">
                                             {{ Page.user.role?.role_name || 'User' }}
                                         </p>
                                     </div>
-                                    <i class="pi pi-chevron-down text-[10px] text-white/70"></i>
+                                    <i :class="['pi pi-chevron-down text-[10px]', transparent && !isScrolled ? 'text-white/70' : 'text-gray-400']"></i>
                                 </button>
                                 
                                 <!-- Dropdown -->
@@ -151,7 +155,7 @@
                                     leave-from-class="transform opacity-100 scale-100"
                                     leave-to-class="transform opacity-0 scale-95"
                                 >
-                                    <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden z-50">
+                                    <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-1 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden z-50">
                                         <div class="px-4 py-3 border-b border-gray-100">
                                             <p class="text-sm font-bold text-gray-900 truncate">{{ Page.user.full_name }}</p>
                                             <p class="text-xs text-gray-500 truncate">{{ Page.user.email }}</p>
@@ -178,10 +182,6 @@
                         </template>
                         <template v-else>
                             <!-- Guest -->
-                            <!-- <router-link :to="{ name: 'auth.login' }" 
-                                :class="['font-semibold', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-700 hover:text-blue-600']">
-                                Log in
-                            </router-link> -->
                             <router-link :to="{ name: 'auth.login' }" 
                                 class="btn-primary px-5 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all text-sm">
                                 Login / Sign up
@@ -269,7 +269,7 @@ import useAxiosUtil from '@/utils/AxiosUtil';
 import { useToast } from 'vue-toastification';
 import { useEcho } from "@laravel/echo-vue";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
-import DateUtil from '@/utils/DateUtil'; // Ensure you have this util
+import { RoleEnum, getStoreRoles } from "@/enums/RoleEnum";
 
 const props = defineProps<{
     mode?: 'guest' | 'auth' | 'customer' | 'admin';
