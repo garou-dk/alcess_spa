@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Hash;
 
 class AccountRecoveryController extends Controller
 {
-    public function __construct(protected SecurityService $service) {}
+    public function __construct(protected SecurityService $service)
+    {
+    }
 
     /**
      * Recover account using a backup code.
@@ -89,7 +91,7 @@ class AccountRecoveryController extends Controller
     public function updateSecuritySettings(Request $request)
     {
         $user = $request->user();
-        
+
         $data = $request->validate([
             'security_question' => ['nullable', 'string', 'max:255'],
             'security_answer' => ['nullable', 'string', 'max:255'],

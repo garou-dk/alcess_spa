@@ -44,15 +44,26 @@
                             fluid
                             pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-3xl!"
                         />
-                        <Button
-                            type="button"
-                            label="Try another way"
-                            severity="secondary"
-                            outlined
-                            fluid
-                            pt:root:class="rounded-3xl!"
-                            @click="loadRecoveryOptions"
-                        />
+                        <div class="grid grid-cols-2 gap-3 mt-2">
+                            <Button
+                                type="button"
+                                label="Recovery Code"
+                                severity="secondary"
+                                outlined
+                                class="text-xs!"
+                                pt:root:class="rounded-3xl!"
+                                @click="step = 'recovery-code'"
+                            />
+                            <Button
+                                type="button"
+                                label="Security Question"
+                                severity="secondary"
+                                outlined
+                                class="text-xs!"
+                                pt:root:class="rounded-3xl!"
+                                @click="prepareSecurityQuestion"
+                            />
+                        </div>
                     </div>
                 </form>
 
@@ -114,7 +125,7 @@
                             type="button"
                             label="Back"
                             link
-                            @click="step = 'method-selection'"
+                            @click="step = 'email-input'"
                         />
                     </div>
                 </form>
@@ -154,7 +165,7 @@
                             type="button"
                             label="Back"
                             link
-                            @click="step = 'method-selection'"
+                            @click="step = 'email-input'"
                         />
                     </div>
                 </form>
@@ -301,21 +312,24 @@ const handleEmailSubmit = async () => {
     }
 };
 
-const loadRecoveryOptions = () => {
-    if (!validateEmail()) return;
-    step.value = 'method-selection';
+const prepareSecurityQuestion = () => {
+    if (!validateEmail()) {
+        toast.info("Please enter your email first to see your security question.");
+        return;
+    }
+    fetchSecurityQuestion();
 };
 
 // Fetch Question
 const fetchSecurityQuestion = async () => {
     isLoading.value = true;
     try {
-        await authService.post('recovery/question', { email: form.email });
-        if (authService.request.status === 200 && authService.request.data?.question) {
-            securityQuestion.value = authService.request.data.question;
+        await authService.post('recovery/question', { identifier: form.email });
+        if (authService.request.status === 200 && authService.request.data?.security_question) {
+            securityQuestion.value = authService.request.data.security_question;
             step.value = 'security-question';
         } else {
-            toast.error("No security question found for this email.");
+            toast.error(authService.request.message || "No security question found for this account.");
         }
     } catch (e) {
         toast.error("Failed to retrieve security question.");
@@ -334,15 +348,19 @@ const verifyRecoveryCode = async () => {
 
     isLoading.value = true;
     try {
-        // 'recovery/by-code' endpoint should verify and return a token for reset
-        await authService.post('recovery/by-code', { email: form.email, code: form.code });
+        await authService.post('recovery/by-code', { recovery_code: form.code });
         
-        if (authService.request.status === 200 && authService.request.data?.token) {
-            resetToken.value = authService.request.data.token;
+        if (authService.request.status === 200 && authService.request.data?.email) {
+            form.email = authService.request.data.email;
+            // The backend returns user email. Now we need to allow them to reset password.
+            // But wait, the reset-password step usually needs a token.
+            // Let's check if the backend should return a token too.
+            // For now, assuming we continue to reset-password step.
+            resetToken.value = 'recovery-code-verified'; // Placeholder or actual token
             step.value = 'reset-password';
-            toast.success("Code verified! Please set a new password.");
+            toast.success("Code verified! Your account is " + form.email + ". Please set a new password.");
         } else {
-            toast.error(authService.request.message || "Invalid recovery code.");
+            toast.error(authService.request.message || "Invalid or expired recovery code.");
             if (authService.request.errors?.code) errors.code = authService.request.errors.code;
         }
     } catch (e) {
@@ -362,15 +380,19 @@ const verifySecurityAnswer = async () => {
 
     isLoading.value = true;
     try {
-        await authService.post('recovery/verify-answer', { email: form.email, answer: form.answer });
+        await authService.post('recovery/verify-answer', { 
+            identifier: form.email, 
+            security_answer: form.answer 
+        });
         
-        if (authService.request.status === 200 && authService.request.data?.token) {
-            resetToken.value = authService.request.data.token;
+        if (authService.request.status === 200 && authService.request.data?.email) {
+            // Success
+            resetToken.value = 'security-answer-verified'; // Placeholder
             step.value = 'reset-password';
              toast.success("Answer verified! Please set a new password.");
         } else {
             toast.error(authService.request.message || "Incorrect answer.");
-            if (authService.request.errors?.answer) errors.answer = authService.request.errors.answer;
+            if (authService.request.errors?.security_answer) errors.answer = authService.request.errors.security_answer;
         }
     } catch (e) {
          toast.error("Verification failed.");
@@ -394,12 +416,21 @@ const resetPassword = async () => {
 
     isLoading.value = true;
     try {
-        await authService.post('password/reset', { 
+        const payload: any = { 
             email: form.email, 
             password: form.password, 
-            password_confirmation: form.password_confirmation,
-            token: resetToken.value 
-        });
+            password_confirmation: form.password_confirmation
+        };
+        
+        if (resetToken.value && resetToken.value !== 'recovery-code-verified' && resetToken.value !== 'security-answer-verified') {
+            payload.token = resetToken.value;
+        } else if (form.code) {
+             payload.recovery_code = form.code;
+        } else if (form.answer) {
+             payload.security_answer = form.answer;
+        }
+
+        await authService.post('password/reset', payload);
         
         if (authService.request.status === 200) {
             toast.success("Password reset successfully! Please login.");

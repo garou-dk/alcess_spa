@@ -82,7 +82,7 @@ class PasswordResetService
             $resetData['verification_attempts']++;
             $remainingAttempts = 3 - $resetData['verification_attempts'];
             Cache::put($cacheKey, $resetData, Carbon::parse($resetData['expiration']));
-            
+
             if ($remainingAttempts > 0) {
                 abort(401, "Invalid verification code. You have {$remainingAttempts} attempt(s) remaining.");
             } else {
@@ -100,20 +100,29 @@ class PasswordResetService
         $user = User::where('email', $data['email'])->first();
         abort_if(empty($user), 404, 'User not found.');
 
-        $cacheKey = "password-reset-{$user->user_id}";
-        
-        abort_unless(Cache::has($cacheKey), 404, 'Reset session expired or not found.');
-
-        $resetData = Cache::get($cacheKey);
-
-        // Verify code again to be sure (and it's passed in the final request)
-        if ($resetData['code'] !== $data['code']) {
-            abort(401, "Invalid verification code.");
+        if (!empty($data['code'])) {
+            $cacheKey = "password-reset-{$user->user_id}";
+            abort_unless(Cache::has($cacheKey), 404, 'Reset session expired or not found.');
+            $resetData = Cache::get($cacheKey);
+            if ($resetData['code'] !== $data['code']) {
+                abort(401, "Invalid verification code.");
+            }
+            Cache::forget($cacheKey);
+        } elseif (!empty($data['recovery_code'])) {
+            $securityService = app(\App\Services\SecurityService::class);
+            $verifiedUser = $securityService->verifyAndUseRecoveryCode($data['recovery_code']);
+            abort_unless($verifiedUser && $verifiedUser->user_id === $user->user_id, 401, 'Invalid recovery code.');
+        } elseif (!empty($data['security_answer'])) {
+            $securityService = app(\App\Services\SecurityService::class);
+            $verifiedUser = $securityService->verifySecurityAnswer($user->email, $data['security_answer']);
+            abort_unless($verifiedUser && $verifiedUser->user_id === $user->user_id, 401, 'Invalid security answer.');
+        } else {
+            abort(400, 'Verification proof required.');
         }
 
         // Update password
         $user->update([
-            'password' => Hash::make($data['new_password']),
+            'password' => Hash::make($data['password']),
         ]);
 
         // Clear cache

@@ -23,10 +23,10 @@ class PasswordResetRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email', 'exists:users,email'],
-            'current_password' => ['nullable', 'string'],
-            'new_password' => ['required', 'string', 'min:8'],
-            'new_password_confirmation' => ['required', 'string', 'same:new_password'],
-            'code' => ['required', 'string', 'size:6'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'code' => ['required_without_all:recovery_code,security_answer', 'nullable', 'string', 'size:6'],
+            'recovery_code' => ['nullable', 'string', 'size:10'],
+            'security_answer' => ['nullable', 'string'],
         ];
     }
 }

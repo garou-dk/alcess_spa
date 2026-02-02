@@ -1,16 +1,22 @@
 <template>
-    <div class="flex h-screen overflow-hidden bg-gray-100">
-        <!-- Sidebar for Desktop (Always visible) -->
-        <div v-if="!isMobile" class="h-full flex-shrink-0 bg-blue-600 transition-all duration-300">
+    <div class="flex h-screen overflow-hidden bg-gray-50">
+        <!-- Sidebar for Desktop -->
+        <aside 
+            v-if="!isMobile" 
+            :class="[
+                'h-full flex-shrink-0 bg-blue-700 transition-all duration-300 ease-in-out z-40',
+                sideBar ? 'w-64' : 'w-0 overflow-hidden'
+            ]"
+        >
              <AdminSideBar />
-        </div>
+        </aside>
 
         <!-- Sidebar for Mobile (Drawer) -->
         <Drawer 
             v-if="isMobile"
             v-model:visible="sideBar" 
             :modal="true"
-            class="!w-full !bg-blue-600 !border-0"
+            class="!w-72 !bg-blue-700 !border-0"
             :showCloseIcon="false"
              :pt="{
                 root: { class: 'border-none' },
@@ -24,8 +30,11 @@
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <NavBar mode="admin" />
             
-            <main class="w-full h-full p-6">
-                <RouterView />
+            <main class="w-full min-h-screen p-4 md:p-6">
+                <!-- Wrapper for content to allow spacing from navbar -->
+                <div class="container mx-auto">
+                    <RouterView />
+                </div>
             </main>
         </div>
     </div>
@@ -51,12 +60,7 @@ provide("sideBar", sideBar);
 // Ensure correct initial state
 const initSidebar = () => {
     if (!isMobile.value) {
-        // On desktop/tablet, AdminSideBar is always visible in the layout,
-        // so 'sideBar' ref usually controls the Mobile Drawer visibility.
-        // However, NavBar toggle button might toggle this ref.
-        // If we want the toggle button to do nothing on desktop OR hide the sidebar:
-        // For now, let's assume Sidebar is persistent on Desktop.
-        sideBar.value = false; 
+        sideBar.value = true; // Open by default on desktop
     } else {
         sideBar.value = false; // Closed initially on mobile
     }
