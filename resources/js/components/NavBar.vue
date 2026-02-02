@@ -217,7 +217,6 @@
                                 Login / Sign up
                             </router-link>
                         </template>
-                    </div>
                 </div>
             </div>
         </div>
