@@ -40,6 +40,22 @@
             </div>
         </section>
 
+        <!-- Sticky Icons -->
+        <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+            <button @click="goToBrowseProducts" 
+                class="w-12 h-12 rounded-full bg-white text-blue-600 shadow-lg shadow-blue-500/20 flex items-center justify-center hover:bg-blue-50 transition-all hover:scale-110 tooltip-btn group relative border border-blue-100"
+                title="Browse Products">
+                <i class="pi pi-th-large text-xl"></i>
+                <span class="absolute right-full mr-2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Browse Products</span>
+            </button>
+            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
+                class="w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/30 flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110 tooltip-btn group relative"
+                title="Message Us">
+                <i class="pi pi-facebook text-xl"></i>
+                <span class="absolute right-full mr-2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Message Us</span>
+            </a>
+        </div>
+
         <!-- Featured Products Section -->
         <section v-if="showCarousel && products.length > 0" class="featured-products" id="products">
             <div class="container">
@@ -530,16 +546,16 @@ onUnmounted(() => stopCarousel());
 .w-feature i { color: #2563eb; font-size: 1.125rem; }
 
 /* Moving Watermark Style */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.08; pointer-events: none; z-index: 5; }
-.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.2rem; display: flex; align-items: center; }
-.watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.35; pointer-events: none; z-index: 5; }
+.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; will-change: transform; transform-style: preserve-3d; }
+.watermark-row { white-space: nowrap; font-size: 1.75rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.3rem; display: flex; align-items: center; }
+.watermark-item { display: inline-flex; align-items: center; gap: 1rem; backface-visibility: hidden; transform: translateZ(0); }
 .watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: none; }
 .watermark-row:nth-child(even) { margin-left: -8rem; }
 
 @keyframes moveWatermark {
     0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
-    100% { transform: rotate(-25deg) translate(-10%, -10%) scale(1.5); }
+    100% { transform: rotate(-25deg) translate(-500px, -200px) scale(1.5); }
 }
 
 /* Brands Section */

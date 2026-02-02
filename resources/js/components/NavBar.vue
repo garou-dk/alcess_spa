@@ -17,10 +17,13 @@
                     </div>
                 </div>
 
-                <!-- Middle: Navigation Links (Hidden on Landing Page as per request) -->
+                <!-- Middle: Navigation Links (Restored) -->
                 <div class="hidden md:flex flex-1 items-center justify-center">
-                    <div v-if="isHomePage && !isAuthPage" class="hidden">
-                        <!-- Links hidden, using burger menu only -->
+                    <div v-if="isHomePage && !isAuthPage" class="flex items-center gap-8 lg:gap-12">
+                        <a href="#home" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Home</a>
+                        <a href="#products" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Products</a>
+                        <a href="#features" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Features</a>
+                        <a href="#footer" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Contact</a>
                     </div>
                 </div>
 
@@ -44,10 +47,10 @@
                         <!-- Notifications -->
                         <div v-if="mode === 'customer' || mode === 'admin'" class="relative">
                             <button @click="toggleNotification" 
-                                :class="['relative p-2 rounded-full transition-all border-2', 
-                                    transparent && !isScrolled ? 'text-white border-transparent hover:bg-white/10' : 'text-slate-600 border-blue-50 hover:border-blue-200 hover:bg-blue-50/50 hover:text-blue-600']">
-                                <i class="pi pi-bell text-xl font-bold"></i>
-                                <span v-if="unreadCount > 0" :class="['absolute top-0 right-0 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 shadow-sm', transparent && !isScrolled ? 'border-[#0b1426]' : 'border-white']">
+                                :class="['relative p-2 rounded-full transition-all border-2 flex items-center justify-center w-10 h-10', 
+                                    transparent && !isScrolled ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-600']">
+                                <i class="pi pi-bell text-lg font-bold"></i>
+                                <span v-if="unreadCount > 0" :class="['absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 shadow-sm', transparent && !isScrolled ? 'border-[#0b1426]' : 'border-white']">
                                     {{ unreadCount }}
                                 </span>
                             </button>
@@ -107,20 +110,21 @@
 
                         <!-- Cart -->
                         <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
-                            :class="['relative group p-2 rounded-full transition-all border-2', 
-                                transparent && !isScrolled ? 'text-white border-transparent hover:bg-white/10' : 'text-slate-600 border-blue-50 hover:border-blue-200 hover:bg-blue-50/50 hover:text-blue-600']">
-                            <i class="pi pi-shopping-cart text-xl font-bold"></i>
-                            <span v-if="cartCount > 0" :class="['absolute top-0 right-0 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 shadow-sm', transparent && !isScrolled ? 'border-[#0b1426]' : 'border-white']">
+                            :class="['relative group p-2 rounded-full transition-all border-2 flex items-center justify-center w-10 h-10', 
+                                transparent && !isScrolled ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-600']">
+                            <i class="pi pi-shopping-cart text-lg font-bold"></i>
+                            <span v-if="cartCount > 0" :class="['absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 shadow-sm', transparent && !isScrolled ? 'border-[#0b1426]' : 'border-white']">
                                 {{ cartCount }}
                             </span>
                         </button>
                     </template>
 
                     <!-- Mobile Menu Button (Always visible on Landing Page now, otherwise mobile only) -->
-                    <div :class="[isHomePage && !Page.user ? 'flex' : 'md:hidden flex', 'items-center']" v-if="(!Page.user && !isAuthPage) || (isHomePage && !Page.user)">
+                    <div :class="[isHomePage && !Page.user ? 'flex' : 'md:hidden flex', 'items-center gap-2']" v-if="(!Page.user && !isAuthPage) || (isHomePage && !Page.user)">
                         <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
-                            :class="['p-2 rounded-md focus:outline-none transition-colors', transparent && !isScrolled && !isMobileMenuOpen ? 'text-white' : 'text-slate-600 hover:bg-slate-100']">
-                            <i :class="isMobileMenuOpen ? 'pi pi-times text-2xl' : 'pi pi-bars text-2xl'"></i>
+                            :class="['p-2 rounded-full border-2 focus:outline-none transition-all flex items-center justify-center w-10 h-10', 
+                                transparent && !isScrolled && !isMobileMenuOpen ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-600']">
+                            <i :class="isMobileMenuOpen ? 'pi pi-times text-xl' : 'pi pi-bars text-xl'"></i>
                         </button>
                     </div>
 
@@ -129,11 +133,11 @@
                         <template v-if="Page.user">
                             <div class="relative ml-2" ref="userMenuRef">
                                 <button @click="toggleUserMenu" 
-                                    :class="['flex items-center gap-3 p-1 pr-3 rounded-2xl transition-all border-2 focus:outline-none', 
-                                        transparent && !isScrolled ? 'text-white border-transparent hover:bg-white/10' : 'text-slate-700 border-blue-50 hover:border-blue-200 hover:bg-blue-50/50']">
+                                    :class="['flex items-center gap-3 p-1 pr-3 rounded-full transition-all border-2 focus:outline-none', 
+                                        transparent && !isScrolled ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-50/50 hover:border-blue-500']">
                                     <Avatar 
                                         shape="circle" 
-                                        class="cursor-pointer shadow-sm !w-9 !h-9 bg-blue-500 text-white overflow-hidden"
+                                        class="cursor-pointer shadow-sm !w-8 !h-8 bg-blue-500 text-white overflow-hidden"
                                     >
                                         <img v-if="userImage" :src="userImage" class="w-full h-full object-cover" />
                                         <span v-else>{{ userInitials }}</span>
@@ -142,11 +146,8 @@
                                         <p class="text-sm font-bold leading-tight">
                                             {{ Page.user.full_name }}
                                         </p>
-                                        <p :class="['text-[10px] font-semibold uppercase tracking-wider', transparent && !isScrolled ? 'text-blue-100' : 'text-blue-600']">
-                                            {{ Page.user.role?.role_name || 'User' }}
-                                        </p>
                                     </div>
-                                    <i :class="['pi pi-chevron-down text-[10px]', transparent && !isScrolled ? 'text-white/70' : 'text-slate-400']"></i>
+                                    <i :class="['pi pi-chevron-down text-[10px]', transparent && !isScrolled ? 'text-white/70' : 'text-blue-400']"></i>
                                 </button>
                                 
                                 <!-- Dropdown -->
