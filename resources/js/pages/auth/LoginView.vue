@@ -66,20 +66,20 @@ const onLoginSuccess = () => {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    /* align-items: center; Removed to allow full width children */
+    justify-content: flex-start; /* Changed from center to allow spacer or margin auto to handle centering */
     background-color: #f8fafc;
     background-image: 
         radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
         radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, hsla(225,39%,30%,0) 50%), 
         radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
     font-family: 'Inter', sans-serif;
-    padding: 1.5rem;
+    /* padding: 1.5rem; Removed padding from parent to let navbar touch edges */
     position: relative;
     overflow: hidden;
 }
 
-/* Subtle modern background pattern */
+/* Background Decoration */
 .bg-decoration {
     position: absolute;
     inset: 0;
@@ -93,6 +93,8 @@ const onLoginSuccess = () => {
 .auth-container {
     width: 100%;
     max-width: 440px;
+    margin: auto; /* Center vertically and horizontally */
+    padding: 1.5rem; 
     z-index: 10;
     display: flex;
     flex-direction: column;

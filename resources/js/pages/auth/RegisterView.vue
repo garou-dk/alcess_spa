@@ -61,15 +61,13 @@ const onRegisterSuccess = () => {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     background-color: #f8fafc;
     background-image: 
         radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
         radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, hsla(225,39%,30%,0) 50%), 
         radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
     font-family: 'Inter', sans-serif;
-    padding: 1.5rem;
     position: relative;
     overflow: hidden;
 }
@@ -88,6 +86,8 @@ const onRegisterSuccess = () => {
 .auth-container {
     width: 100%;
     max-width: 440px;
+    margin: auto;
+    padding: 1.5rem;
     z-index: 10;
     display: flex;
     flex-direction: column;

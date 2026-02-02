@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent && !isScrolled ? 'absolute top-0 left-0 bg-transparent' : 'sticky top-0 bg-white border-b border-gray-200 shadow-sm']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-white border-b border-gray-200 shadow-sm']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
@@ -10,8 +10,8 @@
                     </button>
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer group" @click="goHome">
-                        <div class="bg-blue-600 p-1.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform">
-                            <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10 filter brightness-0 invert" />
+                        <div class="group-hover:scale-105 transition-transform">
+                            <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10" />
                         </div>
                         <span :class="['ml-3 text-xl font-extrabold tracking-tight hidden sm:block', transparent && !isScrolled ? 'text-white' : 'text-gray-800']">
                             Alcess
@@ -35,105 +35,115 @@
                     </div>
                 </div>
 
-                <!-- Desktop Navigation Links -->
-                <nav class="hidden md:flex items-center space-x-6 ml-4">
-                    <template v-if="mode === 'customer' || mode === 'guest'">
-                         <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
-                           :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
-                            <i class="pi pi-facebook text-xl"></i>
-                            <span class="hidden lg:inline">Support</span>
-                        </a>
-                        <button @click="goToBrowse" 
-                            :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
-                            <i class="pi pi-th-large text-xl"></i>
-                            <span class="hidden lg:inline">Browse</span>
-                        </button>
-                    </template>
-
-                    <!-- Auth/User Actions -->
-                    <div class="flex items-center gap-5">
-                        <template v-if="Page.user">
-                            <!-- User Logged In -->
+                <!-- Navigation Actions (Visible on Mobile & Desktop) -->
+                <div class="flex items-center gap-3 md:gap-4 ml-auto">
+                    
+                    <template v-if="Page.user">
+                        <!-- Notifications -->
+                        <div v-if="mode === 'customer' || mode === 'admin'" class="relative">
+                            <button @click="toggleNotification" 
+                                :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
+                                <i class="pi pi-bell text-xl font-bold"></i>
+                                <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                                    {{ unreadCount }}
+                                </span>
+                            </button>
                             
-                            <!-- Notifications -->
-                            <div v-if="mode === 'customer' || mode === 'admin'" class="relative">
-                                <button @click="toggleNotification" 
-                                    :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
-                                    <i class="pi pi-bell text-xl font-bold"></i>
-                                    <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
-                                        {{ unreadCount }}
-                                    </span>
-                                </button>
-                                
-                                <!-- Notification Popover -->
-                                <Popover ref="notificationElement" appendTo="body" class="w-80 sm:w-96 !bg-white !shadow-2xl !border-0 !p-0 overflow-hidden !rounded-2xl mt-2">
-                                    <div class="flex flex-col max-h-[480px]">
-                                        <!-- Header -->
-                                        <div class="flex items-center justify-between p-4 bg-gray-50/80 border-b border-gray-100">
-                                            <h3 class="font-bold text-gray-900 flex items-center gap-2">
-                                                <i class="pi pi-bell text-blue-600"></i>
-                                                Notifications
-                                            </h3>
-                                            <Button v-if="unreadCount > 0" @click="markAllAsRead" label="Mark all read" link size="small" class="!px-0 !py-0 !text-blue-600 !font-bold hover:!underline" />
-                                        </div>
-                                        
-                                        <!-- Tabs -->
-                                        <div class="flex p-1 gap-1 text-sm font-bold text-center bg-gray-100/50 m-2 rounded-xl">
-                                            <button @click="handleTabClick('all')" :class="['flex-1 py-1.5 rounded-lg transition-all', activeTab === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
-                                                All
-                                            </button>
-                                            <button @click="handleTabClick('unread')" :class="['flex-1 py-1.5 rounded-lg transition-all', activeTab === 'unread' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
-                                                Unread
-                                                <span v-if="unreadCount > 0" class="ml-1 bg-red-500 text-white px-1.5 rounded-full text-[10px]">{{ unreadCount }}</span>
-                                            </button>
-                                        </div>
+                            <!-- Notification Popover -->
+                            <Popover ref="notificationElement" appendTo="body" class="w-80 sm:w-96 !bg-white !shadow-2xl !border-0 !p-0 overflow-hidden !rounded-2xl mt-2">
+                                <div class="flex flex-col max-h-[480px]">
+                                    <!-- Header -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50/80 border-b border-gray-100">
+                                        <h3 class="font-bold text-gray-900 flex items-center gap-2">
+                                            <i class="pi pi-bell text-blue-600"></i>
+                                            Notifications
+                                        </h3>
+                                        <Button v-if="unreadCount > 0" @click="markAllAsRead" label="Mark all read" link size="small" class="!px-0 !py-0 !text-blue-600 !font-bold hover:!underline" />
+                                    </div>
+                                    
+                                    <!-- Tabs -->
+                                    <div class="flex p-1 gap-1 text-sm font-bold text-center bg-gray-100/50 m-2 rounded-xl">
+                                        <button @click="handleTabClick('all')" :class="['flex-1 py-1.5 rounded-lg transition-all', activeTab === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+                                            All
+                                        </button>
+                                        <button @click="handleTabClick('unread')" :class="['flex-1 py-1.5 rounded-lg transition-all', activeTab === 'unread' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+                                            Unread
+                                            <span v-if="unreadCount > 0" class="ml-1 bg-red-500 text-white px-1.5 rounded-full text-[10px]">{{ unreadCount }}</span>
+                                        </button>
+                                    </div>
 
-                                        <!-- List -->
-                                        <div class="overflow-y-auto flex-1 custom-scrollbar">
-                                            <div v-if="filteredNotifications.length === 0" class="p-10 text-center text-gray-400">
-                                                <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                    <i class="pi pi-bell-slash text-2xl"></i>
-                                                </div>
-                                                <p class="text-sm font-medium">No notifications yet</p>
-                                                <p class="text-xs text-gray-400 mt-1">We'll let you know when something happens</p>
+                                    <!-- List -->
+                                    <div class="overflow-y-auto flex-1 custom-scrollbar">
+                                        <div v-if="filteredNotifications.length === 0" class="p-10 text-center text-gray-400">
+                                            <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <i class="pi pi-bell-slash text-2xl"></i>
                                             </div>
-                                            <div v-else v-for="note in filteredNotifications" :key="note.order_notification_id" 
-                                                @click="markAsRead(note)"
-                                                :class="['group p-4 border-b border-gray-50 hover:bg-blue-50/50 cursor-pointer transition-all duration-200', !note.is_read ? 'bg-blue-50/30' : '']">
-                                                <div class="flex gap-4">
-                                                    <div :class="['flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', getNotificationColor(note.notification_type)]">
-                                                        <i :class="[getNotificationIcon(note.notification_type), 'text-lg']"></i>
+                                            <p class="text-sm font-medium">No notifications yet</p>
+                                            <p class="text-xs text-gray-400 mt-1">We'll let you know when something happens</p>
+                                        </div>
+                                        <div v-else v-for="note in filteredNotifications" :key="note.order_notification_id" 
+                                            @click="markAsRead(note)"
+                                            :class="['group p-4 border-b border-gray-50 hover:bg-blue-50/50 cursor-pointer transition-all duration-200', !note.is_read ? 'bg-blue-50/30' : '']">
+                                            <div class="flex gap-4">
+                                                <div :class="['flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', getNotificationColor(note.notification_type)]">
+                                                    <i :class="[getNotificationIcon(note.notification_type), 'text-lg']"></i>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="flex justify-between items-start mb-1">
+                                                        <p class="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition-colors">{{ note.notification_type }}</p>
+                                                        <span class="text-[10px] text-gray-400 font-medium">{{ formatTime(note.created_at) }}</span>
                                                     </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <div class="flex justify-between items-start mb-1">
-                                                            <p class="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition-colors">{{ note.notification_type }}</p>
-                                                            <span class="text-[10px] text-gray-400 font-medium">{{ formatTime(note.created_at) }}</span>
-                                                        </div>
-                                                        <p class="text-xs text-gray-600 line-clamp-2 leading-relaxed">{{ note.message }}</p>
-                                                    </div>
+                                                    <p class="text-xs text-gray-600 line-clamp-2 leading-relaxed">{{ note.message }}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </Popover>
-                            </div>
+                                </div>
+                            </Popover>
+                        </div>
 
-                             <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
-                                :class="['relative group p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
-                                <i class="pi pi-shopping-cart text-xl font-bold"></i>
-                                <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
-                                    {{ cartCount }}
-                                </span>
+                        <!-- Cart -->
+                        <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
+                            :class="['relative group p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
+                            <i class="pi pi-shopping-cart text-xl font-bold"></i>
+                            <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                                {{ cartCount }}
+                            </span>
+                        </button>
+                    </template>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden flex items-center">
+                        <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
+                            :class="['p-2 rounded-md focus:outline-none', transparent && !isScrolled && !isMobileMenuOpen ? 'text-white' : 'text-gray-600']">
+                            <i :class="isMobileMenuOpen ? 'pi pi-times text-2xl' : 'pi pi-bars text-2xl'"></i>
+                        </button>
+                    </div>
+
+                    <!-- Desktop User Menu & Links -->
+                    <div class="hidden md:flex items-center gap-5">
+                        <template v-if="mode === 'customer' || mode === 'guest'">
+                             <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
+                               :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
+                                <i class="pi pi-facebook text-xl"></i>
+                                <span class="hidden lg:inline">Support</span>
+                            </a>
+                            <button @click="goToBrowse" 
+                                :class="['flex items-center gap-2 font-semibold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-100' : 'text-gray-600 hover:text-blue-600']">
+                                <i class="pi pi-th-large text-xl"></i>
+                                <span class="hidden lg:inline">Browse</span>
                             </button>
+                        </template>
 
+                        <template v-if="Page.user">
                             <div class="relative ml-2" ref="userMenuRef">
                                 <button @click="toggleUserMenu" 
-                                    :class="['flex items-center gap-3 p-1 pr-3 rounded-2xl transition-colors focus:outline-none border', transparent && !isScrolled ? 'text-white hover:bg-white/10 border-transparent hover:border-white/20' : 'text-gray-700 hover:bg-gray-100 border-transparent hover:border-gray-200']">
+                                    :class="['flex items-center gap-3 p-1 pr-3 rounded-2xl transition-colors focus:outline-none bg-transparent', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100']">
                                     <Avatar 
                                         :image="userImage" 
                                         :label="userInitials" 
                                         shape="circle" 
-                                        class="cursor-pointer border-2 border-white shadow-md !w-9 !h-9 bg-blue-100 text-blue-600"
+                                        class="cursor-pointer shadow-sm !w-9 !h-9 bg-blue-100 text-blue-600"
                                     />
                                     <div class="hidden lg:block text-left">
                                         <p class="text-sm font-bold leading-tight">
@@ -153,7 +163,7 @@
                                     enter-to-class="transform opacity-100 scale-100"
                                     leave-active-class="transition ease-in duration-75"
                                     leave-from-class="transform opacity-100 scale-100"
-                                    leave-to-class="transform opacity-0 scale-95"
+                                    leave-to-class="transform -translate-y-2 opacity-0"
                                 >
                                     <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-1 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden z-50">
                                         <div class="px-4 py-3 border-b border-gray-100">
@@ -181,21 +191,13 @@
                             </div>
                         </template>
                         <template v-else>
-                            <!-- Guest -->
+                             <!-- Guest Button Desktop -->
                             <router-link :to="{ name: 'auth.login' }" 
                                 class="btn-primary px-5 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all text-sm">
                                 Login / Sign up
                             </router-link>
                         </template>
                     </div>
-                </nav>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
-                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
-                        :class="['p-2 rounded-md focus:outline-none', transparent && !isScrolled && !isMobileMenuOpen ? 'text-white' : 'text-gray-600']">
-                        <i :class="isMobileMenuOpen ? 'pi pi-times text-2xl' : 'pi pi-bars text-2xl'"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -358,7 +360,7 @@ const userInitials = computed(() => {
 const handleLogout = async () => {
     await useAxiosUtil().post('logout').then(() => {
         Page.user = null;
-        router.push({ name: 'home' });
+        router.push({ name: 'auth.login' });
         toast.success("Logged out successfully");
     });
 };

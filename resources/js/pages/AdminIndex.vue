@@ -4,8 +4,8 @@
         <aside 
             v-if="!isMobile" 
             :class="[
-                'h-full flex-shrink-0 bg-blue-700 transition-all duration-300 ease-in-out z-40',
-                sideBar ? 'w-72' : 'w-0 overflow-hidden'
+                'h-full flex-shrink-0 bg-blue-700 transition-all duration-300 ease-in-out z-40 overflow-hidden',
+                sideBar ? 'w-72' : 'w-0'
             ]"
         >
              <AdminSideBar />
