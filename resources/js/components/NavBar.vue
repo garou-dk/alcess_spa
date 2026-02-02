@@ -5,8 +5,8 @@
                 <!-- Admin Sidebar Toggle & Logo -->
                 <div class="flex items-center gap-4">
                     <button v-if="mode === 'admin'" @click="toggleSidebar" 
-                        :class="['p-2 rounded-lg transition-colors focus:outline-none', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white']">
-                        <i class="pi pi-bars text-xl md:text-2xl font-bold"></i>
+                        :class="['p-2 rounded-lg transition-all focus:outline-none border-2', transparent && !isScrolled ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-600']">
+                        <i class="pi pi-bars text-lg md:text-xl font-bold"></i>
                     </button>
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer group" @click="goHome">
@@ -38,7 +38,7 @@
                             </div>
                             <input id="search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
                                 :class="['block w-full pl-9 pr-3 py-2 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 sm:text-sm transition-all duration-300 backdrop-blur-md', 
-                                    (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-slate-200']"
+                                    (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-blue-500/40']"
                                 placeholder="Search..." type="search" />
                         </div>
                     </div>
@@ -171,6 +171,7 @@
                                                 </Avatar>
                                                 <div class="min-w-0">
                                                     <p class="text-sm font-bold text-gray-900 truncate">{{ Page.user.full_name }}</p>
+                                                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-tighter mb-0.5">{{ Page.user.role?.role_name || 'User' }}</p>
                                                     <p class="text-[11px] text-gray-500 truncate font-medium">{{ Page.user.email }}</p>
                                                 </div>
                                             </div>
@@ -208,6 +209,19 @@
                                 </router-link>
                              </div>
                         </template>
+                </div>
+                
+                <!-- Mobile Search Bar (Appears below header on mobile) -->
+                <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="lg:hidden pb-4 px-2">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i :class="['pi pi-search transition-colors', (transparent && !isScrolled) ? 'text-white/60' : 'text-slate-400 group-focus-within:text-blue-600']"></i>
+                        </div>
+                        <input id="mobile-search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
+                            :class="['block w-full pl-9 pr-3 py-2 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 text-sm transition-all duration-300 backdrop-blur-md', 
+                                (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-blue-500/40 shadow-sm']"
+                            placeholder="Search products..." type="search" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -255,9 +269,6 @@
                         </button>
                     </template>
                     <template v-else>
-                        <router-link :to="{ name: 'auth.login' }" class="block w-full text-center btn-primary py-3 rounded-lg font-bold">
-                            Login / Sign up
-                        </router-link>
                         <!-- Mobile Section Links -->
                         <div class="grid grid-cols-2 gap-2 pt-2">
                              <a href="#home" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50">Home</a>
@@ -265,12 +276,6 @@
                              <a href="#features" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50">Features</a>
                              <a href="#footer" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50">Contact</a>
                         </div>
-                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
-                            <i class="pi pi-facebook mr-2 text-blue-500"></i> Message Us
-                        </a>
-                        <button @click="goToBrowse" class="w-full text-left px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
-                            <i class="pi pi-th-large mr-2 text-blue-500"></i> Browse Products
-                        </button>
                     </template>
                 </div>
             </div>
