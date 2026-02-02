@@ -22,19 +22,18 @@
             </div>
             <div class="container welcome-container">
                 <div class="welcome-content">
-                    <div class="welcome-badge-wrapper">
-                        <span class="welcome-badge">Premium Tech Destination</span>
-                    </div>
-                    <h1 class="welcome-headline">Welcome to <span class="text-accent">{{ appName }}</span></h1>
-                    <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
-                    <p class="welcome-description">Experience the future with Davao's premier choice for high-performance laptops, cutting-edge smartphones, and genuine tech accessories. Quality you can feel, service you can trust.</p>
-                    <div class="welcome-actions">
-                        <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
-                            Explore Collection <i class="pi pi-arrow-right"></i>
-                        </button>
-                        <!-- <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
-                            <i class="pi pi-facebook"></i> Message Us
-                        </a> -->
+                    <div class="hero-glass-card">
+                        <div class="welcome-badge-wrapper">
+                            <span class="welcome-badge">Premium Tech Destination</span>
+                        </div>
+                        <h1 class="welcome-headline">Welcome to <span class="text-accent">{{ appName }}</span></h1>
+                        <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
+                        <p class="welcome-description">Experience the future with Davao's premier choice for high-performance laptops, cutting-edge smartphones, and genuine tech accessories. Quality you can feel, service you can trust.</p>
+                        <div class="welcome-actions">
+                            <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
+                                Explore Collection <i class="pi pi-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -533,9 +532,10 @@ onUnmounted(() => stopCarousel());
 /* Welcome Hero */
 .welcome-hero { position: relative; background: #fff; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
 .welcome-overlay { position: absolute; inset: 0; background: none; }
-.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
-.welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
-.welcome-badge-wrapper { margin-bottom: 1.5rem; }
+.welcome-container { position: relative; z-index: 10; padding: 6rem 1rem; }
+.welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
+.hero-glass-card { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.5); padding: 4rem 2rem; border-radius: 4rem; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; }
+.welcome-badge-wrapper { margin-bottom: 2rem; }
 .welcome-badge { background: #eff6ff; border: 1px solid #dbeafe; color: #2563eb; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
 .welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 1.5rem; }
 .welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #334155; margin-bottom: 1.5rem; letter-spacing: 0.025em; }

@@ -119,8 +119,8 @@
                         </button>
                     </template>
 
-                    <!-- Mobile Menu Button (Always visible on Landing Page now, otherwise mobile only) -->
-                    <div :class="[isHomePage && !Page.user ? 'flex' : 'md:hidden flex', 'items-center gap-2']" v-if="(!Page.user && !isAuthPage) || (isHomePage && !Page.user)">
+                    <!-- Mobile Menu Button (Only visible on Mobile/Tablet) -->
+                    <div class="md:hidden flex items-center gap-2" v-if="(!Page.user && !isAuthPage) || (isHomePage && !Page.user)">
                         <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                             :class="['p-2 rounded-full border-2 focus:outline-none transition-all flex items-center justify-center w-10 h-10', 
                                 transparent && !isScrolled && !isMobileMenuOpen ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-blue-600 border-blue-500/30 hover:bg-blue-600 hover:text-white hover:border-blue-600']">
@@ -196,8 +196,8 @@
                             </div>
                         </template>
                         <template v-else>
-                             <!-- Guest Buttons Hidden on Landing Page -->
-                             <div class="flex items-center gap-3" v-if="!isHomePage">
+                             <!-- Guest Buttons Desktop -->
+                             <div class="flex items-center gap-3">
                                 <router-link :to="{ name: 'auth.login' }" 
                                     :class="['font-bold text-sm transition-colors', (transparent && !isScrolled) ? 'text-white hover:text-white/80' : 'text-blue-600 hover:text-blue-700']">
                                     Login
