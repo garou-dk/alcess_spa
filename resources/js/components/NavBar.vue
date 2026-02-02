@@ -209,22 +209,24 @@
                                 </router-link>
                              </div>
                         </template>
-                </div>
+            </div>
+        </div>
                 
-                <!-- Mobile Search Bar (Appears below header on mobile) -->
-                <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="lg:hidden pb-4 px-2">
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i :class="['pi pi-search transition-colors', (transparent && !isScrolled) ? 'text-white/60' : 'text-slate-400 group-focus-within:text-blue-600']"></i>
-                        </div>
-                        <input id="mobile-search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
-                            :class="['block w-full pl-9 pr-3 py-2 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 text-sm transition-all duration-300 backdrop-blur-md', 
-                                (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-blue-500/40 shadow-sm']"
-                            placeholder="Search products..." type="search" />
+        <!-- Mobile Search Bar (Appears below header on mobile) -->
+        <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="lg:hidden pb-4 px-2">
+            <div class="container mx-auto px-4 sm:px-6"> <!-- Added container for alignment -->
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i :class="['pi pi-search transition-colors', (transparent && !isScrolled) ? 'text-white/60' : 'text-slate-400 group-focus-within:text-blue-600']"></i>
                     </div>
+                    <input id="mobile-search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
+                        :class="['block w-full pl-9 pr-3 py-2 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 text-sm transition-all duration-300 backdrop-blur-md', 
+                            (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-blue-500/40 shadow-sm']"
+                        placeholder="Search products..." type="search" />
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- Mobile Menu -->
         <transition

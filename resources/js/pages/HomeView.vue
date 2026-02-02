@@ -10,14 +10,14 @@
         <!-- Welcome Hero Section -->
         <section class="welcome-hero" id="home">
             <div class="welcome-background-gradient"></div>
-            <div class="container welcome-container">
+            <div class="welcome-container">
                 <div class="welcome-content">
                     <div class="hero-glass-card">
                         <div class="welcome-badge-wrapper">
                             <span class="welcome-badge">Premium Tech Destination</span>
                         </div>
-                        <h1 class="welcome-headline">Understand <span class="gradient-text">Anything</span></h1>
-                        <p class="welcome-subheadline">Your research and thinking partner, grounded in the information you trust, built with the latest Alcess Smart Technology.</p>
+                        <h1 class="welcome-headline">Elevate <span class="gradient-text">Your Setup</span></h1>
+                        <p class="welcome-subheadline">Your premier destination for high-performance PCs, premium laptops, and cutting-edge computer accessories. Built for creators, gamers, and professionals.</p>
                         <div class="welcome-actions">
                             <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
                                 Get Started <i class="pi pi-arrow-right"></i>

@@ -3,18 +3,18 @@
         <!-- Welcome Hero Section -->
         <section class="welcome-hero">
             <div class="welcome-background-gradient"></div>
-            <div class="container welcome-container">
+            <div class="welcome-container">
                 <div class="welcome-content">
                     <div class="hero-glass-card">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-semibold border border-blue-500/30 mb-6 backdrop-blur-sm">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-semibold border border-blue-500/30 mb-6">
                             <span class="relative flex h-2 w-2">
                               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                               <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
                             </span>
                             New Arrivals Available
                         </div>
-                        <h1 class="welcome-headline">Understand <span class="gradient-text">Anything</span></h1>
-                        <p class="welcome-subheadline">Your research and thinking partner, grounded in the information you trust, built with the latest Alcess Smart Technology.</p>
+                        <h1 class="welcome-headline">Welcome, <span class="gradient-text">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
+                        <p class="welcome-subheadline">Find your next power upgrade. Explore our curated selection of high-end components, premium peripherals, and genuine tech essentials.</p>
                     
                         <div class="welcome-actions">
                             <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
