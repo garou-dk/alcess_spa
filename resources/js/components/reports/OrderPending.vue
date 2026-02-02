@@ -3,6 +3,7 @@
         v-if="dashboardData.pending_orders"
         label="New Orders" 
         :value="dashboardData.pending_orders.total_pending" 
+        :valueClass="getValueFontSize(String(dashboardData.pending_orders.total_pending))"
         :subtitle="dashboardData.pending_orders.today_pending + ' received today'"
         icon="pi pi-bell"
         iconBgColor="bg-blue-50"

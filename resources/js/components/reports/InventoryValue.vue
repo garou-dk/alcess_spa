@@ -3,6 +3,7 @@
         v-if="dashboardData.inventory_value"
         label="Inventory Value" 
         :value="CurrencyUtil.formatCurrency(dashboardData.inventory_value.total_inventory_value)" 
+        :valueClass="getValueFontSize(CurrencyUtil.formatCurrency(dashboardData.inventory_value.total_inventory_value))"
         :subtitle="'Across ' + dashboardData.inventory_value.total_products + ' items'"
         icon="pi pi-warehouse"
         iconBgColor="bg-purple-50"

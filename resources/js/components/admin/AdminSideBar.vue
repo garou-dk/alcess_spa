@@ -64,6 +64,13 @@
             />
             <SideBarButton
                 to="admin.dashboard.index"
+                icon="pi pi-chart-pie"
+                label="Sales/Revenue"
+                :hash="'#sales-distribution-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
                 icon="pi pi-exclamation-triangle"
                 label="Nearly Out of Stock"
                 :hash="'#nearly-out-of-stock-section'"
@@ -81,13 +88,6 @@
                 icon="pi pi-arrows-h"
                 label="Inventory Movement"
                 :hash="'#inventory-movement-section'"
-                :isSubItem="true"
-            />
-            <SideBarButton
-                to="admin.dashboard.index"
-                icon="pi pi-chart-pie"
-                label="Sales/Revenue"
-                :hash="'#sales-distribution-section'"
                 :isSubItem="true"
             />
         </SideBarAccordion>

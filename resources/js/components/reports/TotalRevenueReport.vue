@@ -3,6 +3,7 @@
         v-if="dashboardData.revenue"
         label="Total Revenue" 
         :value="CurrencyUtil.formatCurrency(dashboardData.revenue.current_month.revenue)" 
+        :valueClass="getValueFontSize(CurrencyUtil.formatCurrency(dashboardData.revenue.current_month.revenue))"
         :subtitle="dashboardData.revenue.comparison.percentage_change + '% vs last month'"
         icon="pi pi-dollar"
         iconBgColor="bg-green-50"

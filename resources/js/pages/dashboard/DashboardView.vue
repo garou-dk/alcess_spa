@@ -8,7 +8,7 @@
         />
 
         <!-- Page Header & Time -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-100 mb-2">
+        <div id="overview-section" class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-100 mb-2 scroll-mt-28">
             <div>
                 <h1 class="text-xl lg:text-2xl font-bold text-gray-800">Overview</h1>
                 <p class="text-xs lg:text-sm text-gray-500 mt-1">Summary of your store's performance and inventory.</p>
@@ -24,6 +24,7 @@
             <StatCard 
                 label="Best Selling Item" 
                 :value="topSellerName" 
+                :valueClass="getValueFontSize(topSellerName)"
                 :subtitle="topSellerUnits > 0 ? topSellerUnits + ' units sold' : 'No data'"
                 icon="pi pi-star-fill"
                 iconBgColor="bg-yellow-50"
@@ -42,15 +43,9 @@
         </Transition>
 
         <!-- Main Dashboard Layout Stack -->
-        <div class="space-y-8">
+        <div class="space-y-8 mt-4">
             
-            <!-- Charts Section - Side by Side -->
-            <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
-                <PieGraphReport />
-                <CategorySales />
-            </div>
-
-            <!-- New Orders (High Priority) -->
+            <!-- New Orders (High Priority) - Target for 'New Orders' button -->
             <div id="new-orders-section" class="scroll-mt-28">
                 <PendingReport />
             </div>
@@ -58,6 +53,12 @@
             <!-- Main Transaction/Orders Section -->
             <div id="confirmed-orders-section" class="scroll-mt-28">
                 <DashboardOrdersTable />
+            </div>
+
+            <!-- Charts Section - Side by Side -->
+            <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
+                <PieGraphReport />
+                <CategorySales />
             </div>
 
             <!-- Inventory Alerts - Low Stock -->
@@ -76,16 +77,16 @@
             </div>
 
             <!-- Quick Help / Summary Card (Bottom) -->
-            <BoxShadow class="p-5 bg-gradient-to-br from-blue-600 to-blue-700 text-white">
+            <BoxShadow class="p-5 border-blue-100 bg-white">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
-                        <h3 class="font-bold text-lg mb-1">Need Detailed Reports?</h3>
-                        <p class="text-xs text-white leading-relaxed">
+                        <h3 class="font-bold text-lg mb-1 text-gray-900">Need Detailed Reports?</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">
                             Access full daily sales reports and comprehensive inventory logs.
                         </p>
                     </div>
                     <RouterLink :to="{ name: 'admin.report.index' }">
-                        <button class="bg-white text-blue-600 font-bold py-2 px-6 rounded-lg text-sm hover:bg-blue-50 transition-colors shadow-sm">
+                        <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg text-sm hover:bg-blue-700 transition-colors shadow-sm">
                             View Reports
                         </button>
                     </RouterLink>
@@ -137,6 +138,15 @@ const topSellerUnits = computed(() => {
     return top ? top.units_sold : 0;
 });
 
+const getValueFontSize = (value: string | number) => {
+    const stringValue = String(value);
+    const length = stringValue.length;
+    if (length > 15) return 'text-base';
+    if (length > 12) return 'text-lg';
+    if (length > 9) return 'text-xl';
+    return 'text-2xl';
+};
+
 // Track programmatic scrolling to prevent scroll-spy interference
 const isProgrammaticScroll = ref(false);
 let scrollTimeout: number | null = null;
@@ -167,8 +177,8 @@ const scrollToSection = (sectionId: string) => {
     }
     
     nextTick(() => {
-        // Special handling for first section - scroll to top of page
-        if (sectionId === 'new-orders-section') {
+        // Special handling for top sections - scroll to absolute top
+        if (sectionId === 'overview-section' || sectionId === 'new-orders-section') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             const element = document.getElementById(sectionId);
