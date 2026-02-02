@@ -386,6 +386,10 @@ import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const { isMobile } = useResponsive();
 const appName = import.meta.env.VITE_APP_NAME;
@@ -441,6 +445,10 @@ const loadBestSellingProducts = async () => {
         if (loadBestSellingService.request.status === 200 && loadBestSellingService.request.data) {
             products.value = loadBestSellingService.request.data;
             startCarousel();
+            // Refresh ScrollTrigger after DOM update
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 100);
         }
     });
 };
@@ -469,14 +477,177 @@ const addToCart = async (productId: number) => {
 
 const goToProductDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-onMounted(() => { CategoryStore.fetchCategories(); loadBestSellingProducts(); });
-onUnmounted(() => stopCarousel());
+const initScrollAnimations = () => {
+    // Hero Section Animations
+    gsap.from(".welcome-headline", {
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.2
+    });
+
+    gsap.from(".welcome-subheadline", {
+        y: 30,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.4
+    });
+
+    gsap.from(".welcome-actions", {
+        y: 20,
+        opacity: 0,
+        duration: 1,
+        ease: "power4.out",
+        delay: 0.6
+    });
+
+    gsap.from(".hero-glass-card", {
+        scale: 0.95,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power3.out"
+    });
+
+    // Parallax effect for stripe layers
+    gsap.to(".stripe-layer-1", {
+        y: -100,
+        scrollTrigger: {
+            trigger: ".welcome-hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: true
+        }
+    });
+
+    gsap.to(".stripe-layer-2", {
+        y: 100,
+        scrollTrigger: {
+            trigger: ".welcome-hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: true
+        }
+    });
+
+    // Featured Products Section Reveal
+    gsap.from(".featured-products .section-header", {
+        scrollTrigger: {
+            trigger: ".featured-products",
+            start: "top 80%",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out"
+    });
+
+    gsap.from(".featured-carousel-wrapper", {
+        scrollTrigger: {
+            trigger: ".featured-carousel-wrapper",
+            start: "top 85%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out"
+    });
+
+    // Trust Bar Stagger
+    gsap.from(".trust-item", {
+        scrollTrigger: {
+            trigger: ".trust-bar",
+            start: "top 90%",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+    });
+
+    // Categories Stagger (if visible)
+    ScrollTrigger.create({
+        trigger: ".category-grid",
+        start: "top 85%",
+        onEnter: () => {
+            gsap.from(".category-card", {
+                y: 40,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+        }
+    });
+
+    // Brand Items Stagger
+    gsap.from(".brand-item", {
+        scrollTrigger: {
+            trigger: ".brands-section",
+            start: "top 85%",
+        },
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+    });
+
+    // Testimonials
+    gsap.from(".testimonial-card", {
+        scrollTrigger: {
+            trigger: ".testimonials-section",
+            start: "top 85%",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+
+    // CTA Section
+    gsap.from(".cta-section .container > *", {
+        scrollTrigger: {
+            trigger: ".cta-section",
+            start: "top 80%",
+        },
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+};
+
+onMounted(() => { 
+    CategoryStore.fetchCategories().then(() => {
+        setTimeout(() => ScrollTrigger.refresh(), 500);
+    });
+    loadBestSellingProducts();
+    initScrollAnimations();
+});
+onUnmounted(() => {
+    stopCarousel();
+    ScrollTrigger.getAll().forEach(t => t.kill());
+});
 </script>
 
 <style scoped>
 /* Base */
 .home-page { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+
+/* GSAP Initial States */
+.welcome-headline, .welcome-subheadline, .welcome-actions, .hero-glass-card,
+.featured-products .section-header, .featured-carousel-wrapper,
+.trust-item, .category-card, .brand-item, .testimonial-card,
+.cta-section .container > * {
+    opacity: 0;
+    will-change: transform, opacity;
+}
 
 /* Navigation Header */
 .nav-header { background: #2563eb; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
@@ -555,7 +726,7 @@ onUnmounted(() => stopCarousel());
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.6rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
+
 
 
 /* Brands Section */
