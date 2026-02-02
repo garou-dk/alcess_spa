@@ -516,7 +516,7 @@ onUnmounted(() => stopCarousel());
 
 /* Welcome Hero */
 .welcome-hero { position: relative; background: #fff; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
-.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.05) 0%, transparent 70%); }
+.welcome-overlay { position: absolute; inset: 0; background: none; }
 .welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
 .welcome-badge-wrapper { margin-bottom: 1.5rem; }

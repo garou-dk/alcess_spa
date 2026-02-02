@@ -17,20 +17,17 @@
                     </div>
                 </div>
 
-                <!-- Middle: Navigation Links (Landing Page Only) -->
+                <!-- Middle: Navigation Links (Hidden on Landing Page as per request) -->
                 <div class="hidden md:flex flex-1 items-center justify-center">
-                    <div v-if="isHomePage && !isAuthPage" class="flex items-center gap-8 lg:gap-12">
-                        <a href="#home" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Home</a>
-                        <a href="#products" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Products</a>
-                        <a href="#features" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Features</a>
-                        <a href="#footer" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Contact</a>
+                    <div v-if="isHomePage && !isAuthPage" class="hidden">
+                        <!-- Links hidden, using burger menu only -->
                     </div>
                 </div>
 
                 <!-- Navigation Actions (Visible on Mobile & Desktop) -->
                 <div class="flex items-center gap-3 md:gap-4 ml-auto lg:ml-0">
                     <!-- Search Input (Repositioned to right) -->
-                    <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="hidden lg:block w-48 xl:w-64">
+                    <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="hidden lg:block w-96 xl:w-[32rem]">
                         <label for="search" class="sr-only">Search</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,28 +116,15 @@
                         </button>
                     </template>
 
-                    <!-- Mobile Menu Button (Only for Guest on Home Page) -->
-                    <div class="md:hidden flex items-center" v-if="!Page.user && !isAuthPage">
+                    <!-- Mobile Menu Button (Always visible on Landing Page now, otherwise mobile only) -->
+                    <div :class="[isHomePage && !Page.user ? 'flex' : 'md:hidden flex', 'items-center']" v-if="(!Page.user && !isAuthPage) || (isHomePage && !Page.user)">
                         <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                             :class="['p-2 rounded-md focus:outline-none transition-colors', transparent && !isScrolled && !isMobileMenuOpen ? 'text-white' : 'text-slate-600 hover:bg-slate-100']">
                             <i :class="isMobileMenuOpen ? 'pi pi-times text-2xl' : 'pi pi-bars text-2xl'"></i>
                         </button>
                     </div>
 
-                        <template v-if="mode === 'customer' || mode === 'guest'">
-                             <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
-                               :class="['flex items-center gap-2 font-bold transition-colors ml-2', (transparent && !isScrolled) ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']"
-                               title="Support">
-                                <i class="pi pi-facebook text-xl text-blue-500"></i>
-                                <span class="hidden xl:inline">Support</span>
-                            </a>
-                            <button @click="goToBrowse" 
-                                :class="['flex items-center gap-2 font-bold transition-colors', (transparent && !isScrolled) ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']"
-                                title="Browse">
-                                <i class="pi pi-th-large text-xl text-blue-500"></i>
-                                <span class="hidden xl:inline">Browse</span>
-                            </button>
-                        </template>
+
 
                         <template v-if="Page.user">
                             <div class="relative ml-2" ref="userMenuRef">
@@ -211,8 +195,8 @@
                             </div>
                         </template>
                         <template v-else>
-                             <!-- Guest Buttons Desktop -->
-                             <div class="flex items-center gap-3">
+                             <!-- Guest Buttons Hidden on Landing Page -->
+                             <div class="flex items-center gap-3" v-if="!isHomePage">
                                 <router-link :to="{ name: 'auth.login' }" 
                                     :class="['font-bold text-sm transition-colors', (transparent && !isScrolled) ? 'text-white hover:text-white/80' : 'text-blue-600 hover:text-blue-700']">
                                     Login
