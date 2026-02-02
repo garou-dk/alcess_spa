@@ -2,17 +2,7 @@
     <div class="customer-dashboard">
         <!-- Welcome Hero Section -->
         <section class="welcome-hero">
-            <div class="welcome-overlay"></div>
-            <div class="welcome-watermark-container">
-                <div class="moving-watermark">
-                    <div class="watermark-row" v-for="n in 12" :key="n">
-                        <span v-for="m in 15" :key="m" class="watermark-item">
-                            <img :src="Logo" alt="logo" class="watermark-logo" />
-                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <div class="welcome-background-gradient"></div>
             <div class="container welcome-container">
                 <div class="welcome-content">
                     <div class="hero-glass-card">
@@ -23,8 +13,8 @@
                             </span>
                             New Arrivals Available
                         </div>
-                        <h1 class="welcome-headline">Welcome Back, <span class="text-white">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
-                    <p class="welcome-subheadline">Ready for your next upgrade? Browse our latest collection of premium tech.</p>
+                        <h1 class="welcome-headline">Understand <span class="gradient-text">Anything</span></h1>
+                        <p class="welcome-subheadline">Your research and thinking partner, grounded in the information you trust, built with the latest Alcess Smart Technology.</p>
                     
                         <div class="welcome-actions">
                             <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
@@ -33,6 +23,14 @@
                             <button @click="goToOrders" class="btn-secondary btn-lg">
                                 Track Order <i class="pi pi-truck"></i>
                             </button>
+                        </div>
+                        
+                        <!-- Davao Branch Info -->
+                        <div class="branch-footer-info">
+                            <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
+                                <img :src="Logo" alt="logo" class="w-5 h-5 opacity-80" />
+                                Alcess Tech Davao Branch
+                            </div>
                         </div>
                     </div>
 
@@ -413,35 +411,22 @@ onUnmounted(() => stopCarousel())
 .mb-8 { margin-bottom: 2rem; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #fff; min-height: 450px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
-.welcome-overlay { position: absolute; inset: 0; background: none; }
+.welcome-hero { position: relative; background: #fff; min-height: 550px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
+.welcome-background-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 10%, rgba(236, 72, 153, 0.12) 0%, transparent 40%), radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.1) 0%, transparent 40%); filter: blur(60px); opacity: 1; z-index: 1; }
 .welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
 .welcome-content { max-width: 850px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.1); padding: 4rem 2rem; border-radius: 3rem; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.2); }
-.welcome-headline { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.02em; }
-.welcome-subheadline { font-size: 1.125rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 500; }
-.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
-.stat-chip { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; backdrop-filter: blur(4px); }
-.text-accent { color: #2563eb; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-/* Watermark Animation */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.35; pointer-events: none; z-index: 5; }
-.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; will-change: transform; transform-style: preserve-3d; }
-.watermark-row { white-space: nowrap; font-size: 1.75rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.3rem; display: flex; align-items: center; }
-.watermark-item { display: inline-flex; align-items: center; gap: 1rem; backface-visibility: hidden; transform: translateZ(0); }
-.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: none; }
-.watermark-row:nth-child(even) { margin-left: -8rem; }
-
-@keyframes moveWatermark {
-    0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
-    100% { transform: rotate(-25deg) translate(-500px, -200px) scale(1.5); }
-}
+.hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
+.welcome-headline { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.04em; margin-bottom: 2rem; }
+.gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.welcome-subheadline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: #475569; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
+.branch-footer-info { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
 
 /* Buttons */
 .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
 .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.05); color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; }
-.btn-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-1px); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0, 0, 0, 0.02); color: #1e293b; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(0, 0, 0, 0.1); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; }
+.btn-secondary:hover { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.2); transform: translateY(-1px); }
 .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
 .btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
 .btn-outline:hover { background: rgba(255,255,255,0.1); }

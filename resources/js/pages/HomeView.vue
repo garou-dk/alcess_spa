@@ -9,31 +9,29 @@
 
         <!-- Welcome Hero Section -->
         <section class="welcome-hero" id="home">
-            <div class="welcome-overlay"></div>
-            <div class="welcome-watermark-container">
-                <div class="moving-watermark">
-                    <div class="watermark-row" v-for="n in 12" :key="n">
-                        <span v-for="m in 15" :key="m" class="watermark-item">
-                            <img :src="Icon" alt="logo" class="watermark-logo" />
-                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <div class="welcome-background-gradient"></div>
             <div class="container welcome-container">
                 <div class="welcome-content">
                     <div class="hero-glass-card">
                         <div class="welcome-badge-wrapper">
                             <span class="welcome-badge">Premium Tech Destination</span>
                         </div>
-                        <h1 class="welcome-headline">Welcome to <span class="text-accent">{{ appName }}</span></h1>
-                        <p class="welcome-slogan">Your Gateway to Next-Gen Technology</p>
-                        <p class="welcome-description">Experience the future with Davao's premier choice for high-performance laptops, cutting-edge smartphones, and genuine tech accessories. Quality you can feel, service you can trust.</p>
+                        <h1 class="welcome-headline">Understand <span class="gradient-text">Anything</span></h1>
+                        <p class="welcome-subheadline">Your research and thinking partner, grounded in the information you trust, built with the latest Alcess Smart Technology.</p>
                         <div class="welcome-actions">
                             <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
-                                Explore Collection <i class="pi pi-arrow-right"></i>
+                                Get Started <i class="pi pi-arrow-right"></i>
                             </button>
                         </div>
+                        
+                        <!-- Davao Branch Info -->
+                        <div class="branch-footer-info">
+                            <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
+                                <img :src="Icon" alt="logo" class="w-5 h-5 opacity-80" />
+                                Alcess Tech Davao Branch
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -530,33 +528,17 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: #334155; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #fff; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
-.welcome-overlay { position: absolute; inset: 0; background: none; }
-.welcome-container { position: relative; z-index: 10; padding: 6rem 1rem; }
+.welcome-hero { position: relative; background: #fff; min-height: 85vh; display: flex; align-items: center; overflow: hidden; padding-top: 80px; }
+.welcome-background-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 15%, rgba(236, 72, 153, 0.15) 0%, transparent 40%), radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 40%); filter: blur(60px); opacity: 1; z-index: 1; }
+.welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.5); padding: 4rem 2rem; border-radius: 4rem; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; }
-.welcome-badge-wrapper { margin-bottom: 2rem; }
-.welcome-badge { background: #eff6ff; border: 1px solid #dbeafe; color: #2563eb; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
-.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 1.5rem; }
-.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #334155; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
-.welcome-description { font-size: 1.125rem; color: #475569; line-height: 1.6; margin-bottom: 2.5rem; max-width: 650px; margin-left: auto; margin-right: auto; }
-.welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
-.welcome-features { display: none; }
-.w-feature { display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
-.w-feature i { color: #2563eb; font-size: 1.125rem; }
+.hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
+.welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; }
+.gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.6rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
+.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
 
-/* Moving Watermark Style */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.35; pointer-events: none; z-index: 5; }
-.moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; will-change: transform; transform-style: preserve-3d; }
-.watermark-row { white-space: nowrap; font-size: 1.75rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.3rem; display: flex; align-items: center; }
-.watermark-item { display: inline-flex; align-items: center; gap: 1rem; backface-visibility: hidden; transform: translateZ(0); }
-.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: none; }
-.watermark-row:nth-child(even) { margin-left: -8rem; }
-
-@keyframes moveWatermark {
-    0% { transform: rotate(-25deg) translate(0, 0) scale(1.5); }
-    100% { transform: rotate(-25deg) translate(-500px, -200px) scale(1.5); }
-}
 
 /* Brands Section */
 .brands-section { margin-top: 6rem; padding-bottom: 4rem; border-bottom: 1px solid #e2e8f0; }
