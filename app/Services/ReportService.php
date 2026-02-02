@@ -58,6 +58,18 @@ class ReportService
                     'total_amount' => $itemSubtotal,
                 ];
             }
+
+            // Add shipping fee as a separate line item if present
+            if ($order->shipping_fee > 0) {
+                $result[] = [
+                    'order_date' => $order->created_at->format('Y-m-d'),
+                    'order_id' => $order->order_public_id,
+                    'customer_name' => $customerName,
+                    'product_name' => 'Shipping Fee',
+                    'quantity' => 1,
+                    'total_amount' => round($order->shipping_fee, 2),
+                ];
+            }
         }
 
         return $result;
