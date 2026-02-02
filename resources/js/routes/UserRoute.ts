@@ -1,7 +1,5 @@
 import { RoleEnum } from "@/enums/RoleEnum";
-import UserView from "@/pages/user/UserView.vue";
 import { RouteRecordRaw } from "vue-router";
-
 const route: RouteRecordRaw = {
     path: "users",
     name: "users",
@@ -10,7 +8,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "admin.users.index",
-            component: UserView,
+            component: () => import("@/pages/user/UserView.vue"),
             meta: {
                 access: [RoleEnum.ADMIN],
                 pageName: "User",

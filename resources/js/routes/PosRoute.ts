@@ -1,6 +1,4 @@
 import { getStoreRoles } from "@/enums/RoleEnum";
-import PosDetails from "@/pages/pos/PosDetails.vue";
-import PosView from "@/pages/pos/PosView.vue";
 import { RouteRecordRaw } from "vue-router";
 
 const route: RouteRecordRaw = {
@@ -11,7 +9,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "admin.pos.index",
-            component: PosView,
+            component: () => import("@/pages/pos/PosView.vue"),
             meta: {
                 access: getStoreRoles(),
                 pageName: "Orders",
@@ -21,7 +19,7 @@ const route: RouteRecordRaw = {
         {
             path: ":id",
             name: "admin.pos.find",
-            component: PosDetails,
+            component: () => import("@/pages/pos/PosDetails.vue"),
             meta: {
                 access: getStoreRoles(),
                 pageName: "Orders",

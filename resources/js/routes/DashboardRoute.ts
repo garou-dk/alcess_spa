@@ -1,5 +1,4 @@
 import { RouteRecordRaw } from "vue-router";
-import DashboardView from "@/pages/dashboard/DashboardView.vue";
 import { getStoreRoles } from "@/enums/RoleEnum";
 
 const route: RouteRecordRaw = {
@@ -10,7 +9,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "admin.dashboard.index",
-            component: DashboardView,
+            component: () => import("@/pages/dashboard/DashboardView.vue"),
             meta: {
                 access: getStoreRoles(),
                 pageName: "Dashboard",

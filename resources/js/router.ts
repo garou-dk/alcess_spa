@@ -1,15 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/pages/HomeView.vue";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
-import EmailVerificationView from "@/pages/EmailVerificationView.vue";
 import { UserInterface } from "@/interfaces/UserInterface";
 import { getStoreCustomers, getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
-
-import LoginView from "@/pages/auth/LoginView.vue";
-import RegisterView from "@/pages/auth/RegisterView.vue";
-import ForgotPasswordView from "@/pages/auth/ForgotPasswordView.vue";
-import AdminIndex from "@/pages/AdminIndex.vue";
 import DashboardRoute from "@/routes/DashboardRoute";
 import UserRoute from "@/routes/UserRoute";
 import UnitRoute from "@/routes/UnitRoute";
@@ -18,7 +11,6 @@ import ProductRoute from "@/routes/ProductRoute";
 import OrderRoute from "@/routes/OrderRoute";
 import PosRoute from "@/routes/PosRoute";
 import ReportRoute from "@/routes/ReportRoute";
-import CustomerIndex from "@/pages/CustomerIndex.vue";
 import HomeRoute from "@/routes/HomeRoute";
 import ProductInfoRoute from "@/routes/ProductInfoRoute";
 import CartRoute from "@/routes/CartRoute";
@@ -40,7 +32,7 @@ const router = createRouter({
         {
             path: "/",
             name: "home",
-            component: HomeView,
+            component: () => import("@/pages/HomeView.vue"),
             meta: {
                 access: [null],
                 pageName: "Home",
@@ -51,7 +43,7 @@ const router = createRouter({
         {
             path: "/login",
             name: "auth.login",
-            component: LoginView,
+            component: () => import("@/pages/auth/LoginView.vue"),
             meta: {
                 access: [null],
                 pageName: "Login",
@@ -60,7 +52,7 @@ const router = createRouter({
         {
             path: "/register",
             name: "auth.register",
-            component: RegisterView,
+            component: () => import("@/pages/auth/RegisterView.vue"),
             meta: {
                 access: [null],
                 pageName: "Register",
@@ -69,7 +61,7 @@ const router = createRouter({
         {
             path: "/forgot-password",
             name: "auth.forgot-password",
-            component: ForgotPasswordView,
+            component: () => import("@/pages/auth/ForgotPasswordView.vue"),
             meta: {
                 access: [null],
                 pageName: "Forgot Password",
@@ -82,13 +74,13 @@ const router = createRouter({
                 {
                     path: "login",
                     name: "admin.login",
-                    component: LoginView,
+                    component: () => import("@/pages/auth/LoginView.vue"),
                     props: { admin: true },
                 },
                 {
                     path: "app",
                     name: "admin.app",
-                    component: AdminIndex,
+                    component: () => import("@/pages/AdminIndex.vue"),
                     redirect: { name: "admin.dashboard.index" },
                     meta: {
                         access: getStoreRoles(),
@@ -115,7 +107,7 @@ const router = createRouter({
         {
             path: "/customer",
             name: "customer.app",
-            component: CustomerIndex,
+            component: () => import("@/pages/CustomerIndex.vue"),
             redirect: { name: "customer.home.index" },
             meta: {
                 access: getStoreCustomers(),
@@ -136,7 +128,7 @@ const router = createRouter({
         {
             path: "/verify",
             name: "verify",
-            component: EmailVerificationView,
+            component: () => import("@/pages/EmailVerificationView.vue"),
             meta: {
                 access: [null],
             },

@@ -31,7 +31,16 @@ export default defineConfig({
                 // Add hash to filenames for cache busting
                 entryFileNames: 'assets/[name]-[hash].js',
                 chunkFileNames: 'assets/[name]-[hash].js',
-                assetFileNames: 'assets/[name]-[hash].[ext]'
+                assetFileNames: 'assets/[name]-[hash].[ext]',
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('primevue')) return 'vendor-primevue';
+                        if (id.includes('apexcharts')) return 'vendor-apexcharts';
+                        if (id.includes('pusher-js') || id.includes('laravel-echo')) return 'vendor-realtime';
+                        if (id.includes('axios')) return 'vendor-axios';
+                        return 'vendor'; // All other node_modules
+                    }
+                }
             }
         }
     }

@@ -1,8 +1,5 @@
 import { getStoreRoles } from "@/enums/RoleEnum";
-import OrderView from "@/pages/order/OrderView.vue";
-import OrderInvoiceView from "@/pages/order/OrderInvoiceView.vue";
 import { RouteRecordRaw } from "vue-router";
-
 const route: RouteRecordRaw = {
     path: "order",
     name: "order",
@@ -11,7 +8,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "admin.order.index",
-            component: OrderView,
+            component: () => import("@/pages/order/OrderView.vue"),
             meta: {
                 access: getStoreRoles(),
                 pageName: "Order",
@@ -21,7 +18,7 @@ const route: RouteRecordRaw = {
         {
             path: ":orderId/invoice/:saleId",
             name: "admin.order.invoice",
-            component: OrderInvoiceView,
+            component: () => import("@/pages/order/OrderInvoiceView.vue"),
             meta: {
                 access: getStoreRoles(),
                 pageName: "Order Invoice",

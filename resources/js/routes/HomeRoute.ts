@@ -1,7 +1,5 @@
 import { RoleEnum } from "@/enums/RoleEnum";
-import CustomerDashboardView from "@/pages/customer/CustomerDashboardView.vue";
 import { RouteRecordRaw } from "vue-router";
-
 const route: RouteRecordRaw = {
     path: "home",
     name: "customer.home",
@@ -10,7 +8,7 @@ const route: RouteRecordRaw = {
         {
             path: "",
             name: "customer.home.index",
-            component: CustomerDashboardView,
+            component: () => import("@/pages/customer/CustomerDashboardView.vue"),
             meta: {
                 access: [RoleEnum.CUSTOMER],
                 pageName: "Home",
