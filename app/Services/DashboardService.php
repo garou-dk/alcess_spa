@@ -279,21 +279,7 @@ class DashboardService
             ];
         }
 
-        // Add Shipping Fees as a virtual category if it's non-zero
-        $shippingFeeRevenue = DB::table('orders')
-            ->whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
-            ->sum('shipping_fee');
 
-        if ($shippingFeeRevenue > 0) {
-            $result[] = [
-                'category_id' => 0, // 0 as ID for virtual category
-                'category_name' => 'Shipping & Delivery',
-                'orders_revenue' => round($shippingFeeRevenue, 2),
-                'sales_revenue' => 0,
-                'total_revenue' => round($shippingFeeRevenue, 2),
-            ];
-        }
 
         // Sort by total revenue (highest first)
         usort($result, function ($a, $b) {

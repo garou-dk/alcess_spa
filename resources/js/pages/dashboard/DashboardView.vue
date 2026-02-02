@@ -80,7 +80,7 @@
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
                         <h3 class="font-bold text-lg mb-1">Need Detailed Reports?</h3>
-                        <p class="text-xs text-blue-100 leading-relaxed">
+                        <p class="text-xs text-white leading-relaxed">
                             Access full daily sales reports and comprehensive inventory logs.
                         </p>
                     </div>
