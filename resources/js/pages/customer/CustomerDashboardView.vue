@@ -424,7 +424,7 @@ onUnmounted(() => stopCarousel())
 /* Watermark Animation */
 .welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.03; pointer-events: none; z-index: 5; }
 .moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #0f172a; letter-spacing: 0.2rem; display: flex; align-items: center; }
+.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.2rem; display: flex; align-items: center; }
 .watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
 .watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) invert(0.1); }
 .watermark-row:nth-child(even) { margin-left: -8rem; }

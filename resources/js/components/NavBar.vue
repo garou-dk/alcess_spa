@@ -119,8 +119,8 @@
                         </button>
                     </template>
 
-                    <!-- Mobile Menu Button -->
-                    <div class="md:hidden flex items-center">
+                    <!-- Mobile Menu Button (Only for Guest on Home Page) -->
+                    <div class="md:hidden flex items-center" v-if="!Page.user && !isAuthPage">
                         <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                             :class="['p-2 rounded-md focus:outline-none transition-colors', transparent && !isScrolled && !isMobileMenuOpen ? 'text-white' : 'text-slate-600 hover:bg-slate-100']">
                             <i :class="isMobileMenuOpen ? 'pi pi-times text-2xl' : 'pi pi-bars text-2xl'"></i>
@@ -211,11 +211,17 @@
                             </div>
                         </template>
                         <template v-else>
-                             <!-- Guest Button Desktop -->
-                            <router-link :to="{ name: 'auth.login' }" 
-                                class="btn-primary px-5 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all text-sm">
-                                Login / Sign up
-                            </router-link>
+                             <!-- Guest Buttons Desktop -->
+                             <div class="flex items-center gap-3">
+                                <router-link :to="{ name: 'auth.login' }" 
+                                    :class="['font-bold text-sm transition-colors', (transparent && !isScrolled) ? 'text-white hover:text-white/80' : 'text-blue-600 hover:text-blue-700']">
+                                    Login
+                                </router-link>
+                                <router-link :to="{ name: 'auth.register' }" 
+                                    class="btn-primary px-5 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all text-sm">
+                                    Get Started
+                                </router-link>
+                             </div>
                         </template>
                 </div>
             </div>

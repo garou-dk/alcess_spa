@@ -8,7 +8,7 @@
         />
 
         <!-- Welcome Hero Section -->
-        <section class="welcome-hero">
+        <section class="welcome-hero" id="home">
             <div class="welcome-overlay"></div>
             <div class="welcome-watermark-container">
                 <div class="moving-watermark">
@@ -32,16 +32,16 @@
                         <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
                             Explore Collection <i class="pi pi-arrow-right"></i>
                         </button>
-                        <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
+                        <!-- <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-secondary btn-lg">
                             <i class="pi pi-facebook"></i> Message Us
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Featured Products Section -->
-        <section v-if="showCarousel && products.length > 0" class="featured-products">
+        <section v-if="showCarousel && products.length > 0" class="featured-products" id="products">
             <div class="container">
                 <div class="section-header">
                     <p class="section-label">Top Picks</p>
@@ -81,7 +81,7 @@
         </section>
 
         <!-- Trust Bar -->
-        <section class="trust-bar">
+        <section class="trust-bar" id="features">
             <div class="container">
                 <div class="trust-grid">
                     <div class="trust-item">
@@ -266,7 +266,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer" id="footer">
             <div class="container">
                 <div class="footer-grid">
                     <div>
