@@ -106,7 +106,7 @@
                                 </Popover>
                             </div>
 
-                             <button v-if="mode === 'customer'" @click="goToCart" class="relative group">
+                             <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" class="relative group">
                                 <i :class="['pi pi-shopping-cart text-2xl', transparent && !isScrolled ? 'text-white' : 'text-gray-700 group-hover:text-blue-600']"></i>
                                 <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                                     {{ cartCount }}
@@ -303,7 +303,7 @@ const handleScroll = () => {
 
 const handleSearch = () => {
     if (!searchQuery.value.trim()) return;
-    router.push({ name: 'product.search', query: { q: searchQuery.value } });
+    router.push({ name: 'customer.search-product', query: { q: searchQuery.value } });
 };
 
 const toggleSidebar = () => {
@@ -319,12 +319,12 @@ const goHome = () => {
 };
 
 const goToBrowse = () => {
-    router.push({ name: 'product.search' });
+    router.push({ name: 'customer.browse-products' });
     isMobileMenuOpen.value = false;
 };
 
 const goToCart = () => {
-    router.push({ name: 'customer.cart' });
+    router.push({ name: 'customer.cart.index' });
 };
 
 const toggleUserMenu = () => {
@@ -357,10 +357,11 @@ const handleClickOutside = (event: MouseEvent) => {
 // Notification Logic
 const loadService = useAxiosUtil<null, IOrderNotification[]>();
 const loadNotifications = async () => {
-    if (!Page.user || (props.mode !== 'admin' && props.mode !== 'customer')) return;
+    if (!Page.user) return;
     
-    // Determine endpoint based on mode
-    const prefix = props.mode === 'admin' ? 'admin' : 'customer';
+    // Determine endpoint based on role
+    const isAdmin = getStoreRoles().includes(Page.user.role.role_name as RoleEnum);
+    const prefix = isAdmin ? 'admin' : 'customer';
     
     await loadService.get(`${prefix}/order-notifications`).then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
@@ -380,11 +381,9 @@ const markAsRead = async (notification: IOrderNotification) => {
     
     notification.is_read = true;
     
-    const prefix = props.mode === 'admin' ? 'admin' : 'customer';
+    const isAdmin = getStoreRoles().includes(Page.user?.role.role_name as RoleEnum);
+    const prefix = isAdmin ? 'admin' : 'customer';
     await useAxiosUtil().patch(`${prefix}/order-notifications/mark-as-read/${notification.order_notification_id}`, null);
-    
-    // Optional navigation based on type?
-    // if (props.mode === 'admin') router.push({ name: 'admin.order.index' });
 };
 
 const markAllAsRead = async () => {
@@ -392,7 +391,8 @@ const markAllAsRead = async () => {
     
     notifications.value.forEach(n => n.is_read = true);
     
-    const prefix = props.mode === 'admin' ? 'admin' : 'customer';
+    const isAdmin = getStoreRoles().includes(Page.user?.role.role_name as RoleEnum);
+    const prefix = isAdmin ? 'admin' : 'customer';
     await useAxiosUtil().patch(`${prefix}/order-notifications/mark-all-as-read`, null);
     
     toast.success('All notifications marked as read');
@@ -438,14 +438,9 @@ const getNotificationColor = (type: string) => {
 const setupEcho = () => {
     if (!Page.user) return;
     
-    // Channel name depends on backend implementation. 
-    // Assuming 'admin-order-notification' for admin and something else for customer?
-    // User specific channel is best.
-    // If using public channel filtered by user, we need loop.
-    // Assuming backend broadcasts to specific channels.
+    const isAdmin = getStoreRoles().includes(Page.user.role.role_name as RoleEnum);
     
-    // For now, mirroring AdminNavBar logic:
-    if (props.mode === 'admin') {
+    if (isAdmin) {
          const { leave } = useEcho(
             "admin-order-notification",
             [".admin-order-notification.event"],
@@ -455,20 +450,28 @@ const setupEcho = () => {
             },
         );
         onUnmounted(() => leave());
-    } else if (props.mode === 'customer') {
-        // Assuming customer channel logic exists. If not, skip for now.
-        // Usually `App.Models.User.{id}` for private channels.
+    } else {
+        // Customer private channel logic could go here
     }
+};
+
+const loadCartCount = async () => {
+    if (!Page.user || Page.user.role?.role_name !== 'Customer') return;
+    
+    const cartService = useAxiosUtil();
+    await cartService.get('customer/carts/count').then(() => {
+        if (cartService.request.status === 200) {
+            cartCount.value = Number(cartService.request.data);
+        }
+    });
 };
 
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('click', handleClickOutside);
     loadNotifications();
+    loadCartCount();
     setupEcho();
-    
-    // Fetch cart count if customer?
-    // if (props.mode === 'customer') ...
 });
 
 onUnmounted(() => {

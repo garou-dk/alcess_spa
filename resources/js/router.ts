@@ -118,7 +118,7 @@ const router = createRouter({
             component: CustomerIndex,
             redirect: { name: "customer.home.index" },
             meta: {
-                access: [RoleEnum.CUSTOMER],
+                access: getStoreCustomers(),
                 pageName: "Customer",
                 pageSubName: "Customer",
             },

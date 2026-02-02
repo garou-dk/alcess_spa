@@ -8,12 +8,14 @@ use App\Services\AuthService;
 
 class AuthController extends Controller
 {
-    public function __construct(public AuthService $service) {}
+    public function __construct(public AuthService $service)
+    {
+    }
 
     public function authenticateCustomer(LoginRequest $request)
     {
         $data = $request->validated() + [
-            'role_id' => [3],
+            'role_id' => [1, 2, 3],
         ];
         $result = $this->service->loginUser($data);
 
