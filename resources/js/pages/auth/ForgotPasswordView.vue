@@ -448,7 +448,7 @@ const resetPassword = async () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 .auth-page {
     min-height: 100vh;
@@ -457,57 +457,40 @@ const resetPassword = async () => {
     align-items: center;
     justify-content: center;
     background-color: #f8fafc;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, hsla(225,39%,30%,0) 50%), 
+        radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
     font-family: 'Inter', sans-serif;
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
 }
 
-/* Background Decoration */
+/* Subtle modern background pattern */
 .bg-decoration {
     position: absolute;
     inset: 0;
     z-index: 0;
-    pointer-events: none;
-}
-
-.blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
-}
-
-.blob-1 {
-    width: 500px;
-    height: 500px;
-    background-color: #bfdbfe;
-    top: -100px;
-    right: -100px;
-    animation: move 20s infinite alternate;
-}
-
-.blob-2 {
-    width: 400px;
-    height: 400px;
-    background-color: #dbeafe;
-    bottom: -50px;
-    left: -50px;
-    animation: move 15s infinite alternate-reverse;
-}
-
-@keyframes move {
-    from { transform: translate(0, 0); }
-    to { transform: translate(50px, 50px); }
+    opacity: 0.6;
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
 .auth-container {
     width: 100%;
-    max-width: 450px;
-    z-index: 1;
+    max-width: 440px;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-header {
@@ -515,29 +498,43 @@ const resetPassword = async () => {
 }
 
 .auth-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1e293b;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.875rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: #0f172a;
     margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
     color: #64748b;
     font-size: 0.9375rem;
+    font-weight: 500;
 }
 
 .auth-card {
     background: white;
     padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.02),
+        0 20px 25px -5px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(0, 0, 0, 0.03); 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.02),
+        0 25px 30px -5px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.03); 
+    transform: translateY(-2px);
 }
 
 .auth-footer {
     text-align: center;
     color: #94a3b8;
     font-size: 0.8125rem;
+    font-weight: 500;
 }
 </style>

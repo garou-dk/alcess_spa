@@ -60,7 +60,7 @@
                                 <button @click="toggleNotification" 
                                     :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600']">
                                     <i class="pi pi-bell text-xl font-bold"></i>
-                                    <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm animate-pulse">
+                                    <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                                         {{ unreadCount }}
                                     </span>
                                 </button>
