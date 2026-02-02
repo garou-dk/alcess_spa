@@ -3,6 +3,7 @@
         <NavBar 
             mode="customer" 
             :show-search="isProductPage" 
+            :transparent="isDashboard"
         />
 
         <div class="">
@@ -134,6 +135,10 @@ const isProductPage = computed(() => {
         'home'
     ];
     return productRoutes.includes(router.currentRoute.value.name as string);
+});
+
+const isDashboard = computed(() => {
+    return router.currentRoute.value.name === 'customer.home.index';
 });
 
 interface Notification {

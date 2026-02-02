@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0f172a]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-[#0b1426]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl shadow-black/20']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
@@ -44,7 +44,7 @@
                             <button @click="toggleNotification" 
                                 :class="['relative p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white']">
                                 <i class="pi pi-bell text-xl font-bold"></i>
-                                <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0f172a] shadow-sm">
+                                <span v-if="unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0b1426] shadow-sm">
                                     {{ unreadCount }}
                                 </span>
                             </button>
@@ -106,7 +106,7 @@
                         <button v-if="Page.user && Page.user.role?.role_name === 'Customer'" @click="goToCart" 
                             :class="['relative group p-2 rounded-full transition-colors', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-slate-300 hover:bg-white/10 hover:text-white']">
                             <i class="pi pi-shopping-cart text-xl font-bold"></i>
-                            <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0f172a] shadow-sm">
+                            <span v-if="cartCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#0b1426] shadow-sm">
                                 {{ cartCount }}
                             </span>
                         </button>
@@ -211,7 +211,7 @@
             leave-from-class="transform translate-y-0 opacity-100"
             leave-to-class="transform -translate-y-4 opacity-0"
         >
-            <div v-if="isMobileMenuOpen" class="md:hidden bg-[#0f172a] shadow-xl border-t border-white/5">
+            <div v-if="isMobileMenuOpen" class="md:hidden bg-[#0b1426] shadow-xl border-t border-white/5">
                 <div class="px-4 py-6 space-y-4">
                     <template v-if="Page.user">
                         <div class="flex items-center gap-3 px-2 pb-4 border-b border-white/5">
