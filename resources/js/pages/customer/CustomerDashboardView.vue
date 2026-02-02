@@ -411,15 +411,16 @@ onUnmounted(() => stopCarousel())
 .mb-8 { margin-bottom: 2rem; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #fff; min-height: 550px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
+.welcome-hero { position: relative; background: #fff; min-height: 550px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
 .welcome-background-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 10%, rgba(236, 72, 153, 0.12) 0%, transparent 40%), radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.1) 0%, transparent 40%); filter: blur(60px); opacity: 1; z-index: 1; }
-.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
+.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; width: 100%; }
 .welcome-content { max-width: 850px; margin: 0 auto; text-align: center; }
 .hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
 .welcome-headline { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.04em; margin-bottom: 2rem; }
 .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .welcome-subheadline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: #475569; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
+.welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
 .branch-footer-info { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
 
 /* Buttons */

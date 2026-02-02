@@ -527,15 +527,16 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: #334155; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #fff; min-height: 85vh; display: flex; align-items: center; overflow: hidden; padding-top: 80px; }
+.welcome-hero { position: relative; background: #fff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
 .welcome-background-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 15%, rgba(236, 72, 153, 0.15) 0%, transparent 40%), radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 40%); filter: blur(60px); opacity: 1; z-index: 1; }
-.welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; }
+.welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
 .hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
 .welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; }
 .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.6rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
+.welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
 .branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
 
 
