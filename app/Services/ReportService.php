@@ -38,7 +38,7 @@ class ReportService
             // Handle null user relationship gracefully
             $customerName = $order->user ? $order->user->full_name : 'N/A';
 
-            foreach ($order->productOrders as $productOrder) {
+            foreach ($order->productOrders as $index => $productOrder) {
                 // Handle null product relationship gracefully
                 $productName = $productOrder->product ? $productOrder->product->product_name : 'N/A';
 
@@ -46,8 +46,10 @@ class ReportService
                 $orderDate = $order->created_at->format('Y-m-d');
 
                 // Calculate item subtotal (product price * quantity)
-                // Note: The order.total_amount includes shipping, but we show per-item breakdown here
                 $itemSubtotal = round($productOrder->quantity * $productOrder->price, 2);
+
+                // Add delivery fee to the first item of the order
+                $deliveryFee = ($index === 0) ? (float) $order->shipping_fee : 0;
 
                 $result[] = [
                     'order_date' => $orderDate,
@@ -55,19 +57,8 @@ class ReportService
                     'customer_name' => $customerName,
                     'product_name' => $productName,
                     'quantity' => (int) $productOrder->quantity,
-                    'total_amount' => $itemSubtotal,
-                ];
-            }
-
-            // Add shipping fee as a separate line item if present
-            if ($order->shipping_fee > 0) {
-                $result[] = [
-                    'order_date' => $order->created_at->format('Y-m-d'),
-                    'order_id' => $order->order_public_id,
-                    'customer_name' => $customerName,
-                    'product_name' => 'Shipping Fee',
-                    'quantity' => 1,
-                    'total_amount' => round($order->shipping_fee, 2),
+                    'delivery_fee' => round($deliveryFee, 2),
+                    'total_amount' => round($itemSubtotal + $deliveryFee, 2),
                 ];
             }
         }

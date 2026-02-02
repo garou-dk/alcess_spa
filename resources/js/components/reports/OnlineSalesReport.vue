@@ -115,6 +115,18 @@
                                 print-color-adjust: exact;
                             "
                         >
+                            Delivery Fee
+                        </th>
+                        <th
+                            style="
+                                border: 1px solid #ccc;
+                                background-color: #00598a;
+                                color: white;
+                                padding: 8px;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            "
+                        >
                             Total Amount
                         </th>
                     </tr>
@@ -133,14 +145,27 @@
                         <td style="border: 1px solid #ccc; padding: 8px">
                             {{ val.product_name }}
                         </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center">
                             {{ val.quantity }}
                         </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: right">
+                            {{ CurrencyUtil.formatCurrency(val.delivery_fee || 0) }}
+                        </td>
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: right">
                             {{ CurrencyUtil.formatCurrency(val.total_amount) }}
                         </td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6">
+                            GRAND TOTAL:
+                        </td>
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6; color: #000">
+                            {{ CurrencyUtil.formatCurrency(grandTotal) }}
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
 
             <!-- Approval -->
@@ -186,7 +211,7 @@ import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import { useToast } from "vue-toastification";
 
 interface Props {
@@ -205,7 +230,8 @@ interface IOnlineSalesData {
     customer_name: string;        // Full name from User model
     product_name: string;         // Product name
     quantity: number;             // Quantity ordered
-    total_amount: number;         // Total for this line item
+    delivery_fee: number;         // Shipping fee for this order
+    total_amount: number;         // Total for this line item (inclusive)
 }
 
 const props = defineProps<Props>();
@@ -216,6 +242,10 @@ const form: IForm = reactive({
 });
 
 const data = ref<IOnlineSalesData[]>([]);
+
+const grandTotal = computed(() => {
+    return data.value.reduce((sum, item) => sum + (item.total_amount || 0), 0);
+});
 
 const printReport = () => {
     const printContents = document.getElementById("online-sales-report-data")?.innerHTML;

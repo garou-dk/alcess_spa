@@ -67,6 +67,9 @@
                                 Quantity
                             </th>
                             <th style="border: 1px solid #ccc; background-color: #00598a; color: white; padding: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                Delivery Fee
+                            </th>
+                            <th style="border: 1px solid #ccc; background-color: #00598a; color: white; padding: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                                 Total Amount
                         </th>
                     </tr>
@@ -89,13 +92,16 @@
                             {{ val.quantity }}
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px; text-align: right">
+                            {{ CurrencyUtil.formatCurrency(val.delivery_fee) }}
+                        </td>
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: right">
                             {{ CurrencyUtil.formatCurrency(val.total_amount) }}
                         </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="5" style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6">
+                        <td colspan="6" style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6">
                             GRAND TOTAL:
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6; color: #000; font-size: 16px">
@@ -162,6 +168,7 @@ interface ICombinedSalesData {
     customer_name: string;
     product_name: string;
     quantity: number;
+    delivery_fee: number;
     total_amount: number;
 }
 
@@ -183,6 +190,7 @@ const combinedData = computed<ICombinedSalesData[]>(() => {
                 customer_name: sale.customer_name,
                 product_name: sale.product_name,
                 quantity: sale.quantity,
+                delivery_fee: 0,
                 total_amount: sale.total_amount
             });
         });
@@ -197,6 +205,7 @@ const combinedData = computed<ICombinedSalesData[]>(() => {
                 customer_name: order.customer_name,
                 product_name: order.product_name,
                 quantity: order.quantity,
+                delivery_fee: order.delivery_fee || 0,
                 total_amount: order.total_amount
             });
         });

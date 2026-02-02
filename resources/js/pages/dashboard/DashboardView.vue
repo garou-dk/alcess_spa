@@ -41,60 +41,56 @@
             </div>
         </Transition>
 
-        <!-- Main Dashboard Layout Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+        <!-- Main Dashboard Layout Stack -->
+        <div class="space-y-8">
             
-            <!-- Left Column: Primary Charts & Main Activity (Spans 8 cols on XL) -->
-            <div class="xl:col-span-8 space-y-6 lg:space-y-8">
-                
-                <!-- Charts Section -->
-                <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-24">
-                    <PieGraphReport />
-                    <CategorySales />
-                </div>
-
-                <!-- Main Transaction/Orders Section -->
-                <div id="confirmed-orders-section" class="scroll-mt-24">
-                    <DashboardOrdersTable />
-                </div>
-
-                <!-- Product Performance / Movement Section -->
-                <div id="inventory-movement-section" class="scroll-mt-24">
-                    <StockInOut />
-                </div>
+            <!-- Charts Section - Side by Side -->
+            <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
+                <PieGraphReport />
+                <CategorySales />
             </div>
 
-            <!-- Right Column: Sidebar Actions & Lists (Spans 4 cols on XL) -->
-            <div class="xl:col-span-4 space-y-6 lg:space-y-8">
-                
-                <!-- New Orders Highlight -->
-                <div id="new-orders-section" class="scroll-mt-24">
-                    <PendingReport />
-                </div>
-                
-                <!-- Important Inventory Alerts -->
-                <div id="nearly-out-of-stock-section" class="scroll-mt-24">
-                    <BatchForm />
-                </div>
+            <!-- New Orders (High Priority) -->
+            <div id="new-orders-section" class="scroll-mt-28">
+                <PendingReport />
+            </div>
 
-                <!-- Rankings -->
-                <div id="best-selling-products-section" class="scroll-mt-24">
-                    <TopSoldProducts />
-                </div>
+            <!-- Main Transaction/Orders Section -->
+            <div id="confirmed-orders-section" class="scroll-mt-28">
+                <DashboardOrdersTable />
+            </div>
 
-                <!-- Quick Help / Summary Card (Optional/New) -->
-                <BoxShadow class="p-5 bg-gradient-to-br from-blue-600 to-blue-700 text-white">
-                    <h3 class="font-bold text-lg mb-2">Need Help?</h3>
-                    <p class="text-xs text-blue-100 leading-relaxed mb-4">
-                        Review your daily sales reports and stay on top of low stock alerts to ensure smooth operations.
-                    </p>
+            <!-- Inventory Alerts - Low Stock -->
+            <div id="nearly-out-of-stock-section" class="scroll-mt-28">
+                <BatchForm />
+            </div>
+
+            <!-- Best Selling Products -->
+            <div id="best-selling-products-section" class="scroll-mt-28">
+                <TopSoldProducts />
+            </div>
+
+            <!-- Product Performance / Movement Section -->
+            <div id="inventory-movement-section" class="scroll-mt-28">
+                <StockInOut />
+            </div>
+
+            <!-- Quick Help / Summary Card (Bottom) -->
+            <BoxShadow class="p-5 bg-gradient-to-br from-blue-600 to-blue-700 text-white">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg mb-1">Need Detailed Reports?</h3>
+                        <p class="text-xs text-blue-100 leading-relaxed">
+                            Access full daily sales reports and comprehensive inventory logs.
+                        </p>
+                    </div>
                     <RouterLink :to="{ name: 'admin.report.index' }">
-                        <button class="w-full bg-white text-blue-600 font-bold py-2 rounded-lg text-xs hover:bg-blue-50 transition-colors">
-                            View Full Reports
+                        <button class="bg-white text-blue-600 font-bold py-2 px-6 rounded-lg text-sm hover:bg-blue-50 transition-colors shadow-sm">
+                            View Reports
                         </button>
                     </RouterLink>
-                </BoxShadow>
-            </div>
+                </div>
+            </BoxShadow>
         </div>
     </div>
 </template>
