@@ -10,33 +10,38 @@
                     </button>
                     
                     <div class="flex-shrink-0 flex items-center cursor-pointer group" @click="goHome">
-                        <div :class="['p-2 rounded-2xl shadow-sm transition-all duration-300 group-hover:scale-110 group-active:scale-95', transparent && !isScrolled ? 'bg-blue-600/20 ring-1 ring-white/20' : 'bg-blue-600']">
-                            <img :src="Logo" alt="Alcess Logo" class="h-7 w-auto sm:h-9 filter brightness-0 invert" />
-                        </div>
-                        <span :class="['ml-4 text-xl font-extrabold tracking-tight hidden sm:block transition-colors', transparent && !isScrolled ? 'text-white' : 'text-slate-900']">
+                        <img :src="Logo" alt="Alcess Logo" class="h-8 w-auto sm:h-10 transition-transform group-hover:scale-110" />
+                        <span :class="['ml-3 text-xl font-extrabold tracking-tight hidden sm:block transition-colors', (transparent && !isScrolled) ? 'text-white' : 'text-slate-900']">
                             Alcess
                         </span>
                     </div>
                 </div>
 
-                <!-- Deskstop Navigation (Search & Links) -->
-                <div class="hidden md:flex flex-1 items-center justify-center px-8 lg:ml-6 lg:justify-end">
-                     <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="max-w-lg w-full">
-                        <label for="search" class="sr-only">Search</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i :class="['pi pi-search transition-colors', transparent && !isScrolled ? 'text-white/60' : 'text-slate-400 group-focus-within:text-blue-600']"></i>
-                            </div>
-                            <input id="search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
-                                :class="['block w-full pl-10 pr-3 py-2.5 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 sm:text-sm transition-all duration-300 backdrop-blur-md', 
-                                    transparent && !isScrolled ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-slate-200']"
-                                placeholder="Search products..." type="search" />
-                        </div>
+                <!-- Middle: Navigation Links (Landing Page Only) -->
+                <div class="hidden md:flex flex-1 items-center justify-center">
+                    <div v-if="isHomePage && !isAuthPage" class="flex items-center gap-8 lg:gap-12">
+                        <a href="#home" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Home</a>
+                        <a href="#products" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Products</a>
+                        <a href="#features" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Features</a>
+                        <a href="#footer" :class="['text-sm font-bold transition-colors', (transparent && !isScrolled) ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Contact</a>
                     </div>
                 </div>
 
                 <!-- Navigation Actions (Visible on Mobile & Desktop) -->
-                <div class="flex items-center gap-3 md:gap-4 ml-auto">
+                <div class="flex items-center gap-3 md:gap-4 ml-auto lg:ml-0">
+                    <!-- Search Input (Repositioned to right) -->
+                    <div v-if="(mode === 'customer' || mode === 'guest') && showSearch" class="hidden lg:block w-48 xl:w-64">
+                        <label for="search" class="sr-only">Search</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i :class="['pi pi-search transition-colors', (transparent && !isScrolled) ? 'text-white/60' : 'text-slate-400 group-focus-within:text-blue-600']"></i>
+                            </div>
+                            <input id="search" name="search" v-model="searchQuery" @keyup.enter="handleSearch"
+                                :class="['block w-full pl-9 pr-3 py-2 border-0 rounded-xl leading-5 focus:outline-none focus:ring-2 sm:text-sm transition-all duration-300 backdrop-blur-md', 
+                                    (transparent && !isScrolled) ? 'bg-white/10 text-white placeholder-white/60 focus:ring-white/30' : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white focus:ring-blue-500/20 ring-1 ring-slate-200']"
+                                placeholder="Search..." type="search" />
+                        </div>
+                    </div>
                     
                     <template v-if="Page.user">
                         <!-- Notifications -->
@@ -122,26 +127,18 @@
                         </button>
                     </div>
 
-                    <!-- Desktop User Menu & Links -->
-                    <div class="hidden md:flex items-center gap-5">
                         <template v-if="mode === 'customer' || mode === 'guest'">
-                            <!-- Landing Page Section Links (only on home page or guest modes) -->
-                            <template v-if="isHomePage">
-                                <a href="#home" :class="['text-sm font-bold transition-colors', transparent && !isScrolled ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Home</a>
-                                <a href="#products" :class="['text-sm font-bold transition-colors', transparent && !isScrolled ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Products</a>
-                                <a href="#features" :class="['text-sm font-bold transition-colors', transparent && !isScrolled ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Features</a>
-                                <a href="#footer" :class="['text-sm font-bold transition-colors', transparent && !isScrolled ? 'text-white/90 hover:text-white' : 'text-slate-600 hover:text-blue-600']">Contact</a>
-                            </template>
-
                              <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
-                               :class="['flex items-center gap-2 font-bold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']">
+                               :class="['flex items-center gap-2 font-bold transition-colors ml-2', (transparent && !isScrolled) ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']"
+                               title="Support">
                                 <i class="pi pi-facebook text-xl text-blue-500"></i>
-                                <span class="hidden lg:inline">Support</span>
+                                <span class="hidden xl:inline">Support</span>
                             </a>
                             <button @click="goToBrowse" 
-                                :class="['flex items-center gap-2 font-bold transition-colors', transparent && !isScrolled ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']">
+                                :class="['flex items-center gap-2 font-bold transition-colors', (transparent && !isScrolled) ? 'text-white hover:text-blue-200' : 'text-slate-600 hover:text-blue-600']"
+                                title="Browse">
                                 <i class="pi pi-th-large text-xl text-blue-500"></i>
-                                <span class="hidden lg:inline">Browse</span>
+                                <span class="hidden xl:inline">Browse</span>
                             </button>
                         </template>
 
@@ -321,7 +318,7 @@ const isAuthPage = computed(() => {
 });
 
 const isHomePage = computed(() => {
-    return router.currentRoute.value.name === 'home' || props.mode === 'guest';
+    return router.currentRoute.value.name === 'home';
 });
 
 const isScrolled = ref(false);

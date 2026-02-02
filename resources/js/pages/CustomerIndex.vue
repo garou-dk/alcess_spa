@@ -3,7 +3,7 @@
         <NavBar 
             mode="customer" 
             :show-search="isProductPage" 
-            :transparent="isDashboard"
+            :transparent="false"
         />
 
         <div class="">

@@ -4,7 +4,7 @@
         <NavBar 
             v-if="$route.name === 'home'" 
             mode="guest" 
-            :transparent="true" 
+            :transparent="false" 
         />
 
         <!-- Welcome Hero Section -->
@@ -515,26 +515,26 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: #334155; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #0f172a; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
-.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+.welcome-hero { position: relative; background: #fff; min-height: 600px; display: flex; align-items: center; overflow: hidden; }
+.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.05) 0%, transparent 70%); }
 .welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
 .welcome-badge-wrapper { margin-bottom: 1.5rem; }
-.welcome-badge { background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #60a5fa; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
-.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1.5rem; }
-.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #94a3b8; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
-.welcome-description { font-size: 1.125rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2.5rem; max-width: 650px; margin-left: auto; margin-right: auto; }
+.welcome-badge { background: #eff6ff; border: 1px solid #dbeafe; color: #2563eb; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+.welcome-headline { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 1.5rem; }
+.welcome-slogan { font-size: 1.25rem; font-weight: 600; color: #334155; margin-bottom: 1.5rem; letter-spacing: 0.025em; }
+.welcome-description { font-size: 1.125rem; color: #475569; line-height: 1.6; margin-bottom: 2.5rem; max-width: 650px; margin-left: auto; margin-right: auto; }
 .welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
 .welcome-features { display: none; }
 .w-feature { display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
 .w-feature i { color: #2563eb; font-size: 1.125rem; }
 
 /* Moving Watermark Style */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.08; pointer-events: none; z-index: 5; }
 .moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2rem; display: flex; align-items: center; }
+.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #3b82f6; letter-spacing: 0.2rem; display: flex; align-items: center; }
 .watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
-.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) brightness(2); }
+.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: none; }
 .watermark-row:nth-child(even) { margin-left: -8rem; }
 
 @keyframes moveWatermark {
