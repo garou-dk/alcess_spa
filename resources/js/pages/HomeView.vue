@@ -377,7 +377,7 @@ import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/Searc
 import { useSettingsStore } from "@/stores/SettingsStore";
 import NavBar from "@/components/NavBar.vue";
 import Carousel from "primevue/carousel";
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 import { useCategoryStore } from "@/stores/CategoryState";
 import UrlUtil from "@/utils/UrlUtil";
@@ -445,10 +445,11 @@ const loadBestSellingProducts = async () => {
         if (loadBestSellingService.request.status === 200 && loadBestSellingService.request.data) {
             products.value = loadBestSellingService.request.data;
             startCarousel();
-            // Refresh ScrollTrigger after DOM update
-            setTimeout(() => {
+            // Initialize animations after DOM update
+            nextTick(() => {
+                initProductAnimations();
                 ScrollTrigger.refresh();
-            }, 100);
+            });
         }
     });
 };
@@ -477,59 +478,119 @@ const addToCart = async (productId: number) => {
 
 const goToProductDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-const initScrollAnimations = () => {
+const initStaticAnimations = () => {
     // Hero Section Animations
-    gsap.from(".welcome-headline", {
+    const heroTl = gsap.timeline();
+    
+    heroTl.from(".welcome-headline", {
         y: 50,
         opacity: 0,
         duration: 1.2,
-        ease: "power4.out",
-        delay: 0.2
-    });
-
-    gsap.from(".welcome-subheadline", {
+        ease: "power4.out"
+    })
+    .from(".welcome-subheadline", {
         y: 30,
         opacity: 0,
         duration: 1.2,
-        ease: "power4.out",
-        delay: 0.4
-    });
-
-    gsap.from(".welcome-actions", {
+        ease: "power4.out"
+    }, "-=0.8")
+    .from(".welcome-actions", {
         y: 20,
         opacity: 0,
         duration: 1,
-        ease: "power4.out",
-        delay: 0.6
-    });
+        ease: "power4.out"
+    }, "-=0.8");
 
     gsap.from(".hero-glass-card", {
         scale: 0.95,
         opacity: 0,
         duration: 1.5,
-        ease: "power3.out"
+        ease: "power3.out",
+        delay: 0.2
     });
 
     // Parallax effect for stripe layers
-    gsap.to(".stripe-layer-1", {
-        y: -100,
-        scrollTrigger: {
-            trigger: ".welcome-hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: true
+    [".stripe-layer-1", ".stripe-layer-2"].forEach((cls, i) => {
+        const el = document.querySelector(cls);
+        if (el) {
+            gsap.to(el, {
+                y: i === 0 ? -100 : 100,
+                scrollTrigger: {
+                    trigger: ".welcome-hero",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
         }
     });
 
-    gsap.to(".stripe-layer-2", {
-        y: 100,
-        scrollTrigger: {
-            trigger: ".welcome-hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: true
+    // Trust Bar Stagger
+    ScrollTrigger.create({
+        trigger: ".trust-bar",
+        start: "top 90%",
+        onEnter: () => {
+            gsap.from(".trust-item", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
+            });
         }
     });
+
+    // Brand Items Stagger
+    ScrollTrigger.create({
+        trigger: ".brands-section",
+        start: "top 85%",
+        onEnter: () => {
+            gsap.from(".brand-item", {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
+            });
+        }
+    });
+
+    // Testimonials
+    ScrollTrigger.create({
+        trigger: ".testimonials-section",
+        start: "top 85%",
+        onEnter: () => {
+            gsap.from(".testimonial-card", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+        }
+    });
+
+    // CTA Section
+    ScrollTrigger.create({
+        trigger: ".cta-section",
+        start: "top 80%",
+        onEnter: () => {
+            gsap.from(".cta-section .container > *", {
+                y: 20,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+        }
+    });
+};
+
+const initProductAnimations = () => {
+    // Check if elements exist
+    if (!document.querySelector(".featured-products")) return;
+
+    ScrollTrigger.refresh(); // Ensure positions are recalculated
 
     // Featured Products Section Reveal
     gsap.from(".featured-products .section-header", {
@@ -553,22 +614,14 @@ const initScrollAnimations = () => {
         duration: 1.2,
         ease: "power3.out"
     });
+};
 
-    // Trust Bar Stagger
-    gsap.from(".trust-item", {
-        scrollTrigger: {
-            trigger: ".trust-bar",
-            start: "top 90%",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "back.out(1.7)"
-    });
+const initCategoryAnimations = () => {
+     // Categories Stagger (if visible)
+     const grid = document.querySelector(".category-grid");
+     if (!grid) return;
 
-    // Categories Stagger (if visible)
-    ScrollTrigger.create({
+     ScrollTrigger.create({
         trigger: ".category-grid",
         start: "top 85%",
         onEnter: () => {
@@ -581,53 +634,20 @@ const initScrollAnimations = () => {
             });
         }
     });
-
-    // Brand Items Stagger
-    gsap.from(".brand-item", {
-        scrollTrigger: {
-            trigger: ".brands-section",
-            start: "top 85%",
-        },
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "back.out(1.7)"
-    });
-
-    // Testimonials
-    gsap.from(".testimonial-card", {
-        scrollTrigger: {
-            trigger: ".testimonials-section",
-            start: "top 85%",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-
-    // CTA Section
-    gsap.from(".cta-section .container > *", {
-        scrollTrigger: {
-            trigger: ".cta-section",
-            start: "top 80%",
-        },
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
 };
 
 onMounted(() => { 
+    // Initialize static animations immediately
+    initStaticAnimations();
+
+    // Fetch data and init dynamic animations
     CategoryStore.fetchCategories().then(() => {
-        setTimeout(() => ScrollTrigger.refresh(), 500);
+        nextTick(() => {
+            initCategoryAnimations();
+            ScrollTrigger.refresh();
+        });
     });
     loadBestSellingProducts();
-    initScrollAnimations();
 });
 onUnmounted(() => {
     stopCarousel();
@@ -640,21 +660,7 @@ onUnmounted(() => {
 .home-page { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
-/* GSAP Initial States */
-.home-page .welcome-headline, 
-.home-page .welcome-subheadline, 
-.home-page .welcome-actions, 
-.home-page .hero-glass-card,
-.home-page .featured-products .section-header, 
-.home-page .featured-carousel-wrapper,
-.home-page .trust-item, 
-.home-page .category-card, 
-.home-page .brand-item, 
-.home-page .testimonial-card,
-.home-page .cta-section .container > * {
-    opacity: 0;
-    will-change: transform, opacity;
-}
+
 
 /* Navigation Header */
 .nav-header { background: #2563eb; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
