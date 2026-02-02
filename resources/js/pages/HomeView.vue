@@ -9,7 +9,14 @@
 
         <!-- Welcome Hero Section -->
         <section class="welcome-hero" id="home">
-            <div class="welcome-background-gradient"></div>
+            <div class="stripe-bg-container">
+                <div class="stripe-bg-slant">
+                    <div class="stripe-layer stripe-layer-1"></div>
+                    <div class="stripe-layer stripe-layer-2"></div>
+                    <div class="stripe-layer stripe-layer-3"></div>
+                    <div class="stripe-layer stripe-layer-4"></div>
+                </div>
+            </div>
             <div class="welcome-container">
                 <div class="welcome-content">
                     <div class="hero-glass-card">
@@ -527,8 +534,19 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: #334155; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #fff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
-.welcome-background-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%), radial-gradient(circle at 85% 15%, rgba(236, 72, 153, 0.15) 0%, transparent 40%), radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 40%); filter: blur(60px); opacity: 1; z-index: 1; }
+/* Stripe-style Hero Background */
+.welcome-hero { position: relative; background: #f8fafc; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
+.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #fff; }
+.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: #fbfcfe; z-index: 1; overflow: hidden; }
+.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(60px); opacity: 0.15; animation: stripeLayerMove 15s linear infinite alternate; }
+.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #3b82f6 0%, transparent 50%); top: -10%; left: -10%; }
+.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%); top: -20%; left: 30%; animation-delay: -3s; animation-duration: 18s; }
+.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #8b5cf6 0%, transparent 50%); top: 40%; left: 10%; animation-delay: -6s; animation-duration: 20s; }
+.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #3b82f6 0%, transparent 50%); top: 20%; left: 60%; animation-delay: -9s; animation-duration: 22s; }
+@keyframes stripeLayerMove { 
+    0% { transform: translate(-5%, -5%) rotate(0deg); }
+    100% { transform: translate(5%, 5%) rotate(5deg); }
+}
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
 .hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
