@@ -77,7 +77,7 @@ const router = createRouter({
         },
         {
             path: "/admin",
-            redirect: { name: "auth.login" }, // Redirect to unified login
+            redirect: { name: "admin.login" }, // Redirect to admin login route to ensure props are passed
             children: [
                 {
                     path: "login",

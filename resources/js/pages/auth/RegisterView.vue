@@ -1,16 +1,15 @@
 <template>
     <div class="auth-page">
+        <NavBar mode="guest" :transparent="true" />
+
         <!-- Background Decoration -->
         <div class="bg-decoration">
             <div class="blob blob-1"></div>
             <div class="blob blob-2"></div>
         </div>
 
-        <div class="auth-container">
+        <div class="auth-container mt-16">
             <div class="auth-header">
-                <RouterLink :to="{ name: 'home' }" class="logo-link">
-                    <img :src="Logo" alt="Alcess Logo" class="auth-logo" />
-                </RouterLink>
                 <h1 class="auth-title">Create Account</h1>
                 <p class="auth-subtitle">Join us to start shopping</p>
             </div>
@@ -40,6 +39,7 @@
 <script setup lang="ts">
 import Logo from "@/../img/logo.png";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
+import NavBar from "@/components/NavBar.vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();

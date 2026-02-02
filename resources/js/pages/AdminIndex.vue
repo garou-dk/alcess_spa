@@ -41,28 +41,37 @@
                     class: 'bg-black bg-opacity-50',
                     style: 'z-index: 1000;'
                 }
+    <div class="flex h-screen overflow-hidden bg-gray-100">
+        <Drawer 
+            v-model:visible="sideBar" 
+            header=" " 
+            class="!w-full md:!w-80 !bg-blue-600 !border-0"
+            :modal="true"
+            :showCloseIcon="false"
+            :pt="{
+                root: { class: 'border-none' },
+                header: { class: '!hidden' },
+                content: { class: '!p-0' }
             }"
         >
             <AdminSideBar />
         </Drawer>
-        <div 
-            id="main-content"
-            class="min-h-screen bg-gray-100 transition-all duration-300 overflow-x-hidden"
-            :class="getMainContentClasses()"
-            :style="getMainContentStyles()"
-        >
-            <AdminNavBar />
-            <div :class="responsive.getResponsivePadding()">
+        
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <NavBar mode="admin" />
+            
+            <main class="w-full h-full p-6">
                 <RouterView />
-            </div>
+            </main>
         </div>
     </div>
 </template>
 <script setup lang="ts">
-import AdminNavBar from "@/components/admin/AdminNavBar.vue";
-import AdminSideBar from "@/components/admin/AdminSideBar.vue";
 import { onMounted, onUnmounted, provide, ref, computed, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
+import NavBar from "@/components/NavBar.vue";
+import AdminSideBar from "@/components/admin/AdminSideBar.vue";
+import Drawer from "primevue/drawer";
 
 // Determine initial sidebar state based on screen width synchronously
 const getInitialSidebarState = () => {

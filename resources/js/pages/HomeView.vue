@@ -1,51 +1,11 @@
 <template>
     <div class="home-page">
         <!-- Header -->
-        <header class="nav-header">
-            <div class="nav-container">
-                <RouterLink :to="{ name: 'home' }" class="nav-brand">
-                    <div class="nav-logo">
-                        <img :src="Icon" alt="Store Icon" />
-                    </div>
-                    <span class="nav-title">{{ appName }}</span>
-                </RouterLink>
-                
-                <div v-if="isProductPage" class="nav-search">
-                    <form @submit.prevent="handleSearch">
-                        <div class="nav-search-box">
-                            <i class="pi pi-search" />
-                            <input v-model="form.search" type="text" placeholder="Search products..." />
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="nav-actions">
-                    <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="nav-btn nav-btn-fb" title="Facebook">
-                        <i class="pi pi-facebook"></i>
-                    </a>
-                    <button type="button" class="nav-btn" @click="goToBrowseProducts" title="Browse Products">
-                        <i class="pi pi-th-large"></i>
-                    </button>
-                    <template v-if="Page.user">
-                        <button type="button" class="nav-btn nav-btn-logout" @click="handleLogout" title="Logout">
-                            <i class="pi pi-sign-out"></i>
-                        </button>
-                    </template>
-                    <button v-else type="button" class="nav-btn" @click="$router.push({ name: 'auth.login' })" title="Login">
-                        <i class="pi pi-user"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div v-if="isProductPage" class="nav-mobile-search">
-                <form @submit.prevent="handleSearch">
-                    <div class="nav-search-box">
-                        <i class="pi pi-search" />
-                        <input v-model="form.search" type="text" placeholder="Search products..." />
-                    </div>
-                </form>
-            </div>
-        </header>
+        <NavBar 
+            v-if="$route.name === 'home'" 
+            mode="guest" 
+            :transparent="true" 
+        />
 
         <!-- Welcome Hero Section -->
         <section class="welcome-hero">
@@ -396,7 +356,8 @@ import LenovoLogo from "@/../img/brands/lenovo.png";
 
 import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/SearchProductInterface";
 import { useSettingsStore } from "@/stores/SettingsStore";
-import Page from "@/stores/Page";
+import NavBar from "@/components/NavBar.vue";
+import Carousel from "primevue/carousel";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 import { useCategoryStore } from "@/stores/CategoryState";
