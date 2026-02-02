@@ -18,8 +18,8 @@
                         : 'group flex items-center gap-4 px-4 py-3 transition-all duration-300 ease-in-out cursor-pointer relative'
                 })"
                 :style="{
-                    color: isActive ? '#2563EB' : '#ffffff',
-                    backgroundColor: isActive ? '#F3F4F6' : 'transparent',
+                    color: isActive ? '#60a5fa' : '#ffffff',
+                    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
                     borderRadius: isActive ? (isMobile ? '0' : '8px 0 0 8px') : (isMobile ? '0' : '8px'),
                     marginRight: isActive ? (isMobile ? '0' : isTablet ? '-10px' : '-12px') : '0',
                     paddingRight: isActive ? (isMobile ? '1rem' : isTablet ? 'calc(0.75rem + 10px)' : 'calc(1rem + 12px)') : (isMobile ? '1rem' : isTablet ? '0.75rem' : '1rem')
@@ -92,7 +92,7 @@ const isActive = computed(() => {
 const handleMouseEnter = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
-        target.style.backgroundColor = '#1E40AF';
+        target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
         
         if (isMobile.value) {
             // Mobile: just change background, no border radius or margin adjustments

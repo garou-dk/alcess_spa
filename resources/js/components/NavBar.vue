@@ -140,11 +140,12 @@
                                 <button @click="toggleUserMenu" 
                                     :class="['flex items-center gap-3 p-1 pr-3 rounded-2xl transition-colors focus:outline-none bg-transparent', transparent && !isScrolled ? 'text-white hover:bg-white/10' : 'text-white hover:bg-white/10']">
                                     <Avatar 
-                                        :image="userImage" 
-                                        :label="userInitials" 
                                         shape="circle" 
-                                        class="cursor-pointer shadow-sm !w-9 !h-9 bg-blue-500 text-white"
-                                    />
+                                        class="cursor-pointer shadow-sm !w-9 !h-9 bg-blue-500 text-white overflow-hidden"
+                                    >
+                                        <img v-if="userImage" :src="userImage" class="w-full h-full object-cover" />
+                                        <span v-else>{{ userInitials }}</span>
+                                    </Avatar>
                                     <div class="hidden lg:block text-left">
                                         <p class="text-sm font-bold leading-tight">
                                             {{ Page.user.full_name }}
@@ -169,11 +170,12 @@
                                         <div class="px-4 py-4 border-b border-gray-100 bg-gray-50/50">
                                             <div class="flex items-center gap-3">
                                                 <Avatar 
-                                                    :image="userImage" 
-                                                    :label="userInitials" 
                                                     shape="circle" 
-                                                    class="!w-10 !h-10 shadow-sm ring-2 ring-white bg-blue-500 text-white"
-                                                />
+                                                    class="!w-10 !h-10 shadow-sm ring-2 ring-white bg-blue-500 text-white overflow-hidden"
+                                                >
+                                                    <img v-if="userImage" :src="userImage" class="w-full h-full object-cover" />
+                                                    <span v-else>{{ userInitials }}</span>
+                                                </Avatar>
                                                 <div class="min-w-0">
                                                     <p class="text-sm font-bold text-gray-900 truncate">{{ Page.user.full_name }}</p>
                                                     <p class="text-[11px] text-gray-500 truncate font-medium">{{ Page.user.email }}</p>
@@ -225,7 +227,10 @@
                 <div class="px-4 py-6 space-y-4">
                     <template v-if="Page.user">
                         <div class="flex items-center gap-3 px-2 pb-4 border-b border-white/5">
-                            <Avatar :image="userImage" :label="userInitials" shape="circle" size="large" class="bg-blue-500 text-white" />
+                            <Avatar shape="circle" size="large" class="bg-blue-500 text-white overflow-hidden">
+                            <img v-if="userImage" :src="userImage" class="w-full h-full object-cover" />
+                            <span v-else>{{ userInitials }}</span>
+                        </Avatar>
                             <div>
                                 <p class="font-bold text-white">{{ Page.user.full_name }}</p>
                                 <p class="text-sm text-slate-400">{{ Page.user.email }}</p>

@@ -13,7 +13,7 @@
                 desktop: 'flex w-full cursor-pointer items-center gap-4 px-4 py-3 transition-all duration-200'
             })"
             style="color: #ffffff; border-radius: 8px; background-color: transparent;"
-            @mouseenter="$event.currentTarget.style.backgroundColor = '#1E40AF'"
+            @mouseenter="$event.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'"
             @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
         >
             <i :class="[props.icon, getResponsiveClasses({

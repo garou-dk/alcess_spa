@@ -8,7 +8,7 @@
             mobile: 'flex items-center justify-between gap-2 p-3 border-b',
             tablet: 'flex items-center justify-center gap-2 p-4 border-b',
             desktop: 'flex items-center justify-center gap-3 p-6 border-b'
-        })" style="border-color: #1D4ED8;">
+        })" class="border-white/5">
             <div class="flex items-center gap-2">
                 <div :class="getResponsiveClasses({
                     mobile: 'rounded-full bg-white p-1',
@@ -35,7 +35,7 @@
             <button 
                 v-if="isMobile"
                 @click="closeSidebar"
-                class="text-white hover:text-gray-200 transition-colors p-2 rounded-lg hover:bg-blue-700"
+                class="text-white hover:text-gray-200 transition-colors p-2 rounded-lg hover:bg-white/10"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
@@ -211,7 +211,7 @@ const closeSidebar = () => {
 };
 
 const getResponsiveStyles = () => {
-    const baseStyle = 'background-color: #2563EB;';
+    const baseStyle = 'background-color: #0b1426;';
     
     if (isMobile.value) {
         return `${baseStyle} width: 100%; min-width: 100%; min-height: 100vh;`;
