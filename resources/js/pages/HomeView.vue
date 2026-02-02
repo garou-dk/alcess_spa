@@ -463,7 +463,7 @@ const selectImage = (index: number) => {
                 scale: 1,
                 autoAlpha: 1,
                 duration: 0.5,
-                ease: "back.out(1.2)"
+                ease: "power3.out"
             });
         }
     });
@@ -522,16 +522,15 @@ watch(currentSlide, () => {
         "-=0.2"
     );
     
-    // Animate Image (Zoom In effect)
     gsap.fromTo(".hero-image",
-        { scale: 0.9, autoAlpha: 0, rotation: -2 },
-        { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.8, ease: "back.out(1.2)" }
+        { scale: 0.95, autoAlpha: 0, rotation: 0 },
+        { scale: 1, autoAlpha: 1, rotation: 0, duration: 1, ease: "power3.out" }
     );
 
     // Animate Thumbnails
     gsap.fromTo(".thumb-item",
-        { scale: 0.5, autoAlpha: 0, y: 10 },
-        { scale: 1, autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "back.out(1.7)" }
+        { scale: 0.9, autoAlpha: 0, y: 10 },
+        { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
     );
 });
 
@@ -621,8 +620,8 @@ const initStaticAnimations = () => {
         start: "top 90%",
         onEnter: () => {
             gsap.fromTo(".trust-item", 
-                { y: 30, autoAlpha: 0, scale: 0.8 },
-                { y: 0, autoAlpha: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: "back.out(1.7)" }
+                { y: 30, autoAlpha: 0, scale: 0.95 },
+                { y: 0, autoAlpha: 1, scale: 1, duration: 1, stagger: 0.1, ease: "power3.out" }
             );
         }
     });
@@ -633,8 +632,8 @@ const initStaticAnimations = () => {
         start: "top 85%",
         onEnter: () => {
             gsap.fromTo(".brand-item", 
-                { scale: 0.5, autoAlpha: 0, rotation: -10 },
-                { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.8, stagger: 0.1, ease: "elastic.out(1, 0.75)" }
+                { scale: 0.9, autoAlpha: 0 },
+                { scale: 1, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" }
             );
         }
     });
@@ -703,8 +702,8 @@ const initCategoryAnimations = () => {
         start: "top 85%",
         onEnter: () => {
             gsap.fromTo(".category-card", 
-                { y: 50, scale: 0.85, autoAlpha: 0 },
-                { y: 0, scale: 1, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "back.out(1.2)" }
+                { y: 50, scale: 0.95, autoAlpha: 0 },
+                { y: 0, scale: 1, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power3.out" }
             );
         }
     });

@@ -19,7 +19,7 @@ class ProductService
     {
         // First, try to get products with sales AND ratings (truly "best selling")
         $bestSellingProducts = Product::query()
-            ->with(['category', 'batch'])
+            ->with(['category', 'batch', 'specifications', 'featuredImages'])
             ->withAvg('rates', 'rate')
             ->withCount('rates')
             ->where('is_active', true)
@@ -48,11 +48,11 @@ class ProductService
                     ->where('po.product_id', $product->product_id)
                     ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
                     ->sum('po.quantity');
-                
+
                 $walkinSales = \DB::table('sale_items')
                     ->where('product_id', $product->product_id)
                     ->sum('quantity');
-                
+
                 $product->total_sales = $onlineSales + $walkinSales;
                 $product->is_best_selling = true;
                 return $product;
@@ -69,7 +69,7 @@ class ProductService
 
         // Otherwise, fall back to ALL available products (no limit)
         return Product::query()
-            ->with(['category', 'batch'])
+            ->with(['category', 'batch', 'specifications', 'featuredImages'])
             ->withAvg('rates', 'rate')
             ->where('is_active', true)
             ->where('available_online', true)
@@ -92,7 +92,7 @@ class ProductService
             $products->where('category_id', $data['category_id']);
         }
 
-        if (! empty($data['search']) && ! blank($data['search'])) {
+        if (!empty($data['search']) && !blank($data['search'])) {
             $products->whereLike('product_name', "%{$data['search']}%");
         }
 
@@ -313,45 +313,45 @@ class ProductService
         abort_if(empty($product), 404, 'Product not found');
 
         $product->grouped_rates = $this->fetchRatesGroupedByStar($product->product_id);
-        
+
         // Calculate total items sold (online + walk-in)
         $onlineSales = \DB::table('product_orders as po')
             ->join('orders as o', 'po.order_id', '=', 'o.order_id')
             ->where('po.product_id', $product->product_id)
             ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
             ->sum('po.quantity');
-        
+
         $walkinSales = \DB::table('sale_items')
             ->where('product_id', $product->product_id)
             ->sum('quantity');
-        
+
         $product->total_sold = $onlineSales + $walkinSales;
-        
+
         // Check if user has purchased this product (if authenticated)
         $product->user_has_purchased = false;
         $product->product_order_id = null;
         $product->user_has_reviewed = false;
-        
+
         if (isset($data['user_id'])) {
             $allowedStatuses = [\App\Enums\OrderStatusEnum::COMPLETED->value];
-            
+
             // Check if user has any delivered/completed orders for this product
             $deliveredOrder = \App\Models\ProductOrder::query()
                 ->whereHas('order', function ($query) use ($data, $allowedStatuses) {
                     $query->where('user_id', $data['user_id'])
-                          ->whereIn('status', $allowedStatuses);
+                        ->whereIn('status', $allowedStatuses);
                 })
                 ->where('product_id', $data['product_id'])
                 ->first();
-            
+
             if ($deliveredOrder) {
                 $product->user_has_purchased = true;
-                
+
                 // Check if this specific order has been reviewed
                 $hasReview = \App\Models\Rate::query()
                     ->where('product_order_id', $deliveredOrder->product_order_id)
                     ->exists();
-                
+
                 if (!$hasReview) {
                     // User can review this order
                     $product->product_order_id = $deliveredOrder->product_order_id;
@@ -361,12 +361,12 @@ class ProductService
                     $unreviewedOrder = \App\Models\ProductOrder::query()
                         ->whereHas('order', function ($query) use ($data, $allowedStatuses) {
                             $query->where('user_id', $data['user_id'])
-                                  ->whereIn('status', $allowedStatuses);
+                                ->whereIn('status', $allowedStatuses);
                         })
                         ->where('product_id', $data['product_id'])
                         ->whereDoesntHave('rate')
                         ->first();
-                    
+
                     if ($unreviewedOrder) {
                         $product->product_order_id = $unreviewedOrder->product_order_id;
                     }
@@ -377,7 +377,8 @@ class ProductService
         return $product;
     }
 
-    public function searchProduct(array $data) {
+    public function searchProduct(array $data)
+    {
         $category = $data['category_id'] ?? null;
         if ($category) {
             $category = Category::query()
@@ -396,7 +397,7 @@ class ProductService
         }
         $products->where('available_online', true)
             ->where('is_active', true);
-            // Removed stock check - show all products including out of stock
+        // Removed stock check - show all products including out of stock
 
         if (!empty($data['search'])) {
             $products->whereLike('product_name', "%{$data['search']}%");
@@ -408,13 +409,12 @@ class ProductService
                 'price_desc' => $products->orderBy('product_price', 'desc'),
                 default => $products->orderBy('product_name', 'asc'),
             };
-        }
-        else {
+        } else {
             $products->orderBy('product_name', 'asc');
         }
 
         $paginatedProducts = $products->paginate($data['limit'] ?? 5);
-        
+
         // Add total_sales to each product in the paginated result
         $paginatedProducts->getCollection()->transform(function ($product) {
             // Calculate total sales for each product
@@ -423,11 +423,11 @@ class ProductService
                 ->where('po.product_id', $product->product_id)
                 ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
                 ->sum('po.quantity');
-            
+
             $walkinSales = \DB::table('sale_items')
                 ->where('product_id', $product->product_id)
                 ->sum('quantity');
-            
+
             $product->total_sales = $onlineSales + $walkinSales;
             return $product;
         });
@@ -435,7 +435,8 @@ class ProductService
         return $paginatedProducts;
     }
 
-    public function searchBySku(array $data) {
+    public function searchBySku(array $data)
+    {
         $products = Product::query()
             ->with(['batch'])
             ->where('sku', $data['sku'])
@@ -461,7 +462,7 @@ class ProductService
                 ->latest()
                 ->take(5)
                 ->get();
-            
+
             // Transform to array and modify images
             $ratings[$rate] = $rateRecords->map(function ($rating) {
                 $ratingArray = $rating->toArray();
@@ -476,23 +477,25 @@ class ProductService
         return $ratings->sortKeysDesc();
     }
 
-    public function inventoryCount(array $data = []) {
+    public function inventoryCount(array $data = [])
+    {
         $query = Product::query()
             ->with(['batch'])
             ->where('is_active', true);
-        
+
         // Apply date range filter if provided (filter by product creation date)
         if (!empty($data['start_date']) && !empty($data['end_date'])) {
             $query->whereBetween(DB::raw('DATE(created_at)'), [$data['start_date'], $data['end_date']]);
         }
-        
+
         return $query->orderBy('created_at', 'desc')->get();
     }
 
-    public function getProductByCategory(array $data) {
+    public function getProductByCategory(array $data)
+    {
         // Check if category is provided as ID or slug
         $categoryIdentifier = $data['category'];
-        
+
         if (is_numeric($categoryIdentifier)) {
             // If it's numeric, treat it as category_id
             $category = Category::query()
@@ -511,7 +514,7 @@ class ProductService
             ->with(['category', 'batch'])
             ->withAvg('rates', 'rate')
             ->when(!empty($data['search']), function ($query) use ($data) {
-                $query->whereLike('product_name','%'. $data['search'] .'%');
+                $query->whereLike('product_name', '%' . $data['search'] . '%');
             })
             ->where('category_id', $category->category_id)
             ->where('is_active', true)
@@ -524,27 +527,28 @@ class ProductService
                     ->where('po.product_id', $product->product_id)
                     ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
                     ->sum('po.quantity');
-                
+
                 $walkinSales = \DB::table('sale_items')
                     ->where('product_id', $product->product_id)
                     ->sum('quantity');
-                
+
                 $product->total_sales = $onlineSales + $walkinSales;
                 return $product;
             });
     }
 
-    public function searchProductName(array $data) {
+    public function searchProductName(array $data)
+    {
         $products = Product::query()
             ->with(['batch', 'category', 'unit'])
             ->withAvg('rates', 'rate')
             ->where('is_active', true)
             ->where('available_online', true)
             // Removed stock check - show all products including out of stock
-            ->where(function($query) use ($data) {
-                $query->whereLike('product_name', '%'. $data['search'] .'%')
-                      ->orWhereLike('description', '%'. $data['search'] .'%')
-                      ->orWhereLike('sku', '%'. $data['search'] .'%');
+            ->where(function ($query) use ($data) {
+                $query->whereLike('product_name', '%' . $data['search'] . '%')
+                    ->orWhereLike('description', '%' . $data['search'] . '%')
+                    ->orWhereLike('sku', '%' . $data['search'] . '%');
             })
             ->get()
             ->map(function ($product) {
@@ -554,11 +558,11 @@ class ProductService
                     ->where('po.product_id', $product->product_id)
                     ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
                     ->sum('po.quantity');
-                
+
                 $walkinSales = \DB::table('sale_items')
                     ->where('product_id', $product->product_id)
                     ->sum('quantity');
-                
+
                 $product->total_sales = $onlineSales + $walkinSales;
                 return $product;
             });
