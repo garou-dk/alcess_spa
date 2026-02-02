@@ -427,6 +427,7 @@ const handleSearch = () => {
     else if (router.currentRoute.value.name === 'customer.search-product') router.push({ name: 'customer.search-product' });
 };
 
+
 let searchTimeout: number | null = null;
 watch(() => form.search, (newValue) => {
     if (router.currentRoute.value.name === 'customer.search-product') {
@@ -436,6 +437,21 @@ watch(() => form.search, (newValue) => {
             else router.push({ name: 'customer.search-product' });
         }, 500);
     }
+});
+
+watch(currentSlide, () => {
+    // Animate Text
+    const tl = gsap.timeline();
+    tl.fromTo([".hero-product-name", ".hero-category", ".hero-price", ".hero-buttons"],
+        { y: 20, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
+    );
+    
+    // Animate Image (Zoom In effect)
+    gsap.fromTo(".hero-image",
+        { scale: 0.9, autoAlpha: 0, rotation: -2 },
+        { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.8, ease: "back.out(1.2)" }
+    );
 });
 
 
@@ -482,142 +498,122 @@ const initStaticAnimations = () => {
     // Hero Section Animations
     const heroTl = gsap.timeline();
     
-    heroTl.from(".welcome-headline", {
-        y: 50,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out"
-    })
-    .from(".welcome-subheadline", {
-        y: 30,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out"
-    }, "-=0.8")
-    .from(".welcome-actions", {
-        y: 20,
-        opacity: 0,
-        duration: 1,
-        ease: "power4.out"
-    }, "-=0.8");
+    heroTl.fromTo(".welcome-headline", 
+        { y: 50, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 1.2, ease: "power4.out" }
+    )
+    .fromTo(".welcome-subheadline", 
+        { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 1.2, ease: "power4.out" }, 
+        "-=0.8"
+    )
+    .fromTo(".welcome-actions", 
+        { y: 20, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 1, ease: "power4.out" }, 
+        "-=0.8"
+    );
 
-    gsap.from(".hero-glass-card", {
-        scale: 0.95,
-        opacity: 0,
-        duration: 1.5,
-        ease: "power3.out",
-        delay: 0.2
-    });
+    gsap.fromTo(".hero-glass-card", 
+        { scale: 0.9, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 1.5, ease: "power3.out", delay: 0.2 }
+    );
 
     // Parallax effect for stripe layers
     [".stripe-layer-1", ".stripe-layer-2"].forEach((cls, i) => {
         const el = document.querySelector(cls);
         if (el) {
             gsap.to(el, {
-                y: i === 0 ? -100 : 100,
+                y: i === 0 ? -150 : 150,
                 scrollTrigger: {
                     trigger: ".welcome-hero",
                     start: "top top",
                     end: "bottom top",
-                    scrub: true
+                    scrub: 1 // Smooth scrubbing
                 }
             });
         }
     });
 
-    // Trust Bar Stagger
+    // Trust Bar Stagger with Zoom
     ScrollTrigger.create({
         trigger: ".trust-bar",
         start: "top 90%",
         onEnter: () => {
-            gsap.from(".trust-item", {
-                y: 30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "back.out(1.7)"
-            });
+            gsap.fromTo(".trust-item", 
+                { y: 30, autoAlpha: 0, scale: 0.8 },
+                { y: 0, autoAlpha: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: "back.out(1.7)" }
+            );
         }
     });
 
-    // Brand Items Stagger
+    // Brand Items Stagger with Zoom
     ScrollTrigger.create({
         trigger: ".brands-section",
         start: "top 85%",
         onEnter: () => {
-            gsap.from(".brand-item", {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.6,
-                stagger: 0.1,
-                ease: "back.out(1.7)"
-            });
+            gsap.fromTo(".brand-item", 
+                { scale: 0.5, autoAlpha: 0, rotation: -10 },
+                { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.8, stagger: 0.1, ease: "elastic.out(1, 0.75)" }
+            );
         }
     });
 
-    // Testimonials
+    // Testimonials Slide & Zoom
     ScrollTrigger.create({
         trigger: ".testimonials-section",
         start: "top 85%",
         onEnter: () => {
-            gsap.from(".testimonial-card", {
-                y: 30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
+            gsap.fromTo(".testimonial-card", 
+                { x: 50, autoAlpha: 0 },
+                { x: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }
+            );
         }
     });
 
-    // CTA Section
+    // CTA Section Pop
     ScrollTrigger.create({
         trigger: ".cta-section",
         start: "top 80%",
         onEnter: () => {
-            gsap.from(".cta-section .container > *", {
-                y: 20,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
+            gsap.fromTo(".cta-section .container > *", 
+                { y: 30, autoAlpha: 0 },
+                { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }
+            );
         }
     });
 };
 
 const initProductAnimations = () => {
-    // Check if elements exist
     if (!document.querySelector(".featured-products")) return;
 
-    ScrollTrigger.refresh(); // Ensure positions are recalculated
+    ScrollTrigger.refresh();
 
-    // Featured Products Section Reveal
-    gsap.from(".featured-products .section-header", {
-        scrollTrigger: {
-            trigger: ".featured-products",
-            start: "top 80%",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out"
-    });
+    // Featured Products Header
+    gsap.fromTo(".featured-products .section-header", 
+        { y: 40, autoAlpha: 0 },
+        { 
+            scrollTrigger: {
+                trigger: ".featured-products",
+                start: "top 80%",
+            },
+            y: 0, autoAlpha: 1, duration: 1, ease: "power3.out" 
+        }
+    );
 
-    gsap.from(".featured-carousel-wrapper", {
-        scrollTrigger: {
-            trigger: ".featured-carousel-wrapper",
-            start: "top 85%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out"
-    });
+    // Carousel Wrapper Zoom Reveal
+    gsap.fromTo(".featured-carousel-wrapper", 
+        { y: 60, scale: 0.95, autoAlpha: 0 },
+        { 
+            scrollTrigger: {
+                trigger: ".featured-carousel-wrapper",
+                start: "top 85%",
+            },
+            y: 0, scale: 1, autoAlpha: 1, duration: 1.2, ease: "power3.out" 
+        }
+    );
 };
 
 const initCategoryAnimations = () => {
-     // Categories Stagger (if visible)
      const grid = document.querySelector(".category-grid");
      if (!grid) return;
 
@@ -625,13 +621,10 @@ const initCategoryAnimations = () => {
         trigger: ".category-grid",
         start: "top 85%",
         onEnter: () => {
-            gsap.from(".category-card", {
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
+            gsap.fromTo(".category-card", 
+                { y: 50, scale: 0.85, autoAlpha: 0 },
+                { y: 0, scale: 1, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "back.out(1.2)" }
+            );
         }
     });
 };
