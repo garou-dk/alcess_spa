@@ -71,14 +71,7 @@
                                 <span class="hero-badge">RECOMMENDED</span>
                                 <h2 class="hero-product-name">{{ featuredProducts[currentSlide]?.product_name }}</h2>
                                 <p class="hero-category">{{ featuredProducts[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
-                                <!-- Specifications Grid -->
-                                <div v-if="featuredProducts[currentSlide]?.specifications?.length" class="hero-specs">
-                                    <div v-for="spec in featuredProducts[currentSlide].specifications.slice(0, 4)" :key="spec.specification_id" class="spec-item">
-                                        <span class="spec-label">{{ spec.specification_name }}:</span>
-                                        <span class="spec-value">{{ spec.specification_value }}</span>
-                                    </div>
-                                </div>
-
+                                <div class="hero-price">{{ CurrencyUtil.formatCurrency(featuredProducts[currentSlide]?.product_price) }}</div>
                                 <div class="hero-buttons">
                                     <button @click="viewProduct(featuredProducts[currentSlide]?.product_id)" class="btn-primary">
                                         <i class="pi pi-eye"></i>
@@ -91,34 +84,8 @@
                             </div>
                             <div class="hero-image-container">
                                 <div class="hero-image-wrapper">
-                                    <img 
-                                        v-if="getCurrentProductImage" 
-                                        :src="getCurrentProductImage" 
-                                        :alt="featuredProducts[currentSlide]?.product_name" 
-                                        class="hero-image" 
-                                        @error="handleImageError" 
-                                    />
+                                    <img v-if="featuredProducts[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${featuredProducts[currentSlide]?.product_image}`)" :alt="featuredProducts[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
                                     <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
-                                </div>
-
-                                <!-- Featured Images Thumbnails -->
-                                <div v-if="featuredProducts[currentSlide]?.featured_images?.length" class="hero-thumbnails">
-                                    <div 
-                                        class="thumb-item" 
-                                        :class="{ active: selectedThumb === -1 }"
-                                        @click="selectImage(-1)"
-                                    >
-                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${featuredProducts[currentSlide]?.product_image}`)" alt="Main" />
-                                    </div>
-                                    <div 
-                                        v-for="(img, idx) in featuredProducts[currentSlide].featured_images.slice(0, 3)" 
-                                        :key="img.featured_image_id" 
-                                        class="thumb-item"
-                                        :class="{ active: selectedThumb === idx }"
-                                        @click="selectImage(idx)"
-                                    >
-                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/featured/${img.featured_image}`)" :alt="featuredProducts[currentSlide].product_name" />
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -351,17 +318,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Page from '@/stores/Page'
 import useAxiosUtil from '@/utils/AxiosUtil'
 import CurrencyUtil from '@/utils/CurrencyUtil'
 import UrlUtil from '@/utils/UrlUtil'
 import Logo from "@/../img/logo.png";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const router = useRouter()
 const dashboardService = useAxiosUtil()
@@ -373,67 +336,7 @@ const featuredProducts = ref<any[]>([])
 const bestSellers = ref<any[]>([])
 const categories = ref<any[]>([])
 const currentSlide = ref(0)
-const selectedThumb = ref(-1)
 let carouselInterval: number | null = null
-
-const getCurrentProductImage = computed(() => {
-    const product = featuredProducts.value[currentSlide.value];
-    if (!product) return null;
-    if (selectedThumb.value === -1) return UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`);
-    const featured = product.featured_images[selectedThumb.value];
-    return featured ? UrlUtil.getBaseAppUrl(`storage/images/product/featured/${featured.featured_image}`) : null;
-});
-
-const selectImage = (index: number) => {
-    if (selectedThumb.value === index) return;
-    
-    // GSAP Zoom Transition for image swap
-    gsap.to(".hero-image", {
-        scale: 0.8,
-        autoAlpha: 0,
-        duration: 0.3,
-        onComplete: () => {
-            selectedThumb.value = index;
-            gsap.to(".hero-image", {
-                scale: 1,
-                autoAlpha: 1,
-                duration: 0.5,
-                ease: "power3.out"
-            });
-        }
-    });
-};
-
-watch(currentSlide, () => {
-    selectedThumb.value = -1; // Reset thumb on slide change
-    // Animate Text and Specs
-    const tl = gsap.timeline();
-    tl.fromTo([".hero-product-name", ".hero-category", ".hero-price"],
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
-    )
-    .fromTo(".spec-item", 
-        { x: -20, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" },
-        "-=0.3"
-    )
-    .fromTo(".hero-buttons",
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.5, ease: "power2.out" },
-        "-=0.2"
-    );
-    
-    gsap.fromTo(".hero-image",
-        { scale: 0.95, autoAlpha: 0, rotation: 0 },
-        { scale: 1, autoAlpha: 1, rotation: 0, duration: 1, ease: "power3.out" }
-    );
-
-    // Animate Thumbnails
-    gsap.fromTo(".thumb-item",
-        { scale: 0.9, autoAlpha: 0, y: 10 },
-        { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
-    );
-});
 
 // Fetch Data
 const fetchDashboardData = async () => {
@@ -503,188 +406,14 @@ const goToProducts = () => router.push({ name: 'customer.browse-products' })
 const viewProduct = (id: number) => router.push({ name: 'customer.product-info.index', params: { id } })
 const goToCategory = (id: number) => router.push({ name: 'customer.product-category', params: { id } })
 
-const initScrollAnimations = () => {
-    // Hero Section
-    gsap.from(".welcome-headline", {
-        y: 40,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out",
-        delay: 0.2
-    });
-
-    gsap.from(".welcome-subheadline", {
-        y: 30,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out",
-        delay: 0.4
-    });
-
-    gsap.from(".welcome-actions", {
-        y: 20,
-        opacity: 0,
-        duration: 1,
-        ease: "power4.out",
-        delay: 0.6
-    });
-
-    gsap.from(".hero-glass-card", {
-        scale: 0.98,
-        opacity: 0,
-        duration: 1.5,
-        ease: "power3.out"
-    });
-
-    gsap.from(".welcome-stats div", {
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "back.out(1.7)",
-        delay: 0.8
-    });
-
-    // Sections Headers
-    gsap.utils.toArray(".section-header").forEach((header: any) => {
-        gsap.from(header, {
-            scrollTrigger: {
-                trigger: header,
-                start: "top 90%",
-            },
-            y: 30,
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out"
-        });
-    });
-
-    // Quick Action Cards
-    gsap.from(".action-card", {
-        scrollTrigger: {
-            trigger: ".quick-actions-section",
-            start: "top 85%",
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-
-    // Featured Products Carousel
-    gsap.from(".featured-carousel-wrapper", {
-        scrollTrigger: {
-            trigger: ".featured-products",
-            start: "top 80%",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out"
-    });
-
-    // Trust Items
-    gsap.from(".trust-item", {
-        scrollTrigger: {
-            trigger: ".trust-bar",
-            start: "top 90%",
-        },
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-
-    // Category Cards
-    ScrollTrigger.create({
-        trigger: ".category-grid",
-        start: "top 85%",
-        onEnter: () => {
-            gsap.from(".category-card", {
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
-        }
-    });
-
-    // Recommendations and Timeline
-    gsap.from(".recommendation-card", {
-        scrollTrigger: {
-            trigger: ".recommendations-grid",
-            start: "top 85%",
-        },
-        x: -30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-
-    gsap.from(".timeline-item", {
-        scrollTrigger: {
-            trigger: ".timeline-container",
-            start: "top 85%",
-        },
-        x: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-
-    // CTA
-    gsap.from(".cta-section .container > *", {
-        scrollTrigger: {
-            trigger: ".cta-section",
-            start: "top 85%",
-        },
-        y: 20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out"
-    });
-};
-
-onMounted(() => { 
-    fetchDashboardData().then(() => {
-        setTimeout(() => ScrollTrigger.refresh(), 500);
-    });
-    initScrollAnimations();
-});
-onUnmounted(() => {
-    stopCarousel();
-    ScrollTrigger.getAll().forEach(t => t.kill());
-});
+onMounted(() => { fetchDashboardData() })
+onUnmounted(() => stopCarousel())
 </script>
 
 <style scoped>
 /* Base */
 .customer-dashboard { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
-
-/* GSAP Initial States */
-.customer-dashboard .welcome-headline, 
-.customer-dashboard .welcome-subheadline, 
-.customer-dashboard .welcome-actions, 
-.customer-dashboard .hero-glass-card,
-.customer-dashboard .welcome-stats div,
-.customer-dashboard .section-header,
-.customer-dashboard .action-card,
-.customer-dashboard .featured-carousel-wrapper,
-.customer-dashboard .trust-item,
-.customer-dashboard .category-card,
-.customer-dashboard .recommendation-card,
-.customer-dashboard .timeline-item,
-.customer-dashboard .cta-section .container > * {
-    opacity: 0;
-    will-change: transform, opacity;
-}
 .mb-16 { margin-bottom: 4rem; }
 .mb-8 { margin-bottom: 2rem; }
 
@@ -744,19 +473,6 @@ onUnmounted(() => {
 .hero-image { max-width: 100%; max-height: 250px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
 .hero-image-placeholder { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); font-size: 4rem; }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
-/* Specs */
-.hero-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 2rem; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; }
-.spec-item { display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; background: rgba(255, 255, 255, 0.05); padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); }
-.spec-label { color: #94a3b8; font-size: 0.75rem; font-weight: 500; }
-.spec-value { color: #fff; font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* Thumbnail Gallery */
-.hero-thumbnails { display: flex; gap: 1rem; margin-top: 2rem; justify-content: center; }
-.thumb-item { width: 60px; height: 60px; border-radius: 0.75rem; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); transition: all 0.3s; cursor: pointer; opacity: 0.6; }
-.thumb-item.active { border-color: #60a5fa; opacity: 1; transform: scale(1.1); box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
-.thumb-item:hover:not(.active) { opacity: 0.9; transform: translateY(-2px); }
-.thumb-item img { width: 100%; height: 100%; object-fit: cover; }
-
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
 .dot.active { width: 24px; background: #fff; }
 
@@ -890,7 +606,6 @@ onUnmounted(() => {
     .hero-grid { grid-template-columns: 1fr 1fr; }
     .hero-text { text-align: left; }
     .hero-buttons { justify-content: flex-start; }
-    .hero-specs { margin-left: 0; margin-right: 0; }
     .hero-product-name { font-size: 2.5rem; }
     .hero-price { font-size: 2rem; }
     .hero-image { max-height: 350px; }

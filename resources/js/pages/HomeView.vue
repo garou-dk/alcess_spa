@@ -74,15 +74,6 @@
                                 <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
                                 <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
                                 <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
-                                
-                                <!-- Specifications Grid -->
-                                <div v-if="products[currentSlide]?.specifications?.length" class="hero-specs">
-                                    <div v-for="spec in products[currentSlide].specifications.slice(0, 4)" :key="spec.specification_id" class="spec-item">
-                                        <span class="spec-label">{{ spec.specification_name }}:</span>
-                                        <span class="spec-value">{{ spec.specification_value }}</span>
-                                    </div>
-                                </div>
-
                                 <div class="hero-buttons">
                                     <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-primary">
                                         <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
@@ -95,34 +86,8 @@
                             </div>
                             <div class="hero-image-container">
                                 <div class="hero-image-wrapper">
-                                    <img 
-                                        v-if="getCurrentProductImage" 
-                                        :src="getCurrentProductImage" 
-                                        :alt="products[currentSlide]?.product_name" 
-                                        class="hero-image" 
-                                        @error="handleImageError" 
-                                    />
+                                    <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
                                     <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
-                                </div>
-                                
-                                <!-- Featured Images Thumbnails -->
-                                <div v-if="products[currentSlide]?.featured_images?.length" class="hero-thumbnails">
-                                    <div 
-                                        class="thumb-item" 
-                                        :class="{ active: selectedThumb === -1 }"
-                                        @click="selectImage(-1)"
-                                    >
-                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" alt="Main" />
-                                    </div>
-                                    <div 
-                                        v-for="(img, idx) in products[currentSlide].featured_images.slice(0, 3)" 
-                                        :key="img.featured_image_id" 
-                                        class="thumb-item"
-                                        :class="{ active: selectedThumb === idx }"
-                                        @click="selectImage(idx)"
-                                    >
-                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/featured/${img.featured_image}`)" :alt="products[currentSlide].product_name" />
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -412,7 +377,7 @@ import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/Searc
 import { useSettingsStore } from "@/stores/SettingsStore";
 import NavBar from "@/components/NavBar.vue";
 import Carousel from "primevue/carousel";
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 import { useCategoryStore } from "@/stores/CategoryState";
 import UrlUtil from "@/utils/UrlUtil";
@@ -421,10 +386,6 @@ import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const { isMobile } = useResponsive();
 const appName = import.meta.env.VITE_APP_NAME;
@@ -439,35 +400,6 @@ const activeView = ref<'categories' | 'products'>('categories');
 const footerModalVisible = ref(false);
 const footerModalType = ref('about');
 const router = useRouter();
-const selectedThumb = ref(-1);
-
-const getCurrentProductImage = computed(() => {
-    const product = products.value[currentSlide.value];
-    if (!product) return null;
-    if (selectedThumb.value === -1) return UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`);
-    const featured = product.featured_images[selectedThumb.value];
-    return featured ? UrlUtil.getBaseAppUrl(`storage/images/product/featured/${featured.featured_image}`) : null;
-});
-
-const selectImage = (index: number) => {
-    if (selectedThumb.value === index) return;
-    
-    // GSAP Zoom Transition for image swap
-    gsap.to(".hero-image", {
-        scale: 0.8,
-        autoAlpha: 0,
-        duration: 0.3,
-        onComplete: () => {
-            selectedThumb.value = index;
-            gsap.to(".hero-image", {
-                scale: 1,
-                autoAlpha: 1,
-                duration: 0.5,
-                ease: "power3.out"
-            });
-        }
-    });
-};
 
 const footerModalTitle = computed(() => {
     const titles: Record<string, string> = { 'about': 'About Us', 'contact': 'Contact Us', 'faqs': 'FAQs', 'shipping': 'Shipping Information', 'returns': 'Returns & Warranty', 'privacy': 'Privacy Policy', 'terms': 'Terms & Conditions' };
@@ -491,7 +423,6 @@ const handleSearch = () => {
     else if (router.currentRoute.value.name === 'customer.search-product') router.push({ name: 'customer.search-product' });
 };
 
-
 let searchTimeout: number | null = null;
 watch(() => form.search, (newValue) => {
     if (router.currentRoute.value.name === 'customer.search-product') {
@@ -503,37 +434,6 @@ watch(() => form.search, (newValue) => {
     }
 });
 
-watch(currentSlide, () => {
-    selectedThumb.value = -1; // Reset thumb on slide change
-    // Animate Text and Specs
-    const tl = gsap.timeline();
-    tl.fromTo([".hero-product-name", ".hero-category", ".hero-price"],
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
-    )
-    .fromTo(".spec-item", 
-        { x: -20, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" },
-        "-=0.3"
-    )
-    .fromTo(".hero-buttons",
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.5, ease: "power2.out" },
-        "-=0.2"
-    );
-    
-    gsap.fromTo(".hero-image",
-        { scale: 0.95, autoAlpha: 0, rotation: 0 },
-        { scale: 1, autoAlpha: 1, rotation: 0, duration: 1, ease: "power3.out" }
-    );
-
-    // Animate Thumbnails
-    gsap.fromTo(".thumb-item",
-        { scale: 0.9, autoAlpha: 0, y: 10 },
-        { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
-    );
-});
-
 
 
 const loadBestSellingProducts = async () => {
@@ -541,11 +441,6 @@ const loadBestSellingProducts = async () => {
         if (loadBestSellingService.request.status === 200 && loadBestSellingService.request.data) {
             products.value = loadBestSellingService.request.data;
             startCarousel();
-            // Initialize animations after DOM update
-            nextTick(() => {
-                initProductAnimations();
-                ScrollTrigger.refresh();
-            });
         }
     });
 };
@@ -574,166 +469,14 @@ const addToCart = async (productId: number) => {
 
 const goToProductDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-const initStaticAnimations = () => {
-    // Hero Section Animations
-    const heroTl = gsap.timeline();
-    
-    heroTl.fromTo(".welcome-headline", 
-        { y: 50, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 1.2, ease: "power4.out" }
-    )
-    .fromTo(".welcome-subheadline", 
-        { y: 30, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 1.2, ease: "power4.out" }, 
-        "-=0.8"
-    )
-    .fromTo(".welcome-actions", 
-        { y: 20, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 1, ease: "power4.out" }, 
-        "-=0.8"
-    );
-
-    gsap.fromTo(".hero-glass-card", 
-        { scale: 0.9, autoAlpha: 0 },
-        { scale: 1, autoAlpha: 1, duration: 1.5, ease: "power3.out", delay: 0.2 }
-    );
-
-    // Parallax effect for stripe layers
-    [".stripe-layer-1", ".stripe-layer-2"].forEach((cls, i) => {
-        const el = document.querySelector(cls);
-        if (el) {
-            gsap.to(el, {
-                y: i === 0 ? -150 : 150,
-                scrollTrigger: {
-                    trigger: ".welcome-hero",
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 1 // Smooth scrubbing
-                }
-            });
-        }
-    });
-
-    // Trust Bar Stagger with Zoom
-    ScrollTrigger.create({
-        trigger: ".trust-bar",
-        start: "top 90%",
-        onEnter: () => {
-            gsap.fromTo(".trust-item", 
-                { y: 30, autoAlpha: 0, scale: 0.95 },
-                { y: 0, autoAlpha: 1, scale: 1, duration: 1, stagger: 0.1, ease: "power3.out" }
-            );
-        }
-    });
-
-    // Brand Items Stagger with Zoom
-    ScrollTrigger.create({
-        trigger: ".brands-section",
-        start: "top 85%",
-        onEnter: () => {
-            gsap.fromTo(".brand-item", 
-                { scale: 0.9, autoAlpha: 0 },
-                { scale: 1, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" }
-            );
-        }
-    });
-
-    // Testimonials Slide & Zoom
-    ScrollTrigger.create({
-        trigger: ".testimonials-section",
-        start: "top 85%",
-        onEnter: () => {
-            gsap.fromTo(".testimonial-card", 
-                { x: 50, autoAlpha: 0 },
-                { x: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }
-            );
-        }
-    });
-
-    // CTA Section Pop
-    ScrollTrigger.create({
-        trigger: ".cta-section",
-        start: "top 80%",
-        onEnter: () => {
-            gsap.fromTo(".cta-section .container > *", 
-                { y: 30, autoAlpha: 0 },
-                { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }
-            );
-        }
-    });
-};
-
-const initProductAnimations = () => {
-    if (!document.querySelector(".featured-products")) return;
-
-    ScrollTrigger.refresh();
-
-    // Featured Products Header
-    gsap.fromTo(".featured-products .section-header", 
-        { y: 40, autoAlpha: 0 },
-        { 
-            scrollTrigger: {
-                trigger: ".featured-products",
-                start: "top 80%",
-            },
-            y: 0, autoAlpha: 1, duration: 1, ease: "power3.out" 
-        }
-    );
-
-    // Carousel Wrapper Zoom Reveal
-    gsap.fromTo(".featured-carousel-wrapper", 
-        { y: 60, scale: 0.95, autoAlpha: 0 },
-        { 
-            scrollTrigger: {
-                trigger: ".featured-carousel-wrapper",
-                start: "top 85%",
-            },
-            y: 0, scale: 1, autoAlpha: 1, duration: 1.2, ease: "power3.out" 
-        }
-    );
-};
-
-const initCategoryAnimations = () => {
-     const grid = document.querySelector(".category-grid");
-     if (!grid) return;
-
-     ScrollTrigger.create({
-        trigger: ".category-grid",
-        start: "top 85%",
-        onEnter: () => {
-            gsap.fromTo(".category-card", 
-                { y: 50, scale: 0.95, autoAlpha: 0 },
-                { y: 0, scale: 1, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power3.out" }
-            );
-        }
-    });
-};
-
-onMounted(() => { 
-    // Initialize static animations immediately
-    initStaticAnimations();
-
-    // Fetch data and init dynamic animations
-    CategoryStore.fetchCategories().then(() => {
-        nextTick(() => {
-            initCategoryAnimations();
-            ScrollTrigger.refresh();
-        });
-    });
-    loadBestSellingProducts();
-});
-onUnmounted(() => {
-    stopCarousel();
-    ScrollTrigger.getAll().forEach(t => t.kill());
-});
+onMounted(() => { CategoryStore.fetchCategories(); loadBestSellingProducts(); });
+onUnmounted(() => stopCarousel());
 </script>
 
 <style scoped>
 /* Base */
 .home-page { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
-
-
 
 /* Navigation Header */
 .nav-header { background: #2563eb; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
@@ -812,7 +555,7 @@ onUnmounted(() => {
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.6rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-
+.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
 
 
 /* Brands Section */
@@ -841,21 +584,8 @@ onUnmounted(() => {
 
 /* Hero Typography Refinements */
 .hero-text { position: relative; z-index: 5; }
-.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; }
-.hero-price { color: #60a5fa; font-size: 2rem; margin-bottom: 1.5rem; }
-
-/* Specifications Style */
-.hero-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 2rem; }
-.spec-item { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1); }
-.spec-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
-.spec-value { font-size: 0.9rem; color: #fff; font-weight: 600; }
-
-/* Thumbnail Gallery */
-.hero-thumbnails { display: flex; gap: 1rem; margin-top: 2rem; justify-content: center; }
-.thumb-item { width: 60px; height: 60px; border-radius: 0.75rem; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); transition: all 0.3s; cursor: pointer; opacity: 0.6; }
-.thumb-item.active { border-color: #60a5fa; opacity: 1; transform: scale(1.1); box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
-.thumb-item:hover:not(.active) { opacity: 0.9; transform: translateY(-2px); }
-.thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 1rem; }
+.hero-price { color: #60a5fa; font-size: 2rem; }
 
 /* Shine Effect for Primary Button */
 .shine-effect { position: relative; overflow: hidden; }
