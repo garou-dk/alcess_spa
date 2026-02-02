@@ -325,6 +325,10 @@ import useAxiosUtil from '@/utils/AxiosUtil'
 import CurrencyUtil from '@/utils/CurrencyUtil'
 import UrlUtil from '@/utils/UrlUtil'
 import Logo from "@/../img/logo.png";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const router = useRouter()
 const dashboardService = useAxiosUtil()
@@ -406,14 +410,188 @@ const goToProducts = () => router.push({ name: 'customer.browse-products' })
 const viewProduct = (id: number) => router.push({ name: 'customer.product-info.index', params: { id } })
 const goToCategory = (id: number) => router.push({ name: 'customer.product-category', params: { id } })
 
-onMounted(() => { fetchDashboardData() })
-onUnmounted(() => stopCarousel())
+const initScrollAnimations = () => {
+    // Hero Section
+    gsap.from(".welcome-headline", {
+        y: 40,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.2
+    });
+
+    gsap.from(".welcome-subheadline", {
+        y: 30,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.4
+    });
+
+    gsap.from(".welcome-actions", {
+        y: 20,
+        opacity: 0,
+        duration: 1,
+        ease: "power4.out",
+        delay: 0.6
+    });
+
+    gsap.from(".hero-glass-card", {
+        scale: 0.98,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power3.out"
+    });
+
+    gsap.from(".welcome-stats div", {
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "back.out(1.7)",
+        delay: 0.8
+    });
+
+    // Sections Headers
+    gsap.utils.toArray(".section-header").forEach((header: any) => {
+        gsap.from(header, {
+            scrollTrigger: {
+                trigger: header,
+                start: "top 90%",
+            },
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out"
+        });
+    });
+
+    // Quick Action Cards
+    gsap.from(".action-card", {
+        scrollTrigger: {
+            trigger: ".quick-actions-section",
+            start: "top 85%",
+        },
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+
+    // Featured Products Carousel
+    gsap.from(".featured-carousel-wrapper", {
+        scrollTrigger: {
+            trigger: ".featured-products",
+            start: "top 80%",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out"
+    });
+
+    // Trust Items
+    gsap.from(".trust-item", {
+        scrollTrigger: {
+            trigger: ".trust-bar",
+            start: "top 90%",
+        },
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "back.out(1.7)"
+    });
+
+    // Category Cards
+    ScrollTrigger.create({
+        trigger: ".category-grid",
+        start: "top 85%",
+        onEnter: () => {
+            gsap.from(".category-card", {
+                y: 40,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+        }
+    });
+
+    // Recommendations and Timeline
+    gsap.from(".recommendation-card", {
+        scrollTrigger: {
+            trigger: ".recommendations-grid",
+            start: "top 85%",
+        },
+        x: -30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+
+    gsap.from(".timeline-item", {
+        scrollTrigger: {
+            trigger: ".timeline-container",
+            start: "top 85%",
+        },
+        x: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+
+    // CTA
+    gsap.from(".cta-section .container > *", {
+        scrollTrigger: {
+            trigger: ".cta-section",
+            start: "top 85%",
+        },
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out"
+    });
+};
+
+onMounted(() => { 
+    fetchDashboardData().then(() => {
+        setTimeout(() => ScrollTrigger.refresh(), 500);
+    });
+    initScrollAnimations();
+});
+onUnmounted(() => {
+    stopCarousel();
+    ScrollTrigger.getAll().forEach(t => t.kill());
+});
 </script>
 
 <style scoped>
 /* Base */
 .customer-dashboard { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+
+/* GSAP Initial States */
+.customer-dashboard .welcome-headline, 
+.customer-dashboard .welcome-subheadline, 
+.customer-dashboard .welcome-actions, 
+.customer-dashboard .hero-glass-card,
+.customer-dashboard .welcome-stats div,
+.customer-dashboard .section-header,
+.customer-dashboard .action-card,
+.customer-dashboard .featured-carousel-wrapper,
+.customer-dashboard .trust-item,
+.customer-dashboard .category-card,
+.customer-dashboard .recommendation-card,
+.customer-dashboard .timeline-item,
+.customer-dashboard .cta-section .container > * {
+    opacity: 0;
+    will-change: transform, opacity;
+}
 .mb-16 { margin-bottom: 4rem; }
 .mb-8 { margin-bottom: 2rem; }
 

@@ -641,10 +641,17 @@ onUnmounted(() => {
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
 /* GSAP Initial States */
-.welcome-headline, .welcome-subheadline, .welcome-actions, .hero-glass-card,
-.featured-products .section-header, .featured-carousel-wrapper,
-.trust-item, .category-card, .brand-item, .testimonial-card,
-.cta-section .container > * {
+.home-page .welcome-headline, 
+.home-page .welcome-subheadline, 
+.home-page .welcome-actions, 
+.home-page .hero-glass-card,
+.home-page .featured-products .section-header, 
+.home-page .featured-carousel-wrapper,
+.home-page .trust-item, 
+.home-page .category-card, 
+.home-page .brand-item, 
+.home-page .testimonial-card,
+.home-page .cta-section .container > * {
     opacity: 0;
     will-change: transform, opacity;
 }
