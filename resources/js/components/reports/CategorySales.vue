@@ -7,7 +7,7 @@
         })">
             <div class="mb-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h3 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800'">
+                    <h3 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800 dashboard-section-title'">
                         Top Categories by Revenue
                     </h3>
                     <Button

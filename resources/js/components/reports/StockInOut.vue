@@ -7,9 +7,9 @@
         })">
             <div class="mb-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h3 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800'">
+                    <h1 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800 dashboard-section-title'">
                         Inventory Movement
-                    </h3>
+                    </h1>
                     <Button
                         @click="toggleDateFilter"
                         :icon="showDateFilter ? 'pi pi-chevron-up' : 'pi pi-filter'"

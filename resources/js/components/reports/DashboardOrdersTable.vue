@@ -19,7 +19,7 @@
                 })"
             >
                 <div>
-                    <h2 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800'">Confirmed Orders</h2>
+                    <h2 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800 dashboard-section-title'">Confirmed Orders</h2>
                     <p class="text-xs text-gray-500 mt-0.5">Today's confirmed orders ready for delivery</p>
                 </div>
                 <div 

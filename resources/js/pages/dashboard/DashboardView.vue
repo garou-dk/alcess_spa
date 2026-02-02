@@ -1,81 +1,99 @@
 <template>
-    <div>
-        <!-- Full screen loading overlay for professional UX -->
+    <div class="space-y-6 lg:space-y-8">
+        <!-- Full screen loading overlay -->
         <LoadingOverlay 
             :show="isLoading && !isLoaded" 
             title="Loading Dashboard"
             subtitle="Fetching your latest data..."
         />
 
-        <!-- Date and Time Display -->
-        <DateTimeDisplay />
+        <!-- Page Header & Time -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-100 mb-2">
+            <div>
+                <h1 class="text-xl lg:text-2xl font-bold text-gray-800">Overview</h1>
+                <p class="text-xs lg:text-sm text-gray-500 mt-1">Summary of your store's performance and inventory.</p>
+            </div>
+            <DateTimeDisplay class="!mb-0" />
+        </div>
 
-        <!-- Real-time Update Indicator -->
+        <!-- KPI Cards Grid - 4 Columns on desktop -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <TotalRevenueReport />
+            <OrderPending />
+            <InventoryValue />
+            <StatCard 
+                label="Best Selling Item" 
+                :value="topSellerName" 
+                :subtitle="topSellerUnits > 0 ? topSellerUnits + ' units sold' : 'No data'"
+                icon="pi pi-star-fill"
+                iconBgColor="bg-yellow-50"
+                iconColor="#EAB308"
+            />
+        </div>
+
+        <!-- Real-time Update Indicator Case -->
         <Transition name="fade">
-            <div v-if="isUpdating" class="mb-4 flex items-center justify-center">
-                <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg flex items-center gap-2">
-                    <i class="pi pi-sync animate-spin"></i>
-                    <span class="text-sm font-medium">Dashboard updated with latest data</span>
+            <div v-if="isUpdating" class="flex items-center justify-center">
+                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-full flex items-center gap-2 shadow-sm">
+                    <i class="pi pi-sync animate-spin text-sm"></i>
+                    <span class="text-xs font-semibold">Live updates active</span>
                 </div>
             </div>
         </Transition>
 
-        <!-- New Orders Section -->
-        <div id="new-orders-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-0'">
-            <PendingReport />
-        </div>
-
-        <!-- Confirmed Orders Section -->
-        <div id="confirmed-orders-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
-            <DashboardOrdersTable />
-        </div>
-
-        <!-- Nearly Out of Stock Section -->
-        <div id="nearly-out-of-stock-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
-            <BatchForm />
-        </div>
-
-        <!-- Best Selling Products Section -->
-        <div id="best-selling-products-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
-            <TopSoldProducts />
-        </div>
-
-        <!-- Inventory Movement Section -->
-        <div id="inventory-movement-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
-            <StockInOut />
-        </div>
-
-        <!-- Sales Distribution Section -->
-        <div id="sales-distribution-section" :class="responsive.getResponsiveMargin() + ' scroll-mt-20'">
-            <!-- Charts Section - Desktop unchanged, mobile/tablet stacked -->
-            <div 
-                :class="[
-                    responsive.getResponsiveGap(),
-                    responsive.getResponsiveClasses({
-                        mobile: 'flex flex-col',
-                        tablet: 'flex flex-col', 
-                        desktop: 'mb-5 flex flex-wrap' // Original desktop layout preserved
-                    })
-                ]"
-            >
-                <div 
-                    :class="responsive.getResponsiveClasses({
-                        mobile: 'w-full',
-                        tablet: 'w-full',
-                        desktop: 'flex-1 min-w-0 max-lg:w-full lg:w-1/2' // Original desktop classes
-                    })"
-                >
+        <!-- Main Dashboard Layout Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+            
+            <!-- Left Column: Primary Charts & Main Activity (Spans 8 cols on XL) -->
+            <div class="xl:col-span-8 space-y-6 lg:space-y-8">
+                
+                <!-- Charts Section -->
+                <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-24">
                     <PieGraphReport />
-                </div>
-                <div 
-                    :class="responsive.getResponsiveClasses({
-                        mobile: 'w-full',
-                        tablet: 'w-full',
-                        desktop: 'flex-1 min-w-0 max-lg:w-full lg:w-1/2' // Original desktop classes
-                    })"
-                >
                     <CategorySales />
                 </div>
+
+                <!-- Main Transaction/Orders Section -->
+                <div id="confirmed-orders-section" class="scroll-mt-24">
+                    <DashboardOrdersTable />
+                </div>
+
+                <!-- Product Performance / Movement Section -->
+                <div id="inventory-movement-section" class="scroll-mt-24">
+                    <StockInOut />
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar Actions & Lists (Spans 4 cols on XL) -->
+            <div class="xl:col-span-4 space-y-6 lg:space-y-8">
+                
+                <!-- New Orders Highlight -->
+                <div id="new-orders-section" class="scroll-mt-24">
+                    <PendingReport />
+                </div>
+                
+                <!-- Important Inventory Alerts -->
+                <div id="nearly-out-of-stock-section" class="scroll-mt-24">
+                    <BatchForm />
+                </div>
+
+                <!-- Rankings -->
+                <div id="best-selling-products-section" class="scroll-mt-24">
+                    <TopSoldProducts />
+                </div>
+
+                <!-- Quick Help / Summary Card (Optional/New) -->
+                <BoxShadow class="p-5 bg-gradient-to-br from-blue-600 to-blue-700 text-white">
+                    <h3 class="font-bold text-lg mb-2">Need Help?</h3>
+                    <p class="text-xs text-blue-100 leading-relaxed mb-4">
+                        Review your daily sales reports and stay on top of low stock alerts to ensure smooth operations.
+                    </p>
+                    <RouterLink :to="{ name: 'admin.report.index' }">
+                        <button class="w-full bg-white text-blue-600 font-bold py-2 rounded-lg text-xs hover:bg-blue-50 transition-colors">
+                            View Full Reports
+                        </button>
+                    </RouterLink>
+                </BoxShadow>
             </div>
         </div>
     </div>
@@ -89,10 +107,15 @@ import PieGraphReport from "@/components/reports/PieGraphReport.vue";
 import StockInOut from "@/components/reports/StockInOut.vue";
 import TopSoldProducts from "@/components/reports/TopSoldProducts.vue";
 import DateTimeDisplay from "@/components/DateTimeDisplay.vue";
+import TotalRevenueReport from "@/components/reports/TotalRevenueReport.vue";
+import InventoryValue from "@/components/reports/InventoryValue.vue";
+import OrderPending from "@/components/reports/OrderPending.vue";
+import StatCard from "@/components/StatCard.vue";
+import BoxShadow from "@/components/BoxShadow.vue";
 import { useDashboardData } from "@/composables/useDashboardData";
 import { useResponsive } from "@/composables/useResponsive";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
 import { watch, nextTick } from "vue";
@@ -101,11 +124,22 @@ const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 
-// Use global responsive composable (preserves desktop, optimizes mobile/tablet)
+// Use global responsive composable
 const responsive = useResponsive();
 
 // Use the shared dashboard data composable
-const { loadDashboardData, refreshDashboardData, cleanup, isLoading, isLoaded, isUpdating, error } = useDashboardData();
+const { dashboardData, loadDashboardData, refreshDashboardData, cleanup, isLoading, isLoaded, isUpdating, error } = useDashboardData();
+
+// Computed properties for top selling item stat card
+const topSellerName = computed(() => {
+    const top = dashboardData.top_sellers?.[0];
+    return top ? top.product_name : 'No sales yet';
+});
+
+const topSellerUnits = computed(() => {
+    const top = dashboardData.top_sellers?.[0];
+    return top ? top.units_sold : 0;
+});
 
 // Track programmatic scrolling to prevent scroll-spy interference
 const isProgrammaticScroll = ref(false);

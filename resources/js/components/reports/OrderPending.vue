@@ -1,30 +1,17 @@
 <template>
-    <BoxShadow>
-        <div v-if="dashboardData.pending_orders" class="p-4 w-full">
-            <div class="p-4 w-full">
-                <div class="flex items-center justify-between">
-                    <div class="grow">
-                        <p class="text-sm text-gray-600">New Orders</p>
-                        <p 
-                            class="font-bold text-blue-600 truncate"
-                            :class="getValueFontSize(String(dashboardData.pending_orders.total_pending))"
-                        >
-                            {{ dashboardData.pending_orders.total_pending }}
-                        </p>
-                        <p class="mt-1 text-xs text-gray-500">
-                            <span>{{ dashboardData.pending_orders.today_pending }} today</span>
-                        </p>
-                    </div>
-                    <div class="rounded-full bg-blue-100 p-3 shrink w-12 h-12 flex items-center justify-center">
-                        <i class="pi pi-bell text-xl text-blue-600" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </BoxShadow>
+    <StatCard 
+        v-if="dashboardData.pending_orders"
+        label="New Orders" 
+        :value="dashboardData.pending_orders.total_pending" 
+        :subtitle="dashboardData.pending_orders.today_pending + ' received today'"
+        icon="pi pi-bell"
+        iconBgColor="bg-blue-50"
+        iconColor="#2563EB"
+    />
 </template>
 <script setup lang="ts">
 import { useDashboardData } from '@/composables/useDashboardData';
+import StatCard from '@/components/StatCard.vue';
 
 const { dashboardData } = useDashboardData();
 

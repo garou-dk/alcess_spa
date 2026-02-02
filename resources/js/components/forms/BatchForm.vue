@@ -12,7 +12,7 @@
                 ]"
             >
                 <div>
-                    <h1 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800'">
+                    <h1 :class="responsive.getResponsiveTextSize('lg') + ' font-semibold text-gray-800 dashboard-section-title'">
                         Nearly Out Of Stock
                     </h1>
                     <p class="text-xs text-gray-500 mt-0.5">Products requiring restocking</p>
