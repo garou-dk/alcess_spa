@@ -591,8 +591,7 @@ const { isMobile, isTablet, isDesktop, getResponsiveClasses, getResponsivePaddin
 // Mobile filter sidebar state
 const showMobileFilters = ref(false);
 
-// Inject openLoginForm from parent (CustomerIndex)
-const openLoginForm = inject<(() => void) | null>('openLoginForm', null);
+
 
 interface IForm {
     search: string;
@@ -893,12 +892,8 @@ const openCartModal = (product: ProductInterface, event: Event) => {
     event.stopPropagation();
     
     if (!Page.user) {
-        // Open login modal if available, otherwise show toast
-        if (openLoginForm) {
-            openLoginForm();
-        } else {
-            toast.error('Please login to add items to cart');
-        }
+        // Redirect to login page
+        router.push({ name: 'auth.login' });
         return;
     }
 

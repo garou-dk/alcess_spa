@@ -611,7 +611,7 @@
                             })">Sign In to Review</h3>
                             <p :class="getResponsiveTextSize('sm') + ' text-gray-700 mb-3'">Please sign in to your account to write a review for this product.</p>
                             <button
-                                @click="openLoginForm ? openLoginForm() : router.push({ name: 'admin.login' })"
+                                @click="router.push({ name: 'auth.login' })"
                                 :class="getResponsiveClasses({
                                     mobile: 'w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer',
                                     tablet: 'px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer',
@@ -904,8 +904,7 @@ const {
     getResponsiveGap 
 } = useResponsive();
 
-// Inject openLoginForm from parent (CustomerIndex)
-const openLoginForm = inject<(() => void) | null>('openLoginForm', null);
+
 
 const ratings = ref<IRate[]>([]);
 const filterRating = ref<number | null>(null);
@@ -1142,12 +1141,8 @@ const validate = () => {
 
 const submitForm = async () => {
     if (!Page.user) {
-        // Open login modal if available, otherwise show toast
-        if (openLoginForm) {
-            openLoginForm();
-        } else {
-            toast.error('Please login to add items to cart');
-        }
+        // Redirect to login page
+        router.push({ name: 'auth.login' });
         return;
     }
     
@@ -1180,12 +1175,8 @@ const submitForm = async () => {
 
 const buyNow = async () => {
     if (!Page.user) {
-        // Open login modal if available, otherwise show toast
-        if (openLoginForm) {
-            openLoginForm();
-        } else {
-            toast.error('Please login to add items to cart');
-        }
+        // Redirect to login page
+        router.push({ name: 'auth.login' });
         return;
     }
     

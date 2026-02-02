@@ -5,7 +5,10 @@ import useAxiosUtil from "@/utils/AxiosUtil";
 import EmailVerificationView from "@/pages/EmailVerificationView.vue";
 import { UserInterface } from "@/interfaces/UserInterface";
 import { getStoreCustomers, getStoreRoles, RoleEnum } from "@/enums/RoleEnum";
-import AdminLoginView from "@/pages/AdminLoginView.vue";
+
+import LoginView from "@/pages/auth/LoginView.vue";
+import RegisterView from "@/pages/auth/RegisterView.vue";
+import ForgotPasswordView from "@/pages/auth/ForgotPasswordView.vue";
 import AdminIndex from "@/pages/AdminIndex.vue";
 import DashboardRoute from "@/routes/DashboardRoute";
 import UserRoute from "@/routes/UserRoute";
@@ -44,19 +47,43 @@ const router = createRouter({
                 pageSubName: "Home",
             },
         },
+        // Unified Auth Routes
+        {
+            path: "/login",
+            name: "auth.login",
+            component: LoginView,
+            meta: {
+                access: [null],
+                pageName: "Login",
+            },
+        },
+        {
+            path: "/register",
+            name: "auth.register",
+            component: RegisterView,
+            meta: {
+                access: [null],
+                pageName: "Register",
+            },
+        },
+        {
+            path: "/forgot-password",
+            name: "auth.forgot-password",
+            component: ForgotPasswordView,
+            meta: {
+                access: [null],
+                pageName: "Forgot Password",
+            },
+        },
         {
             path: "/admin",
-            redirect: { name: "admin.login" },
+            redirect: { name: "auth.login" }, // Redirect to unified login
             children: [
                 {
                     path: "login",
                     name: "admin.login",
-                    component: AdminLoginView,
-                    meta: {
-                        access: [null],
-                        pageName: "Administrator Login",
-                        pageSubName: "Administrator Login",
-                    },
+                    component: LoginView,
+                    props: { admin: true },
                 },
                 {
                     path: "app",
@@ -146,8 +173,8 @@ router.beforeEach(async (to, _from, next) => {
         }
     }
     if (Page.user) {
-        // If user is logged in and trying to access login page, redirect to appropriate dashboard
-        if (to.name === "admin.login") {
+        // If user is logged in and trying to access login/register page, redirect to appropriate dashboard
+        if (to.name === "auth.login" || to.name === "auth.register" || to.name === "admin.login") {
             if (getStoreRoles().includes(Page.user.role.role_name as RoleEnum)) {
                 next({ name: "admin.dashboard.index" });
                 return;
@@ -184,7 +211,7 @@ router.beforeEach(async (to, _from, next) => {
         if (Array.isArray(to.meta.access) && to.meta.access.includes(null)) {
             next();
         } else {
-            next({ name: "admin.login" });
+            next({ name: "auth.login" });
         }
     }
 });

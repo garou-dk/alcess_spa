@@ -78,7 +78,8 @@
                             rounded
                             severity="secondary"
                             size="small"
-                            @click="openLoginForm()"
+                            as="router-link"
+                            to="/login"
                             v-tooltip.bottom="'Login'"
                         />
                     </div>
@@ -188,7 +189,8 @@
                             icon="pi pi-user"
                             rounded
                             severity="secondary"
-                            @click="openLoginForm()"
+                            as="router-link"
+                            to="/login"
                             v-tooltip.bottom="'Login'"
                         />
                     </div>
@@ -336,7 +338,8 @@
                                             icon="pi pi-user"
                                             rounded
                                             severity="secondary"
-                                            @click="openLoginForm()"
+                                            as="router-link"
+                                            to="/login"
                                             v-tooltip.bottom="'Login'"
                                         />
                                     </div>
@@ -598,110 +601,7 @@
             <RouterView />
         </div>
         
-        <Dialog
-            v-model:visible="loginFormVisible"
-            modal
-            header="Login"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <LoginForm @success="loginFormVisible = false">
-                <template #footer>
-                    <div class="flex flex-col">
-                        <div class="flex">
-                            <div class="w-1/2 p-2">
-                                <Button
-                                    type="button"
-                                    variant="link"
-                                    label="Forgot password?"
-                                    class="p-0! text-black! text-sm!"
-                                    pt:label:class="font-normal!"
-                                    @click="openResetPasswordForm()"
-                                />
-                            </div>
-                            <div class="flex w-1/2 flex-col p-2">
-                                <span class="text-end text-sm">Don't have an account?</span>
-                                <div class="flex justify-end">
-                                    <Button
-                                        type="button"
-                                        variant="link"
-                                        label="Register"
-                                        class="p-0! text-sm! text-blue-600!"
-                                        pt:label:class="font-normal!"
-                                        @click="openRegisterForm()"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-center p-2 text-sm text-gray-600">
-                            <span>Are you an administrator? </span>
-                            <RouterLink 
-                                :to="{ name: 'admin.login' }"
-                                class="ml-1 text-green-600 hover:underline cursor-pointer"
-                            >
-                                Login
-                            </RouterLink>
-                        </div>
-                    </div>
-                </template>
-            </LoginForm>
-        </Dialog>
-        <Dialog
-            v-model:visible="registerFormVisible"
-            modal
-            header="Register"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <RegisterForm>
-                <template #footer>
-                    <div class="flex justify-center p-2">
-                        <span>Already have an account?</span>
-                        &nbsp;
-                        <Button
-                            type="button"
-                            variant="link"
-                            label="Login"
-                            class="p-0!"
-                            pt:label:class="font-normal!"
-                            @click="openLoginForm()"
-                        />
-                    </div>
-                </template>
-            </RegisterForm>
-        </Dialog>
-        <Dialog
-            v-model:visible="resetPasswordFormVisible"
-            modal
-            header="Reset Account"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <ResetPasswordForm @code-sent="handleCodeSent" />
-        </Dialog>
-        <Dialog
-            v-model:visible="verifyCodeFormVisible"
-            modal
-            header="Verify Code"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :dismissableMask="true"
-            pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
-        >
-            <VerifyCodeForm 
-                :email="resetEmail"
-                :current-password="resetCurrentPassword"
-                :new-password="resetNewPassword"
-                :new-password-confirmation="resetNewPasswordConfirmation"
-                @success="handleResetSuccess" 
-            />
-        </Dialog>
+
         <Dialog
             v-model:visible="addressForm"
             modal
@@ -740,10 +640,7 @@ import UrlUtil from "@/utils/UrlUtil";
 import { Popover, Badge, OverlayBadge } from "primevue";
 import LogoutButton from "@/components/LogoutButton.vue";
 import CartButton from "@/components/CartButton.vue";
-import RegisterForm from "@/components/forms/RegisterForm.vue";
-import LoginForm from "@/components/forms/LoginForm.vue";
-import ResetPasswordForm from "@/components/forms/ResetPasswordForm.vue";
-import VerifyCodeForm from "@/components/forms/VerifyCodeForm.vue";
+
 import AddressForm from "@/components/forms/AddressForm.vue";
 import SecurityForm from "@/components/forms/SecurityForm.vue";
 import { useRouter } from "vue-router";
@@ -811,14 +708,6 @@ watch(() => form.search, (newValue, oldValue) => {
 
 const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
-const loginFormVisible = ref<boolean>(false);
-const registerFormVisible = ref<boolean>(false);
-const resetPasswordFormVisible = ref<boolean>(false);
-const verifyCodeFormVisible = ref<boolean>(false);
-const resetEmail = ref<string | null>(null);
-const resetCurrentPassword = ref<string | null>(null);
-const resetNewPassword = ref<string | null>(null);
-const resetNewPasswordConfirmation = ref<string | null>(null);
 const addressForm = ref<boolean>(false);
 const securityForm = ref<boolean>(false);
 const router = useRouter();
@@ -939,47 +828,7 @@ const markAllAsRead = () => {
     notifications.value.forEach(n => n.is_read = true);
 };
 
-const openRegisterForm = () => {
-    loginFormVisible.value = false;
-    resetPasswordFormVisible.value = false;
-    addressForm.value = false;
-    registerFormVisible.value = true;
-};
-
-const openLoginForm = () => {
-    registerFormVisible.value = false;
-    resetPasswordFormVisible.value = false;
-    addressForm.value = false;
-    loginFormVisible.value = true;
-};
-
-// Provide openLoginForm to child components
-provide('openLoginForm', openLoginForm);
-
-const openResetPasswordForm = () => {
-    loginFormVisible.value = false;
-    registerFormVisible.value = false;
-    resetPasswordFormVisible.value = true;
-};
-
-const handleCodeSent = (data: { email: string; current_password: string; new_password: string; new_password_confirmation: string }) => {
-    resetEmail.value = data.email;
-    resetCurrentPassword.value = data.current_password;
-    resetNewPassword.value = data.new_password;
-    resetNewPasswordConfirmation.value = data.new_password_confirmation;
-    resetPasswordFormVisible.value = false;
-    verifyCodeFormVisible.value = true;
-};
-
-const handleResetSuccess = () => {
-    verifyCodeFormVisible.value = false;
-    resetPasswordFormVisible.value = false;
-    loginFormVisible.value = true;
-};
-
 const openAddressForm = () => {
-    loginFormVisible.value = false;
-    registerFormVisible.value = false;
     addressForm.value = true;
     avatarElement.value?.hide();
 };

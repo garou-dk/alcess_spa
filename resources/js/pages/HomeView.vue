@@ -31,7 +31,7 @@
                             <i class="pi pi-sign-out"></i>
                         </button>
                     </template>
-                    <button v-else type="button" class="nav-btn" @click="openLoginForm()" title="Login">
+                    <button v-else type="button" class="nav-btn" @click="$router.push({ name: 'auth.login' })" title="Login">
                         <i class="pi pi-user"></i>
                     </button>
                 </div>
@@ -345,48 +345,7 @@
         </footer>
 
         <!-- Dialogs -->
-        <Dialog v-model:visible="loginFormVisible" modal header="Login" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <LoginForm @success="loginFormVisible = false">
-                <template #footer>
-                    <div class="dialog-footer">
-                        <div class="dialog-footer-row">
-                            <Button type="button" variant="link" label="Forgot password?" class="p-0! text-black! text-sm!" pt:label:class="font-normal!" @click="openResetPasswordForm()" />
-                            <div class="text-right">
-                                <span class="text-sm">Don't have an account?</span>
-                                <Button type="button" variant="link" label="Register" class="p-0! text-sm! text-blue-600!" pt:label:class="font-normal!" @click="openRegisterForm()" />
-                            </div>
-                        </div>
-                        <div class="dialog-admin-link">
-                            <span>Are you an administrator? </span>
-                            <RouterLink :to="{ name: 'admin.login' }" class="admin-link">Login</RouterLink>
-                        </div>
-                    </div>
-                </template>
-            </LoginForm>
-        </Dialog>
 
-        <Dialog v-model:visible="registerFormVisible" modal header="Register" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <RegisterForm>
-                <template #footer>
-                    <div class="dialog-footer-center">
-                        <span>Already have an account?</span>
-                        <Button type="button" variant="link" label="Login" class="p-0!" pt:label:class="font-normal!" @click="openLoginForm()" />
-                    </div>
-                </template>
-            </RegisterForm>
-        </Dialog>
-
-        <Dialog v-model:visible="resetPasswordFormVisible" modal header="Reset Account" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <ResetPasswordForm @code-sent="handleCodeSent" @lost-email="handleLostEmail" />
-        </Dialog>
-
-        <Dialog v-model:visible="accountRecoveryVisible" modal header="Account Recovery" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-orange-600! text-white! rounded-t-lg! rounded-b-none!">
-            <AccountRecoveryForm @back="handleRecoveryBack" @recovered="handleRecovered" />
-        </Dialog>
-
-        <Dialog v-model:visible="verifyCodeFormVisible" modal header="Verify & Reset" :style="{ width: '28rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <VerifyCodeForm :email="resetEmail" :current-password="resetCurrentPassword" @success="handleResetSuccess" />
-        </Dialog>
 
         <Dialog v-model:visible="footerModalVisible" modal :header="footerModalTitle" :style="{ width: isMobile ? '95vw' : '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '95vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
             <div v-if="footerModalType === 'about'" class="modal-content">
@@ -434,11 +393,7 @@ import AsusLogo from "@/../img/brands/asus.png";
 import DellLogo from "@/../img/brands/dell.png";
 import HpLogo from "@/../img/brands/hp.png";
 import LenovoLogo from "@/../img/brands/lenovo.png";
-import LoginForm from "@/components/forms/LoginForm.vue";
-import RegisterForm from "@/components/forms/RegisterForm.vue";
-import ResetPasswordForm from "@/components/forms/ResetPasswordForm.vue";
-import VerifyCodeForm from "@/components/forms/VerifyCodeForm.vue";
-import AccountRecoveryForm from "@/components/forms/AccountRecoveryForm.vue";
+
 import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/SearchProductInterface";
 import { useSettingsStore } from "@/stores/SettingsStore";
 import Page from "@/stores/Page";
@@ -454,15 +409,7 @@ import { CartFormInterface } from "@/interfaces/CartInterface";
 
 const { isMobile } = useResponsive();
 const appName = import.meta.env.VITE_APP_NAME;
-const loginFormVisible = ref(false);
-const registerFormVisible = ref(false);
-const resetPasswordFormVisible = ref(false);
-const verifyCodeFormVisible = ref(false);
-const accountRecoveryVisible = ref(false);
-const resetEmail = ref<string | null>(null);
-const resetCurrentPassword = ref<string | null>(null);
-const resetNewPassword = ref<string | null>(null);
-const resetNewPasswordConfirmation = ref<string | null>(null);
+
 const CategoryStore = useCategoryStore();
 const loadBestSellingService = useAxiosUtil<null, ProductInterface[]>();
 const addToCartService = useAxiosUtil<CartFormInterface, null>();
@@ -489,9 +436,7 @@ const errors: SearchErrorInterface = reactive({ search: [] });
 
 const openFooterModal = (type: string) => { footerModalType.value = type; footerModalVisible.value = true; };
 const goToBrowseProducts = () => router.push({ name: "customer.browse-products" });
-const openLoginForm = () => { registerFormVisible.value = false; resetPasswordFormVisible.value = false; loginFormVisible.value = true; };
-const openRegisterForm = () => { loginFormVisible.value = false; resetPasswordFormVisible.value = false; registerFormVisible.value = true; };
-const openResetPasswordForm = () => { loginFormVisible.value = false; registerFormVisible.value = false; resetPasswordFormVisible.value = true; };
+
 
 const handleSearch = () => {
     if (form.search?.trim()) router.push({ name: 'customer.search-product', query: { q: form.search } });
@@ -509,23 +454,7 @@ watch(() => form.search, (newValue) => {
     }
 });
 
-const handleCodeSent = (data: { email: string; current_password: string }) => {
-    resetEmail.value = data.email; resetCurrentPassword.value = data.current_password;
-    resetPasswordFormVisible.value = false; verifyCodeFormVisible.value = true;
-};
 
-const handleResetSuccess = () => { verifyCodeFormVisible.value = false; resetPasswordFormVisible.value = false; loginFormVisible.value = true; };
-
-const handleLostEmail = () => { resetPasswordFormVisible.value = false; accountRecoveryVisible.value = true; };
-
-const handleRecoveryBack = () => { accountRecoveryVisible.value = false; resetPasswordFormVisible.value = true; };
-
-const handleRecovered = (email: string) => { 
-    accountRecoveryVisible.value = false; 
-    resetPasswordFormVisible.value = true; 
-    // We can potentially pre-fill the email here if ResetPasswordForm exposed a way, 
-    // but for now, just finding the email is a huge help for the user.
-};
 
 const loadBestSellingProducts = async () => {
     await loadBestSellingService.get("best-selling").then(() => {
@@ -554,7 +483,7 @@ const handleLogout = async () => {
 };
 
 const addToCart = async (productId: number) => {
-    if (!Page.user) { openLoginForm(); return; }
+    if (!Page.user) { router.push({ name: 'auth.login' }); return; }
     await addToCartService.post('customer/carts', { product_id: productId, quantity: 1 });
 };
 
