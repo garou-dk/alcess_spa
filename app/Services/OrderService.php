@@ -19,10 +19,11 @@ use Ramsey\Uuid\Uuid;
 
 class OrderService
 {
-    public function orderProduct(array $data)  {
+    public function orderProduct(array $data)
+    {
         $authService = new AuthService();
         $user = $authService->getAuth();
-        
+
         return DB::transaction(function () use ($data, $user) {
             $address = Address::query()
                 ->where('user_id', $user->user_id)
@@ -46,11 +47,11 @@ class OrderService
             // Validate stock for each product before proceeding
             foreach ($data['products'] as $value) {
                 $product = $productSelected->where('product_id', $value['product_id'])->first();
-                
+
                 if (!$product) {
                     continue; // Product doesn't exist, will be caught by validation
                 }
-                
+
                 // Check if product is completely out of stock
                 if ($product->product_quantity <= 0) {
                     $outOfStockItems[] = [
@@ -61,7 +62,7 @@ class OrderService
                     ];
                     continue;
                 }
-                
+
                 // Check if requested quantity exceeds available stock
                 if ($value['quantity'] > $product->product_quantity) {
                     $insufficientStockItems[] = [
@@ -72,7 +73,7 @@ class OrderService
                     ];
                     continue;
                 }
-                
+
                 $products[] = [
                     'product_id' => $value['product_id'],
                     'quantity' => $value['quantity'],
@@ -116,7 +117,7 @@ class OrderService
                 $orderInsert['other_details'] = $address->other_details;
                 $orderInsert['postal_code'] = $address->postal_code;
             }
-            
+
             $order = Order::create($orderInsert);
 
             $order->productOrders()->createMany($products);
@@ -128,7 +129,7 @@ class OrderService
             $fullName = $order->user->full_name;
 
             $notification = OrderNotification::create([
-                'user_id'=> $data['user_id'],
+                'user_id' => $data['user_id'],
                 'notification_type' => 'New Order',
                 'notification_to' => 'Store',
                 'message' => "{$fullName} has placed a new order. Please review and accept or decline.",
@@ -140,7 +141,8 @@ class OrderService
         });
     }
 
-    public function getOrder(array $data) {
+    public function getOrder(array $data)
+    {
         $order = Order::query()
             ->with(['productOrders.product'])
             ->where([
@@ -154,39 +156,46 @@ class OrderService
         return $order;
     }
 
-    public function getCustomerOrders(array $data) {
+    public function getCustomerOrders(array $data)
+    {
         $orders = Order::query()
             ->with([
                 'user',
-                'productOrders' => function($query) {
+                'productOrders' => function ($query) {
                     $query->with(['product']);
                 },
-                'productOrders.rate' => function($query) {
+                'productOrders.rate' => function ($query) {
                     $query->with('images');
                 },
-                'barangay.municity.province.region.islandGroup', 
+                'barangay.municity.province.region.islandGroup',
                 'sale.saleItems.product'
             ])
             ->where('user_id', $data['user_id'])
             ->where('status', '!=', OrderStatusEnum::CANCELLED->value)
             ->latest()
             ->get();
-        
+
         return $orders;
     }
 
-    public function getPaidOrders(array $data) {
+    public function getPaidOrders(array $data)
+    {
         return Order::query()
-            ->with(['productOrders' => function($query) {
-                $query->with(['product', 'rate']);
-            }, 'barangay.municity.province.region.islandGroup', 'sale.saleItems.product'])
+            ->with([
+                'productOrders' => function ($query) {
+                    $query->with(['product', 'rate']);
+                },
+                'barangay.municity.province.region.islandGroup',
+                'sale.saleItems.product'
+            ])
             ->where('user_id', $data['user_id'])
             ->whereNotNull('date_paid_confirmed')
             ->latest('date_paid_confirmed')
             ->get();
     }
 
-    public function getAllOrders() {
+    public function getAllOrders()
+    {
         return Order::query()
             ->with([
                 'productOrders.product:product_id,product_name,description,product_image,product_price,category_id,unit_id',
@@ -203,8 +212,9 @@ class OrderService
      * Order remains in Processing status
      * Pickup orders have $0 shipping fee
      */
-    public function acceptOrder(array $data) {
-        return DB::transaction(function() use ($data) {
+    public function acceptOrder(array $data)
+    {
+        return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->where('order_id', $data['order_id'])
                 ->with(['productOrders.product'])
@@ -223,11 +233,11 @@ class OrderService
                 abort_if(!isset($data['shipping_fee']), 400, 'Shipping fee is required for delivery orders.');
                 $order->shipping_fee = $data['shipping_fee'];
             }
-            
+
             // Calculate total amount
-            $list = array_map(fn ($item) => $item['price'] * $item['quantity'], $order->productOrders->toArray());
+            $list = array_map(fn($item) => $item['price'] * $item['quantity'], $order->productOrders->toArray());
             $order->total_amount = array_sum($list) + $order->shipping_fee;
-            
+
             // Mark as accepted by admin
             $order->admin_accepted = true;
             $order->admin_accepted_at = now();
@@ -238,7 +248,7 @@ class OrderService
 
             // Send notification to customer
             $notification = OrderNotification::create([
-                'user_id'=> $order->user_id,
+                'user_id' => $order->user_id,
                 'notification_type' => 'Order Accepted',
                 'notification_to' => 'Customer',
                 'message' => "Your order has been accepted. Please proceed with payment.",
@@ -255,8 +265,9 @@ class OrderService
      * Admin declines order - sets status to Cancelled with reason
      * Restores inventory since stock was deducted at order placement
      */
-    public function declineOrder(array $data) {
-        return DB::transaction(function() use ($data) {
+    public function declineOrder(array $data)
+    {
+        return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->where('order_id', $data['order_id'])
                 ->with(['productOrders.product'])
@@ -283,7 +294,7 @@ class OrderService
 
             // Send notification to customer
             $notification = OrderNotification::create([
-                'user_id'=> $order->user_id,
+                'user_id' => $order->user_id,
                 'notification_type' => 'Order Declined',
                 'notification_to' => 'Customer',
                 'message' => "Your order has been declined. Reason: {$data['remarks']}",
@@ -300,8 +311,9 @@ class OrderService
      * Confirm payment for an order in Processing status
      * This transitions the order from Processing to Confirmed
      */
-    public function confirmPaymentStatus(array $data) {
-        return DB::transaction(function() use ($data) {
+    public function confirmPaymentStatus(array $data)
+    {
+        return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->where('order_id', $data['order_id'])
                 ->with(['productOrders.product'])
@@ -317,12 +329,15 @@ class OrderService
             $order->date_paid_confirmed = now();
             $order->save();
 
+            // Automatically generate invoice when payment is confirmed
+            $this->generateInvoiceFromOrder(['order_id' => $order->order_id]);
+
             $order->refresh();
             $order->load(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup']);
 
             // Send notification to customer
             $notification = OrderNotification::create([
-                'user_id'=> $order->user_id,
+                'user_id' => $order->user_id,
                 'notification_type' => 'Payment Confirmed',
                 'notification_to' => 'Customer',
                 'message' => "Your payment has been confirmed. Order is being prepared for delivery.",
@@ -340,7 +355,8 @@ class OrderService
      * Allowed only when: Processing, admin_accepted, payment proof uploaded, not yet confirmed.
      * Restores inventory and notifies the customer.
      */
-    public function cancelPayment(array $data) {
+    public function cancelPayment(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->where('order_id', $data['order_id'])
@@ -390,7 +406,8 @@ class OrderService
      * Once payment is confirmed (Confirmed status), order cannot be cancelled
      * Restores inventory since stock was deducted at order placement
      */
-    public function cancelOrder(array $data) {
+    public function cancelOrder(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->with(['productOrders']);
@@ -429,7 +446,7 @@ class OrderService
             $fullName = $order->user->full_name;
 
             $notification = OrderNotification::create([
-                'user_id'=> $data['user_id'],
+                'user_id' => $data['user_id'],
                 'notification_type' => 'Cancelled Order',
                 'notification_to' => 'Store',
                 'message' => "{$fullName} has cancelled an order.",
@@ -446,7 +463,8 @@ class OrderService
      * Order must be accepted by admin first
      * Order remains in Processing until admin confirms payment
      */
-    public function setPayment(array $data) {
+    public function setPayment(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query();
             $order = $order->where('user_id', $data['user_id']);
@@ -474,7 +492,7 @@ class OrderService
             $fullName = $order->user->full_name;
 
             $notification = OrderNotification::create([
-                'user_id'=> $data['user_id'],
+                'user_id' => $data['user_id'],
                 'notification_type' => 'Payment Uploaded',
                 'notification_to' => 'Store',
                 'message' => "{$fullName} has uploaded payment proof. Please review and confirm.",
@@ -486,7 +504,8 @@ class OrderService
         });
     }
 
-    public function fetchPaymentImage(array $data) {
+    public function fetchPaymentImage(array $data)
+    {
         $order = Order::query()
             ->where('order_id', $data['order_id'])
             ->first();
@@ -503,7 +522,8 @@ class OrderService
         return $image;
     }
 
-    public function confirmPayment(array $data) {
+    public function confirmPayment(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->with('productOrders')
@@ -515,14 +535,14 @@ class OrderService
             abort_if($order->payment_method == PaymentMethodEnum::OnlinePayment->value && $order->status != OrderStatusEnum::CONFIRMED->value, 400, 'Order is not confirmed.');
 
             abort_if($order->payment_method == PaymentMethodEnum::CashOnDelivery->value && $order->status != OrderStatusEnum::SHIPPED->value, 400, 'Order is not shipped.');
-        
+
             abort_unless(empty($order->date_paid_confirmed), 422, 'This order is already been paid.');
 
             // Note: Stock is already deducted at order placement time to prevent overselling
             // No need to deduct here again
 
             $order->date_paid_confirmed = now();
-            
+
             // Change status from CONFIRMED to PROCESSING after payment confirmation
             if ($order->payment_method == PaymentMethodEnum::OnlinePayment->value) {
                 $order->status = OrderStatusEnum::PROCESSING->value;
@@ -540,13 +560,15 @@ class OrderService
      * @deprecated This method is deprecated. Use setDeliveryWithProof() instead which requires delivery proof upload.
      * Kept for reference only - should not be called.
      */
-    public function setToShipped(array $data) {
+    public function setToShipped(array $data)
+    {
         // This method is deprecated and should not be used
         // Use setDeliveryWithProof() instead to ensure delivery proof is uploaded
         throw new \Exception('This method is deprecated. Use setDeliveryWithProof() to upload delivery proof.');
     }
 
-    public function markAsReceived(array $data) {
+    public function markAsReceived(array $data)
+    {
         $order = Order::query()
             ->where('order_id', $data['order_id'])
             ->first();
@@ -561,10 +583,10 @@ class OrderService
 
         // Reload with all relationships including rates
         $order->load([
-            'productOrders' => function($query) {
+            'productOrders' => function ($query) {
                 $query->with(['product']);
             },
-            'productOrders.rate' => function($query) {
+            'productOrders.rate' => function ($query) {
                 $query->with('images');
             },
             'barangay.municity.province.region.islandGroup',
@@ -577,7 +599,8 @@ class OrderService
         return $order;
     }
 
-    public function cashOnDeliveryConfirm(array $data) {
+    public function cashOnDeliveryConfirm(array $data)
+    {
         $order = Order::query()
             ->where('order_id', $data['order_id'])
             ->first();
@@ -595,7 +618,8 @@ class OrderService
         return $order;
     }
 
-    public function setDeliveryWithProof(array $data) {
+    public function setDeliveryWithProof(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->where('order_id', $data['order_id'])
@@ -618,8 +642,9 @@ class OrderService
             // Handle image uploads (max 3)
             if (!empty($data['images']) && is_array($data['images'])) {
                 foreach ($data['images'] as $image) {
-                    if (count($imagePaths) >= 3) break;
-                    
+                    if (count($imagePaths) >= 3)
+                        break;
+
                     if ($image instanceof \Illuminate\Http\UploadedFile) {
                         $result = $fileService->saveFile($image, FileDirectoryEnum::DELIVERY_PROOF->value, 'public');
                         $imagePaths[] = $result['file_name'];
@@ -641,7 +666,7 @@ class OrderService
             $order->estimated_delivery_date_start = $data['estimated_delivery_date_start'];
             $order->estimated_delivery_date_end = $data['estimated_delivery_date_end'];
             $order->status = OrderStatusEnum::SHIPPED->value;
-            
+
             \Log::info('💾 Saving order with delivery proof', [
                 'order_id' => $order->order_id,
                 'delivery_proof_images' => $order->delivery_proof_images,
@@ -650,7 +675,7 @@ class OrderService
                 'estimated_delivery_date_end' => $order->estimated_delivery_date_end,
                 'status' => $order->status
             ]);
-            
+
             $order->save();
 
             $order->refresh();
@@ -666,7 +691,8 @@ class OrderService
         });
     }
 
-    public function generateInvoiceFromOrder(array $data) {
+    public function generateInvoiceFromOrder(array $data)
+    {
         return DB::transaction(function () use ($data) {
             $order = Order::query()
                 ->with(['productOrders.product', 'user', 'barangay.municity.province.region.islandGroup'])
@@ -674,7 +700,20 @@ class OrderService
                 ->first();
 
             abort_if(empty($order), 404, 'Order not found!');
-            abort_if($order->status != OrderStatusEnum::CONFIRMED->value, 400, 'Order must be in Confirmed status to generate invoice.');
+
+            // Allow invoice generation for Confirmed, Shipped, or Completed statuses
+            $allowedStatuses = [
+                OrderStatusEnum::CONFIRMED->value,
+                OrderStatusEnum::SHIPPED->value,
+                OrderStatusEnum::COMPLETED->value
+            ];
+
+            abort_unless(
+                in_array($order->status, $allowedStatuses),
+                400,
+                'Order must be confirmed or further in the process to generate invoice.'
+            );
+
             abort_if(empty($order->date_paid_confirmed), 400, 'Payment must be confirmed before generating invoice.');
 
             // Check if invoice already exists
@@ -683,7 +722,7 @@ class OrderService
                     ->with(['saleItems.product', 'user'])
                     ->where('sale_id', $order->sale_id)
                     ->first();
-                
+
                 if ($existingSale) {
                     return $existingSale;
                 }
@@ -704,7 +743,7 @@ class OrderService
             // Map order payment method to sale payment method
             // Order: "Online Payment", "Cash on Delivery"
             // Sale: "Cash", "E-wallet", "Installment"
-            $salePaymentMethod = match($order->payment_method) {
+            $salePaymentMethod = match ($order->payment_method) {
                 'Cash on Delivery' => 'Cash',
                 'Online Payment' => 'E-wallet', // Online payment is via e-wallet (GCash, etc.)
                 default => 'Cash'

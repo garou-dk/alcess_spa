@@ -21,9 +21,9 @@ class ReportService
      */
     public function getOnlineSalesData(?string $startDate, ?string $endDate): array
     {
-        // Filter for COMPLETED orders only - matches Sales (Online) page behavior
+        // Filter for PAID orders - Confirmed, Shipped, or Completed
         $query = Order::with(['user', 'productOrders.product'])
-            ->where('status', 'Completed');
+            ->whereIn('status', ['Confirmed', 'Shipped', 'Completed']);
 
         // Apply date range filter if provided - filter by creation date to match Sales page
         if ($startDate && $endDate) {
@@ -116,25 +116,25 @@ class ReportService
     public function getCustomerReviewData(array $data = []): array
     {
         $query = Rate::with(['user', 'product']);
-        
+
         // Apply date range filter if provided
         if (!empty($data['start_date']) && !empty($data['end_date'])) {
             // Add time to make it inclusive of the entire end date
             $startDateTime = $data['start_date'] . ' 00:00:00';
             $endDateTime = $data['end_date'] . ' 23:59:59';
-            
+
             \Log::info('Customer Review Report Date Filter', [
                 'start_date' => $data['start_date'],
                 'end_date' => $data['end_date'],
                 'startDateTime' => $startDateTime,
                 'endDateTime' => $endDateTime
             ]);
-            
+
             $query->whereBetween('created_at', [$startDateTime, $endDateTime]);
         }
-        
+
         $reviews = $query->orderBy('created_at', 'desc')->get();
-        
+
         \Log::info('Customer Review Report Results', [
             'total_reviews' => $reviews->count(),
             'review_dates' => $reviews->pluck('created_at')->toArray()

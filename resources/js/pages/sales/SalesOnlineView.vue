@@ -635,9 +635,9 @@ const progressiveLoad = useProgressiveLoad();
 const loadPrimaryData = async () => {
     await loadService.get("admin/orders").then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
-            // Filter for Completed orders (which are displayed as "Delivered" to customers)
+            // Filter for PAID orders - Confirmed, Shipped, or Completed
             data.value = loadService.request.data.filter((order: IOrder) => 
-                order.status === 'Completed'
+                ['Confirmed', 'Shipped', 'Completed'].includes(order.status)
             );
         } else {
             toast.error(loadService.request.message ?? "Failed to load orders");
