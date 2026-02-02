@@ -4,7 +4,7 @@
         <aside 
             v-if="!isMobile" 
             :class="[
-                'h-full flex-shrink-0 bg-[#0b1426] transition-all duration-300 ease-in-out z-40 overflow-hidden',
+                'h-full flex-shrink-0 bg-blue-700 transition-all duration-300 ease-in-out z-40 overflow-hidden',
                 sideBar ? 'w-72' : 'w-0'
             ]"
         >
@@ -16,7 +16,7 @@
             v-if="isMobile"
             v-model:visible="sideBar" 
             :modal="true"
-            class="!w-72 !bg-[#0b1426] !border-0"
+            class="!w-72 !bg-blue-700 !border-0"
             :showCloseIcon="false"
              :pt="{
                 root: { class: 'border-none' },

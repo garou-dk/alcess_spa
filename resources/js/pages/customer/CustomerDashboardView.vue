@@ -15,10 +15,10 @@
             </div>
             <div class="container welcome-container">
                 <div class="welcome-content">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-sm font-medium border border-blue-500/30 mb-4 backdrop-blur-sm">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold border border-blue-200 mb-6 backdrop-blur-sm">
                         <span class="relative flex h-2 w-2">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                         </span>
                         New Arrivals Available
                     </div>
@@ -36,13 +36,13 @@
 
                     <!-- Minimal Features / Quick Stats chips -->
                     <div class="welcome-stats mt-8 flex justify-center gap-4 flex-wrap">
-                         <div v-if="stats.pending_orders > 0" class="stat-chip bg-amber-500/20 text-amber-200 border border-amber-500/30">
+                         <div v-if="stats.pending_orders > 0" class="stat-chip bg-amber-100 text-amber-700 border border-amber-200">
                             <i class="pi pi-clock"></i> {{ stats.pending_orders }} Pending Orders
                         </div>
-                         <div v-else class="stat-chip bg-emerald-500/20 text-emerald-200 border border-emerald-500/30">
+                         <div v-else class="stat-chip bg-emerald-100 text-emerald-700 border border-emerald-200">
                             <i class="pi pi-check-circle"></i> All Orders Completed
                         </div>
-                        <div class="stat-chip bg-purple-500/20 text-purple-200 border border-purple-500/30">
+                        <div class="stat-chip bg-purple-100 text-purple-700 border border-purple-200">
                             <i class="pi pi-star"></i> Loyalty Member
                         </div>
                     </div>
@@ -411,22 +411,22 @@ onUnmounted(() => stopCarousel())
 .mb-8 { margin-bottom: 2rem; }
 
 /* Welcome Hero */
-.welcome-hero { position: relative; background: #0f172a; min-height: 400px; display: flex; align-items: center; overflow: hidden; }
-.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 70%), linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+.welcome-hero { position: relative; background: #f8fafc; min-height: 400px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
+.welcome-overlay { position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.05) 0%, transparent 70%), linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); }
 .welcome-container { position: relative; z-index: 10; padding: 6rem 1rem 2rem 1rem; }
 .welcome-content { max-width: 800px; margin: 0 auto; text-align: center; }
-.welcome-headline { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.02em; }
-.welcome-subheadline { font-size: 1.125rem; color: #cbd5e1; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.welcome-headline { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.welcome-subheadline { font-size: 1.125rem; color: #475569; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 500; }
 .welcome-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
-.stat-chip { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; backdrop-filter: blur(4px); }
-.text-accent { color: #60a5fa; background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-chip { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; backdrop-filter: blur(4px); }
+.text-accent { color: #2563eb; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* Watermark Animation */
-.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.05; pointer-events: none; z-index: 5; }
+.welcome-watermark-container { position: absolute; inset: 0; overflow: hidden; opacity: 0.03; pointer-events: none; z-index: 5; }
 .moving-watermark { transform: rotate(-25deg) scale(1.5); width: 250%; height: 250%; position: absolute; top: -50%; left: -75%; display: flex; flex-direction: column; gap: 4rem; animation: moveWatermark 80s linear infinite; }
-.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 0.2rem; display: flex; align-items: center; }
+.watermark-row { white-space: nowrap; font-size: 1.5rem; font-weight: 900; color: #0f172a; letter-spacing: 0.2rem; display: flex; align-items: center; }
 .watermark-item { display: inline-flex; align-items: center; gap: 1rem; }
-.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) brightness(2); }
+.watermark-logo { width: 32px; height: 32px; border-radius: 50%; filter: grayscale(1) invert(0.1); }
 .watermark-row:nth-child(even) { margin-left: -8rem; }
 
 @keyframes moveWatermark {
@@ -435,10 +435,10 @@ onUnmounted(() => stopCarousel())
 }
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
-.btn-primary:hover { background: #1d4ed8; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; }
-.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+.btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #334155; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
 .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
 .btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
 .btn-outline:hover { background: rgba(255,255,255,0.1); }
