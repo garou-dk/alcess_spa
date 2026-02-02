@@ -74,6 +74,15 @@
                                 <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
                                 <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
                                 <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
+                                
+                                <!-- Specifications Grid -->
+                                <div v-if="products[currentSlide]?.specifications?.length" class="hero-specs">
+                                    <div v-for="spec in products[currentSlide].specifications.slice(0, 4)" :key="spec.specification_id" class="spec-item">
+                                        <span class="spec-label">{{ spec.specification_name }}:</span>
+                                        <span class="spec-value">{{ spec.specification_value }}</span>
+                                    </div>
+                                </div>
+
                                 <div class="hero-buttons">
                                     <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-primary">
                                         <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
@@ -86,8 +95,34 @@
                             </div>
                             <div class="hero-image-container">
                                 <div class="hero-image-wrapper">
-                                    <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
+                                    <img 
+                                        v-if="getCurrentProductImage" 
+                                        :src="getCurrentProductImage" 
+                                        :alt="products[currentSlide]?.product_name" 
+                                        class="hero-image" 
+                                        @error="handleImageError" 
+                                    />
                                     <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
+                                </div>
+                                
+                                <!-- Featured Images Thumbnails -->
+                                <div v-if="products[currentSlide]?.featured_images?.length" class="hero-thumbnails">
+                                    <div 
+                                        class="thumb-item" 
+                                        :class="{ active: selectedThumb === -1 }"
+                                        @click="selectImage(-1)"
+                                    >
+                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" alt="Main" />
+                                    </div>
+                                    <div 
+                                        v-for="(img, idx) in products[currentSlide].featured_images.slice(0, 3)" 
+                                        :key="img.featured_image_id" 
+                                        class="thumb-item"
+                                        :class="{ active: selectedThumb === idx }"
+                                        @click="selectImage(idx)"
+                                    >
+                                        <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/featured/${img.featured_image}`)" :alt="products[currentSlide].product_name" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -404,6 +439,35 @@ const activeView = ref<'categories' | 'products'>('categories');
 const footerModalVisible = ref(false);
 const footerModalType = ref('about');
 const router = useRouter();
+const selectedThumb = ref(-1);
+
+const getCurrentProductImage = computed(() => {
+    const product = products.value[currentSlide.value];
+    if (!product) return null;
+    if (selectedThumb.value === -1) return UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`);
+    const featured = product.featured_images[selectedThumb.value];
+    return featured ? UrlUtil.getBaseAppUrl(`storage/images/product/featured/${featured.featured_image}`) : null;
+});
+
+const selectImage = (index: number) => {
+    if (selectedThumb.value === index) return;
+    
+    // GSAP Zoom Transition for image swap
+    gsap.to(".hero-image", {
+        scale: 0.8,
+        autoAlpha: 0,
+        duration: 0.3,
+        onComplete: () => {
+            selectedThumb.value = index;
+            gsap.to(".hero-image", {
+                scale: 1,
+                autoAlpha: 1,
+                duration: 0.5,
+                ease: "back.out(1.2)"
+            });
+        }
+    });
+};
 
 const footerModalTitle = computed(() => {
     const titles: Record<string, string> = { 'about': 'About Us', 'contact': 'Contact Us', 'faqs': 'FAQs', 'shipping': 'Shipping Information', 'returns': 'Returns & Warranty', 'privacy': 'Privacy Policy', 'terms': 'Terms & Conditions' };
@@ -440,17 +504,34 @@ watch(() => form.search, (newValue) => {
 });
 
 watch(currentSlide, () => {
-    // Animate Text
+    selectedThumb.value = -1; // Reset thumb on slide change
+    // Animate Text and Specs
     const tl = gsap.timeline();
-    tl.fromTo([".hero-product-name", ".hero-category", ".hero-price", ".hero-buttons"],
+    tl.fromTo([".hero-product-name", ".hero-category", ".hero-price"],
         { y: 20, autoAlpha: 0 },
         { y: 0, autoAlpha: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
+    )
+    .fromTo(".spec-item", 
+        { x: -20, autoAlpha: 0 },
+        { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" },
+        "-=0.3"
+    )
+    .fromTo(".hero-buttons",
+        { y: 20, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.5, ease: "power2.out" },
+        "-=0.2"
     );
     
     // Animate Image (Zoom In effect)
     gsap.fromTo(".hero-image",
         { scale: 0.9, autoAlpha: 0, rotation: -2 },
         { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.8, ease: "back.out(1.2)" }
+    );
+
+    // Animate Thumbnails
+    gsap.fromTo(".thumb-item",
+        { scale: 0.5, autoAlpha: 0, y: 10 },
+        { scale: 1, autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "back.out(1.7)" }
     );
 });
 
@@ -761,8 +842,21 @@ onUnmounted(() => {
 
 /* Hero Typography Refinements */
 .hero-text { position: relative; z-index: 5; }
-.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 1rem; }
-.hero-price { color: #60a5fa; font-size: 2rem; }
+.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; }
+.hero-price { color: #60a5fa; font-size: 2rem; margin-bottom: 1.5rem; }
+
+/* Specifications Style */
+.hero-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 2rem; }
+.spec-item { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1); }
+.spec-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.spec-value { font-size: 0.9rem; color: #fff; font-weight: 600; }
+
+/* Thumbnail Gallery */
+.hero-thumbnails { display: flex; gap: 1rem; margin-top: 2rem; justify-content: center; }
+.thumb-item { width: 60px; height: 60px; border-radius: 0.75rem; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); transition: all 0.3s; cursor: pointer; opacity: 0.6; }
+.thumb-item.active { border-color: #60a5fa; opacity: 1; transform: scale(1.1); box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+.thumb-item:hover:not(.active) { opacity: 0.9; transform: translateY(-2px); }
+.thumb-item img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Shine Effect for Primary Button */
 .shine-effect { position: relative; overflow: hidden; }
