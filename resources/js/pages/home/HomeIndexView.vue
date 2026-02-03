@@ -2,7 +2,13 @@
     <div class="customer-home">
         <!-- Hero Section -->
         <section class="hero">
-            <div class="hero-bg"></div>
+            <div class="hero-bg">
+                <div class="hero-wave wave-1"></div>
+                <div class="hero-wave wave-2"></div>
+                <div class="hero-wave wave-3"></div>
+                <div class="hero-orb orb-1"></div>
+                <div class="hero-orb orb-2"></div>
+            </div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
@@ -262,38 +268,52 @@ onUnmounted(() => stopCarousel());
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
 /* Hero */
-.hero { position: relative; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 420px; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 50%); }
+.hero { position: relative; background: linear-gradient(135deg, #0c1929 0%, #1a365d 40%, #0f2847 70%, #0a192f 100%); min-height: 420px; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(56,189,248,0.12) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(99,102,241,0.08) 0%, transparent 50%); }
+
+/* Wavy Gradient Layers */
+.hero-wave { position: absolute; width: 200%; height: 100%; left: -50%; opacity: 0.6; }
+.wave-1 { bottom: -60%; background: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59,130,246,0.25) 0%, transparent 60%); animation: waveFloat 12s ease-in-out infinite; }
+.wave-2 { bottom: -50%; background: radial-gradient(ellipse 70% 40% at 40% 100%, rgba(139,92,246,0.2) 0%, transparent 55%); animation: waveFloat 15s ease-in-out infinite reverse; }
+.wave-3 { bottom: -40%; background: radial-gradient(ellipse 60% 35% at 60% 100%, rgba(14,165,233,0.18) 0%, transparent 50%); animation: waveFloat 18s ease-in-out infinite; animation-delay: -3s; }
+@keyframes waveFloat { 0%, 100% { transform: translateX(-5%) translateY(0) scale(1); } 50% { transform: translateX(5%) translateY(-15px) scale(1.02); } }
+
+/* Decorative Orbs */
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4; }
+.orb-1 { width: 300px; height: 300px; top: -100px; right: -50px; background: radial-gradient(circle, rgba(59,130,246,0.5) 0%, transparent 70%); animation: orbPulse 8s ease-in-out infinite; }
+.orb-2 { width: 200px; height: 200px; bottom: 20%; left: 5%; background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%); animation: orbPulse 10s ease-in-out infinite reverse; }
+@keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.1); opacity: 0.6; } }
+
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2.5rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
 .hero-text { text-align: center; position: relative; z-index: 5; }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
-.hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 0.75rem; position: relative; z-index: 2; }
-.hero-title { font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; }
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.04); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
+.hero-badge { display: inline-block; background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.15) 100%); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; font-size: 0.75rem; font-weight: 600; padding: 0.4rem 0.875rem; border-radius: 9999px; margin-bottom: 0.75rem; position: relative; z-index: 2; backdrop-filter: blur(8px); }
+.hero-title { font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
 .hero-category { color: #94a3b8; font-size: 0.8125rem; margin-bottom: 0.75rem; position: relative; z-index: 2; }
-.hero-price { font-size: 1.375rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem; position: relative; z-index: 2; }
+.hero-price { font-size: 1.375rem; font-weight: 700; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.75rem; position: relative; z-index: 2; }
 .hero-rating { display: flex; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; position: relative; z-index: 2; }
 .hero-rating i { font-size: 0.75rem; }
-.hero-rating i.pi-star-fill { color: #f59e0b; }
+.hero-rating i.pi-star-fill { color: #fbbf24; }
 .hero-rating i.pi-star { color: #475569; }
 .hero-rating span { font-size: 0.75rem; color: #94a3b8; margin-left: 0.5rem; }
 .hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
 .hero-image-container { display: flex; justify-content: center; }
-.hero-image { max-height: 220px; width: auto; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
-.hero-placeholder { width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 2.5rem; }
+.hero-image { max-height: 220px; width: auto; object-fit: contain; filter: drop-shadow(0 25px 50px rgba(59,130,246,0.25)); }
+.hero-placeholder { width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 2.5rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.25rem; }
-.dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
-.dot.active { width: 24px; background: #fff; }
+.dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.25); border: none; cursor: pointer; transition: all 0.3s; }
+.dot.active { width: 24px; background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%); }
 .hero-static { text-align: center; padding: 2rem 0; }
 .hero-subtitle { color: #94a3b8; font-size: 0.9375rem; max-width: 400px; margin: 0 auto; }
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.8125rem; transition: background 0.2s; }
-.btn-primary:hover { background: #1d4ed8; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 0.8125rem; transition: background 0.2s; }
-.btn-secondary:hover { background: rgba(255,255,255,0.1); }
-.btn-view { display: block; background: #1e293b; color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: background 0.2s; }
-.btn-view:hover { background: #334155; }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.8125rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-size: 0.8125rem; transition: all 0.3s; backdrop-filter: blur(8px); }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+.btn-view { display: block; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+.btn-view:hover { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
 
 /* Trust Bar */
 .trust-bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 0.875rem 0; }

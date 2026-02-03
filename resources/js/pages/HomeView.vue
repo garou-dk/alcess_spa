@@ -16,6 +16,14 @@
                     <div class="stripe-layer stripe-layer-3"></div>
                     <div class="stripe-layer stripe-layer-4"></div>
                 </div>
+                <!-- Wavy Gradient Layers -->
+                <div class="welcome-wave wave-1"></div>
+                <div class="welcome-wave wave-2"></div>
+                <div class="welcome-wave wave-3"></div>
+                <!-- Decorative Orbs -->
+                <div class="welcome-orb orb-1"></div>
+                <div class="welcome-orb orb-2"></div>
+                <div class="welcome-orb orb-3"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
@@ -522,40 +530,55 @@ onUnmounted(() => stopCarousel());
 .hero-subtext { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: background 0.2s; }
-.btn-primary:hover { background: #1d4ed8; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 0.875rem; transition: background 0.2s; }
-.btn-secondary:hover { background: rgba(255,255,255,0.1); }
-.btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
-.btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 0.875rem; transition: background 0.2s; }
-.btn-outline:hover { background: rgba(255,255,255,0.1); }
-.btn-view { display: block; background: #1e293b; color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: background 0.2s; }
-.btn-view:hover { background: #334155; }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59,130,246,0.35); }
+.btn-primary:hover { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.45); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.25); cursor: pointer; font-size: 0.875rem; transition: all 0.3s ease; backdrop-filter: blur(8px); }
+.btn-secondary:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+.btn-lg { padding: 0.875rem 1.75rem; font-size: 1rem; border-radius: 0.875rem; }
+.btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.25); text-decoration: none; font-size: 0.875rem; transition: all 0.3s ease; }
+.btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+.btn-view { display: block; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s ease; }
+.btn-view:hover { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
 
 /* Welcome Hero */
 /* Stripe-style Hero Background */
-.welcome-hero { position: relative; background: #f8fafc; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
-.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #fff; }
-.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: #fbfcfe; z-index: 1; overflow: hidden; }
-.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(60px); opacity: 0.15; animation: stripeLayerMove 15s linear infinite alternate; }
-.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #3b82f6 0%, transparent 50%); top: -10%; left: -10%; }
-.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%); top: -20%; left: 30%; animation-delay: -3s; animation-duration: 18s; }
-.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #8b5cf6 0%, transparent 50%); top: 40%; left: 10%; animation-delay: -6s; animation-duration: 20s; }
-.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #3b82f6 0%, transparent 50%); top: 20%; left: 60%; animation-delay: -9s; animation-duration: 22s; }
+.welcome-hero { position: relative; background: linear-gradient(180deg, #f0f7ff 0%, #fafbff 50%, #fff 100%); min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
+.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: transparent; }
+.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: linear-gradient(135deg, rgba(248,250,255,0.9) 0%, rgba(255,255,255,0.8) 100%); z-index: 1; overflow: hidden; }
+.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(80px); opacity: 0.18; animation: stripeLayerMove 20s linear infinite alternate; }
+.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #60a5fa 0%, transparent 50%); top: -10%; left: -10%; }
+.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #f472b6 0%, transparent 50%); top: -20%; left: 30%; animation-delay: -4s; animation-duration: 24s; }
+.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #a78bfa 0%, transparent 50%); top: 40%; left: 10%; animation-delay: -8s; animation-duration: 28s; }
+.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #38bdf8 0%, transparent 50%); top: 20%; left: 60%; animation-delay: -12s; animation-duration: 32s; }
 @keyframes stripeLayerMove { 
-    0% { transform: translate(-5%, -5%) rotate(0deg); }
-    100% { transform: translate(5%, 5%) rotate(5deg); }
+    0% { transform: translate(-3%, -3%) rotate(0deg); }
+    100% { transform: translate(3%, 3%) rotate(3deg); }
 }
+
+/* Wavy Gradient Layers */
+.welcome-wave { position: absolute; width: 200%; height: 50%; left: -50%; z-index: 2; }
+.welcome-wave.wave-1 { bottom: -20%; background: radial-gradient(ellipse 100% 70% at 50% 100%, rgba(59,130,246,0.08) 0%, transparent 60%); animation: welcomeWaveFloat 14s ease-in-out infinite; }
+.welcome-wave.wave-2 { bottom: -15%; background: radial-gradient(ellipse 80% 50% at 30% 100%, rgba(139,92,246,0.06) 0%, transparent 50%); animation: welcomeWaveFloat 18s ease-in-out infinite reverse; }
+.welcome-wave.wave-3 { bottom: -10%; background: radial-gradient(ellipse 90% 60% at 70% 100%, rgba(236,72,153,0.05) 0%, transparent 55%); animation: welcomeWaveFloat 22s ease-in-out infinite; animation-delay: -5s; }
+@keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-3%) translateY(0) scale(1); } 50% { transform: translateX(3%) translateY(-10px) scale(1.01); } }
+
+/* Decorative Orbs */
+.welcome-orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 2; }
+.welcome-orb.orb-1 { width: 400px; height: 400px; top: 10%; right: -100px; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); animation: welcomeOrbFloat 16s ease-in-out infinite; }
+.welcome-orb.orb-2 { width: 300px; height: 300px; bottom: 20%; left: -50px; background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%); animation: welcomeOrbFloat 20s ease-in-out infinite reverse; }
+.welcome-orb.orb-3 { width: 250px; height: 250px; top: 40%; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%); animation: welcomeOrbFloat 24s ease-in-out infinite; animation-delay: -8s; }
+@keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; } 50% { transform: translateY(-20px) scale(1.05); opacity: 1; } }
+
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
+.hero-glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.7); padding: 5rem 2rem; border-radius: 3rem; box-shadow: 0 30px 60px -12px rgba(59, 130, 246, 0.08), 0 0 0 1px rgba(255,255,255,0.5) inset; }
 .welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; }
-.gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
-@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-.welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.6rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
+.gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 40%, #ec4899 70%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 300% auto; animation: gradientMove 6s linear infinite; }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+.welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.5rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 500; letter-spacing: -0.02em; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
+.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(59,130,246,0.1); }
 
 
 /* Brands Section */
