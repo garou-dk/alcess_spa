@@ -474,8 +474,8 @@ const goToProductDetails = (productId: number) => router.push({ name: 'customer.
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Initialize GSAP animations
-const initGSAPAnimations = () => {
+// Initialize GSAP animations for STATIC elements only
+const initStaticAnimations = () => {
     // Hero section entrance animation
     const heroTimeline = gsap.timeline();
     
@@ -546,32 +546,7 @@ const initGSAPAnimations = () => {
         delay: 1.2
     });
 
-    // Featured Products section scroll animation
-    gsap.from('.featured-products .section-header', {
-        scrollTrigger: {
-            trigger: '.featured-products',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 0.8,
-        y: 40,
-        opacity: 0,
-        ease: 'power2.out'
-    });
-
-    gsap.from('.featured-carousel-wrapper', {
-        scrollTrigger: {
-            trigger: '.featured-products',
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 1,
-        y: 60,
-        opacity: 0,
-        ease: 'power3.out'
-    });
-
-    // Trust bar items staggered animation
+    // Trust bar items staggered animation (static HTML)
     gsap.from('.trust-item', {
         scrollTrigger: {
             trigger: '.trust-bar',
@@ -585,7 +560,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Section tabs animation
+    // Section tabs animation (static HTML)
     gsap.from('.section-tabs', {
         scrollTrigger: {
             trigger: '.main-content',
@@ -598,35 +573,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Category cards staggered animation
-    gsap.from('.category-card', {
-        scrollTrigger: {
-            trigger: '.category-grid',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 0.7,
-        y: 50,
-        opacity: 0,
-        stagger: 0.1,
-        ease: 'power2.out'
-    });
-
-    // Product cards staggered animation
-    gsap.from('.product-card', {
-        scrollTrigger: {
-            trigger: '.product-grid',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 0.6,
-        y: 40,
-        opacity: 0,
-        stagger: 0.08,
-        ease: 'power2.out'
-    });
-
-    // Brands section animation
+    // Brands section animation (static HTML)
     gsap.from('.brands-section .section-header', {
         scrollTrigger: {
             trigger: '.brands-section',
@@ -652,7 +599,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Testimonials section animation
+    // Testimonials section animation (static HTML)
     gsap.from('.testimonials-section .section-header', {
         scrollTrigger: {
             trigger: '.testimonials-section',
@@ -678,7 +625,7 @@ const initGSAPAnimations = () => {
         ease: 'power3.out'
     });
 
-    // CTA section animation
+    // CTA section animation (static HTML)
     gsap.from('.cta-section h2, .cta-section > .container > p, .cta-buttons', {
         scrollTrigger: {
             trigger: '.cta-section',
@@ -692,7 +639,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Newsletter section animation
+    // Newsletter section animation (static HTML)
     gsap.from('.newsletter-card', {
         scrollTrigger: {
             trigger: '.newsletter-section',
@@ -706,7 +653,7 @@ const initGSAPAnimations = () => {
         ease: 'power3.out'
     });
 
-    // Footer animation
+    // Footer animation (static HTML)
     gsap.from('.footer-grid > div', {
         scrollTrigger: {
             trigger: '.footer',
@@ -721,13 +668,58 @@ const initGSAPAnimations = () => {
     });
 };
 
+// Animate dynamic content when it loads
+const animateDynamicContent = (selector: string, staggerDelay = 0.1) => {
+    nextTick(() => {
+        const elements = document.querySelectorAll(selector);
+        if (elements.length > 0) {
+            gsap.fromTo(elements, 
+                { y: 40, opacity: 0 },
+                { 
+                    duration: 0.6, 
+                    y: 0, 
+                    opacity: 1, 
+                    stagger: staggerDelay,
+                    ease: 'power2.out'
+                }
+            );
+        }
+    });
+};
+
+// Watch for categories data to animate cards when loaded
+watch(() => CategoryStore.categories, (newCategories) => {
+    if (newCategories && newCategories.length > 0) {
+        animateDynamicContent('.category-card', 0.08);
+    }
+}, { immediate: false });
+
+// Watch for products data to animate cards when loaded
+watch(products, (newProducts) => {
+    if (newProducts && newProducts.length > 0) {
+        nextTick(() => {
+            // Animate featured carousel
+            gsap.fromTo('.featured-products .section-header', 
+                { y: 40, opacity: 0 },
+                { duration: 0.8, y: 0, opacity: 1, ease: 'power2.out' }
+            );
+            gsap.fromTo('.featured-carousel-wrapper', 
+                { y: 60, opacity: 0 },
+                { duration: 1, y: 0, opacity: 1, ease: 'power3.out', delay: 0.2 }
+            );
+            // Animate product cards
+            animateDynamicContent('.product-card', 0.06);
+        });
+    }
+}, { immediate: false });
+
 onMounted(() => { 
     CategoryStore.fetchCategories(); 
     loadBestSellingProducts();
     
-    // Initialize GSAP animations after DOM is ready
+    // Initialize GSAP animations for static elements after DOM is ready
     nextTick(() => {
-        initGSAPAnimations();
+        initStaticAnimations();
     });
 });
 

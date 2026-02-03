@@ -191,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, nextTick } from "vue";
+import { computed, onMounted, onUnmounted, ref, nextTick, watch } from "vue";
 import { useCategoryStore } from "@/stores/CategoryState";
 import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
@@ -257,71 +257,9 @@ const viewDetails = (productId: number) => router.push({ name: 'customer.product
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Refs for GSAP animations
-const heroTextRef = ref<HTMLElement | null>(null);
-const heroImageRef = ref<HTMLElement | null>(null);
-
-// Initialize GSAP animations
-const initGSAPAnimations = () => {
-    // Hero section entrance animation
-    const heroTimeline = gsap.timeline();
-    
-    heroTimeline
-        .from('.hero-watermark', {
-            duration: 1.2,
-            opacity: 0,
-            scale: 0.8,
-            ease: 'power2.out'
-        })
-        .from('.hero-badge', {
-            duration: 0.5,
-            y: 20,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.8')
-        .from('.hero-title', {
-            duration: 0.7,
-            y: 30,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.4')
-        .from('.hero-category', {
-            duration: 0.5,
-            y: 20,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.3')
-        .from('.hero-price', {
-            duration: 0.5,
-            y: 20,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.3')
-        .from('.hero-rating', {
-            duration: 0.5,
-            y: 15,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.2')
-        .from('.hero-buttons', {
-            duration: 0.6,
-            y: 20,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.2')
-        .from('.hero-image-container', {
-            duration: 0.8,
-            x: 50,
-            opacity: 0,
-            ease: 'power3.out'
-        }, '-=0.8')
-        .from('.hero-dots', {
-            duration: 0.4,
-            opacity: 0,
-            ease: 'power2.out'
-        }, '-=0.3');
-
-    // Trust bar items staggered animation
+// Initialize GSAP animations for STATIC elements only
+const initStaticAnimations = () => {
+    // Trust bar items staggered animation (static HTML)
     gsap.from('.trust-item', {
         scrollTrigger: {
             trigger: '.trust-bar',
@@ -335,7 +273,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Section tabs animation
+    // Section tabs animation (static HTML)
     gsap.from('.section-tabs', {
         scrollTrigger: {
             trigger: '.main-content',
@@ -348,35 +286,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Category cards staggered animation
-    gsap.from('.category-card', {
-        scrollTrigger: {
-            trigger: '.category-grid',
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 0.6,
-        y: 40,
-        opacity: 0,
-        stagger: 0.08,
-        ease: 'power2.out'
-    });
-
-    // Product cards staggered animation
-    gsap.from('.product-card', {
-        scrollTrigger: {
-            trigger: '.product-grid',
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
-        },
-        duration: 0.5,
-        y: 30,
-        opacity: 0,
-        stagger: 0.06,
-        ease: 'power2.out'
-    });
-
-    // Features section animation
+    // Features section animation (static HTML)
     gsap.from('.features-section .section-header', {
         scrollTrigger: {
             trigger: '.features-section',
@@ -402,7 +312,7 @@ const initGSAPAnimations = () => {
         ease: 'power2.out'
     });
 
-    // Testimonials section animation
+    // Testimonials section animation (static HTML)
     gsap.from('.testimonials-section .section-header', {
         scrollTrigger: {
             trigger: '.testimonials-section',
@@ -428,7 +338,7 @@ const initGSAPAnimations = () => {
         ease: 'power3.out'
     });
 
-    // Footer animation
+    // Footer animation (static HTML)
     gsap.from('.footer-grid > div', {
         scrollTrigger: {
             trigger: '.footer',
@@ -440,6 +350,76 @@ const initGSAPAnimations = () => {
         opacity: 0,
         stagger: 0.08,
         ease: 'power2.out'
+    });
+};
+
+// Animate hero section when products are loaded
+const initHeroAnimations = () => {
+    const heroTimeline = gsap.timeline();
+    
+    heroTimeline
+        .fromTo('.hero-watermark', 
+            { opacity: 0, scale: 0.8 },
+            { duration: 1.2, opacity: 1, scale: 1, ease: 'power2.out' }
+        )
+        .fromTo('.hero-badge', 
+            { y: 20, opacity: 0 },
+            { duration: 0.5, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.8'
+        )
+        .fromTo('.hero-title', 
+            { y: 30, opacity: 0 },
+            { duration: 0.7, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.4'
+        )
+        .fromTo('.hero-category', 
+            { y: 20, opacity: 0 },
+            { duration: 0.5, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.3'
+        )
+        .fromTo('.hero-price', 
+            { y: 20, opacity: 0 },
+            { duration: 0.5, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.3'
+        )
+        .fromTo('.hero-rating', 
+            { y: 15, opacity: 0 },
+            { duration: 0.5, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.2'
+        )
+        .fromTo('.hero-buttons', 
+            { y: 20, opacity: 0 },
+            { duration: 0.6, y: 0, opacity: 1, ease: 'power2.out' },
+            '-=0.2'
+        )
+        .fromTo('.hero-image-container', 
+            { x: 50, opacity: 0 },
+            { duration: 0.8, x: 0, opacity: 1, ease: 'power3.out' },
+            '-=0.8'
+        )
+        .fromTo('.hero-dots', 
+            { opacity: 0 },
+            { duration: 0.4, opacity: 1, ease: 'power2.out' },
+            '-=0.3'
+        );
+};
+
+// Animate dynamic content when it loads
+const animateDynamicContent = (selector: string, staggerDelay = 0.1) => {
+    nextTick(() => {
+        const elements = document.querySelectorAll(selector);
+        if (elements.length > 0) {
+            gsap.fromTo(elements, 
+                { y: 40, opacity: 0 },
+                { 
+                    duration: 0.6, 
+                    y: 0, 
+                    opacity: 1, 
+                    stagger: staggerDelay,
+                    ease: 'power2.out'
+                }
+            );
+        }
     });
 };
 
@@ -481,7 +461,7 @@ const animateSlideChange = () => {
     });
 };
 
-// Add GSAP animation to carousel transitions (enhance startCarousel)
+// Add GSAP animation to carousel transitions
 const startCarouselWithAnimation = () => {
     const count = Math.min(products.value.length, 3);
     if (count > 1) {
@@ -494,19 +474,37 @@ const startCarouselWithAnimation = () => {
     }
 };
 
+// Watch for categories data to animate cards when loaded
+watch(() => CategoryStore.categories, (newCategories) => {
+    if (newCategories && newCategories.length > 0) {
+        animateDynamicContent('.category-card', 0.08);
+    }
+}, { immediate: false });
+
+// Watch for products data to animate hero and product cards when loaded
+watch(products, (newProducts) => {
+    if (newProducts && newProducts.length > 0) {
+        nextTick(() => {
+            // Animate hero section
+            initHeroAnimations();
+            // Animate product cards
+            animateDynamicContent('.product-card', 0.06);
+            // Start animated carousel
+            if (newProducts.length > 1) {
+                stopCarousel();
+                startCarouselWithAnimation();
+            }
+        });
+    }
+}, { immediate: false });
+
 onMounted(() => { 
     CategoryStore.fetchCategories(); 
-    loadBestSellingProducts().then(() => {
-        // Use animated carousel after products load
-        if (products.value.length > 1) {
-            stopCarousel();
-            startCarouselWithAnimation();
-        }
-    });
+    loadBestSellingProducts();
     
-    // Initialize GSAP animations after DOM is ready
+    // Initialize GSAP animations for static elements after DOM is ready
     nextTick(() => {
-        initGSAPAnimations();
+        initStaticAnimations();
     });
 });
 
