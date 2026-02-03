@@ -269,20 +269,21 @@ onUnmounted(() => stopCarousel());
 
 /* Hero */
 .hero { position: relative; background: linear-gradient(135deg, #0c1929 0%, #1a365d 40%, #0f2847 70%, #0a192f 100%); min-height: 420px; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(56,189,248,0.12) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(99,102,241,0.08) 0%, transparent 50%); }
+.hero-bg { position: absolute; inset: 0; }
 
-/* Wavy Gradient Layers */
-.hero-wave { position: absolute; width: 200%; height: 100%; left: -50%; opacity: 0.6; }
-.wave-1 { bottom: -60%; background: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59,130,246,0.25) 0%, transparent 60%); animation: waveFloat 12s ease-in-out infinite; }
-.wave-2 { bottom: -50%; background: radial-gradient(ellipse 70% 40% at 40% 100%, rgba(139,92,246,0.2) 0%, transparent 55%); animation: waveFloat 15s ease-in-out infinite reverse; }
-.wave-3 { bottom: -40%; background: radial-gradient(ellipse 60% 35% at 60% 100%, rgba(14,165,233,0.18) 0%, transparent 50%); animation: waveFloat 18s ease-in-out infinite; animation-delay: -3s; }
-@keyframes waveFloat { 0%, 100% { transform: translateX(-5%) translateY(0) scale(1); } 50% { transform: translateX(5%) translateY(-15px) scale(1.02); } }
+/* Wavy Gradient Layers - Colorful & Visible */
+.hero-wave { position: absolute; width: 250%; height: 100%; left: -75%; }
+.wave-1 { bottom: -30%; background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(6,182,212,0.5) 0%, rgba(59,130,246,0.3) 30%, transparent 60%); animation: waveFloat 10s ease-in-out infinite; }
+.wave-2 { bottom: -20%; background: radial-gradient(ellipse 70% 50% at 30% 100%, rgba(168,85,247,0.45) 0%, rgba(139,92,246,0.25) 35%, transparent 55%); animation: waveFloat 13s ease-in-out infinite reverse; }
+.wave-3 { bottom: -10%; background: radial-gradient(ellipse 60% 45% at 70% 100%, rgba(236,72,153,0.4) 0%, rgba(244,114,182,0.2) 30%, transparent 50%); animation: waveFloat 16s ease-in-out infinite; animation-delay: -3s; }
+@keyframes waveFloat { 0%, 100% { transform: translateX(-8%) translateY(0) scale(1); } 50% { transform: translateX(8%) translateY(-20px) scale(1.03); } }
 
-/* Decorative Orbs */
-.hero-orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4; }
-.orb-1 { width: 300px; height: 300px; top: -100px; right: -50px; background: radial-gradient(circle, rgba(59,130,246,0.5) 0%, transparent 70%); animation: orbPulse 8s ease-in-out infinite; }
-.orb-2 { width: 200px; height: 200px; bottom: 20%; left: 5%; background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%); animation: orbPulse 10s ease-in-out infinite reverse; }
-@keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.1); opacity: 0.6; } }
+/* Decorative Orbs - Vibrant */
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(40px); }
+.orb-1 { width: 350px; height: 350px; top: -80px; right: -30px; background: radial-gradient(circle, rgba(251,191,36,0.5) 0%, rgba(245,158,11,0.25) 40%, transparent 70%); animation: orbPulse 7s ease-in-out infinite; }
+.orb-2 { width: 280px; height: 280px; bottom: 15%; left: 3%; background: radial-gradient(circle, rgba(34,211,238,0.45) 0%, rgba(6,182,212,0.2) 45%, transparent 70%); animation: orbPulse 9s ease-in-out infinite reverse; }
+@keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.15); opacity: 1; } }
+
 
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2.5rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }

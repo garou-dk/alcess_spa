@@ -543,36 +543,36 @@ onUnmounted(() => stopCarousel());
 
 /* Welcome Hero */
 /* Stripe-style Hero Background */
-.welcome-hero { position: relative; background: linear-gradient(180deg, #f0f7ff 0%, #fafbff 50%, #fff 100%); min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
-.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: transparent; }
-.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: linear-gradient(135deg, rgba(248,250,255,0.9) 0%, rgba(255,255,255,0.8) 100%); z-index: 1; overflow: hidden; }
-.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(80px); opacity: 0.18; animation: stripeLayerMove 20s linear infinite alternate; }
-.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #60a5fa 0%, transparent 50%); top: -10%; left: -10%; }
-.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #f472b6 0%, transparent 50%); top: -20%; left: 30%; animation-delay: -4s; animation-duration: 24s; }
-.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #a78bfa 0%, transparent 50%); top: 40%; left: 10%; animation-delay: -8s; animation-duration: 28s; }
-.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #38bdf8 0%, transparent 50%); top: 20%; left: 60%; animation-delay: -12s; animation-duration: 32s; }
+.welcome-hero { position: relative; background: linear-gradient(180deg, #fafbff 0%, #f8fafc 50%, #fff 100%); min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
+.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: transparent; z-index: 1; overflow: hidden; }
+.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(50px); opacity: 0.35; animation: stripeLayerMove 18s linear infinite alternate; }
+.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #38bdf8 0%, rgba(56,189,248,0.4) 30%, transparent 55%); top: -10%; left: -10%; }
+.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #f472b6 0%, rgba(244,114,182,0.4) 30%, transparent 55%); top: -20%; left: 30%; animation-delay: -4s; animation-duration: 22s; }
+.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #a78bfa 0%, rgba(167,139,250,0.4) 30%, transparent 55%); top: 40%; left: 10%; animation-delay: -8s; animation-duration: 26s; }
+.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #fbbf24 0%, rgba(251,191,36,0.35) 30%, transparent 55%); top: 20%; left: 60%; animation-delay: -12s; animation-duration: 30s; }
 @keyframes stripeLayerMove { 
-    0% { transform: translate(-3%, -3%) rotate(0deg); }
-    100% { transform: translate(3%, 3%) rotate(3deg); }
+    0% { transform: translate(-4%, -4%) rotate(0deg); }
+    100% { transform: translate(4%, 4%) rotate(4deg); }
 }
 
-/* Wavy Gradient Layers */
-.welcome-wave { position: absolute; width: 200%; height: 50%; left: -50%; z-index: 2; }
-.welcome-wave.wave-1 { bottom: -20%; background: radial-gradient(ellipse 100% 70% at 50% 100%, rgba(59,130,246,0.08) 0%, transparent 60%); animation: welcomeWaveFloat 14s ease-in-out infinite; }
-.welcome-wave.wave-2 { bottom: -15%; background: radial-gradient(ellipse 80% 50% at 30% 100%, rgba(139,92,246,0.06) 0%, transparent 50%); animation: welcomeWaveFloat 18s ease-in-out infinite reverse; }
-.welcome-wave.wave-3 { bottom: -10%; background: radial-gradient(ellipse 90% 60% at 70% 100%, rgba(236,72,153,0.05) 0%, transparent 55%); animation: welcomeWaveFloat 22s ease-in-out infinite; animation-delay: -5s; }
-@keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-3%) translateY(0) scale(1); } 50% { transform: translateX(3%) translateY(-10px) scale(1.01); } }
+/* Wavy Gradient Layers - Colorful & Visible */
+.welcome-wave { position: absolute; width: 250%; height: 60%; left: -75%; z-index: 2; }
+.welcome-wave.wave-1 { bottom: -15%; background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(6,182,212,0.3) 0%, rgba(59,130,246,0.15) 40%, transparent 60%); animation: welcomeWaveFloat 12s ease-in-out infinite; }
+.welcome-wave.wave-2 { bottom: -10%; background: radial-gradient(ellipse 80% 60% at 30% 100%, rgba(168,85,247,0.25) 0%, rgba(139,92,246,0.12) 40%, transparent 55%); animation: welcomeWaveFloat 15s ease-in-out infinite reverse; }
+.welcome-wave.wave-3 { bottom: -5%; background: radial-gradient(ellipse 90% 70% at 70% 100%, rgba(236,72,153,0.22) 0%, rgba(244,114,182,0.1) 40%, transparent 55%); animation: welcomeWaveFloat 18s ease-in-out infinite; animation-delay: -4s; }
+@keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-5%) translateY(0) scale(1); } 50% { transform: translateX(5%) translateY(-15px) scale(1.02); } }
 
-/* Decorative Orbs */
-.welcome-orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 2; }
-.welcome-orb.orb-1 { width: 400px; height: 400px; top: 10%; right: -100px; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); animation: welcomeOrbFloat 16s ease-in-out infinite; }
-.welcome-orb.orb-2 { width: 300px; height: 300px; bottom: 20%; left: -50px; background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%); animation: welcomeOrbFloat 20s ease-in-out infinite reverse; }
-.welcome-orb.orb-3 { width: 250px; height: 250px; top: 40%; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%); animation: welcomeOrbFloat 24s ease-in-out infinite; animation-delay: -8s; }
-@keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; } 50% { transform: translateY(-20px) scale(1.05); opacity: 1; } }
+/* Decorative Orbs - Vibrant */
+.welcome-orb { position: absolute; border-radius: 50%; filter: blur(50px); z-index: 2; }
+.welcome-orb.orb-1 { width: 450px; height: 450px; top: 5%; right: -120px; background: radial-gradient(circle, rgba(251,191,36,0.4) 0%, rgba(245,158,11,0.2) 40%, transparent 70%); animation: welcomeOrbFloat 14s ease-in-out infinite; }
+.welcome-orb.orb-2 { width: 350px; height: 350px; bottom: 15%; left: -80px; background: radial-gradient(circle, rgba(34,211,238,0.35) 0%, rgba(6,182,212,0.15) 45%, transparent 70%); animation: welcomeOrbFloat 18s ease-in-out infinite reverse; }
+.welcome-orb.orb-3 { width: 300px; height: 300px; top: 35%; left: 45%; transform: translateX(-50%); background: radial-gradient(circle, rgba(236,72,153,0.3) 0%, rgba(244,114,182,0.12) 45%, transparent 70%); animation: welcomeOrbFloat 22s ease-in-out infinite; animation-delay: -6s; }
+@keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; } 50% { transform: translateY(-25px) scale(1.08); opacity: 1; } }
 
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.7); padding: 5rem 2rem; border-radius: 3rem; box-shadow: 0 30px 60px -12px rgba(59, 130, 246, 0.08), 0 0 0 1px rgba(255,255,255,0.5) inset; }
+.hero-glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.8); padding: 5rem 2rem; border-radius: 3rem; box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.12), 0 0 0 1px rgba(255,255,255,0.6) inset; }
 .welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; }
 .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 40%, #ec4899 70%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 300% auto; animation: gradientMove 6s linear infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
