@@ -533,11 +533,11 @@ onUnmounted(() => stopCarousel());
 .hero-subtext { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #635bff; color: #fff; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.9375rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.1); }
-.btn-primary:hover { background: #0a2540; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.08), 0 1px 1px rgba(0,0,0,0.1); }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.9375rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+.btn-primary:hover { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #635bff; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.9375rem; transition: all 0.2s ease; }
-.btn-secondary:hover { background: #f6f9fc; border-color: #d1d5db; transform: translateY(-1px); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #2563eb; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.9375rem; transition: all 0.2s ease; }
+.btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
 .btn-lg { padding: 0.875rem 1.75rem; font-size: 1rem; border-radius: 0.875rem; }
 .btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.25); text-decoration: none; font-size: 0.875rem; transition: all 0.3s ease; }
 .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
@@ -548,22 +548,22 @@ onUnmounted(() => stopCarousel());
 /* Stripe-style Hero Background - LIGHT THEME */
 .welcome-hero { position: relative; background: #fdfeff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
 .stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
-.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: #fafbff; z-index: 1; overflow: hidden; }
-.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(70px); opacity: 0.15; animation: stripeLayerMove 20s linear infinite alternate; }
-.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #ff6b6b 0%, transparent 60%); top: -10%; left: -10%; } /* Soft Red/Pink */
-.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #ff9f43 0%, transparent 60%); top: -20%; left: 30%; animation-delay: -5s; } /* Soft Orange */
-.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #a29bfe 0%, transparent 60%); top: 40%; left: 10%; animation-delay: -10s; } /* Soft Violet */
-.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #fd79a8 0%, transparent 60%); top: 20%; left: 60%; animation-delay: -15s; } /* Soft Pink */
+.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fafbff; z-index: 1; overflow: hidden; }
+.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(50px); opacity: 0.22; animation: stripeLayerMove 20s linear infinite alternate; }
+.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, rgba(255, 107, 107, 0.8) 0%, transparent 60%); top: -10%; left: -10%; } /* Soft Red/Pink */
+.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, rgba(255, 159, 67, 0.8) 0%, transparent 60%); top: -20%; left: 30%; animation-delay: -5s; } /* Soft Orange */
+.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, rgba(162, 155, 254, 0.8) 0%, transparent 60%); top: 40%; left: 10%; animation-delay: -10s; } /* Soft Violet */
+.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, rgba(253, 121, 168, 0.8) 0%, transparent 60%); top: 20%; left: 60%; animation-delay: -15s; } /* Soft Pink */
 @keyframes stripeLayerMove { 
     0% { transform: translate(-4%, -4%) rotate(0deg); }
     100% { transform: translate(4%, 4%) rotate(4deg); }
 }
 
 /* Wavy Gradient Layers - Soft Pastel */
-.welcome-wave { position: absolute; width: 250%; height: 60%; left: -75%; z-index: 2; opacity: 0.12; }
-.welcome-wave.wave-1 { bottom: -15%; background: radial-gradient(ellipse 100% 80% at 50% 100%, #fd79a8 0%, transparent 60%); animation: welcomeWaveFloat 15s ease-in-out infinite; }
-.welcome-wave.wave-2 { bottom: -10%; background: radial-gradient(ellipse 80% 60% at 30% 100%, #fab1a0 0%, transparent 55%); animation: welcomeWaveFloat 18s ease-in-out infinite reverse; }
-.welcome-wave.wave-3 { bottom: -5%; background: radial-gradient(ellipse 90% 70% at 70% 100%, #a29bfe 0%, transparent 55%); animation: welcomeWaveFloat 20s ease-in-out infinite; animation-delay: -5s; }
+.welcome-wave { position: absolute; width: 250%; height: 60%; left: -75%; z-index: 2; opacity: 0.18; }
+.welcome-wave.wave-1 { bottom: -15%; background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(253, 121, 168, 0.6) 0%, transparent 60%); animation: welcomeWaveFloat 15s ease-in-out infinite; }
+.welcome-wave.wave-2 { bottom: -10%; background: radial-gradient(ellipse 80% 60% at 30% 100%, rgba(250, 177, 160, 0.6) 0%, transparent 55%); animation: welcomeWaveFloat 18s ease-in-out infinite reverse; }
+.welcome-wave.wave-3 { bottom: -5%; background: radial-gradient(ellipse 90% 70% at 70% 100%, rgba(162, 155, 254, 0.6) 0%, transparent 55%); animation: welcomeWaveFloat 20s ease-in-out infinite; animation-delay: -5s; }
 @keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-2%) translateY(0); } 50% { transform: translateX(2%) translateY(-10px); } }
 
 /* Decorative Orbs - High Clarity Soft */
@@ -574,11 +574,11 @@ onUnmounted(() => stopCarousel());
 @keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
 
 /* Circle Gradient Shapes - Refined */
-.welcome-circle { position: absolute; border-radius: 50%; z-index: 3; opacity: 0.08; }
-.welcome-circle.circle-1 { width: 500px; height: 500px; top: -200px; left: -150px; background: transparent; border: 2px solid #a29bfe; animation: welcomeCircleFloat 22s ease-in-out infinite; }
-.welcome-circle.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -80px; background: radial-gradient(circle at 60% 40%, rgba(251, 177, 160, 0.1) 0%, transparent 50%); border: 2px solid #fab1a0; animation: welcomeCircleFloat 28s ease-in-out infinite reverse; }
-.welcome-circle.circle-3 { width: 200px; height: 200px; top: 25%; right: 15%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%); border: 2px solid #fd79a8; animation: welcomeCircleFloat 18s ease-in-out infinite; }
-.welcome-circle.circle-4 { width: 280px; height: 280px; bottom: 25%; left: 8%; background: radial-gradient(circle at 40% 60%, rgba(162, 155, 254, 0.1) 0%, transparent 50%); border: 2px solid #a29bfe; animation: welcomeCircleFloat 24s ease-in-out infinite; }
+.welcome-circle { position: absolute; border-radius: 50%; z-index: 3; opacity: 0.15; }
+.welcome-circle.circle-1 { width: 500px; height: 500px; top: -200px; left: -150px; background: transparent; border: 2.5px solid #a29bfe; animation: welcomeCircleFloat 22s ease-in-out infinite; }
+.welcome-circle.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -80px; background: radial-gradient(circle at 60% 40%, rgba(251, 177, 160, 0.1) 0%, transparent 50%); border: 2.5px solid #fab1a0; animation: welcomeCircleFloat 28s ease-in-out infinite reverse; }
+.welcome-circle.circle-3 { width: 200px; height: 200px; top: 25%; right: 15%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%); border: 2.5px solid #fd79a8; animation: welcomeCircleFloat 18s ease-in-out infinite; }
+.welcome-circle.circle-4 { width: 280px; height: 280px; bottom: 25%; left: 8%; background: radial-gradient(circle at 40% 60%, rgba(162, 155, 254, 0.1) 0%, transparent 50%); border: 2.5px solid #a29bfe; animation: welcomeCircleFloat 24s ease-in-out infinite; }
 @keyframes welcomeCircleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -25px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
 
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }

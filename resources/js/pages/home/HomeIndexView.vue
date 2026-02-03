@@ -276,23 +276,23 @@ onUnmounted(() => stopCarousel());
 .hero-bg { position: absolute; inset: 0; overflow: hidden; }
 
 /* Wavy Gradient Layers - Soft Pastel */
-.hero-wave { position: absolute; width: 300%; height: 120%; left: -100%; opacity: 0.15; }
-.wave-1 { bottom: -10%; background: radial-gradient(ellipse 90% 70% at 50% 100%, #fd79a8 0%, transparent 65%); animation: waveFloat 15s ease-in-out infinite; }
-.wave-2 { bottom: 0%; background: radial-gradient(ellipse 80% 60% at 25% 100%, #fab1a0 0%, transparent 60%); animation: waveFloat 18s ease-in-out infinite reverse; }
-.wave-3 { bottom: 10%; background: radial-gradient(ellipse 70% 55% at 75% 100%, #a29bfe 0%, transparent 55%); animation: waveFloat 20s ease-in-out infinite; animation-delay: -5s; }
+.hero-wave { position: absolute; width: 300%; height: 120%; left: -100%; opacity: 0.2; }
+.wave-1 { bottom: -10%; background: radial-gradient(ellipse 90% 70% at 50% 100%, rgba(253, 121, 168, 0.7) 0%, transparent 65%); animation: waveFloat 15s ease-in-out infinite; }
+.wave-2 { bottom: 0%; background: radial-gradient(ellipse 80% 60% at 25% 100%, rgba(250, 177, 160, 0.7) 0%, transparent 60%); animation: waveFloat 18s ease-in-out infinite reverse; }
+.wave-3 { bottom: 10%; background: radial-gradient(ellipse 70% 55% at 75% 100%, rgba(162, 155, 254, 0.7) 0%, transparent 55%); animation: waveFloat 20s ease-in-out infinite; animation-delay: -5s; }
 @keyframes waveFloat { 0%, 100% { transform: translateX(-8%) translateY(0) scale(1); } 50% { transform: translateX(8%) translateY(-25px) scale(1.04); } }
 
 /* Decorative Orbs - Soft Light */
-.hero-orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.12; }
-.orb-1 { width: 400px; height: 400px; top: -100px; right: -50px; background: radial-gradient(circle, #fab1a0 0%, transparent 70%); animation: orbPulse 10s ease-in-out infinite; }
-.orb-2 { width: 320px; height: 320px; bottom: 10%; left: -5%; background: radial-gradient(circle, #fd79a8 0%, transparent 70%); animation: orbPulse 12s ease-in-out infinite reverse; }
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(50px); opacity: 0.18; }
+.orb-1 { width: 400px; height: 400px; top: -100px; right: -50px; background: radial-gradient(circle, rgba(250, 177, 160, 0.8) 0%, transparent 70%); animation: orbPulse 10s ease-in-out infinite; }
+.orb-2 { width: 320px; height: 320px; bottom: 10%; left: -5%; background: radial-gradient(circle, rgba(253, 121, 168, 0.8) 0%, transparent 70%); animation: orbPulse 12s ease-in-out infinite reverse; }
 @keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 1; } }
 
 /* Circle Gradient Shapes - Soft */
-.hero-circle { position: absolute; border-radius: 50%; border: 2px solid rgba(0, 0, 0, 0.05); }
-.circle-1 { width: 450px; height: 450px; top: -180px; left: -120px; background: radial-gradient(circle at 30% 30%, rgba(162, 155, 254, 0.05) 0%, transparent 50%); animation: circleFloat 20s ease-in-out infinite; }
-.circle-2 { width: 280px; height: 280px; bottom: 5%; right: 3%; background: radial-gradient(circle at 70% 70%, rgba(251, 177, 160, 0.05) 0%, transparent 50%); border-color: rgba(251, 177, 160, 0.1); animation: circleFloat 25s ease-in-out infinite reverse; }
-.circle-3 { width: 200px; height: 200px; top: 35%; left: 55%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.05) 0%, transparent 50%); border-color: rgba(253, 121, 168, 0.1); animation: circleFloat 18s ease-in-out infinite; animation-delay: -5s; }
+.hero-circle { position: absolute; border-radius: 50%; border: 2.5px solid rgba(0, 0, 0, 0.08); }
+.circle-1 { width: 450px; height: 450px; top: -180px; left: -120px; background: radial-gradient(circle at 30% 30%, rgba(162, 155, 254, 0.1) 0%, transparent 50%); border-color: rgba(162, 155, 254, 0.15); animation: circleFloat 20s ease-in-out infinite; }
+.circle-2 { width: 280px; height: 280px; bottom: 5%; right: 3%; background: radial-gradient(circle at 70% 70%, rgba(251, 177, 160, 0.1) 0%, transparent 50%); border-color: rgba(251, 177, 160, 0.15); animation: circleFloat 25s ease-in-out infinite reverse; }
+.circle-3 { width: 200px; height: 200px; top: 35%; left: 55%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%); border-color: rgba(253, 121, 168, 0.15); animation: circleFloat 18s ease-in-out infinite; animation-delay: -5s; }
 @keyframes circleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -30px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
 
 
@@ -320,10 +320,10 @@ onUnmounted(() => stopCarousel());
 .hero-subtitle { color: #94a3b8; font-size: 0.9375rem; max-width: 400px; margin: 0 auto; }
 
 /* Buttons */
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #635bff; color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-.btn-primary:hover { background: #0a2540; transform: translateY(-1px); }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #635bff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s; }
-.btn-secondary:hover { background: #f6f9fc; transform: translateY(-1px); }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); }
+.btn-primary:hover { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); transform: translateY(-1px); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #2563eb; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s; }
+.btn-secondary:hover { background: #f8fafc; transform: translateY(-1px); }
 .btn-view { display: block; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
 .btn-view:hover { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
 
