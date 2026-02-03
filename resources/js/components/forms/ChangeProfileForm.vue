@@ -68,6 +68,7 @@
                         />
                     </div>
                 </div>
+                <small class="text-gray-500 mt-1 block">Supported formats: JPEG, PNG, JPG. Max size: 5MB.</small>
             </InputForm>
         </div>
         <div class="flex justify-center p-2">
@@ -170,6 +171,23 @@ const onFileSelect = (e: Event) => {
     if (!files || !files.length) return;
 
     const file = files[0];
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+        toast.error("Invalid file type. Please upload a JPEG, PNG, or JPG image.");
+        e.target.value = ""; // Reset input
+        return;
+    }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+        toast.error("File size is too large. Maximum size is 5MB.");
+        e.target.value = ""; // Reset input
+        return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
