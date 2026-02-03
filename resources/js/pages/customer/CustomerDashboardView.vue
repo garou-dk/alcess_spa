@@ -9,37 +9,44 @@
                     <div class="stripe-layer stripe-layer-3"></div>
                     <div class="stripe-layer stripe-layer-4"></div>
                 </div>
+                <!-- Wavy Gradient Layers -->
+                <div class="welcome-wave wave-1"></div>
+                <div class="welcome-wave wave-2"></div>
+                <div class="welcome-wave wave-3"></div>
+                <!-- Decorative Orbs -->
+                <div class="welcome-orb orb-1"></div>
+                <div class="welcome-orb orb-2"></div>
+                <div class="welcome-orb orb-3"></div>
+                <!-- Circle Gradient Shapes -->
+                <div class="welcome-circle circle-1"></div>
+                <div class="welcome-circle circle-2"></div>
+                <div class="welcome-circle circle-3"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
-                    <div class="hero-glass-card">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-semibold border border-blue-500/30 mb-6">
-                            <span class="relative flex h-2 w-2">
-                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
-                            </span>
-                            New Arrivals Available
-                        </div>
-                        <h1 class="welcome-headline">Welcome, <span class="gradient-text">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
-                        <p class="welcome-subheadline">Find your next power upgrade. Explore our curated selection of high-end components, premium peripherals, and genuine tech essentials.</p>
+                    <div class="welcome-badge-wrapper">
+                        <span class="welcome-badge">Customer Dashboard</span>
+                    </div>
+                    <h1 class="welcome-headline">Welcome, <span class="gradient-text">{{ Page.user?.full_name?.split(' ')[0] }}!</span></h1>
+                    <p class="welcome-subheadline">Find your next power upgrade. Explore our curated selection of high-end components, premium peripherals, and genuine tech essentials.</p>
+                
+                    <div class="welcome-actions">
+                        <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
+                            Browse Products <i class="pi pi-arrow-right"></i>
+                        </button>
+                        <button @click="goToOrders" class="btn-secondary btn-lg">
+                            Track Order <i class="pi pi-truck"></i>
+                        </button>
+                    </div>
                     
-                        <div class="welcome-actions">
-                            <button @click="goToProducts" class="btn-primary btn-lg shine-effect">
-                                Browse Products <i class="pi pi-arrow-right"></i>
-                            </button>
-                            <button @click="goToOrders" class="btn-secondary btn-lg">
-                                Track Order <i class="pi pi-truck"></i>
-                            </button>
-                        </div>
-                        
-                        <!-- Davao Branch Info -->
-                        <div class="branch-footer-info">
-                            <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
-                                <img :src="Logo" alt="logo" class="w-5 h-5 opacity-80" />
-                                Alcess Tech Davao Branch
-                            </div>
+                    <!-- Davao Branch Info -->
+                    <div class="branch-footer-info">
+                        <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
+                            <img :src="Logo" alt="logo" class="w-5 h-5 opacity-80" />
+                            Alcess Tech Davao Branch
                         </div>
                     </div>
+                </div>
 
                     <!-- Minimal Features / Quick Stats chips -->
                     <div class="welcome-stats mt-8 flex justify-center gap-4 flex-wrap">
@@ -419,27 +426,50 @@ onUnmounted(() => stopCarousel())
 
 /* Welcome Hero */
 /* Stripe-style Hero Background */
-.welcome-hero { position: relative; background: #f8fafc; min-height: 550px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #e2e8f0; }
-.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #fff; }
-.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: #fbfcfe; z-index: 1; overflow: hidden; }
-.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(60px); opacity: 0.12; animation: stripeLayerMove 15s linear infinite alternate; }
-.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #3b82f6 0%, transparent 50%); top: -10%; left: -10%; }
-.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #ec4899 0%, transparent 50%); top: -20%; left: 30%; animation-delay: -3s; animation-duration: 18s; }
-.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #8b5cf6 0%, transparent 50%); top: 40%; left: 10%; animation-delay: -6s; animation-duration: 20s; }
-.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #3b82f6 0%, transparent 50%); top: 20%; left: 60%; animation-delay: -9s; animation-duration: 22s; }
-@keyframes stripeLayerMove { 
-    0% { transform: translate(-5%, -5%) rotate(0deg); }
-    100% { transform: translate(5%, 5%) rotate(5deg); }
-}
-.welcome-container { position: relative; z-index: 10; padding: 4rem 1rem; width: 100%; }
-.welcome-content { max-width: 850px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.3); padding: 5rem 2rem; border-radius: 4rem; box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.05); }
-.welcome-headline { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.04em; margin-bottom: 2rem; }
-.gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #ec4899 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
+.welcome-hero { position: relative; background: linear-gradient(135deg, #020024 0%, #090979 100%); min-height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 0; }
+.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: skewY(-10deg); transform-origin: 0; background: transparent; z-index: 1; overflow: hidden; }
+.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(60px); opacity: 0.35; animation: stripeLayerMove 15s linear infinite alternate; }
+.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, #00D4FF 0%, rgba(0, 212, 255, 0.4) 30%, transparent 55%); top: -10%; left: -10%; }
+.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, #090979 0%, rgba(9, 9, 121, 0.4) 30%, transparent 55%); top: -20%; left: 30%; animation-delay: -3s; animation-duration: 18s; }
+.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, #020024 0%, rgba(2, 0, 36, 0.4) 30%, transparent 55%); top: 40%; left: 10%; animation-delay: -6s; animation-duration: 20s; }
+.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, #00D4FF 0%, rgba(0, 212, 255, 0.35) 30%, transparent 55%); top: 20%; left: 60%; animation-delay: -9s; animation-duration: 22s; }
+
+/* Wavy Gradient Layers - Tech Color Palette */
+.welcome-wave { position: absolute; width: 250%; height: 60%; left: -75%; z-index: 2; }
+.welcome-wave.wave-1 { bottom: -15%; background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(0, 212, 255, 0.35) 0%, rgba(9, 9, 121, 0.18) 40%, transparent 60%); animation: welcomeWaveFloat 12s ease-in-out infinite; }
+.welcome-wave.wave-2 { bottom: -10%; background: radial-gradient(ellipse 80% 60% at 30% 100%, rgba(0, 212, 255, 0.3) 0%, rgba(2, 0, 36, 0.15) 40%, transparent 55%); animation: welcomeWaveFloat 15s ease-in-out infinite reverse; }
+.welcome-wave.wave-3 { bottom: -5%; background: radial-gradient(ellipse 90% 70% at 70% 100%, rgba(0, 212, 255, 0.28) 0%, rgba(9, 9, 121, 0.12) 40%, transparent 55%); animation: welcomeWaveFloat 18s ease-in-out infinite; animation-delay: -4s; }
+@keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-5%) translateY(0) scale(1); } 50% { transform: translateX(5%) translateY(-15px) scale(1.02); } }
+
+/* Decorative Orbs - Tech Vibrant */
+.welcome-orb { position: absolute; border-radius: 50%; filter: blur(50px); z-index: 2; }
+.welcome-orb.orb-1 { width: 450px; height: 450px; top: 5%; right: -120px; background: radial-gradient(circle, rgba(0, 212, 255, 0.45) 0%, rgba(9, 9, 121, 0.22) 40%, transparent 70%); animation: welcomeOrbFloat 14s ease-in-out infinite; }
+.welcome-orb.orb-2 { width: 350px; height: 350px; bottom: 15%; left: -80px; background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, rgba(2, 0, 36, 0.18) 45%, transparent 70%); animation: welcomeOrbFloat 18s ease-in-out infinite reverse; }
+.welcome-orb.orb-3 { width: 300px; height: 300px; top: 35%; left: 45%; transform: translateX(-50%); background: radial-gradient(circle, rgba(0, 212, 255, 0.35) 0%, rgba(9, 9, 121, 0.15) 45%, transparent 70%); animation: welcomeOrbFloat 22s ease-in-out infinite; animation-delay: -6s; }
+@keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; } 50% { transform: translateY(-25px) scale(1.08); opacity: 1; } }
+
+/* Circle Gradient Shapes - Tech */
+.welcome-circle { position: absolute; border-radius: 50%; z-index: 3; }
+.welcome-circle.circle-1 { width: 500px; height: 500px; top: -200px; left: -150px; background: transparent; border: 3px solid rgba(0, 212, 255, 0.25); animation: welcomeCircleFloat 22s ease-in-out infinite; }
+.welcome-circle.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -80px; background: radial-gradient(circle at 60% 40%, rgba(0, 212, 255, 0.15) 0%, transparent 50%); border: 2px solid rgba(0, 212, 255, 0.2); animation: welcomeCircleFloat 28s ease-in-out infinite reverse; }
+.welcome-circle.circle-3 { width: 200px; height: 200px; top: 25%; right: 15%; background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.12) 0%, transparent 50%); border: 2px solid rgba(0, 212, 255, 0.15); animation: welcomeCircleFloat 18s ease-in-out infinite; animation-delay: -6s; }
+@keyframes welcomeCircleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -25px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
+
+.welcome-container { position: relative; z-index: 10; padding: 4rem 1.5rem; width: 100%; }
+.welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
+.welcome-badge-wrapper { margin-bottom: 1.5rem; }
+.welcome-badge { display: inline-block; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(9, 9, 121, 0.12) 100%); border: 1px solid rgba(0, 212, 255, 0.3); color: #00D4FF; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 9999px; backdrop-filter: blur(8px); }
+.welcome-headline { font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; color: #fff; line-height: 1; letter-spacing: -0.04em; margin-bottom: 2rem; text-shadow: 0 2px 30px rgba(0,0,0,0.5); }
+.gradient-text { background: linear-gradient(135deg, #00D4FF 0%, #090979 50%, #00D4FF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 5s linear infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-.welcome-subheadline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: #475569; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
+.welcome-subheadline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: #cbd5e1; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-.branch-footer-info { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #090979 0%, #00D4FF 100%); color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4); }
+.btn-primary:hover { background: linear-gradient(135deg, #020024 0%, #090979 100%); transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(0, 212, 255, 0.5); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.1); color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; backdrop-filter: blur(8px); }
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-1px); }
+.branch-footer-info { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
 
 /* Buttons */
 .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
@@ -449,8 +479,8 @@ onUnmounted(() => stopCarousel())
 .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
 .btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
 .btn-outline:hover { background: rgba(255,255,255,0.1); }
-.btn-view { display: block; background: #1e293b; color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
-.btn-view:hover { background: #334155; }
+.btn-view { display: block; background: linear-gradient(135deg, #090979 0%, #020024 100%); color: #fff; text-align: center; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+.btn-view:hover { background: linear-gradient(135deg, #020024 0%, #090979 100%); }
 
 /* Shine Effect */
 .shine-effect { position: relative; overflow: hidden; }
@@ -466,7 +496,7 @@ onUnmounted(() => stopCarousel())
 .hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; }
 .hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
 .hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
-.hero-price { font-size: 1.5rem; font-weight: 700; color: #60a5fa; margin-bottom: 1.5rem; }
+.hero-price { font-size: 1.5rem; font-weight: 700; color: #00D4FF; margin-bottom: 1.5rem; }
 .hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 .hero-image-container { display: flex; align-items: center; justify-content: center; }
 .hero-image-wrapper { max-width: 300px; }
@@ -474,7 +504,7 @@ onUnmounted(() => stopCarousel())
 .hero-image-placeholder { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); font-size: 4rem; }
 .hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.3s; }
-.dot.active { width: 24px; background: #fff; }
+.dot.active { width: 24px; background: linear-gradient(90deg, #090979 0%, #00D4FF 100%); }
 
 /* Trust Bar */
 .trust-bar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 1rem 0; }
@@ -486,7 +516,7 @@ onUnmounted(() => stopCarousel())
 .trust-icon-blue { background: #eff6ff; color: #2563eb; }
 .trust-icon-purple { background: #f5f3ff; color: #7c3aed; }
 .trust-icon-amber { background: #fffbeb; color: #d97706; }
-.trust-title { font-size: 0.75rem; font-weight: 600; color: #1e293b; }
+.trust-title { font-size: 0.75rem; font-weight: 600; color: #020024; }
 .trust-sub { font-size: 0.625rem; color: #64748b; }
 
 /* Quick Actions Section */
@@ -512,7 +542,7 @@ onUnmounted(() => stopCarousel())
 .section-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
 
 /* Main Content */
-.main-content { padding: 3rem 0; background: #f8fafc; }
+.main-content { padding: 3rem 0; background: #fafbff; }
 
 /* Categories (Styled like HomeView) */
 .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
