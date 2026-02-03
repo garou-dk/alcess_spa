@@ -12,29 +12,30 @@ class UserService
 {
     public function createUser(array $data): User
     {
-        $user = new User;
-        $user->full_name = $data['full_name'];
-        $user->email = $data['email'];
-        $user->password = $data['password'];
-        $user->role_id = $data['role_id'] ?? 3;
-
-        if (isset($data['image'])) {
-            $manageService = new ManageFileService;
-            $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value, 'public');
-
-            $user->image = $result['file_name'];
-        }
-
-        $user->save();
-
         try {
+            $user = new User;
+            $user->full_name = $data['full_name'];
+            $user->email = $data['email'];
+            $user->password = $data['password'];
+            $user->role_id = $data['role_id'] ?? 3;
+
+            if (isset($data['image'])) {
+                $manageService = new ManageFileService;
+                $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value, 'public');
+
+                $user->image = $result['file_name'];
+            }
+
+            $user->save();
+
             $mailer = new MailerService;
             $mailer->sendEmailVerification($user);
-        } catch (\Throwable $th) {
-            Log::error('Email verification failed: ' . $th->getMessage());
-        }
 
-        return $user;
+            return $user;
+        } catch (\Throwable $th) {
+            Log::error('Create user failed: ' . $th->getMessage());
+            abort(400, 'DEBUG ERROR: ' . $th->getMessage());
+        }
     }
 
     public function verifyEmail(array $data)
