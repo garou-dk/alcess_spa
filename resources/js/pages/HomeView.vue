@@ -24,27 +24,30 @@
                 <div class="welcome-orb orb-1"></div>
                 <div class="welcome-orb orb-2"></div>
                 <div class="welcome-orb orb-3"></div>
+                <!-- Circle Gradient Shapes -->
+                <div class="welcome-circle circle-1"></div>
+                <div class="welcome-circle circle-2"></div>
+                <div class="welcome-circle circle-3"></div>
+                <div class="welcome-circle circle-4"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
-                    <div class="hero-glass-card">
-                        <div class="welcome-badge-wrapper">
-                            <span class="welcome-badge">Premium Tech Destination</span>
-                        </div>
-                        <h1 class="welcome-headline">Elevate <span class="gradient-text">Your Setup</span></h1>
-                        <p class="welcome-subheadline">Your premier destination for high-performance PCs, premium laptops, and cutting-edge computer accessories. Built for creators, gamers, and professionals.</p>
+                    <div class="welcome-badge-wrapper">
+                        <span class="welcome-badge">Premium Tech Destination</span>
+                    </div>
+                    <h1 class="welcome-headline">Elevate <span class="gradient-text">Your Setup</span></h1>
+                    <p class="welcome-subheadline">Your premier destination for high-performance PCs, premium laptops, and cutting-edge computer accessories. Built for creators, gamers, and professionals.</p>
                         <div class="welcome-actions">
                             <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
                                 Get Started <i class="pi pi-arrow-right"></i>
                             </button>
                         </div>
                         
-                        <!-- Davao Branch Info -->
-                        <div class="branch-footer-info">
-                            <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
-                                <img :src="Icon" alt="logo" class="w-5 h-5 opacity-80" />
-                                Alcess Tech Davao Branch
-                            </div>
+                    <!-- Davao Branch Info -->
+                    <div class="branch-footer-info">
+                        <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
+                            <img :src="Icon" alt="logo" class="w-5 h-5 opacity-80" />
+                            Alcess Tech Davao Branch
                         </div>
                     </div>
                 </div>
@@ -570,15 +573,24 @@ onUnmounted(() => stopCarousel());
 .welcome-orb.orb-3 { width: 300px; height: 300px; top: 35%; left: 45%; transform: translateX(-50%); background: radial-gradient(circle, rgba(236,72,153,0.3) 0%, rgba(244,114,182,0.12) 45%, transparent 70%); animation: welcomeOrbFloat 22s ease-in-out infinite; animation-delay: -6s; }
 @keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; } 50% { transform: translateY(-25px) scale(1.08); opacity: 1; } }
 
+/* Circle Gradient Shapes */
+.welcome-circle { position: absolute; border-radius: 50%; z-index: 3; }
+.welcome-circle.circle-1 { width: 500px; height: 500px; top: -200px; left: -150px; background: transparent; border: 3px solid rgba(59,130,246,0.2); animation: welcomeCircleFloat 22s ease-in-out infinite; }
+.welcome-circle.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -80px; background: radial-gradient(circle at 60% 40%, rgba(168,85,247,0.12) 0%, transparent 50%); border: 2px solid rgba(168,85,247,0.15); animation: welcomeCircleFloat 28s ease-in-out infinite reverse; }
+.welcome-circle.circle-3 { width: 200px; height: 200px; top: 25%; right: 15%; background: radial-gradient(circle at 50% 50%, rgba(236,72,153,0.1) 0%, transparent 50%); border: 2px solid rgba(236,72,153,0.12); animation: welcomeCircleFloat 18s ease-in-out infinite; animation-delay: -6s; }
+.welcome-circle.circle-4 { width: 280px; height: 280px; bottom: 25%; left: 8%; background: radial-gradient(circle at 40% 60%, rgba(251,191,36,0.1) 0%, transparent 50%); border: 2px solid rgba(251,191,36,0.12); animation: welcomeCircleFloat 24s ease-in-out infinite; animation-delay: -10s; }
+@keyframes welcomeCircleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -25px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
+
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
-.hero-glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.8); padding: 5rem 2rem; border-radius: 3rem; box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.12), 0 0 0 1px rgba(255,255,255,0.6) inset; }
-.welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; }
+.welcome-badge-wrapper { margin-bottom: 1.5rem; }
+.welcome-badge { display: inline-block; background: linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(139,92,246,0.1) 100%); border: 1px solid rgba(59,130,246,0.2); color: #3b82f6; font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 9999px; backdrop-filter: blur(8px); }
+.welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2rem; text-shadow: 0 2px 30px rgba(255,255,255,0.5); }
 .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 40%, #ec4899 70%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 300% auto; animation: gradientMove 6s linear infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.5rem); color: #475569; margin-bottom: 3.5rem; max-width: 750px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 500; letter-spacing: -0.02em; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(59,130,246,0.1); }
+.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(59,130,246,0.15); }
 
 
 /* Brands Section */

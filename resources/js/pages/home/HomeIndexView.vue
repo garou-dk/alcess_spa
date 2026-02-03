@@ -8,6 +8,10 @@
                 <div class="hero-wave wave-3"></div>
                 <div class="hero-orb orb-1"></div>
                 <div class="hero-orb orb-2"></div>
+                <!-- Circle Gradient Shapes -->
+                <div class="hero-circle circle-1"></div>
+                <div class="hero-circle circle-2"></div>
+                <div class="hero-circle circle-3"></div>
             </div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
@@ -283,6 +287,13 @@ onUnmounted(() => stopCarousel());
 .orb-1 { width: 350px; height: 350px; top: -80px; right: -30px; background: radial-gradient(circle, rgba(251,191,36,0.5) 0%, rgba(245,158,11,0.25) 40%, transparent 70%); animation: orbPulse 7s ease-in-out infinite; }
 .orb-2 { width: 280px; height: 280px; bottom: 15%; left: 3%; background: radial-gradient(circle, rgba(34,211,238,0.45) 0%, rgba(6,182,212,0.2) 45%, transparent 70%); animation: orbPulse 9s ease-in-out infinite reverse; }
 @keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.15); opacity: 1; } }
+
+/* Circle Gradient Shapes */
+.hero-circle { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); }
+.circle-1 { width: 400px; height: 400px; top: -150px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(59,130,246,0.2) 0%, transparent 50%); animation: circleFloat 20s ease-in-out infinite; }
+.circle-2 { width: 250px; height: 250px; bottom: 10%; right: 5%; background: radial-gradient(circle at 70% 70%, rgba(168,85,247,0.18) 0%, transparent 50%); border-color: rgba(168,85,247,0.2); animation: circleFloat 25s ease-in-out infinite reverse; }
+.circle-3 { width: 180px; height: 180px; top: 40%; left: 50%; background: radial-gradient(circle at 50% 50%, rgba(236,72,153,0.15) 0%, transparent 50%); border-color: rgba(236,72,153,0.15); animation: circleFloat 18s ease-in-out infinite; animation-delay: -5s; }
+@keyframes circleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(10px, -10px) rotate(5deg); } 50% { transform: translate(0, -20px) rotate(0deg); } 75% { transform: translate(-10px, -10px) rotate(-5deg); } }
 
 
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2.5rem 1rem; }
