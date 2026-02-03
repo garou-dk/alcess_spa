@@ -45,7 +45,7 @@
             >
                 <Select
                     v-model="form.role_id"
-                    :options="uniqueRoles"
+                    :options="roleStore.roles"
                     :invalid="errors.role_id.length > 0"
                     option-label="role_name"
                     option-value="role_id"
@@ -301,17 +301,6 @@ const selectImage = () => {
         uploadInput.value.click();
     }
 };
-
-const uniqueRoles = computed(() => {
-    const roles = roleStore.roles;
-    const unique = new Map();
-    roles.forEach((role) => {
-        if (!unique.has(role.role_id)) {
-            unique.set(role.role_id, role);
-        }
-    });
-    return Array.from(unique.values());
-});
 
 const onFileSelect = (e: Event) => {
     img.value = "";
