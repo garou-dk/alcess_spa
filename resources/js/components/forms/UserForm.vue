@@ -164,7 +164,6 @@
                         <span class="text-sm">Select an Image</span>
                     </div>
                 </button>
-                <small class="text-gray-500 mt-1 block">Supported formats: JPEG, PNG, JPG. Max size: 5MB.</small>
                 <div v-else class="flex flex-col">
                     <img
                         :src="result.dataURL"
@@ -192,6 +191,7 @@
                         />
                     </div>
                 </div>
+                <small class="text-gray-500 mt-1 block">Supported formats: JPEG, PNG, JPG. Max size: 5MB.</small>
             </InputForm>
         </div>
         <div class="flex justify-center p-2">
