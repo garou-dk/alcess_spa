@@ -45,7 +45,7 @@
             >
                 <Select
                     v-model="form.role_id"
-                    :options="roleStore.roles"
+                    :options="uniqueRoles"
                     :invalid="errors.role_id.length > 0"
                     option-label="role_name"
                     option-value="role_id"
@@ -164,6 +164,7 @@
                         <span class="text-sm">Select an Image</span>
                     </div>
                 </button>
+                <small class="text-gray-500 mt-1 block">Supported formats: JPEG, PNG, JPG. Max size: 5MB.</small>
                 <div v-else class="flex flex-col">
                     <img
                         :src="result.dataURL"
@@ -301,6 +302,17 @@ const selectImage = () => {
     }
 };
 
+const uniqueRoles = computed(() => {
+    const roles = roleStore.roles;
+    const unique = new Map();
+    roles.forEach((role) => {
+        if (!unique.has(role.role_id)) {
+            unique.set(role.role_id, role);
+        }
+    });
+    return Array.from(unique.values());
+});
+
 const onFileSelect = (e: Event) => {
     img.value = "";
     result.dataURL = "";
@@ -311,6 +323,23 @@ const onFileSelect = (e: Event) => {
     if (!files || !files.length) return;
 
     const file = files[0];
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+        toast.error("Invalid file type. Please upload a JPEG, PNG, or JPG image.");
+        e.target.value = ""; // Reset input
+        return;
+    }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+        toast.error("File size is too large. Maximum size is 5MB.");
+        e.target.value = ""; // Reset input
+        return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
