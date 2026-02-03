@@ -12,7 +12,7 @@ class UserService
 {
     public function createUser(array $data): User
     {
-        try {
+        return DB::transaction(function () use ($data) {
             $user = new User;
             $user->full_name = $data['full_name'];
             $user->email = $data['email'];
@@ -28,14 +28,16 @@ class UserService
 
             $user->save();
 
-            $mailer = new MailerService;
-            $mailer->sendEmailVerification($user);
+            // TEMPORARY: Commented out to isolate 500 Error (Vite Manifest Issue)
+            // try {
+            //     $mailer = new MailerService;
+            //     $mailer->sendEmailVerification($user);
+            // } catch (\Throwable $th) {
+            //     Log::error('Email verification failed: ' . $th->getMessage());
+            // }
 
             return $user;
-        } catch (\Throwable $th) {
-            Log::error('Create user failed: ' . $th->getMessage());
-            abort(400, 'DEBUG ERROR: ' . $th->getMessage());
-        }
+        });
     }
 
     public function verifyEmail(array $data)
