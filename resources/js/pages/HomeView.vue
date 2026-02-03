@@ -377,7 +377,7 @@ import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/Searc
 import { useSettingsStore } from "@/stores/SettingsStore";
 import NavBar from "@/components/NavBar.vue";
 import Carousel from "primevue/carousel";
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref, watch, nextTick } from "vue";
 import { useResponsive } from "@/composables/useResponsive";
 import { useCategoryStore } from "@/stores/CategoryState";
 import UrlUtil from "@/utils/UrlUtil";
@@ -386,6 +386,8 @@ import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const { isMobile } = useResponsive();
 const appName = import.meta.env.VITE_APP_NAME;
@@ -469,8 +471,271 @@ const addToCart = async (productId: number) => {
 
 const goToProductDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-onMounted(() => { CategoryStore.fetchCategories(); loadBestSellingProducts(); });
-onUnmounted(() => stopCarousel());
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Initialize GSAP animations
+const initGSAPAnimations = () => {
+    // Hero section entrance animation
+    const heroTimeline = gsap.timeline();
+    
+    heroTimeline
+        .from('.hero-glass-card', {
+            duration: 1,
+            y: 60,
+            opacity: 0,
+            ease: 'power3.out'
+        })
+        .from('.welcome-badge', {
+            duration: 0.6,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.5')
+        .from('.welcome-headline', {
+            duration: 0.8,
+            y: 30,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.4')
+        .from('.welcome-subheadline', {
+            duration: 0.6,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.4')
+        .from('.welcome-actions', {
+            duration: 0.6,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.3')
+        .from('.branch-footer-info', {
+            duration: 0.5,
+            y: 15,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.2');
+
+    // Animated gradient background layers
+    gsap.to('.stripe-layer-1', {
+        duration: 20,
+        x: '+=50',
+        y: '+=30',
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
+    
+    gsap.to('.stripe-layer-2', {
+        duration: 25,
+        x: '-=40',
+        y: '+=20',
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+    });
+
+    // Sticky icons entrance animation
+    gsap.from('.fixed.bottom-6 button, .fixed.bottom-6 a', {
+        duration: 0.6,
+        scale: 0,
+        opacity: 0,
+        stagger: 0.15,
+        ease: 'back.out(1.7)',
+        delay: 1.2
+    });
+
+    // Featured Products section scroll animation
+    gsap.from('.featured-products .section-header', {
+        scrollTrigger: {
+            trigger: '.featured-products',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.8,
+        y: 40,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    gsap.from('.featured-carousel-wrapper', {
+        scrollTrigger: {
+            trigger: '.featured-products',
+            start: 'top 75%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 1,
+        y: 60,
+        opacity: 0,
+        ease: 'power3.out'
+    });
+
+    // Trust bar items staggered animation
+    gsap.from('.trust-item', {
+        scrollTrigger: {
+            trigger: '.trust-bar',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out'
+    });
+
+    // Section tabs animation
+    gsap.from('.section-tabs', {
+        scrollTrigger: {
+            trigger: '.main-content',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 20,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    // Category cards staggered animation
+    gsap.from('.category-card', {
+        scrollTrigger: {
+            trigger: '.category-grid',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.7,
+        y: 50,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out'
+    });
+
+    // Product cards staggered animation
+    gsap.from('.product-card', {
+        scrollTrigger: {
+            trigger: '.product-grid',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 40,
+        opacity: 0,
+        stagger: 0.08,
+        ease: 'power2.out'
+    });
+
+    // Brands section animation
+    gsap.from('.brands-section .section-header', {
+        scrollTrigger: {
+            trigger: '.brands-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.7,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    gsap.from('.brand-item', {
+        scrollTrigger: {
+            trigger: '.brands-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 40,
+        opacity: 0,
+        stagger: 0.12,
+        ease: 'power2.out'
+    });
+
+    // Testimonials section animation
+    gsap.from('.testimonials-section .section-header', {
+        scrollTrigger: {
+            trigger: '.testimonials-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.7,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    gsap.from('.testimonial-card', {
+        scrollTrigger: {
+            trigger: '.testimonials-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.7,
+        y: 50,
+        opacity: 0,
+        stagger: 0.15,
+        ease: 'power3.out'
+    });
+
+    // CTA section animation
+    gsap.from('.cta-section h2, .cta-section > .container > p, .cta-buttons', {
+        scrollTrigger: {
+            trigger: '.cta-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.7,
+        y: 40,
+        opacity: 0,
+        stagger: 0.15,
+        ease: 'power2.out'
+    });
+
+    // Newsletter section animation
+    gsap.from('.newsletter-card', {
+        scrollTrigger: {
+            trigger: '.newsletter-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.8,
+        y: 50,
+        opacity: 0,
+        scale: 0.95,
+        ease: 'power3.out'
+    });
+
+    // Footer animation
+    gsap.from('.footer-grid > div', {
+        scrollTrigger: {
+            trigger: '.footer',
+            start: 'top 90%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out'
+    });
+};
+
+onMounted(() => { 
+    CategoryStore.fetchCategories(); 
+    loadBestSellingProducts();
+    
+    // Initialize GSAP animations after DOM is ready
+    nextTick(() => {
+        initGSAPAnimations();
+    });
+});
+
+onUnmounted(() => {
+    stopCarousel();
+    // Clean up ScrollTrigger instances
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+});
 </script>
 
 <style scoped>

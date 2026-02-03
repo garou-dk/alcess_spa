@@ -191,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, nextTick } from "vue";
 import { useCategoryStore } from "@/stores/CategoryState";
 import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
@@ -202,6 +202,8 @@ import { useToast } from 'vue-toastification';
 import Page from '@/stores/Page';
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const CategoryStore = useCategoryStore();
 const loadBestSellingService = useAxiosUtil<null, ProductInterface[]>();
@@ -252,8 +254,267 @@ const confirmAddToCart = async () => {
 
 const viewDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-onMounted(() => { CategoryStore.fetchCategories(); loadBestSellingProducts(); });
-onUnmounted(() => stopCarousel());
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Refs for GSAP animations
+const heroTextRef = ref<HTMLElement | null>(null);
+const heroImageRef = ref<HTMLElement | null>(null);
+
+// Initialize GSAP animations
+const initGSAPAnimations = () => {
+    // Hero section entrance animation
+    const heroTimeline = gsap.timeline();
+    
+    heroTimeline
+        .from('.hero-watermark', {
+            duration: 1.2,
+            opacity: 0,
+            scale: 0.8,
+            ease: 'power2.out'
+        })
+        .from('.hero-badge', {
+            duration: 0.5,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.8')
+        .from('.hero-title', {
+            duration: 0.7,
+            y: 30,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.4')
+        .from('.hero-category', {
+            duration: 0.5,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.3')
+        .from('.hero-price', {
+            duration: 0.5,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.3')
+        .from('.hero-rating', {
+            duration: 0.5,
+            y: 15,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.2')
+        .from('.hero-buttons', {
+            duration: 0.6,
+            y: 20,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.2')
+        .from('.hero-image-container', {
+            duration: 0.8,
+            x: 50,
+            opacity: 0,
+            ease: 'power3.out'
+        }, '-=0.8')
+        .from('.hero-dots', {
+            duration: 0.4,
+            opacity: 0,
+            ease: 'power2.out'
+        }, '-=0.3');
+
+    // Trust bar items staggered animation
+    gsap.from('.trust-item', {
+        scrollTrigger: {
+            trigger: '.trust-bar',
+            start: 'top 90%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 25,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out'
+    });
+
+    // Section tabs animation
+    gsap.from('.section-tabs', {
+        scrollTrigger: {
+            trigger: '.main-content',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 20,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    // Category cards staggered animation
+    gsap.from('.category-card', {
+        scrollTrigger: {
+            trigger: '.category-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 40,
+        opacity: 0,
+        stagger: 0.08,
+        ease: 'power2.out'
+    });
+
+    // Product cards staggered animation
+    gsap.from('.product-card', {
+        scrollTrigger: {
+            trigger: '.product-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 30,
+        opacity: 0,
+        stagger: 0.06,
+        ease: 'power2.out'
+    });
+
+    // Features section animation
+    gsap.from('.features-section .section-header', {
+        scrollTrigger: {
+            trigger: '.features-section',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    gsap.from('.feature-card', {
+        scrollTrigger: {
+            trigger: '.features-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 35,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'power2.out'
+    });
+
+    // Testimonials section animation
+    gsap.from('.testimonials-section .section-header', {
+        scrollTrigger: {
+            trigger: '.testimonials-section',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 30,
+        opacity: 0,
+        ease: 'power2.out'
+    });
+
+    gsap.from('.testimonial-card', {
+        scrollTrigger: {
+            trigger: '.testimonials-grid',
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.6,
+        y: 40,
+        opacity: 0,
+        stagger: 0.12,
+        ease: 'power3.out'
+    });
+
+    // Footer animation
+    gsap.from('.footer-grid > div', {
+        scrollTrigger: {
+            trigger: '.footer',
+            start: 'top 95%',
+            toggleActions: 'play none none reverse'
+        },
+        duration: 0.5,
+        y: 25,
+        opacity: 0,
+        stagger: 0.08,
+        ease: 'power2.out'
+    });
+};
+
+// Animate carousel slide change with GSAP
+const animateSlideChange = () => {
+    // Animate out current content
+    gsap.to('.hero-text > *:not(.hero-watermark)', {
+        duration: 0.2,
+        opacity: 0,
+        y: -10,
+        ease: 'power2.in',
+        onComplete: () => {
+            // After animating out, animate in the new content
+            gsap.fromTo('.hero-text > *:not(.hero-watermark)', 
+                { opacity: 0, y: 10 },
+                { 
+                    duration: 0.4, 
+                    opacity: 1, 
+                    y: 0, 
+                    stagger: 0.05,
+                    ease: 'power2.out' 
+                }
+            );
+        }
+    });
+
+    // Animate image
+    gsap.to('.hero-image', {
+        duration: 0.2,
+        opacity: 0,
+        scale: 0.95,
+        ease: 'power2.in',
+        onComplete: () => {
+            gsap.fromTo('.hero-image',
+                { opacity: 0, scale: 1.05 },
+                { duration: 0.4, opacity: 1, scale: 1, ease: 'power2.out' }
+            );
+        }
+    });
+};
+
+// Add GSAP animation to carousel transitions (enhance startCarousel)
+const startCarouselWithAnimation = () => {
+    const count = Math.min(products.value.length, 3);
+    if (count > 1) {
+        carouselInterval = window.setInterval(() => {
+            animateSlideChange();
+            setTimeout(() => {
+                currentSlide.value = (currentSlide.value + 1) % count;
+            }, 200);
+        }, 5000);
+    }
+};
+
+onMounted(() => { 
+    CategoryStore.fetchCategories(); 
+    loadBestSellingProducts().then(() => {
+        // Use animated carousel after products load
+        if (products.value.length > 1) {
+            stopCarousel();
+            startCarouselWithAnimation();
+        }
+    });
+    
+    // Initialize GSAP animations after DOM is ready
+    nextTick(() => {
+        initGSAPAnimations();
+    });
+});
+
+onUnmounted(() => {
+    stopCarousel();
+    // Clean up ScrollTrigger instances
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+});
 </script>
 
 <style scoped>

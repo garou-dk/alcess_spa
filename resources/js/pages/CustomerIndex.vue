@@ -66,6 +66,7 @@ import { Popover, Badge, OverlayBadge } from "primevue";
 import LogoutButton from "@/components/LogoutButton.vue";
 import NavBar from "@/components/NavBar.vue";
 import CartButton from "@/components/CartButton.vue";
+import gsap from "gsap";
 
 import AddressForm from "@/components/forms/AddressForm.vue";
 import SecurityForm from "@/components/forms/SecurityForm.vue";
@@ -367,6 +368,19 @@ watch(() => router.currentRoute.value.query.q, (newQuery, oldQuery) => {
     }
 }, { immediate: true });
 
+// Initialize GSAP animations for sticky buttons
+const initStickyButtonsAnimation = () => {
+    // Animate sticky floating action buttons with bouncy entrance
+    gsap.from('.fixed.bottom-6.right-6 button, .fixed.bottom-6.right-6 a', {
+        duration: 0.6,
+        scale: 0,
+        opacity: 0,
+        stagger: 0.15,
+        ease: 'back.out(1.7)',
+        delay: 0.5
+    });
+};
+
 onMounted(() => {
     if (Page.user) {
         loadNotifications();
@@ -374,6 +388,11 @@ onMounted(() => {
     window.addEventListener('open-security-form', openSecurityForm);
     window.addEventListener('open-address-form', openAddressForm);
     window.addEventListener('go-to-profile', goToProfile);
+    
+    // Initialize GSAP animations
+    nextTick(() => {
+        initStickyButtonsAnimation();
+    });
 });
 
 onUnmounted(() => {
