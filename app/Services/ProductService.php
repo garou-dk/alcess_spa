@@ -24,36 +24,26 @@ class ProductService
             ->withCount('rates')
             ->where('is_active', true)
             ->where('available_online', true)
-            // Removed stock check - show best sellers even if out of stock
+            // Use subqueries to count total sales without N+1
+            ->withSum(['productOrders' => function ($query) {
+                $query->whereHas('order', function ($q) {
+                    $q->where('status', \App\Enums\OrderStatusEnum::COMPLETED->value);
+                });
+            }], 'quantity')
+            ->withSum('saleItems', 'quantity')
             ->where(function ($query) {
                 // Must have at least one delivered order OR one walk-in sale
-                $query->whereExists(function ($subQuery) {
-                    $subQuery->select(\DB::raw(1))
-                        ->from('product_orders as po')
-                        ->join('orders as o', 'po.order_id', '=', 'o.order_id')
-                        ->whereColumn('po.product_id', 'products.product_id')
-                        ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value);
-                })->orWhereExists(function ($subQuery) {
-                    $subQuery->select(\DB::raw(1))
-                        ->from('sale_items as si')
-                        ->whereColumn('si.product_id', 'products.product_id');
-                });
+                $query->whereHas('productOrders', function ($q) {
+                    $q->whereHas('order', function ($oq) {
+                        $oq->where('status', \App\Enums\OrderStatusEnum::COMPLETED->value);
+                    });
+                })->orWhereHas('saleItems');
             })
             ->has('rates', '>', 0) // Must have at least one rating
             ->get()
             ->map(function ($product) {
-                // Calculate total sales for sorting
-                $onlineSales = \DB::table('product_orders as po')
-                    ->join('orders as o', 'po.order_id', '=', 'o.order_id')
-                    ->where('po.product_id', $product->product_id)
-                    ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
-                    ->sum('po.quantity');
-
-                $walkinSales = \DB::table('sale_items')
-                    ->where('product_id', $product->product_id)
-                    ->sum('quantity');
-
-                $product->total_sales = $onlineSales + $walkinSales;
+                // Combine summed quantities
+                $product->total_sales = ($product->product_orders_sum_quantity ?? 0) + ($product->sale_items_sum_quantity ?? 0);
                 $product->is_best_selling = true;
                 return $product;
             })
@@ -413,22 +403,18 @@ class ProductService
             $products->orderBy('product_name', 'asc');
         }
 
-        $paginatedProducts = $products->paginate($data['limit'] ?? 5);
+        $paginatedProducts = $products
+            ->withSum(['productOrders' => function ($query) {
+                $query->whereHas('order', function ($q) {
+                    $q->where('status', \App\Enums\OrderStatusEnum::COMPLETED->value);
+                });
+            }], 'quantity')
+            ->withSum('saleItems', 'quantity')
+            ->paginate($data['limit'] ?? 5);
 
         // Add total_sales to each product in the paginated result
         $paginatedProducts->getCollection()->transform(function ($product) {
-            // Calculate total sales for each product
-            $onlineSales = \DB::table('product_orders as po')
-                ->join('orders as o', 'po.order_id', '=', 'o.order_id')
-                ->where('po.product_id', $product->product_id)
-                ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
-                ->sum('po.quantity');
-
-            $walkinSales = \DB::table('sale_items')
-                ->where('product_id', $product->product_id)
-                ->sum('quantity');
-
-            $product->total_sales = $onlineSales + $walkinSales;
+            $product->total_sales = ($product->product_orders_sum_quantity ?? 0) + ($product->sale_items_sum_quantity ?? 0);
             return $product;
         });
 

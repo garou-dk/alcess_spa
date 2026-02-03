@@ -210,6 +210,9 @@ class OrderController extends Controller
         $validated = $request->validate([
             'estimated_delivery_date_start' => ['required', 'date', 'after_or_equal:today'],
             'estimated_delivery_date_end' => ['required', 'date', 'after_or_equal:estimated_delivery_date_start'],
+            'images' => ['nullable', 'array', 'max:3'],
+            'images.*' => ['file', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // Max 5MB per image
+            'video' => ['nullable', 'file', 'mimes:mp4,mov', 'max:51200'], // Max 50MB video
         ]);
         
         \Log::info('🎯 Controller received request', [
