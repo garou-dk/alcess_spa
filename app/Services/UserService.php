@@ -6,6 +6,7 @@ use App\Enums\FileDirectoryEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -26,8 +27,12 @@ class UserService
 
         $user->save();
 
-        $mailer = new MailerService;
-        $mailer->sendEmailVerification($user);
+        try {
+            $mailer = new MailerService;
+            $mailer->sendEmailVerification($user);
+        } catch (\Throwable $th) {
+            Log::error('Email verification failed: ' . $th->getMessage());
+        }
 
         return $user;
     }
