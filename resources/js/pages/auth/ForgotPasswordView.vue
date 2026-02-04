@@ -1,285 +1,288 @@
 <template>
-    <div class="min-h-screen flex bg-white">
-        <!-- Left Side - Branding -->
-        <div class="hidden lg:flex lg:w-1/2 bg-slate-900 relative overflow-hidden flex-col items-center justify-center p-12 text-white">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 z-0 opacity-20">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30"></div>
-                <div class="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-                <div class="absolute -bottom-8 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-            </div>
+    <div class="min-h-screen flex flex-col bg-white">
+         <!-- Full Width Navbar -->
+        <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
-            <!-- Content -->
-            <div class="relative z-10 text-center">
-                <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
-                    <img :src="Logo" alt="Alcess Logo" class="h-32 w-auto drop-shadow-2xl" />
+        <div class="flex-1 flex">
+            <!-- Left Side - Branding (White Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 z-0">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50"></div>
+                    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                 </div>
-                <h1 class="text-4xl font-extrabold tracking-tight text-white mb-4">Account Recovery</h1>
-                <p class="text-lg text-slate-300 max-w-md mx-auto leading-relaxed">
-                    Don't worry, we've got you covered. Follow the simple steps to regain access to your account.
-                </p>
+
+                <!-- Content -->
+                <div class="relative z-10 text-center">
+                    <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
+                        <img :src="Logo" alt="Alcess Logo" class="h-40 w-auto drop-shadow-xl" />
+                    </div>
+                    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Account Recovery</h1>
+                    <p class="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
+                        Don't worry, we've got you covered. Follow the simple steps to regain access to your account.
+                    </p>
+                    
+                    <!-- Security Tip -->
+                    <div class="mt-12 p-6 bg-blue-50/80 rounded-2xl border border-blue-100 backdrop-blur-sm max-w-sm mx-auto text-left">
+                        <div class="flex items-start gap-4">
+                            <i class="pi pi-lock text-blue-600 text-xl mt-1"></i>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-1">Security Tip</h3>
+                                <p class="text-sm text-gray-600">Never share your password or recovery codes with anyone. Alcess support will never ask for your password.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                <!-- Security Tip -->
-                <div class="mt-12 p-6 bg-slate-800/50 rounded-2xl border border-slate-700 backdrop-blur-sm max-w-sm mx-auto text-left">
-                    <div class="flex items-start gap-4">
-                        <i class="pi pi-lock text-blue-400 text-xl mt-1"></i>
-                        <div>
-                            <h3 class="font-semibold text-white mb-1">Security Tip</h3>
-                            <p class="text-sm text-slate-400">Never share your password or recovery codes with anyone. Alcess support will never ask for your password.</p>
-                        </div>
-                    </div>
+                <div class="absolute bottom-6 text-gray-400 text-xs text-center">
+                    &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
                 </div>
             </div>
-            
-            <div class="absolute bottom-6 text-slate-500 text-xs text-center">
-                &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
-            </div>
-        </div>
 
-        <!-- Right Side - Content -->
-        <div class="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto">
-            <NavBar mode="guest" class="bg-white/80 backdrop-blur-md sticky top-0 z-20" :transparent="false" />
-            
-            <div class="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-20 xl:px-24 py-12">
-                <div class="w-full max-w-md mx-auto">
-                    <div class="text-center lg:text-left mb-10">
-                        <h2 class="text-3xl font-bold tracking-tight text-gray-900">Forgot Password?</h2>
-                        <p class="mt-2 text-sm text-gray-600">
-                            {{ subtitle }}
-                        </p>
-                    </div>
-
-                    <div class="bg-white rounded-2xl">
-                        <!-- Step 1: Email Input -->
-                        <form v-if="step === 'email-input'" @submit.prevent="handleEmailSubmit">
-                            <div class="flex flex-col gap-4">
-                                <InputForm
-                                    :errors="errors.email"
-                                    id="email"
-                                    labelName="Email Address"
-                                    tag="label"
-                                >
-                                    <InputText
-                                        type="email"
-                                        v-model="form.email"
-                                        :invalid="errors.email.length > 0"
-                                        placeholder="Enter your email"
-                                        fluid
-                                        id="email"
-                                        autocomplete="off"
-                                        class="w-full"
-                                    />
-                                </InputForm>
-
-                                <div class="flex flex-col gap-3 mt-2">
-                                    <Button
-                                        type="submit"
-                                        label="Send Reset Link"
-                                        :loading="isLoading"
-                                        fluid
-                                        pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
-                                    />
-                                    
-                                    <div class="relative flex py-2 items-center">
-                                        <div class="flex-grow border-t border-gray-200"></div>
-                                        <span class="flex-shrink-0 mx-4 text-xs text-gray-400 uppercase">Or try another method</span>
-                                        <div class="flex-grow border-t border-gray-200"></div>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <Button
-                                            type="button"
-                                            label="Recovery Code"
-                                            severity="secondary"
-                                            outlined
-                                            class="w-full"
-                                            pt:root:class="text-sm! py-2.5!"
-                                            @click="step = 'recovery-code'"
-                                        />
-                                        <Button
-                                            type="button"
-                                            label="Security Question"
-                                            severity="secondary"
-                                            outlined
-                                            class="w-full"
-                                            pt:root:class="text-sm! py-2.5!"
-                                            @click="prepareSecurityQuestion"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-
-                        <!-- Step 2: Method Selection (Keeping existing logic but wrapped in new layout if needed, though step 'email-input' handles jump to others) -->
-                        <div v-else-if="step === 'method-selection'" class="flex flex-col gap-3">
-                            <Button
-                                label="Use Recovery Code"
-                                icon="pi pi-key"
-                                severity="secondary"
-                                outlined
-                                class="p-4 text-left justify-start w-full"
-                                @click="step = 'recovery-code'"
-                            />
-                            <Button
-                                label="Answer Security Question"
-                                icon="pi pi-question-circle"
-                                severity="secondary"
-                                outlined
-                                class="p-4 text-left justify-start w-full"
-                                @click="fetchSecurityQuestion"
-                            />
-                             <Button
-                                label="Go Back"
-                                link
-                                class="mt-2 w-full"
-                                @click="step = 'email-input'"
-                            />
+            <!-- Right Side - Content -->
+            <div class="w-full lg:w-1/2 flex flex-col h-full overflow-y-auto bg-white">
+                <div class="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-20 xl:px-24 py-12">
+                    <div class="w-full max-w-md mx-auto">
+                        <div class="text-center lg:text-left mb-10">
+                            <h2 class="text-3xl font-bold tracking-tight text-gray-900">Forgot Password?</h2>
+                            <p class="mt-2 text-sm text-gray-600">
+                                {{ subtitle }}
+                            </p>
                         </div>
 
-                        <!-- Step 3: Recovery Code -->
-                        <form v-else-if="step === 'recovery-code'" @submit.prevent="verifyRecoveryCode">
-                            <div class="flex flex-col gap-4">
-                                <InputForm
-                                    :errors="errors.code"
-                                    id="code"
-                                    labelName="Recovery Code"
-                                    tag="label"
-                                >
-                                    <InputText
-                                        type="text"
-                                        v-model="form.code"
-                                        :invalid="errors.code.length > 0"
-                                        placeholder="Enter 6-digit code"
-                                        fluid
+                        <div class="bg-white">
+                            <!-- Step 1: Email Input -->
+                            <form v-if="step === 'email-input'" @submit.prevent="handleEmailSubmit">
+                                <div class="flex flex-col gap-4">
+                                    <InputForm
+                                        :errors="errors.email"
+                                        id="email"
+                                        labelName="Email Address"
+                                        tag="label"
+                                    >
+                                        <InputText
+                                            type="email"
+                                            v-model="form.email"
+                                            :invalid="errors.email.length > 0"
+                                            placeholder="Enter your email"
+                                            fluid
+                                            id="email"
+                                            autocomplete="off"
+                                            class="w-full"
+                                        />
+                                    </InputForm>
+
+                                    <div class="flex flex-col gap-3 mt-2">
+                                        <Button
+                                            type="submit"
+                                            label="Send Reset Link"
+                                            :loading="isLoading"
+                                            fluid
+                                            pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
+                                        />
+                                        
+                                        <div class="relative flex py-2 items-center">
+                                            <div class="flex-grow border-t border-gray-200"></div>
+                                            <span class="flex-shrink-0 mx-4 text-xs text-gray-400 uppercase">Or try another method</span>
+                                            <div class="flex-grow border-t border-gray-200"></div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <Button
+                                                type="button"
+                                                label="Recovery Code"
+                                                severity="secondary"
+                                                outlined
+                                                class="w-full"
+                                                pt:root:class="text-sm! py-2.5!"
+                                                @click="step = 'recovery-code'"
+                                            />
+                                            <Button
+                                                type="button"
+                                                label="Security Question"
+                                                severity="secondary"
+                                                outlined
+                                                class="w-full"
+                                                pt:root:class="text-sm! py-2.5!"
+                                                @click="prepareSecurityQuestion"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Step 2: Method Selection (Keeping existing logic but wrapped in new layout if needed, though step 'email-input' handles jump to others) -->
+                            <div v-else-if="step === 'method-selection'" class="flex flex-col gap-3">
+                                <Button
+                                    label="Use Recovery Code"
+                                    icon="pi pi-key"
+                                    severity="secondary"
+                                    outlined
+                                    class="p-4 text-left justify-start w-full"
+                                    @click="step = 'recovery-code'"
+                                />
+                                <Button
+                                    label="Answer Security Question"
+                                    icon="pi pi-question-circle"
+                                    severity="secondary"
+                                    outlined
+                                    class="p-4 text-left justify-start w-full"
+                                    @click="fetchSecurityQuestion"
+                                />
+                                 <Button
+                                    label="Go Back"
+                                    link
+                                    class="mt-2 w-full"
+                                    @click="step = 'email-input'"
+                                />
+                            </div>
+
+                            <!-- Step 3: Recovery Code -->
+                            <form v-else-if="step === 'recovery-code'" @submit.prevent="verifyRecoveryCode">
+                                <div class="flex flex-col gap-4">
+                                    <InputForm
+                                        :errors="errors.code"
                                         id="code"
-                                        autocomplete="off"
-                                        class="w-full text-center tracking-widest font-mono text-lg"
-                                        maxlength="6"
-                                    />
-                                </InputForm>
-                                
-                                <div class="flex flex-col gap-3 mt-2">
-                                    <Button
-                                        type="submit"
-                                        label="Verify Code"
-                                        :loading="isLoading"
-                                        fluid
-                                        pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
-                                    />
-                                     <Button
-                                        type="button"
-                                        label="Back to Email"
-                                        link
-                                        class="w-full text-sm text-gray-500"
-                                        @click="step = 'email-input'"
-                                    />
+                                        labelName="Recovery Code"
+                                        tag="label"
+                                    >
+                                        <InputText
+                                            type="text"
+                                            v-model="form.code"
+                                            :invalid="errors.code.length > 0"
+                                            placeholder="Enter 6-digit code"
+                                            fluid
+                                            id="code"
+                                            autocomplete="off"
+                                            class="w-full text-center tracking-widest font-mono text-lg"
+                                            maxlength="6"
+                                        />
+                                    </InputForm>
+                                    
+                                    <div class="flex flex-col gap-3 mt-2">
+                                        <Button
+                                            type="submit"
+                                            label="Verify Code"
+                                            :loading="isLoading"
+                                            fluid
+                                            pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
+                                        />
+                                         <Button
+                                            type="button"
+                                            label="Back to Email"
+                                            link
+                                            class="w-full text-sm text-gray-500"
+                                            @click="step = 'email-input'"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
 
-                        <!-- Step 4: Security Question -->
-                        <form v-else-if="step === 'security-question'" @submit.prevent="verifySecurityAnswer">
-                            <div class="flex flex-col gap-4">
-                                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
-                                    <p class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Security Question</p>
-                                    <p class="text-gray-900 font-medium">{{ securityQuestion }}</p>
-                                </div>
-                                
-                                <InputForm
-                                    :errors="errors.answer"
-                                    id="answer"
-                                    labelName="Your Answer"
-                                    tag="label"
-                                >
-                                    <InputText
-                                        type="text"
-                                        v-model="form.answer"
-                                        :invalid="errors.answer.length > 0"
-                                        placeholder="Type your answer here"
-                                        fluid
+                            <!-- Step 4: Security Question -->
+                            <form v-else-if="step === 'security-question'" @submit.prevent="verifySecurityAnswer">
+                                <div class="flex flex-col gap-4">
+                                     <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                                        <p class="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Security Question</p>
+                                        <p class="text-gray-900 font-medium">{{ securityQuestion }}</p>
+                                    </div>
+                                    
+                                    <InputForm
+                                        :errors="errors.answer"
                                         id="answer"
-                                        autocomplete="off"
-                                        class="w-full"
-                                    />
-                                </InputForm>
-                                
-                                <div class="flex flex-col gap-3 mt-2">
-                                    <Button
-                                        type="submit"
-                                        label="Verify Answer"
-                                        :loading="isLoading"
-                                        fluid
-                                        pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
-                                    />
-                                     <Button
-                                        type="button"
-                                        label="Back to Email"
-                                        link
-                                        class="w-full text-sm text-gray-500"
-                                        @click="step = 'email-input'"
-                                    />
+                                        labelName="Your Answer"
+                                        tag="label"
+                                    >
+                                        <InputText
+                                            type="text"
+                                            v-model="form.answer"
+                                            :invalid="errors.answer.length > 0"
+                                            placeholder="Type your answer here"
+                                            fluid
+                                            id="answer"
+                                            autocomplete="off"
+                                            class="w-full"
+                                        />
+                                    </InputForm>
+                                    
+                                    <div class="flex flex-col gap-3 mt-2">
+                                        <Button
+                                            type="submit"
+                                            label="Verify Answer"
+                                            :loading="isLoading"
+                                            fluid
+                                            pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
+                                        />
+                                         <Button
+                                            type="button"
+                                            label="Back to Email"
+                                            link
+                                            class="w-full text-sm text-gray-500"
+                                            @click="step = 'email-input'"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
 
-                        <!-- Step 5: Reset Password -->
-                        <form v-else-if="step === 'reset-password'" @submit.prevent="resetPassword">
-                             <div class="flex flex-col gap-4">
-                                <InputForm
-                                    :errors="errors.password"
-                                    id="password"
-                                    labelName="New Password"
-                                    tag="label"
-                                >
-                                    <InputText
-                                        type="password"
-                                        v-model="form.password"
-                                        :invalid="errors.password.length > 0"
-                                        placeholder="Create new password"
-                                        fluid
+                            <!-- Step 5: Reset Password -->
+                            <form v-else-if="step === 'reset-password'" @submit.prevent="resetPassword">
+                                 <div class="flex flex-col gap-4">
+                                    <InputForm
+                                        :errors="errors.password"
                                         id="password"
-                                        class="w-full"
-                                    />
-                                </InputForm>
-                                 <InputForm
-                                    :errors="errors.password_confirmation"
-                                    id="password_confirmation"
-                                    labelName="Confirm Password"
-                                    tag="label"
-                                >
-                                    <InputText
-                                        type="password"
-                                        v-model="form.password_confirmation"
-                                        :invalid="errors.password_confirmation.length > 0"
-                                        placeholder="Confirm new password"
-                                        fluid
+                                        labelName="New Password"
+                                        tag="label"
+                                    >
+                                        <InputText
+                                            type="password"
+                                            v-model="form.password"
+                                            :invalid="errors.password.length > 0"
+                                            placeholder="Create new password"
+                                            fluid
+                                            id="password"
+                                            class="w-full"
+                                        />
+                                    </InputForm>
+                                     <InputForm
+                                        :errors="errors.password_confirmation"
                                         id="password_confirmation"
-                                        class="w-full"
-                                    />
-                                </InputForm>
-                                
-                                <div class="flex flex-col gap-3 mt-2">
-                                    <Button
-                                        type="submit"
-                                        label="Reset Password"
-                                        :loading="isLoading"
-                                        fluid
-                                        pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
-                                    />
+                                        labelName="Confirm Password"
+                                        tag="label"
+                                    >
+                                        <InputText
+                                            type="password"
+                                            v-model="form.password_confirmation"
+                                            :invalid="errors.password_confirmation.length > 0"
+                                            placeholder="Confirm new password"
+                                            fluid
+                                            id="password_confirmation"
+                                            class="w-full"
+                                        />
+                                    </InputForm>
+                                    
+                                    <div class="flex flex-col gap-3 mt-2">
+                                        <Button
+                                            type="submit"
+                                            label="Reset Password"
+                                            :loading="isLoading"
+                                            fluid
+                                            pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-lg! py-3! font-semibold!"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
 
-                        <div class="mt-8 pt-6 border-t border-gray-100 text-center">
-                            <p class="text-sm text-gray-600">
-                                Remember your password? 
-                                <RouterLink 
-                                    :to="{ name: 'auth.login' }" 
-                                    class="font-bold text-blue-600 hover:text-blue-500 transition-colors ml-1"
-                                >
-                                    Back to Login
-                                </RouterLink>
-                            </p>
+                            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                                <p class="text-sm text-gray-600">
+                                    Remember your password? 
+                                    <RouterLink 
+                                        :to="{ name: 'auth.login' }" 
+                                        class="font-bold text-blue-600 hover:text-blue-500 transition-colors ml-1"
+                                    >
+                                        Back to Login
+                                    </RouterLink>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
