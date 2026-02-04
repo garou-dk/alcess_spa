@@ -12,6 +12,7 @@
                         <p class="text-blue-100 text-xs opacity-80">Always here to help!</p>
                     </div>
                 </div>
+                <!-- Only show close button if not externally controlled, or maybe always allowing close is fine but toggle is external -->
                 <button @click="chatStore.toggleChat" class="text-white hover:bg-white/10 p-1 rounded transition-colors">
                     <i class="pi pi-times"></i>
                 </button>
@@ -20,21 +21,21 @@
             <div class="chat-body" ref="chatBody">
                 <div v-for="(msg, index) in chatStore.messages" :key="index" :class="['message-wrapper', msg.type]">
                     <!-- Bot Avatar -->
-                    <div v-if="msg.type === 'bot' || msg.type === 'product_list'" class="bot-avatar">
+                    <div v-if="['bot', 'product_list', 'product_detail'].includes(msg.type)" class="bot-avatar">
                         <i class="pi pi-bolt"></i>
                     </div>
 
                     <!-- Message Content -->
-                    <div class="message-content" :class="{ 'w-full': msg.type === 'product_list' }">
+                    <div class="message-content" :class="{ 'w-full': msg.type === 'product_list' || msg.type === 'product_detail' }">
                         
                         <!-- Text Bubble -->
-                        <div v-if="msg.text" class="message-bubble" :class="{ 'mb-2': msg.type === 'product_list' }">
+                        <div v-if="msg.text" class="message-bubble" :class="{ 'mb-2': msg.type !== 'user' && msg.type !== 'bot' }">
                             <p v-html="msg.text"></p>
                         </div>
 
                         <!-- Product List Carousel -->
                         <div v-if="msg.type === 'product_list'" class="product-carousel">
-                            <div v-for="product in msg.data" :key="product.product_id" class="chat-product-card" @click="goToProduct(product.product_id)">
+                            <div v-for="product in msg.data" :key="product.product_id" class="chat-product-card" @click="handleProductClick(product.product_id)">
                                 <div class="chat-prod-img">
                                      <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name" />
                                      <i v-else class="pi pi-image text-2xl text-slate-300"></i>
@@ -43,6 +44,27 @@
                                     <h4 class="line-clamp-2 text-xs font-semibold text-slate-800 mb-1">{{ product.product_name }}</h4>
                                     <span class="text-blue-600 font-bold text-xs">{{ CurrencyUtil.formatCurrency(product.product_price) }}</span>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Detail View -->
+                        <div v-if="msg.type === 'product_detail'" class="product-detail-card">
+                            <div class="detail-header">
+                                <img v-if="msg.data.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${msg.data.product_image}`)" class="detail-img" />
+                                <div class="detail-info">
+                                    <h4 class="font-bold text-slate-800 text-sm leading-tight">{{ msg.data.product_name }}</h4>
+                                    <p class="text-blue-600 font-bold mt-1">{{ CurrencyUtil.formatCurrency(msg.data.product_price) }}</p>
+                                </div>
+                            </div>
+                            <div class="detail-specs">
+                                <p class="text-xs font-semibold text-slate-500 mb-1">Key Specifications:</p>
+                                <ul v-if="msg.data.specifications && msg.data.specifications.length" class="space-y-1">
+                                    <li v-for="spec in msg.data.specifications.slice(0, 3)" :key="spec.id" class="text-xs text-slate-600 flex justify-between">
+                                        <span class="opacity-80">{{ spec.specification_name }}:</span>
+                                        <span class="font-medium truncate ml-2 max-w-[120px]">{{ spec.specification_value }}</span>
+                                    </li>
+                                </ul>
+                                <p v-else class="text-xs text-slate-400 italic">No specifications listed.</p>
                             </div>
                         </div>
 
@@ -76,8 +98,9 @@
             </div>
         </div>
 
-        <!-- Floating Toggle Button -->
+        <!-- Floating Toggle Button (Hidden if externally controlled) -->
         <button 
+            v-if="!externalControl"
             @click="chatStore.toggleChat" 
             class="chat-toggle-btn group"
             :class="{ 'active': chatStore.isOpen }"
@@ -93,11 +116,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from 'vue';
+import { ref, watch, nextTick, defineProps } from 'vue';
 import { useChatStore } from '@/stores/ChatStore';
 import UrlUtil from '@/utils/UrlUtil';
 import CurrencyUtil from '@/utils/CurrencyUtil';
 import { useRouter } from 'vue-router';
+
+const props = defineProps({
+    externalControl: {
+        type: Boolean,
+        default: false
+    }
+});
 
 const chatStore = useChatStore();
 const chatBody = ref<HTMLElement | null>(null);
@@ -129,81 +159,42 @@ watch(() => router.currentRoute.value.name, (newRouteName) => {
     }
 }, { immediate: true });
 
-const goToProduct = (id: number) => {
-    router.push({ name: 'customer.product-info.index', params: { id } });
-}
+const handleProductClick = (id: number) => {
+    // Instead of navigating, we ask the bot for details
+    chatStore.handleOption({ 
+        label: `View Details`, 
+        value: 'view_details', 
+        action: 'view_details', 
+        payload: id 
+    });
+};
 </script>
 
 <style scoped>
 .product-bot-container {
     position: relative;
-    z-index: 9999;
+    /* Removed z-index: 9999 to allow Menu container to manage stacking if needed, 
+       but keeping relative implies it flows naturally in the DOM of Menu */
 }
 
-/* Toggle Button */
-.chat-toggle-btn {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    border: 2px solid rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 52; /* Above chat window when closed/open toggle */
-}
-
-.chat-toggle-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-}
-
-.chat-toggle-btn.active {
-    background: #0f172a;
-    transform: rotate(180deg);
-}
-
-.tooltip-text {
-    position: absolute;
-    left: 100%;
-    margin-left: 10px;
-    background: #1e293b;
-    color: white;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    white-space: nowrap;
-}
-
-.chat-toggle-btn:hover .tooltip-text {
-    opacity: 1;
-}
-
-/* Chat Window */
+/* Chat Window - Adjusted for new positioning logic relative to parent */
 .chat-window {
     position: absolute;
-    bottom: 5rem;
-    left: 0;
+    bottom: 1rem; /* Slightly up from bottom */
+    right: 4.5rem; /* To the left of the button stack */
+    left: auto; /* Reset left */
     width: 360px;
-    height: 550px; /* Fixed height for consistency */
-    max-height: 80vh;
+    height: 550px;
+    max-height: 70vh;
     background: #ffffff;
     border-radius: 1.5rem;
     box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transform-origin: bottom left;
+    transform-origin: bottom right; /* Animate from bottom right */
     border: 1px solid #e2e8f0;
-    z-index: 51;
+    z-index: 1000;
 }
 
 /* Header */
@@ -230,7 +221,7 @@ const goToProduct = (id: number) => {
 .message-wrapper {
     display: flex;
     gap: 0.75rem;
-    max-width: 85%;
+    max-width: 90%;
     animation: fadeIn 0.3s ease;
 }
 
@@ -239,8 +230,8 @@ const goToProduct = (id: number) => {
     flex-direction: row-reverse;
 }
 
-.message-wrapper.product_list {
-    max-width: 100%; /* Product list takes full width minus padding */
+.message-wrapper.product_list, .message-wrapper.product_detail {
+    max-width: 100%; 
 }
 
 .bot-avatar {
@@ -276,7 +267,7 @@ const goToProduct = (id: number) => {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-.bot .message-bubble, .product_list .message-bubble {
+.bot .message-bubble, .product_list .message-bubble, .product_detail .message-bubble {
     background: #ffffff;
     color: #334155;
     border-bottom-left-radius: 0.25rem;
@@ -302,7 +293,7 @@ const goToProduct = (id: number) => {
     overflow-x: auto;
     padding: 0.25rem;
     width: 100%;
-    max-width: 270px; /* Constrain width within bubble area if needed, or let it flow */
+    max-width: 280px;
     scrollbar-width: thin;
 }
 
@@ -342,6 +333,40 @@ const goToProduct = (id: number) => {
 .chat-prod-info {
     padding: 0.75rem;
     border-top: 1px solid #f1f5f9;
+}
+
+/* Product Details Card */
+.product-detail-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    overflow: hidden;
+    max-width: 280px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.detail-header {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    border: 1px solid #e2e8f0;
+}
+
+.detail-specs {
+    padding: 1rem;
+    background: #fff;
 }
 
 /* Typing Indicator */
@@ -408,8 +433,9 @@ const goToProduct = (id: number) => {
 /* Mobile Tweaks */
 @media (max-width: 640px) {
     .chat-window {
-        width: 320px;
-        bottom: 4.5rem;
+        width: 300px;
+        right: 1rem;
+        bottom: 5rem;
         height: 500px;
     }
 }

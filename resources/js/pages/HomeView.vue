@@ -42,24 +42,8 @@
         </section>
 
         <!-- Sticky Icons -->
-        <!-- Sticky Icons -->
-        <div class="fixed bottom-6 left-6 z-50 flex flex-col gap-3 items-start">
-             <!-- Chatbot -->
-            <ProductChatBot />
-
-            <button @click="goToBrowseProducts" 
-                class="w-12 h-12 rounded-full bg-white text-blue-600 shadow-lg shadow-blue-500/20 flex items-center justify-center hover:bg-blue-50 transition-all hover:scale-110 tooltip-btn group relative border border-blue-100"
-                title="Browse Products">
-                <i class="pi pi-th-large text-xl"></i>
-                <span class="absolute left-full ml-2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Browse Products</span>
-            </button>
-            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" 
-                class="w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/30 flex items-center justify-center hover:bg-blue-700 transition-all hover:scale-110 tooltip-btn group relative"
-                title="Message Us">
-                <i class="pi pi-facebook text-xl"></i>
-                <span class="absolute left-full ml-2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Message Us</span>
-            </a>
-        </div>
+        <!-- Sticky Menu -->
+        <FloatingActionMenu />
 
         <!-- Featured Products Section -->
         <section v-if="showCarousel && products.length > 0" class="featured-products" id="products">
@@ -378,7 +362,7 @@ import LenovoLogo from "@/../img/brands/lenovo.png";
 import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/SearchProductInterface";
 import { useSettingsStore } from "@/stores/SettingsStore";
 import NavBar from "@/components/NavBar.vue";
-import ProductChatBot from "@/components/ProductChatBot.vue";
+import FloatingActionMenu from "@/components/FloatingActionMenu.vue";
 import Carousel from "primevue/carousel";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useResponsive } from "@/composables/useResponsive";

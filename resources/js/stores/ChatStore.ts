@@ -12,9 +12,9 @@ export interface ChatOption {
 }
 
 export interface ChatMessage {
-    type: 'bot' | 'user' | 'product_list';
+    type: 'bot' | 'user' | 'product_list' | 'product_detail';
     text?: string;
-    data?: any; // For product list
+    data?: any; // For product list or detail
     time: string;
 }
 
@@ -69,7 +69,7 @@ export const useChatStore = defineStore("chat", {
         setMainOptions() {
             this.currentOptions = [
                 { label: "💻 Best Laptops", value: "laptops", action: 'fetch_products', payload: 'laptops' },
-                { label: "📱 Phones & Tablets", value: "phones", action: 'fetch_products', payload: 'phones' }, // Placeholder for now
+                { label: "🔍 Browse All Products", value: "all", action: 'browse_all' },
                 { label: "🛡️ Warranty Info", value: "warranty", action: 'flow' },
                 { label: "📍 Store Location", value: "location", action: 'flow' },
                 { label: "🚚 Shipping", value: "shipping", action: 'flow' }
@@ -88,6 +88,8 @@ export const useChatStore = defineStore("chat", {
                 } else if (option.value === 'facebook_link') {
                     window.open(option.payload, '_blank');
                     this.setMainOptions();
+                } else if (option.value === 'view_product_page') {
+                    router.push({ name: 'customer.product-info.index', params: { id: option.payload } });
                 }
                 return;
             }
@@ -99,6 +101,10 @@ export const useChatStore = defineStore("chat", {
 
             if (option.action === 'fetch_products') {
                 await this.handleFetchProducts(option.payload);
+            } else if (option.action === 'browse_all') {
+                await this.handleFetchProducts(null); // Fetch all/search endpoint
+            } else if (option.action === 'view_details') {
+                await this.fetchProductDetails(option.payload);
             } else {
                 setTimeout(() => {
                     this.handleFlow(option.value);
@@ -107,32 +113,65 @@ export const useChatStore = defineStore("chat", {
             }
         },
 
-        async handleFetchProducts(category: string) {
+        async handleFetchProducts(category: string | null) {
             const service = useAxiosUtil<null, ProductInterface[]>();
-            // Using 'best-selling' as a proxy for "Best Laptops" for now since we don't have a direct category ID mapping here without fetching categories first.
-            // In a real scenario, we'd map "laptops" to ID 1, etc.
-            // For now, let's just fetch best selling as a "recommendation"
 
             try {
-                await service.get('best-selling'); // or products/search?category_id=...
+                let endpoint = 'best-selling';
+                if (!category) endpoint = 'products/search'; // General search if browsing all
+
+                await service.get(endpoint);
                 if (service.request.status === 200 && service.request.data) {
                     const products: ProductInterface[] = service.request.data;
 
                     setTimeout(() => {
                         this.isTyping = false;
-                        this.addMessage({ text: "Here are some of our top picks based on what's popular right now:", type: 'bot' });
-                        this.addMessage({ type: 'product_list', data: products.slice(0, 5) }); // Limit to 5
+                        const text = category
+                            ? "Here are some top picks:"
+                            : "Here are our latest products. Click one to see more details inside the chat:";
+
+                        this.addMessage({ text: text, type: 'bot' });
+                        this.addMessage({ type: 'product_list', data: products.slice(0, 8) });
 
                         this.currentOptions = [
-                            { label: "View All Products", value: "browse_link", action: 'link' },
+                            { label: "View All on Page", value: "browse_link", action: 'link' },
                             { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
                         ];
                     }, 500);
                 }
             } catch (e) {
                 this.isTyping = false;
-                this.addMessage({ text: "I'm having trouble connecting to our product database right now. Please try browsing directly.", type: 'bot' });
-                this.setMainOptions();
+                this.addMessage({ text: "I'm checking our stock... Please simply browse our full catalog here:", type: 'bot' });
+                this.currentOptions = [{ label: "Browse Catalog", value: "browse_link", action: 'link' }];
+            }
+        },
+
+        async fetchProductDetails(productId: number) {
+            const service = useAxiosUtil<null, ProductInterface>();
+            try {
+                // Using find-product endpoint as identified in plan
+                await service.get(`find-product/${productId}`);
+
+                if (service.request.status === 200 && service.request.data) {
+                    const product = service.request.data;
+
+                    setTimeout(() => {
+                        this.isTyping = false;
+                        this.addMessage({
+                            type: 'product_detail',
+                            data: product
+                        });
+
+                        this.currentOptions = [
+                            { label: "View Full Page", value: "view_product_page", action: 'link', payload: productId },
+                            { label: "⬅️ Back to Products", value: "all", action: 'browse_all' }
+                        ];
+                    }, 500);
+                }
+            } catch (e) {
+                this.isTyping = false;
+                this.addMessage({ text: "I couldn't load the details for that product. Trying opening its page directly.", type: 'bot' });
+                this.currentOptions = [{ label: "View Page", value: "view_product_page", action: 'link', payload: productId }];
             }
         },
 
