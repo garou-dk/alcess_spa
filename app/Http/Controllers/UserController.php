@@ -46,12 +46,31 @@ class UserController extends Controller
 
     public function createUser(UserRequest $request)
     {
-        $result = $this->service->createUser($request->validated());
+        try {
+            $result = $this->service->createUser($request->validated());
 
-        return ApiResponse::success()
-            ->data($result)
-            ->message('User created successfully')
-            ->response();
+            return ApiResponse::success()
+                ->data($result)
+                ->message('User created successfully')
+                ->response();
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle duplicate email or other database constraint violations
+            if ($e->getCode() === '23000') {
+                return ApiResponse::bad_request()
+                    ->message('A user with this email already exists.')
+                    ->response();
+            }
+            
+            \Illuminate\Support\Facades\Log::error('Database error creating user: ' . $e->getMessage());
+            return ApiResponse::bad_request()
+                ->message('Failed to create user. Please try again.')
+                ->response();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error creating user: ' . $e->getMessage());
+            return ApiResponse::bad_request()
+                ->message('An unexpected error occurred. Please try again.')
+                ->response();
+        }
     }
 
     public function index(FetchUserRequest $request)

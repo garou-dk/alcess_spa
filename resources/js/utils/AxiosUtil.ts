@@ -166,12 +166,36 @@ export default function useAxiosUtil<Input, Output>() {
     const postFormData = async (url: string, data: Input) => {
         request.loading = true;
         await getCsrfCookie();
+        
+        // Convert data object to FormData for proper file upload support
+        const formData = new FormData();
+        const dataObj = data as Record<string, unknown>;
+        
+        for (const key in dataObj) {
+            if (Object.prototype.hasOwnProperty.call(dataObj, key)) {
+                const value = dataObj[key];
+                if (value !== null && value !== undefined) {
+                    if (value instanceof File) {
+                        formData.append(key, value);
+                    } else if (value instanceof Blob) {
+                        formData.append(key, value);
+                    } else if (typeof value === 'object' && !(value instanceof Date)) {
+                        // For nested objects/arrays, stringify them
+                        formData.append(key, JSON.stringify(value));
+                    } else {
+                        formData.append(key, String(value));
+                    }
+                }
+            }
+        }
+        
         await axios({
             url: "/api/" + url,
             method: "POST",
-            data: data,
+            data: formData,
             headers: {
                 Accept: "application/json",
+                "Content-Type": "multipart/form-data",
             },
         })
             .then((response) => {

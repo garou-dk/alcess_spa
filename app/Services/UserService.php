@@ -13,30 +13,42 @@ class UserService
     public function createUser(array $data): User
     {
         return DB::transaction(function () use ($data) {
-            $user = new User;
-            $user->full_name = $data['full_name'];
-            $user->email = $data['email'];
-            $user->password = $data['password'];
-            $user->role_id = $data['role_id'] ?? 3;
+            try {
+                $user = new User;
+                $user->full_name = $data['full_name'];
+                $user->email = $data['email'];
+                $user->password = $data['password'];
+                $user->role_id = $data['role_id'] ?? 3;
+                $user->email_verified_at = now(); // Auto-verify for admin-created users
 
-            if (isset($data['image'])) {
-                $manageService = new ManageFileService;
-                $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value, 'public');
+                if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+                    try {
+                        $manageService = new ManageFileService;
+                        $result = $manageService->saveFile($data['image'], FileDirectoryEnum::PROFILE_IMAGE->value, 'public');
+                        $user->image = $result['file_name'];
+                    } catch (\Throwable $e) {
+                        Log::warning('Failed to save profile image during user creation: ' . $e->getMessage());
+                        // Continue without image - don't fail the entire operation
+                    }
+                }
 
-                $user->image = $result['file_name'];
+                $user->save();
+
+                Log::info('User created successfully', [
+                    'user_id' => $user->user_id,
+                    'email' => $user->email,
+                    'role_id' => $user->role_id,
+                ]);
+
+                return $user;
+            } catch (\Throwable $e) {
+                Log::error('Failed to create user', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'data' => array_diff_key($data, ['password' => '', 'image' => '']),
+                ]);
+                throw $e;
             }
-
-            $user->save();
-
-            // TEMPORARY: Commented out to isolate 500 Error (Vite Manifest Issue)
-            // try {
-            //     $mailer = new MailerService;
-            //     $mailer->sendEmailVerification($user);
-            // } catch (\Throwable $th) {
-            //     Log::error('Email verification failed: ' . $th->getMessage());
-            // }
-
-            return $user;
         });
     }
 

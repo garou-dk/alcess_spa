@@ -44,6 +44,14 @@ class ApiResponse
         return $instance;
     }
 
+    public static function bad_request()
+    {
+        $instance = new self;
+        self::$response['status'] = Response::HTTP_BAD_REQUEST;
+
+        return $instance;
+    }
+
     public function message(string $message)
     {
         self::$response['message'] = $message;
