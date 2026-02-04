@@ -288,6 +288,7 @@
                 </div>
             </div>
         </div>
+        <Footer />
     </div>
 </template>
 
@@ -300,6 +301,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
 import Logo from "@/../img/logo.png";
 
 const toast = useToast();

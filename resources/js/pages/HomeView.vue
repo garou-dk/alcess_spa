@@ -271,84 +271,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer" id="footer">
-            <div class="container">
-                <div class="footer-grid">
-                    <div>
-                        <h3>{{ appName }}</h3>
-                        <p>Your trusted destination for quality laptops, phones, and computers with genuine products and warranty.</p>
-                    </div>
-                    <div>
-                        <h4>Quick Links</h4>
-                        <ul>
-                            <li><button @click="openFooterModal('about')">About Us</button></li>
-                            <li><button @click="openFooterModal('contact')">Contact</button></li>
-                            <li><button @click="openFooterModal('faqs')">FAQs</button></li>
-                            <li><button @click="openFooterModal('shipping')">Shipping Info</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4>Customer Service</h4>
-                        <ul>
-                            <li><button @click="openFooterModal('returns')">Returns & Warranty</button></li>
-                            <li><button @click="openFooterModal('privacy')">Privacy Policy</button></li>
-                            <li><button @click="openFooterModal('terms')">Terms & Conditions</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4>Connect With Us</h4>
-                        <div class="social-links">
-                            <a href="https://www.facebook.com/alcesslaptopstore" target="_blank"><i class="pi pi-facebook"></i></a>
-                        </div>
-                        <p class="contact-info"><i class="pi pi-envelope"></i> support@alcess.com</p>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>&copy; {{ new Date().getFullYear() }} {{ appName }}. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Dialogs -->
-
-
-        <Dialog v-model:visible="footerModalVisible" modal :header="footerModalTitle" :style="{ width: isMobile ? '95vw' : '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '95vw' }" :dismissableMask="true" pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!">
-            <div v-if="footerModalType === 'about'" class="modal-content">
-                <div class="modal-header-info"><div class="modal-icon modal-icon-blue"><i class="pi pi-building"></i></div><div><h3>{{ appName }}</h3><p>Your Trusted Tech Partner</p></div></div>
-                <p>Welcome to {{ appName }}! We are a dedicated online retailer specializing in high-quality laptops, smartphones, desktop computers, and accessories.</p>
-                <p>Our mission is to provide our customers with the latest technology products at competitive prices, backed by excellent customer service.</p>
-            </div>
-            <div v-if="footerModalType === 'contact'" class="modal-content">
-                <p>Have questions or need assistance? We're here to help!</p>
-                <div class="contact-card"><div class="modal-icon modal-icon-blue"><i class="pi pi-facebook"></i></div><div><h4>Facebook</h4><a href="https://www.facebook.com/alcesslaptopstore" target="_blank">facebook.com/alcesslaptopstore</a></div></div>
-                <div class="contact-card"><div class="modal-icon modal-icon-green"><i class="pi pi-envelope"></i></div><div><h4>Email</h4><p>support@alcess.com</p></div></div>
-            </div>
-            <div v-if="footerModalType === 'faqs'" class="modal-content">
-                <div class="faq-item"><h4>How do I place an order?</h4><p>Browse our products, add items to your cart, and proceed to checkout.</p></div>
-                <div class="faq-item"><h4>What payment methods do you accept?</h4><p>We accept bank transfers, GCash, and cash on delivery for select areas.</p></div>
-                <div class="faq-item"><h4>Are your products genuine?</h4><p>Yes! All products are 100% genuine with official manufacturer warranty.</p></div>
-                <div class="faq-item"><h4>How long does delivery take?</h4><p>Delivery typically takes 3-7 business days depending on your location.</p></div>
-            </div>
-            <div v-if="footerModalType === 'shipping'" class="modal-content">
-                <div class="info-banner info-banner-blue"><i class="pi pi-truck"></i><div><h4>Nationwide Delivery</h4><p>We deliver to all provinces in the Philippines</p></div></div>
-                <h4>Delivery Timeline</h4>
-                <ul><li>Metro Manila: 5-7 business days</li><li>Luzon: 7-10 business days</li><li>Visayas: 3-6 business days</li><li>Mindanao: 1-3 business days</li></ul>
-            </div>
-            <div v-if="footerModalType === 'returns'" class="modal-content">
-                <div class="info-banner info-banner-green"><i class="pi pi-shield"></i><div><h4>Warranty Coverage</h4><p>All products come with manufacturer warranty</p></div></div>
-                <h4>Return Policy</h4>
-                <ul><li>7-day replacement for defective products</li><li>Products must be in original packaging</li><li>Contact us first before returning any item</li></ul>
-            </div>
-            <div v-if="footerModalType === 'privacy'" class="modal-content">
-                <h4>Information We Collect</h4><p>We collect information you provide when creating an account or placing orders.</p>
-                <h4>How We Use Your Information</h4><p>Your information is used to process orders and provide customer support. We never sell your data.</p>
-            </div>
-            <div v-if="footerModalType === 'terms'" class="modal-content">
-                <h4>Order Acceptance</h4><p>All orders are subject to acceptance and availability.</p>
-                <h4>Pricing</h4><p>Prices are subject to change without notice.</p>
-                <h4>Product Descriptions</h4><p>We strive to provide accurate descriptions. Actual products may vary slightly.</p>
-            </div>
-        </Dialog>
+        <Footer />
     </div>
 </template>
 
@@ -362,6 +285,7 @@ import LenovoLogo from "@/../img/brands/lenovo.png";
 import { SearchErrorInterface, SearchProductInterface } from "@/interfaces/SearchProductInterface";
 import { useSettingsStore } from "@/stores/SettingsStore";
 import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
 import FloatingActionMenu from "@/components/FloatingActionMenu.vue";
 import Carousel from "primevue/carousel";
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
@@ -384,14 +308,8 @@ const products = ref<ProductInterface[]>([]);
 const currentSlide = ref(0);
 let carouselInterval: number | null = null;
 const activeView = ref<'categories' | 'products'>('categories');
-const footerModalVisible = ref(false);
-const footerModalType = ref('about');
 const router = useRouter();
 
-const footerModalTitle = computed(() => {
-    const titles: Record<string, string> = { 'about': 'About Us', 'contact': 'Contact Us', 'faqs': 'FAQs', 'shipping': 'Shipping Information', 'returns': 'Returns & Warranty', 'privacy': 'Privacy Policy', 'terms': 'Terms & Conditions' };
-    return titles[footerModalType.value] || 'Information';
-});
 
 const categoriesHeading = computed(() => CategoryStore.categories?.some((cat: any) => cat.is_popular) ? 'Popular Categories' : 'Categories');
 const productsHeading = computed(() => products.value?.some((prod: any) => prod.is_best_selling) ? 'Best Sellers' : 'Products');
@@ -401,7 +319,6 @@ const isProductPage = computed(() => ['customer.product-search', 'customer.produ
 const form: SearchProductInterface = reactive({ search: null });
 const errors: SearchErrorInterface = reactive({ search: [] });
 
-const openFooterModal = (type: string) => { footerModalType.value = type; footerModalVisible.value = true; };
 const goToBrowseProducts = () => router.push({ name: "customer.browse-products" });
 
 

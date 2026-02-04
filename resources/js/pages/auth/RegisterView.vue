@@ -90,6 +90,7 @@
                 </div>
             </div>
         </div>
+        <Footer />
     </div>
 </template>
 
@@ -97,6 +98,7 @@
 import Logo from "@/../img/logo.png";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
