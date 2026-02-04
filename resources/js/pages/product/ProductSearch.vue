@@ -426,11 +426,7 @@
         <Dialog 
             v-model:visible="showCartModal" 
             modal 
-            :style="getResponsiveClasses({ 
-                mobile: '{ width: \'95vw\', maxWidth: \'350px\' }', 
-                tablet: '{ width: \'400px\' }', 
-                desktop: '{ width: \'400px\' }' 
-            })" 
+            :style="cartModalStyle" 
             :pt="{
                 root: { class: getResponsiveClasses({ 
                     mobile: 'rounded-xl mx-2', 
@@ -634,6 +630,13 @@ const selectedProduct = ref<ProductInterface | null>(null);
 const cartQuantity = ref(1);
 const currentPage = ref(1);
 const itemsPerPage = 15;
+
+const cartModalStyle = computed(() => {
+    if (isMobile.value) {
+        return { width: '95vw', maxWidth: '350px' };
+    }
+    return { width: '400px' };
+});
 
 const filteredData = computed(() => {
     // Ensure data.value is an array

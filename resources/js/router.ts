@@ -133,6 +133,24 @@ const router = createRouter({
                 access: [null],
             },
         },
+        {
+            path: "/privacy-policy",
+            name: "privacy-policy",
+            component: () => import("@/pages/PrivacyPolicyView.vue"),
+            meta: { access: [null], pageName: "Privacy Policy" },
+        },
+        {
+            path: "/terms-of-service",
+            name: "terms-of-service",
+            component: () => import("@/pages/TermsOfServiceView.vue"),
+            meta: { access: [null], pageName: "Terms of Service" },
+        },
+        {
+            path: "/help-center",
+            name: "help-center",
+            component: () => import("@/pages/HelpCenterView.vue"),
+            meta: { access: [null], pageName: "Help Center" },
+        },
     ],
 });
 

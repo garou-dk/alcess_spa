@@ -1,36 +1,90 @@
 <template>
-    <div class="auth-page">
-        <NavBar mode="guest" />
+    <div class="min-h-screen flex bg-white">
+        <!-- Left Side - Branding -->
+        <div class="hidden lg:flex lg:w-1/2 bg-slate-900 relative overflow-hidden flex-col items-center justify-center p-12 text-white">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 z-0 opacity-20">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30"></div>
+                <div class="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                <div class="absolute -bottom-8 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+            </div>
 
-        <!-- Background Decoration -->
-        <div class="bg-decoration">
-            <div class="blob blob-1"></div>
-            <div class="blob blob-2"></div>
+            <!-- Content -->
+            <div class="relative z-10 text-center">
+                <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
+                    <img :src="Logo" alt="Alcess Logo" class="h-32 w-auto drop-shadow-2xl" />
+                </div>
+                <h1 class="text-4xl font-extrabold tracking-tight text-white mb-4">Join the Community</h1>
+                <p class="text-lg text-slate-300 max-w-md mx-auto leading-relaxed">
+                    Create your account today and unlock exclusive features, faster checkout, and order tracking.
+                </p>
+                
+                <!-- Feature List -->
+                <div class="mt-12 space-y-4 text-left inline-block">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <i class="pi pi-check text-blue-400"></i>
+                        </div>
+                        <span class="text-slate-300">Exclusive member discounts</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+                            <i class="pi pi-check text-purple-400"></i>
+                        </div>
+                        <span class="text-slate-300">Track your order history</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <i class="pi pi-check text-green-400"></i>
+                        </div>
+                        <span class="text-slate-300">Fast and secure checkout</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-6 text-slate-500 text-xs text-center">
+                &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
+            </div>
         </div>
 
-        <div class="auth-container mt-16">
-            <div class="auth-header">
-                <h1 class="auth-title">Create Account</h1>
-                <p class="auth-subtitle">Join us to start shopping</p>
-            </div>
+        <!-- Right Side - Content -->
+        <div class="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto">
+            <NavBar mode="guest" class="bg-white/80 backdrop-blur-md sticky top-0 z-20" :transparent="false" />
+            
+            <div class="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-20 xl:px-24 py-12">
+                <div class="w-full max-w-md mx-auto">
+                    <div class="text-center lg:text-left mb-10">
+                        <h2 class="text-3xl font-bold tracking-tight text-gray-900">Create Account</h2>
+                        <p class="mt-2 text-sm text-gray-600">
+                            Join us to start shopping
+                        </p>
+                    </div>
 
-            <div class="auth-card">
-                <RegisterForm @success="onRegisterSuccess">
-                    <template #footer>
-                        <div class="text-center mt-6 pt-4 border-t border-gray-100">
-                            <p class="text-sm text-gray-500">
-                                Already have an account? 
-                                <RouterLink :to="{ name: 'auth.login' }" class="text-blue-600 hover:text-blue-700 font-bold hover:underline">
-                                    Sign in
-                                </RouterLink>
-                            </p>
-                        </div>
-                    </template>
-                </RegisterForm>
-            </div>
+                    <div class="bg-white rounded-2xl">
+                        <RegisterForm @success="onRegisterSuccess">
+                            <template #footer>
+                                <div class="mt-6 text-xs text-center text-gray-500">
+                                    By signing up, you agree to our 
+                                    <RouterLink :to="{ name: 'terms-of-service' }" target="_blank" class="text-blue-600 hover:underline">Terms of Service</RouterLink>
+                                    and 
+                                    <RouterLink :to="{ name: 'privacy-policy' }" target="_blank" class="text-blue-600 hover:underline">Privacy Policy</RouterLink>.
+                                </div>
 
-            <div class="auth-footer">
-                <p>&copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.</p>
+                                <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                                    <p class="text-sm text-gray-600">
+                                        Already have an account? 
+                                        <RouterLink 
+                                            :to="{ name: 'auth.login' }" 
+                                            class="font-bold text-blue-600 hover:text-blue-500 transition-colors ml-1"
+                                        >
+                                            Sign in
+                                        </RouterLink>
+                                    </p>
+                                </div>
+                            </template>
+                        </RegisterForm>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -45,11 +99,6 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const onRegisterSuccess = () => {
-    // Redirect to home or logic happens inside RegisterForm mostly, 
-    // but usually we want to go straight to login or home if auto-logged in.
-    // RegisterForm usually clears form.
-    // Let's assume we want to redirect to login or auto-login.
-    // If backend auto-logs in, we go to home.
     router.push({ name: 'home' });
 };
 </script>
@@ -57,91 +106,16 @@ const onRegisterSuccess = () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-.auth-page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background-color: #f8fafc;
-    background-image: 
-        radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
-        radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, hsla(225,39%,30%,0) 50%), 
-        radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    overflow: hidden;
+.animate-blob {
+    animation: blob 7s infinite;
 }
-
-/* Subtle modern background pattern */
-.bg-decoration {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    opacity: 0.6;
-    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-    background-size: 32px 32px;
-    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+.animation-delay-2000 {
+    animation-delay: 2s;
 }
-
-.auth-container {
-    width: 100%;
-    max-width: 440px;
-    margin: auto;
-    padding: 1.5rem;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.auth-header {
-    text-align: center;
-}
-
-.auth-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.875rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
-}
-
-.auth-subtitle {
-    color: #64748b;
-    font-size: 0.9375rem;
-    font-weight: 500;
-}
-
-.auth-card {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 1.5rem;
-    box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.02),
-        0 20px 25px -5px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(0, 0, 0, 0.03); 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.auth-card:hover {
-    box-shadow: 
-        0 10px 15px -3px rgba(0, 0, 0, 0.02),
-        0 25px 30px -5px rgba(0, 0, 0, 0.06),
-        0 0 0 1px rgba(0, 0, 0, 0.03); 
-    transform: translateY(-2px);
-}
-
-.auth-footer {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 0.8125rem;
-    font-weight: 500;
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
 }
 </style>
