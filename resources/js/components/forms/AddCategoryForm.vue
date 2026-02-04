@@ -26,56 +26,11 @@
                     label-name="Image"
                     tag="label"
                 >
-                    <input
-                        ref="uploadInput"
-                        type="file"
-                        name="image"
-                        id="image"
-                        class="hidden"
-                        accept="image/png, image/jpeg, image/jpg"
-                        @change="onFileSelect"
+                    <MediaUploader
+                        v-model="form.category_image"
+                        :aspect-ratio="1"
+                        label="Upload Category Image"
                     />
-                    <button
-                        v-if="!form.category_image && !result.dataURL"
-                        type="button"
-                        class="w-full cursor-pointer border border-dotted border-sky-800 p-2"
-                        :class="{
-                            'border-red-500!': errors.category_image.length > 0,
-                        }"
-                        @click="selectImage()"
-                    >
-                        <div class="flex flex-col">
-                            <i class="pi pi-image" />
-                            <span class="text-sm">Select an Image</span>
-                        </div>
-                    </button>
-                    <div v-else class="flex flex-col">
-                        <img
-                            :src="result.dataURL"
-                            class="w-full"
-                            alt="User Image"
-                        />
-                        <div class="mt-2 flex flex-wrap justify-center gap-2">
-                            <Button
-                                type="button"
-                                label="Change Image"
-                                icon="pi pi-pencil"
-                                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
-                                @click="selectImage"
-                            />
-                            <Button
-                                type="button"
-                                label="Remove Image"
-                                icon="pi pi-trash"
-                                severity="danger"
-                                @click="
-                                    form.category_image = null;
-                                    result.dataURL = '';
-                                    result.blobURL = '';
-                                "
-                            />
-                        </div>
-                    </div>
                 </InputForm>
             </div>
             <div class="flex justify-center p-2">
@@ -88,43 +43,6 @@
                 />
             </div>
         </form>
-        <Dialog
-            v-model:visible="showCropperModal"
-            modal
-            header="Crop Image"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :pt="{
-                header: { class: '!bg-blue-600 !text-white' },
-                closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
-                closeButtonIcon: { class: '!text-white' }
-            }"
-        >
-            <VuePictureCropper
-                :boxStyle="{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#f8f8f8',
-                    margin: 'auto',
-                }"
-                :img="img"
-                :options="{
-                    viewMode: 1,
-                    dragMode: 'crop',
-                    aspectRatio: 1,
-                }"
-            />
-            <div class="mt-2 flex justify-center">
-                <Button
-                    type="button"
-                    label="Crop Image"
-                    icon="pi pi-image"
-                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
-                    @click="getCropResult()"
-                    :loading="imageProcessing"
-                />
-            </div>
-        </Dialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -133,25 +51,14 @@ import {
     CategoryFormInterface,
 } from "@/interfaces/CategoryInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";
-import { reactive, ref } from "vue";
+import MediaUploader from "@/components/common/MediaUploader.vue";
+import { reactive } from "vue";
 import { useToast } from "vue-toastification";
-import VuePictureCropper, { cropper } from "vue-picture-cropper";
 import ValidatorUtil from "@/utils/ValidatorUtil";
 
 const emit = defineEmits(["cb"]);
 const toast = useToast();
 const submitService = useAxiosUtil<FormData, null>();
-const img = ref<string>("");
-const result: {
-    dataURL: string;
-    blobURL: string;
-} = reactive({
-    dataURL: "",
-    blobURL: "",
-});
-const uploadInput = ref<HTMLInputElement | null>(null);
-const showCropperModal = ref<boolean>(false);
-const imageProcessing = ref<boolean>(false);
 
 const form: CategoryFormInterface = reactive({
     category_name: null,
@@ -161,48 +68,6 @@ const errors: CategoryFormErrorInterface = reactive({
     category_name: [],
     category_image: [],
 });
-
-const selectImage = () => {
-    if (uploadInput.value) {
-        uploadInput.value.click();
-    }
-};
-
-const onFileSelect = (e: Event) => {
-    img.value = "";
-    result.dataURL = "";
-    result.blobURL = "";
-    form.category_image = null;
-
-    const { files } = e.target as HTMLInputElement;
-    if (!files || !files.length) return;
-
-    const file = files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-        img.value = String(reader.result);
-        showCropperModal.value = true;
-        if (!uploadInput.value) return;
-        uploadInput.value.value = "";
-    };
-};
-
-const getCropResult = async () => {
-    imageProcessing.value = true;
-    if (!cropper) return;
-    const base64 = cropper.getDataURL();
-    const blob: Blob | null = await cropper.getBlob();
-    if (!blob) return;
-    const file = await cropper.getFile({
-        fileName: "cropped-image",
-    });
-    form.category_image = file;
-    result.dataURL = base64;
-    result.blobURL = URL.createObjectURL(blob);
-    showCropperModal.value = false;
-    imageProcessing.value = false;
-};
 
 const clearError = () => {
     errors.category_name = [];
@@ -220,6 +85,7 @@ const validate = (): FormData | false => {
     if (!form.category_image) {
         errors.category_image.push("Category image is required");
     } else {
+        // MediaUploader output is trusted, but we can double check
         if (!ValidatorUtil.isValidImageFormat(form.category_image)) {
             errors.category_image.push("Invalid image format");
         } else if (!ValidatorUtil.isValidImageSize(form.category_image)) {

@@ -7,23 +7,14 @@
             
             <!-- Image Upload -->
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Images (Max 3)
-                </label>
-                <input
-                    type="file"
-                    ref="imageInput"
-                    @change="handleImageUpload"
-                    accept="image/*"
+                <MediaUploader
+                    v-model="selectedImages"
                     multiple
-                    class="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100"
+                    :max-files="3"
+                    :aspect-ratio="1"
+                    label="Upload Images (Max 3)"
+                    accept="image/*"
                 />
-                <p class="text-xs text-gray-500 mt-1">{{ selectedImages.length }}/3 images selected</p>
                 <div v-if="errors.images.length > 0" class="text-xs text-red-600 mt-1">
                     {{ errors.images[0] }}
                 </div>
@@ -31,53 +22,15 @@
 
             <!-- Video Upload -->
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Video (Max 15 seconds)
-                </label>
-                <input
-                    type="file"
-                    ref="videoInput"
-                    @change="handleVideoUpload"
+                <MediaUploader
+                    v-model="selectedVideo"
+                    :allow-crop="false"
+                    label="Upload Video (Max 15s)"
                     accept="video/*"
-                    class="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-purple-50 file:text-purple-700
-                        hover:file:bg-purple-100"
+                    icon="pi pi-video"
                 />
-                <p v-if="selectedVideo" class="text-xs text-gray-500 mt-1">Video selected: {{ selectedVideo.name }}</p>
                 <div v-if="errors.video.length > 0" class="text-xs text-red-600 mt-1">
                     {{ errors.video[0] }}
-                </div>
-            </div>
-
-            <!-- Preview Section -->
-            <div v-if="selectedImages.length > 0 || selectedVideo" class="mb-4 p-3 bg-gray-50 rounded-lg">
-                <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-                <div class="flex flex-wrap gap-2">
-                    <div v-for="(img, index) in selectedImages" :key="index" class="relative">
-                        <img :src="getImagePreview(img)" class="w-20 h-20 object-cover rounded" />
-                        <button
-                            type="button"
-                            @click="removeImage(index)"
-                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                        >
-                            ×
-                        </button>
-                    </div>
-                    <div v-if="selectedVideo" class="relative">
-                        <div class="w-20 h-20 bg-purple-100 rounded flex items-center justify-center">
-                            <i class="pi pi-video text-purple-600 text-2xl"></i>
-                        </div>
-                        <button
-                            type="button"
-                            @click="removeVideo"
-                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                        >
-                            ×
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -146,6 +99,7 @@ import { ref, reactive } from 'vue';
 import { IOrder } from '@/interfaces/IOrder';
 import { useToast } from 'vue-toastification';
 import useAxiosUtil from '@/utils/AxiosUtil';
+import MediaUploader from "@/components/common/MediaUploader.vue";
 
 interface Props {
     order: IOrder | null;
@@ -155,8 +109,6 @@ const props = defineProps<Props>();
 const emit = defineEmits(['cb']);
 const toast = useToast();
 
-const imageInput = ref<HTMLInputElement | null>(null);
-const videoInput = ref<HTMLInputElement | null>(null);
 const selectedImages = ref<File[]>([]);
 const selectedVideo = ref<File | null>(null);
 const deliveryDateStart = ref<Date | null>(null);
@@ -170,46 +122,7 @@ const errors = reactive({
     deliveryDateEnd: [] as string[],
 });
 
-const handleImageUpload = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const files = Array.from(target.files || []);
-    
-    errors.images = [];
-    
-    if (files.length > 3) {
-        errors.images.push('Maximum 3 images allowed');
-        return;
-    }
-    
-    selectedImages.value = files;
-};
-
-const handleVideoUpload = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0];
-    
-    errors.video = [];
-    
-    if (file) {
-        // Check video duration (will be validated on backend)
-        selectedVideo.value = file;
-    }
-};
-
-const getImagePreview = (file: File) => {
-    return URL.createObjectURL(file);
-};
-
-const removeImage = (index: number) => {
-    selectedImages.value.splice(index, 1);
-};
-
-const removeVideo = () => {
-    selectedVideo.value = null;
-    if (videoInput.value) {
-        videoInput.value.value = '';
-    }
-};
+// Note: MediaUploader handles file selection update via v-model
 
 const submitService = useAxiosUtil<FormData, IOrder>();
 

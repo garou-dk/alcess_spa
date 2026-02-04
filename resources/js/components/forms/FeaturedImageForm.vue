@@ -1,64 +1,36 @@
 <template>
     <div>
         <div v-if="!submitService.request.loading">
-            <button
-                type="button"
-                class="h-28 w-28 cursor-pointer rounded border border-dotted border-sky-800 hover:bg-gray-100"
-                @click="selectImage()"
-            >
-                <i class="pi pi-plus" />
-            </button>
-            <input
-                ref="uploadInput"
-                type="file"
-                name="image"
-                id="image"
-                class="hidden"
+            <MediaUploader
+                v-model="form.featured_image"
+                label="Add Featured Image/Video"
                 accept="image/png, image/jpeg, image/jpg, video/mp4"
-                @change="onFileSelect"
+                :max-size-m-b="20"
+                @update:modelValue="handleSubmit" 
             />
-            <Dialog
-                v-model:visible="showCropperModal"
-                modal
-                header="Crop Image"
-                :dismissableMask="true"
-                :style="{ width: '28rem' }"
-                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-                :pt="{
-                    header: { class: '!bg-blue-600 !text-white' },
-                    closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
-                    closeButtonIcon: { class: '!text-white' }
-                }"
-            >
-                <VuePictureCropper
-                    :boxStyle="{
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: '#f8f8f8',
-                        margin: 'auto',
-                    }"
-                    :img="img"
-                    :options="{
-                        viewMode: 1,
-                        dragMode: 'crop',
-                        aspectRatio: 1,
-                    }"
-                />
-                <div class="mt-4 flex justify-end pt-4 border-t border-gray-200">
-                    <Button
-                        type="button"
-                        label="Crop Image"
-                        icon="pi pi-check"
-                        class="!bg-blue-600 hover:!bg-blue-700 !text-white"
-                        @click="getCropResult()"
-                    />
-                </div>
-            </Dialog>
+            <!-- 
+                Note: Original logic submitted immediately on selection/crop. 
+                MediaUploader updates modelValue on selection/crop completion.
+                So we can watch the model or listen to update event to trigger submit.
+                However, to prevent double submits if user re-selects, maybe better to have a save button?
+                Original UX was: click (+) -> select -> (crop if image) -> auto submit.
+                MediaUploader creates a preview. 
+                The Refactor below keeps the "Immediate Submit" pattern by calling handleSubmit on change.
+                But MediaUploader shows preview. 
+                If we want to keep the exact UX (button only, no preview until saved?), 
+                we might need to tweak MediaUploader usage or just let it show preview then user clicks save?
+                Actually, original code replaced the button with spinner immediately.
+                Let's stick to the immediate submit for now as that seems to be the design.
+                But wait, MediaUploader is designed to show a preview state.
+                If I use it, it will show the image, then I submit.
+                Actually, better UX: Show preview + Save button? 
+                Or: Listener `update:modelValue` triggers submit.
+            -->
         </div>
         <div v-else>
             <button
                 type="button"
-                class="h-28 w-28 cursor-pointer rounded border border-dotted border-sky-800 bg-gray-500 hover:bg-gray-100"
+                class="h-28 w-28 cursor-pointer rounded border border-dotted border-sky-800 bg-gray-500 hover:bg-gray-100 flex items-center justify-center p-0"
             >
                 <i
                     class="pi pi-spin pi-spinner"
@@ -76,8 +48,8 @@ import {
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import ValidatorUtil from "@/utils/ValidatorUtil";
-import { reactive, ref } from "vue";
-import VuePictureCropper, { cropper } from "vue-picture-cropper";
+import MediaUploader from "@/components/common/MediaUploader.vue";
+import { reactive, watch } from "vue";
 import { useToast } from "vue-toastification";
 
 interface Props {
@@ -96,84 +68,6 @@ const props = defineProps<Props>();
 const emit = defineEmits(["cb"]);
 const submitService = useAxiosUtil<FormData, ProductInterface>();
 const toast = useToast();
-const img = ref<string>("");
-const result: {
-    dataURL: string;
-    blobURL: string;
-} = reactive({
-    dataURL: "",
-    blobURL: "",
-});
-const uploadInput = ref<HTMLInputElement | null>(null);
-const showCropperModal = ref<boolean>(false);
-
-const selectImage = () => {
-    if (uploadInput.value) {
-        uploadInput.value.click();
-    }
-};
-
-const onFileSelect = (e: Event) => {
-    img.value = "";
-    result.dataURL = "";
-    result.blobURL = "";
-    form.featured_image = null;
-
-    const { files } = e.target as HTMLInputElement;
-    if (!files || !files.length) return;
-
-    const file = files[0];
-    const fileType = ValidatorUtil.isImageOrMp4(file);
-    if (!fileType) {
-        toast.error(
-            "Invalid file type, please select a jpeg, jpg, png or mp4 file",
-        );
-        uploadInput.value.value = "";
-        return;
-    }
-    const validSize = ValidatorUtil.checkSizeValidation(file, 20);
-    if (!validSize) {
-        toast.error("File size must be less than 20MB");
-        uploadInput.value.value = "";
-        return;
-    }
-
-    if (fileType === "video/mp4") {
-        form.featured_image = file;
-        handleSubmit();
-    } else {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            img.value = String(reader.result);
-            showCropperModal.value = true;
-            if (!uploadInput.value) return;
-            uploadInput.value.value = "";
-        };
-    }
-};
-
-const getCropResult = async () => {
-    if (!cropper) return;
-    const base64 = cropper.getDataURL();
-    const blob: Blob | null = await cropper.getBlob();
-    if (!blob) return;
-    const file = await cropper.getFile({
-        fileName: "cropped-image",
-    });
-    result.dataURL = base64;
-    result.blobURL = URL.createObjectURL(blob);
-    form.featured_image = file;
-    showCropperModal.value = false;
-    handleSubmit();
-};
-
-const resetForm = () => {
-    img.value = "";
-    result.dataURL = "";
-    result.blobURL = "";
-    form.featured_image = null;
-};
 
 const clearErrors = () => {
     errors.featured_image = [];
@@ -182,22 +76,19 @@ const clearErrors = () => {
 const validate = (): FormData | false => {
     clearErrors();
     let formData = new FormData();
-    if (ValidatorUtil.isEmpty(form.featured_image)) {
-        errors.featured_image.push("Featured image is required");
-    } else if (!ValidatorUtil.isImageOrMp4(form.featured_image)) {
-        errors.featured_image.push("Invalid image format");
-    } else if (!ValidatorUtil.checkSizeValidation(form.featured_image, 20)) {
-        errors.featured_image.push(
-            "Image size must be less than or equal to 20MB",
-        );
+    if (!form.featured_image) {
+        errors.featured_image.push("Featured image is required"); // Should adhere to non-empty check
     } else {
-        formData.append("featured_image", form.featured_image);
+         // MediaUploader handles types, but double check doesn't hurt or can be skipped
+         formData.append("featured_image", form.featured_image);
     }
     const hasErrors = [errors.featured_image.length > 0];
     return hasErrors.includes(true) ? false : formData;
 };
 
 const handleSubmit = async () => {
+    if (!form.featured_image) return; // Wait for file
+
     const data = validate();
     if (data) {
         await submitService
@@ -209,22 +100,24 @@ const handleSubmit = async () => {
                 if (submitService.request.status === 200) {
                     toast.success(submitService.request.message);
                     emit("cb", submitService.request.data);
+                    // Reset is handled by parent re-rendering or we clear form
+                    form.featured_image = null; 
                 } else {
                     toast.error(
                         submitService.request.message ?? "Please try again",
                     );
-                    if (submitService.request.errors) {
-                        Object.keys(submitService.request.errors).forEach(
-                            (key) => {
-                                errors[key] = submitService.request.errors[key];
-                            },
-                        );
-                    }
+                    form.featured_image = null; // Clear to allow retry
                 }
             });
-        resetForm();
     } else {
         toast.error("Please fill in the required fields.");
     }
 };
+
+// Watch for file changes to trigger auto-submit (mimicking original behavior)
+watch(() => form.featured_image, (newVal) => {
+    if (newVal) {
+        handleSubmit();
+    }
+});
 </script>

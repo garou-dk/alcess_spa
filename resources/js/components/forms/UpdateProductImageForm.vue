@@ -8,45 +8,21 @@
 
         <!-- Image Upload Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div v-if="!form.product_image && props.data.product_image" class="flex flex-col items-center mb-4">
+                <img 
+                    :src="UrlUtil.getBaseAppUrl(`storage/images/product/${props.data.product_image}`)" 
+                    alt="Current Product Image" 
+                    class="w-64 h-64 object-cover rounded-lg border-2 border-gray-300 mb-2" 
+                />
+                <p class="text-xs text-gray-500">Current Image</p>
+            </div>
+            
             <div class="flex flex-col items-center">
-                <!-- Preview -->
-                <div v-if="result.blobURL || props.data.product_image" class="mb-4">
-                    <img 
-                        :src="result.blobURL || UrlUtil.getBaseAppUrl(`storage/images/product/${props.data.product_image}`)" 
-                        alt="Product Preview" 
-                        class="w-64 h-64 object-cover rounded-lg border-2 border-gray-300" 
-                    />
-                </div>
-                
-                <!-- Upload Button -->
-                <div class="w-full max-w-md">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
-                    <input
-                        ref="uploadInput"
-                        type="file"
-                        accept="image/*"
-                        @change="selectFile"
-                        class="block w-full text-sm text-gray-500
-                            file:mr-4 file:py-2 file:px-4
-                            file:rounded-lg file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100
-                            cursor-pointer"
-                    />
-                    <p class="text-xs text-gray-500 mt-2">Recommended: Square image, at least 500x500px</p>
-                </div>
-
-                <!-- Clear Button -->
-                <button
-                    v-if="result.blobURL"
-                    type="button"
-                    @click="clearImage"
-                    class="mt-4 text-sm text-red-600 hover:text-red-700"
-                >
-                    <i class="pi pi-times mr-1"></i>
-                    Remove Image
-                </button>
+                <MediaUploader
+                    v-model="form.product_image"
+                    label="Change Product Image"
+                    :aspect-ratio="1"
+                />
             </div>
         </div>
 
@@ -61,45 +37,6 @@
                 :loading="submitService.request.loading"
             />
         </div>
-
-        <!-- Cropper Modal -->
-        <Dialog
-            v-model:visible="showCropperModal"
-            modal
-            header="Crop Image"
-            :dismissableMask="true"
-            :style="{ width: '28rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-            :pt="{
-                header: { class: '!bg-blue-600 !text-white' },
-                closeButton: { class: '!text-white hover:!bg-blue-700 !border-white' },
-                closeButtonIcon: { class: '!text-white' }
-            }"
-        >
-            <VuePictureCropper
-                :boxStyle="{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#f8f8f8',
-                    margin: 'auto',
-                }"
-                :img="img"
-                :options="{
-                    viewMode: 1,
-                    dragMode: 'crop',
-                    aspectRatio: 1,
-                }"
-            />
-            <div class="mt-4 flex justify-end pt-4 border-t border-gray-200">
-                <Button
-                    type="button"
-                    label="Crop Image"
-                    icon="pi pi-check"
-                    class="!bg-blue-600 hover:!bg-blue-700 !text-white"
-                    @click="getCropResult()"
-                />
-            </div>
-        </Dialog>
     </form>
 </template>
 
@@ -111,9 +48,9 @@ import {
 } from "@/interfaces/ProductInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import UrlUtil from "@/utils/UrlUtil";
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { useToast } from "vue-toastification";
-import VuePictureCropper, { cropper } from "vue-picture-cropper";
+import MediaUploader from "@/components/common/MediaUploader.vue";
 
 interface Props {
     data: ProductInterface;
@@ -123,16 +60,6 @@ const submitService = useAxiosUtil<FormData, unknown>();
 const toast = useToast();
 const emit = defineEmits(["cb"]);
 const props = defineProps<Props>();
-const img = ref<string>("");
-const result: {
-    dataURL: string;
-    blobURL: string;
-} = reactive({
-    dataURL: "",
-    blobURL: "",
-});
-const uploadInput = ref<HTMLInputElement | null>(null);
-const showCropperModal = ref<boolean>(false);
 
 const form: UpdateProductImageFormInterface = reactive({
     product_image: null,
@@ -144,50 +71,6 @@ const errors: UpdateProductImageFormErrorInterface = reactive({
 
 const clearForm = () => {
     form.product_image = null;
-    img.value = "";
-    result.dataURL = "";
-    result.blobURL = "";
-};
-
-const selectImage = () => {
-    if (uploadInput.value) {
-        uploadInput.value.click();
-    }
-};
-
-const selectFile = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-        img.value = String(reader.result);
-        showCropperModal.value = true;
-        if (!uploadInput.value) return;
-        uploadInput.value.value = '';
-    };
-};
-
-const clearImage = () => {
-    form.product_image = null;
-    result.dataURL = '';
-    result.blobURL = '';
-};
-
-const getCropResult = async () => {
-    if (!cropper) return;
-    const base64 = cropper.getDataURL();
-    const blob: Blob | null = await cropper.getBlob();
-    if (!blob) return;
-    const file = await cropper.getFile({
-        fileName: 'product-image',
-    });
-    form.product_image = file;
-    result.dataURL = base64;
-    result.blobURL = URL.createObjectURL(blob);
-    showCropperModal.value = false;
 };
 
 const clearErrors = () => {

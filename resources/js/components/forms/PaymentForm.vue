@@ -101,29 +101,12 @@
                     labelName="Proof of Payment (Screenshot/Image)*"
                     tag="span"
                 >
-                    <div v-if="selectedFile">
-                        <InputGroup>
-                            <InputText
-                                :model-value="selectedFile.name"
-                                readonly
-                            />
-                            <InputGroupAddon>
-                                <Button
-                                    type="button"
-                                    icon="pi pi-times"
-                                    @click="selectedFile = null"
-                                    severity="danger"
-                                />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </div>
-                    <Button 
-                        v-else 
-                        label="Upload Screenshot" 
-                        icon="pi pi-upload" 
-                        @click="fileElement.click()" 
-                        type="button"
-                        class="w-full !bg-blue-600 hover:!bg-blue-700"
+                    <MediaUploader
+                        v-model="form.payment_proof"
+                        :allow-crop="false"
+                        label="Upload Screenshot"
+                        accept="image/*"
+                         @update:modelValue="errors.payment_proof = []"
                     />
                 </InputForm>
             </div>
@@ -151,7 +134,6 @@
         <div v-else class="p-5 flex justify-center">
             <PageLoader />
         </div>
-        <input type="file" ref="fileElement" @change="onFileChange" class="hidden" id="screenshot" accept="image/png, image/jpeg, image/jpg" />
     </div>
 </template>
 <script setup lang="ts">
@@ -163,6 +145,7 @@ import CurrencyUtil from '@/utils/CurrencyUtil';
 import DateUtil from '@/utils/DateUtil';
 import { onMounted, reactive, ref, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
+import MediaUploader from "@/components/common/MediaUploader.vue";
 
 interface IReceivedData {
     bank_account: IAppConfiguration;
@@ -210,30 +193,6 @@ const isFormValid = computed(() => {
         form.bank_name.trim() !== '' &&
         form.payment_proof
     );
-});
-
-const fileElement = ref<HTMLInputElement>();
-
-const selectedFile = ref<File | null>(null);
-
-const onFileChange = (event: Event) => {
-    const files = (event.target as HTMLInputElement).files;
-    if (files && files.length > 0) {
-        selectedFile.value = files[0];
-    }
-    else {
-        selectedFile.value = null;
-    }
-    fileElement.value!.value = "";
-}
-
-watch(selectedFile, () => {
-    if (selectedFile.value) {
-        form.payment_proof = selectedFile.value;
-    }
-    else {
-        form.payment_proof = null;
-    }
 });
 
 const form = reactive<IForm>({
