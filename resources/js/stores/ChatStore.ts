@@ -9,6 +9,7 @@ export interface ChatOption {
     value: string;
     action?: string; // 'fetch_products' | 'link' | 'flow'
     payload?: any;
+    icon?: string;
 }
 
 export interface ChatMessage {
@@ -68,11 +69,11 @@ export const useChatStore = defineStore("chat", {
 
         setMainOptions() {
             this.currentOptions = [
-                { label: "💻 Best Laptops", value: "laptops", action: 'fetch_products', payload: 'laptops' },
-                { label: "🔍 Browse All Products", value: "all", action: 'browse_all' },
-                { label: "🛡️ Warranty Info", value: "warranty", action: 'flow' },
-                { label: "📍 Store Location", value: "location", action: 'flow' },
-                { label: "🚚 Shipping", value: "shipping", action: 'flow' }
+                { label: "Best Laptops", value: "laptops", action: 'fetch_products', payload: 'laptops', icon: 'pi pi-desktop' },
+                { label: "Browse All Products", value: "all", action: 'browse_all', icon: 'pi pi-search' },
+                { label: "Warranty Info", value: "warranty", action: 'flow', icon: 'pi pi-shield' },
+                { label: "Store Location", value: "location", action: 'flow', icon: 'pi pi-map-marker' },
+                { label: "Shipping", value: "shipping", action: 'flow', icon: 'pi pi-truck' }
             ];
         },
 
@@ -114,44 +115,50 @@ export const useChatStore = defineStore("chat", {
         },
 
         async handleFetchProducts(category: string | null) {
-            const service = useAxiosUtil<null, any>(); // Change generic to any to support search response structure
+            const service = useAxiosUtil<null, any>();
 
             try {
                 let endpoint = 'best-selling';
-                // If browsing all, we hit the search endpoint which returns paginated data (data.data)
                 if (!category) endpoint = 'products/search?search=';
 
                 await service.get(endpoint);
+
                 if (service.request.status === 200 && service.request.data) {
                     let products: ProductInterface[] = [];
 
-                    if (category) {
+                    if (category && category !== 'all') {
+                        // Some endpoints return array directly
                         products = service.request.data as unknown as ProductInterface[];
                     } else {
-                        // Search endpoint usually returns { data: [...] }
+                        // Search endpoint usually returns { data: [...] } or just array depending on backend
                         const responseData = service.request.data;
                         products = Array.isArray(responseData) ? responseData : (responseData.data || []);
                     }
 
-                    setTimeout(() => {
-                        this.isTyping = false;
+                    if (products.length === 0) {
+                        this.addMessage({ text: "I couldn't find any products matching that criteria right now.", type: 'bot' });
+                    } else {
                         const text = category
                             ? "Here are some top picks:"
                             : "Here are available products. Click one for full details:";
 
                         this.addMessage({ text: text, type: 'bot' });
                         this.addMessage({ type: 'product_list', data: products.slice(0, 10) });
+                    }
 
-                        this.currentOptions = [
-                            { label: "View Full Catalog", value: "browse_link", action: 'link' },
-                            { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
-                        ];
-                    }, 500);
+                    this.currentOptions = [
+                        { label: "View Full Catalog", value: "browse_link", action: 'link', icon: 'pi pi-th-large' },
+                        { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
+                    ];
+                } else {
+                    throw new Error("Failed to fetch products");
                 }
             } catch (e) {
+                console.error(e);
+                this.addMessage({ text: "I'm having a little trouble reaching our catalog. You can browse directly here:", type: 'bot' });
+                this.currentOptions = [{ label: "Browse Catalog", value: "browse_link", action: 'link', icon: 'pi pi-external-link' }];
+            } finally {
                 this.isTyping = false;
-                this.addMessage({ text: "I'm checking our stock... Please simply browse our full catalog here:", type: 'bot' });
-                this.currentOptions = [{ label: "Browse Catalog", value: "browse_link", action: 'link' }];
             }
         },
 
@@ -172,15 +179,15 @@ export const useChatStore = defineStore("chat", {
                         });
 
                         this.currentOptions = [
-                            { label: "View Full Page", value: "view_product_page", action: 'link', payload: productId },
-                            { label: "⬅️ Back to Products", value: "all", action: 'browse_all' }
+                            { label: "View Full Page", value: "view_product_page", action: 'link', payload: productId, icon: 'pi pi-external-link' },
+                            { label: "Back to Products", value: "all", action: 'browse_all', icon: 'pi pi-arrow-left' }
                         ];
                     }, 500);
                 }
             } catch (e) {
                 this.isTyping = false;
                 this.addMessage({ text: "I couldn't load the details for that product. Trying opening its page directly.", type: 'bot' });
-                this.currentOptions = [{ label: "View Page", value: "view_product_page", action: 'link', payload: productId }];
+                this.currentOptions = [{ label: "View Page", value: "view_product_page", action: 'link', payload: productId, icon: 'pi pi-external-link' }];
             }
         },
 
@@ -193,35 +200,35 @@ export const useChatStore = defineStore("chat", {
                 warranty: {
                     text: "All our brand new items come with a <b>1-year official manufacturer warranty</b>. We also offer a 7-day replacement for factory defects.",
                     options: [
-                        { label: "How to claim?", value: "claim_warranty", action: 'flow' },
-                        { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
+                        { label: "How to claim?", value: "claim_warranty", action: 'flow', icon: 'pi pi-question-circle' },
+                        { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
                     ]
                 },
                 claim_warranty: {
                     text: "To claim warranty, simply bring the item and your receipt to our Davao branch, or contact our support team via Facebook.",
                     options: [
-                        { label: "Store Location", value: "location", action: 'flow' },
-                        { label: "Message Support", value: "facebook_link", action: 'link', payload: 'https://www.facebook.com/alcesslaptopstore' }
+                        { label: "Store Location", value: "location", action: 'flow', icon: 'pi pi-map-marker' },
+                        { label: "Message Support", value: "facebook_link", action: 'link', payload: 'https://www.facebook.com/alcesslaptopstore', icon: 'pi pi-facebook' }
                     ]
                 },
                 location: {
                     text: "We are located at <b>Alcess Tech, Davao City</b>. Open Mon-Sat, 9AM to 6PM.",
                     options: [
-                        { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
+                        { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
                     ]
                 },
                 shipping: {
                     text: "We ship nationwide! 🚚 <br>• Metro Manila: 5-7 days <br>• Mindanao: 1-3 days <br>• Visayas: 3-5 days",
                     options: [
-                        { label: "Check Rates", value: "rates", action: 'flow' },
-                        { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
+                        { label: "Check Rates", value: "rates", action: 'flow', icon: 'pi pi-dollar' },
+                        { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
                     ]
                 },
                 rates: {
                     text: "Shipping is free for orders above ₱50,000! For smaller items, it starts at ₱150.",
                     options: [
-                        { label: "Start Shopping", value: "browse_link", action: 'link' },
-                        { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
+                        { label: "Start Shopping", value: "browse_link", action: 'link', icon: 'pi pi-shopping-bag' },
+                        { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
                     ]
                 }
             };
@@ -244,10 +251,48 @@ export const useChatStore = defineStore("chat", {
 
             // Add context specific options
             if (routeName === 'customer.cart') {
-                this.currentOptions.unshift({ label: "🚚 Shipping Rates", value: "shipping", action: 'flow' });
+                this.currentOptions.unshift({ label: "Shipping Rates", value: "shipping", action: 'flow', icon: 'pi pi-truck' });
             } else if (routeName === 'customer.product-info.index') {
-                this.currentOptions.unshift({ label: "🛡️ Warranty for this item", value: "warranty", action: 'flow' });
+                this.currentOptions.unshift({ label: "Warranty for this item", value: "warranty", action: 'flow', icon: 'pi pi-shield' });
             }
+        },
+
+        handleNotification(notification: any) {
+            // Ensure chat is initialized so messages don't get lost or weird state
+            if (!this.hasInitialized) {
+                this.messages.push({
+                    type: 'bot',
+                    text: "Welcome back. I have an update regarding your order.",
+                    time: this.getCurrentTime()
+                });
+                this.hasInitialized = true;
+            }
+
+            // Professional phrasing based on status/content
+            let messageText = `<b>Update:</b> ${notification.title}<br/><span class="text-xs text-slate-500">${notification.message}</span>`;
+            let options: ChatOption[] = [];
+
+            // We can infer context from the message or adds logic if we had status codes. 
+            // For now, assume most are order updates.
+
+            this.addMessage({ text: messageText, type: 'bot' });
+
+            options = [
+                { label: "View Order Details", value: "view_order", action: 'link', icon: 'pi pi-file' },
+                { label: "Track Shipment", value: "track_order", action: 'link', icon: 'pi pi-map' }
+            ];
+
+            // If we are currently "typing", stop it to show this urgent message
+            this.isTyping = false;
+            this.currentOptions = options;
+
+            // Optional: Auto-open chat if closed? Maybe too intrusive. 
+            // Let's just update the state. The user will see the badge (if we implemented one) or opens it.
+            // But user requested "proactive", so opening it might be expected *if* it's important.
+            // For now, let's keep it closed to not annoy, but ensuring it's ready when opened.
+            // actually, let's set unread indicator logic if we had one.
+            // Since we don't have a specific "unread" badge for chat icon yet (only the ping animation), 
+            // the message will be there when they open it.
         }
     }
 });

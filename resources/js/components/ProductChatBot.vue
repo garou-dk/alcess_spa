@@ -4,8 +4,8 @@
         <div v-show="chatStore.isOpen" class="chat-window animate__animated animate__fadeInUp">
             <div class="chat-header">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                        <i class="pi pi-bolt text-white text-sm"></i>
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center p-1">
+                        <img :src="Logo" alt="Alcess" class="w-full h-full object-contain" />
                     </div>
                     <div>
                         <h3 class="text-white font-bold text-sm">Alcess Assistant</h3>
@@ -22,7 +22,7 @@
                 <div v-for="(msg, index) in chatStore.messages" :key="index" :class="['message-wrapper', msg.type]">
                     <!-- Bot Avatar -->
                     <div v-if="['bot', 'product_list', 'product_detail'].includes(msg.type)" class="bot-avatar">
-                        <i class="pi pi-bolt"></i>
+                        <img :src="Logo" alt="Bot" class="w-full h-full object-contain p-1" />
                     </div>
 
                     <!-- Message Content -->
@@ -98,9 +98,10 @@
                             v-for="(option, idx) in chatStore.currentOptions" 
                             :key="idx" 
                             @click="chatStore.handleOption(option)"
-                            class="suggestion-chip"
+                            class="suggestion-chip flex items-center gap-2"
                             :disabled="chatStore.isTyping"
                         >
+                            <i v-if="option.icon" :class="option.icon" class="text-xs"></i>
                             {{ option.label }}
                         </button>
                     </div>
@@ -131,6 +132,7 @@ import { useChatStore } from '@/stores/ChatStore';
 import UrlUtil from '@/utils/UrlUtil';
 import CurrencyUtil from '@/utils/CurrencyUtil';
 import { useRouter } from 'vue-router';
+import Logo from "@/../img/logo.png";
 
 const props = defineProps({
     externalControl: {
@@ -249,17 +251,18 @@ const handleProductClick = (id: number) => {
 }
 
 .bot-avatar {
-    width: 28px;
-    height: 28px;
-    background: #eff6ff;
-    color: #2563eb;
+    width: 32px;
+    height: 32px;
+    background: #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     font-size: 0.75rem;
-    border: 1px solid #dbeafe;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .message-content {

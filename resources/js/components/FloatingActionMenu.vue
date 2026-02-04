@@ -72,6 +72,7 @@ const toggleMenu = () => {
 
 const closeMenu = () => {
     if (isExpanded.value) isExpanded.value = false;
+    if (chatStore.isOpen) chatStore.isOpen = false;
 };
 
 const handleAction = (action: string) => {

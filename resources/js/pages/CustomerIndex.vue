@@ -54,6 +54,7 @@ import LogoutButton from "@/components/LogoutButton.vue";
 import NavBar from "@/components/NavBar.vue";
 import CartButton from "@/components/CartButton.vue";
 import FloatingActionMenu from "@/components/FloatingActionMenu.vue";
+import { useChatStore } from "@/stores/ChatStore";
 
 import AddressForm from "@/components/forms/AddressForm.vue";
 import SecurityForm from "@/components/forms/SecurityForm.vue";
@@ -324,12 +325,16 @@ const loadNotifications = async () => {
 
 let leave: (() => void) | null = null;
 
+const chatStore = useChatStore();
+
 if (Page.user) {
     const echoResult = useEcho(
         `order.${Page.user.user_id}`,
         [".customer-order.event"],
         (value: IOrderNotification) => {
             notifications.value.unshift(value);
+            // Push to Chatbot as well
+            chatStore.handleNotification(value);
         },
     );
     leave = echoResult.leave;
