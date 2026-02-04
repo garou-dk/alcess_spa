@@ -36,12 +36,18 @@ class UserController extends Controller
 
     public function registerCustomer(UserRequest $request)
     {
-        $result = $this->service->createUser($request->validated());
+        try {
+            $result = $this->service->createUser($request->validated());
 
-        return ApiResponse::success()
-            ->data($result)
-            ->message('Verification link has been sent to your email')
-            ->response();
+            return ApiResponse::success()
+                ->data($result)
+                ->message('Verification link has been sent to your email')
+                ->response();
+        } catch (\Throwable $e) {
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function createUser(UserRequest $request)

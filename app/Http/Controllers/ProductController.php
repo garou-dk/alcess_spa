@@ -44,12 +44,18 @@ class ProductController extends Controller
 
     public function createWithMedia(Request $request)
     {
-        $data = $request->all();
+        try {
+            $data = $request->all();
 
-        return ApiResponse::success()
-            ->data($this->service->createWithMedia($data))
-            ->message('Product created successfully')
-            ->response();
+            return ApiResponse::success()
+                ->data($this->service->createWithMedia($data))
+                ->message('Product created successfully')
+                ->response();
+        } catch (\Throwable $e) {
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function validateProductInfo(ProductRequest $request)
@@ -110,12 +116,18 @@ class ProductController extends Controller
 
     public function changeImage(string $id, ProductImageRequest $request)
     {
-        $data = $request->validated() + ['product_id' => $id];
+        try {
+            $data = $request->validated() + ['product_id' => $id];
 
-        return ApiResponse::success()
-            ->data($this->service->updateImage($data))
-            ->message('Product image updated successfully')
-            ->response();
+            return ApiResponse::success()
+                ->data($this->service->updateImage($data))
+                ->message('Product image updated successfully')
+                ->response();
+        } catch (\Throwable $e) {
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function update(string $id, ProductRequest $request)

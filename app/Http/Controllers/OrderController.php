@@ -207,34 +207,46 @@ class OrderController extends Controller
     }
 
     public function setDeliveryWithProof(string $id, Request $request) {
-        $validated = $request->validate([
-            'estimated_delivery_date_start' => ['required', 'date', 'after_or_equal:today'],
-            'estimated_delivery_date_end' => ['required', 'date', 'after_or_equal:estimated_delivery_date_start'],
-        ]);
-        
-        \Log::info('🎯 Controller received request', [
-            'order_id' => $id,
-            'has_files' => $request->hasFile('images') || $request->hasFile('video'),
-            'has_images' => $request->hasFile('images'),
-            'has_video' => $request->hasFile('video'),
-            'delivery_dates' => [
-                'start' => $validated['estimated_delivery_date_start'],
-                'end' => $validated['estimated_delivery_date_end']
-            ]
-        ]);
-        
-        $data = [
-            'order_id' => $id,
-            'images' => $request->file('images', []),
-            'video' => $request->file('video'),
-            'estimated_delivery_date_start' => $validated['estimated_delivery_date_start'],
-            'estimated_delivery_date_end' => $validated['estimated_delivery_date_end'],
-        ];
-        
-        return ApiResponse::success()
-            ->data($this->service->setDeliveryWithProof($data))
-            ->message('Order set to delivery successfully!')
-            ->response();
+        try {
+            $validated = $request->validate([
+                'estimated_delivery_date_start' => ['required', 'date', 'after_or_equal:today'],
+                'estimated_delivery_date_end' => ['required', 'date', 'after_or_equal:estimated_delivery_date_start'],
+            ]);
+            
+            \Log::info('🎯 Controller received request', [
+                'order_id' => $id,
+                'has_files' => $request->hasFile('images') || $request->hasFile('video'),
+                'has_images' => $request->hasFile('images'),
+                'has_video' => $request->hasFile('video'),
+                'delivery_dates' => [
+                    'start' => $validated['estimated_delivery_date_start'],
+                    'end' => $validated['estimated_delivery_date_end']
+                ]
+            ]);
+            
+            $data = [
+                'order_id' => $id,
+                'images' => $request->file('images', []),
+                'video' => $request->file('video'),
+                'estimated_delivery_date_start' => $validated['estimated_delivery_date_start'],
+                'estimated_delivery_date_end' => $validated['estimated_delivery_date_end'],
+            ];
+            
+            return ApiResponse::success()
+                ->data($this->service->setDeliveryWithProof($data))
+                ->message('Order set to delivery successfully!')
+                ->response();
+        } catch (\Throwable $e) {
+            \Log::error('❌ Error setting delivery proof', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function generateInvoice(string $id) {

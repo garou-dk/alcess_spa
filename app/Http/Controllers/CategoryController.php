@@ -21,10 +21,16 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request)
     {
-        return ApiResponse::success()
-            ->data($this->service->store($request->validated()))
-            ->message('Category created successfully')
-            ->response();
+        try {
+            return ApiResponse::success()
+                ->data($this->service->store($request->validated()))
+                ->message('Category created successfully')
+                ->response();
+        } catch (\Throwable $e) {
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function updateCategoryName(string $id, UpdateCategoryNameRequest $request)
@@ -41,14 +47,20 @@ class CategoryController extends Controller
 
     public function updateCategoryImage(string $id, UpdateCategoryImageRequest $request)
     {
-        $data = $request->validated() + [
-            'category_id' => $id,
-        ];
+        try {
+            $data = $request->validated() + [
+                'category_id' => $id,
+            ];
 
-        return ApiResponse::success()
-            ->data($this->service->updateCategoryImage($data))
-            ->message('Category image updated successfully')
-            ->response();
+            return ApiResponse::success()
+                ->data($this->service->updateCategoryImage($data))
+                ->message('Category image updated successfully')
+                ->response();
+        } catch (\Throwable $e) {
+            return ApiResponse::bad_request()
+                ->message($e->getMessage())
+                ->response();
+        }
     }
 
     public function destroy(string $id)
