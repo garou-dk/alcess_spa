@@ -70,7 +70,8 @@ export const useChatStore = defineStore("chat", {
         setMainOptions() {
             this.currentOptions = [
                 { label: "Best Laptops", value: "laptops", action: 'fetch_products', payload: 'laptops', icon: 'pi pi-desktop' },
-                { label: "Browse All Products", value: "all", action: 'browse_all', icon: 'pi pi-search' },
+                { label: "Browse Store", value: "browse_link", action: 'link', icon: 'pi pi-shopping-bag' },
+                { label: "All Products", value: "all", action: 'fetch_all', icon: 'pi pi-list' },
                 { label: "Warranty Info", value: "warranty", action: 'flow', icon: 'pi pi-shield' },
                 { label: "Store Location", value: "location", action: 'flow', icon: 'pi pi-map-marker' },
                 { label: "Shipping", value: "shipping", action: 'flow', icon: 'pi pi-truck' }
@@ -103,7 +104,12 @@ export const useChatStore = defineStore("chat", {
             if (option.action === 'fetch_products') {
                 await this.handleFetchProducts(option.payload);
             } else if (option.action === 'browse_all') {
-                await this.handleFetchProducts(null); // Fetch all/search endpoint
+                // Legacy support or specific flows: Redirect to browse page
+                router.push({ name: 'customer.browse-products' });
+                this.isTyping = false;
+            } else if (option.action === 'fetch_all') {
+                // New action: Fetch all products and show in chat
+                await this.handleFetchProducts(null);
             } else if (option.action === 'view_details') {
                 await this.fetchProductDetails(option.payload);
             } else {

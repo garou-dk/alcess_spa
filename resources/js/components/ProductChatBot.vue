@@ -1,7 +1,7 @@
 <template>
     <div class="product-bot-container">
         <!-- Chat Window -->
-        <div v-show="chatStore.isOpen" class="chat-window animate__animated animate__fadeInUp">
+        <div v-show="chatStore.isOpen" class="chat-window animate__animated animate__fadeInUp" @click.stop>
             <div class="chat-header">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center p-1">

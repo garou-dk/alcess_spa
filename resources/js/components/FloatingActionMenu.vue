@@ -80,7 +80,7 @@ const handleAction = (action: string) => {
         // As requested: Chat should show links instead of redirecting directly.
         // We will open the Chat and trigger "Browse All" flow.
         if (!chatStore.isOpen) chatStore.toggleChat();
-        chatStore.handleOption({ label: 'Browse All Products', value: 'all', action: 'browse_all' });
+        chatStore.handleOption({ label: 'Browse Store', value: 'all', action: 'browse_all' });
         // Optional: Close menu after selection? 
         // isExpanded.value = false;
     } 
