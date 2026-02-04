@@ -125,7 +125,7 @@ export const useChatStore = defineStore("chat", {
 
             try {
                 let endpoint = 'best-selling';
-                if (!category) endpoint = 'products/search?search=';
+                if (!category) endpoint = 'products';
 
                 await service.get(endpoint);
 

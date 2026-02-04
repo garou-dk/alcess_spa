@@ -20,15 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // For testing purposes
-        // DB::listen(function ($query) {
-        //     if (str_contains(strtolower($query->sql), 'from barangays')) {
-        //         while (true) {
-        //             if (mt_rand(1, 500) == 1) {
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // });
+        \Illuminate\Database\Eloquent\Builder::macro('whereLike', function ($attributes, $searchTerm) {
+            $this->where(function ($query) use ($attributes, $searchTerm) {
+                foreach (array_wrap($attributes) as $attribute) {
+                    $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
+                }
+            });
+
+            return $this;
+        });
     }
 }
