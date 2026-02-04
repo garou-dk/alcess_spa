@@ -123,6 +123,12 @@ watch(() => chatStore.isOpen, (val) => {
     if (val) scrollToBottom();
 });
 
+watch(() => router.currentRoute.value.name, (newRouteName) => {
+    if (newRouteName) {
+        chatStore.setContext(newRouteName.toString());
+    }
+}, { immediate: true });
+
 const goToProduct = (id: number) => {
     router.push({ name: 'customer.product-info.index', params: { id } });
 }

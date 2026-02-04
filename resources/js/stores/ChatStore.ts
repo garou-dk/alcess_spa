@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import router from "@/router";
 
 export interface ChatOption {
     label: string;
@@ -83,8 +84,7 @@ export const useChatStore = defineStore("chat", {
             // 2. Handle Action
             if (option.action === 'link') {
                 if (option.value === 'browse_link') {
-                    // This should be handled in component via router, or we can use window.location
-                    window.location.href = '/products';
+                    router.push({ name: 'customer.browse-products' });
                 } else if (option.value === 'facebook_link') {
                     window.open(option.payload, '_blank');
                     this.setMainOptions();
@@ -185,6 +185,20 @@ export const useChatStore = defineStore("chat", {
                 this.setMainOptions();
             } else {
                 this.currentOptions = response.options;
+            }
+        },
+
+        setContext(routeName: string) {
+            if (!this.hasInitialized) return;
+
+            // Reset to main options first
+            this.setMainOptions();
+
+            // Add context specific options
+            if (routeName === 'customer.cart') {
+                this.currentOptions.unshift({ label: "🚚 Shipping Rates", value: "shipping", action: 'flow' });
+            } else if (routeName === 'customer.product-info.index') {
+                this.currentOptions.unshift({ label: "🛡️ Warranty for this item", value: "warranty", action: 'flow' });
             }
         }
     }
