@@ -4,15 +4,13 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (Creative Shapes Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-slate-50 relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
-                <!-- Abstract Shapes -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute top-10 left-10 w-32 h-32 bg-emerald-100 rounded-3xl rotate-12 opacity-40 animate-pulse"></div>
-                    <div class="absolute bottom-20 right-10 w-48 h-48 bg-teal-100 rounded-full opacity-30 animate-bounce" style="animation-duration: 4s"></div>
-                    <div class="absolute top-1/2 left-1/4 w-12 h-12 bg-green-200 rounded-lg -rotate-45 opacity-20"></div>
-                    <div class="absolute bottom-1/4 left-10 w-24 h-24 border-4 border-emerald-50 rounded-full opacity-50"></div>
-                    <div class="absolute top-1/4 right-1/4 w-8 h-8 bg-teal-300 rounded-full opacity-10"></div>
+            <!-- Left Side - Branding (Crisp Shapes Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <!-- Abstract Shapes (Sharp & Clear Style) -->
+                <div class="absolute inset-0 z-0 overflow-hidden">
+                    <div class="absolute w-[500px] h-[500px] rounded-full top-[-150px] left-[-100px] bg-gradient-to-br from-emerald-400/20 to-teal-500/20 animate-pulse"></div>
+                    <div class="absolute w-[300px] h-[300px] rounded-full bottom-[-50px] right-[-50px] bg-gradient-to-tr from-teal-400/20 to-green-500/20 animate-bounce" style="animation-duration: 6s"></div>
+                    <div class="absolute w-24 h-24 rounded-2xl top-1/4 right-1/4 bg-gradient-to-tr from-emerald-300/30 to-teal-300/30 rotate-12"></div>
                 </div>
 
                 <!-- Branding Content -->

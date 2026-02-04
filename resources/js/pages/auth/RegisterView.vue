@@ -4,14 +4,13 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (Creative Shapes Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-slate-50 relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
-                <!-- Abstract Shapes -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute top-20 right-20 w-40 h-40 bg-blue-100 rounded-full opacity-40 animate-pulse"></div>
-                    <div class="absolute top-1/3 left-10 w-32 h-32 bg-indigo-100 rounded-2xl rotate-45 opacity-30 animate-spin" style="animation-duration: 10s"></div>
-                    <div class="absolute bottom-10 left-1/4 w-20 h-20 bg-blue-200 rounded-full opacity-20"></div>
-                    <div class="absolute top-10 left-1/2 w-48 h-12 bg-slate-100 -rotate-12 opacity-50"></div>
+            <!-- Left Side - Branding (Crisp Shapes Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <!-- Abstract Shapes (Sharp & Clear Style) -->
+                <div class="absolute inset-0 z-0 overflow-hidden">
+                    <div class="absolute w-[450px] h-[450px] rounded-full top-[-100px] right-[-100px] bg-gradient-to-br from-emerald-400/20 to-teal-500/20 animate-pulse"></div>
+                    <div class="absolute w-[350px] h-[350px] rounded-full bottom-[-80px] left-[-80px] bg-gradient-to-tr from-teal-400/20 to-green-500/20 animate-bounce" style="animation-duration: 8s"></div>
+                    <div class="absolute w-20 h-20 rounded-full top-1/2 left-1/4 bg-gradient-to-tr from-emerald-300/30 to-teal-300/30"></div>
                 </div>
 
                 <!-- Branding Content -->
