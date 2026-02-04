@@ -47,24 +47,34 @@
                             </div>
                         </div>
 
-                        <!-- Product Detail View -->
+                        <!-- Product Detail View (Enhanced) -->
                         <div v-if="msg.type === 'product_detail'" class="product-detail-card">
                             <div class="detail-header">
                                 <img v-if="msg.data.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${msg.data.product_image}`)" class="detail-img" />
                                 <div class="detail-info">
-                                    <h4 class="font-bold text-slate-800 text-sm leading-tight">{{ msg.data.product_name }}</h4>
+                                    <h4 class="font-bold text-slate-800 text-sm leading-tight line-clamp-2">{{ msg.data.product_name }}</h4>
                                     <p class="text-blue-600 font-bold mt-1">{{ CurrencyUtil.formatCurrency(msg.data.product_price) }}</p>
                                 </div>
                             </div>
-                            <div class="detail-specs">
-                                <p class="text-xs font-semibold text-slate-500 mb-1">Key Specifications:</p>
-                                <ul v-if="msg.data.specifications && msg.data.specifications.length" class="space-y-1">
-                                    <li v-for="spec in msg.data.specifications.slice(0, 3)" :key="spec.id" class="text-xs text-slate-600 flex justify-between">
-                                        <span class="opacity-80">{{ spec.specification_name }}:</span>
-                                        <span class="font-medium truncate ml-2 max-w-[120px]">{{ spec.specification_value }}</span>
-                                    </li>
-                                </ul>
-                                <p v-else class="text-xs text-slate-400 italic">No specifications listed.</p>
+                            
+                            <div class="detail-content custom-scrollbar">
+                                 <!-- Description Section -->
+                                <div class="mb-3">
+                                    <p class="text-xs font-bold text-slate-700 mb-1">About this Item:</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed">{{ msg.data.description || 'No description available.' }}</p>
+                                </div>
+
+                                <!-- Specs Section -->
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">Technical Specifications:</p>
+                                    <div v-if="msg.data.specifications && msg.data.specifications.length" class="space-y-1 bg-slate-50 p-2 rounded">
+                                        <div v-for="spec in msg.data.specifications" :key="spec.id" class="text-xs text-slate-600 flex flex-col border-b border-slate-100 last:border-0 pb-1 last:pb-0">
+                                            <span class="opacity-70 text-[10px] uppercase tracking-wide">{{ spec.specification_name }}</span>
+                                            <span class="font-medium pl-1">{{ spec.specification_value }}</span>
+                                        </div>
+                                    </div>
+                                    <p v-else class="text-xs text-slate-400 italic">No detailed specifications listed.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -179,22 +189,25 @@ const handleProductClick = (id: number) => {
 
 /* Chat Window - Adjusted for new positioning logic relative to parent */
 .chat-window {
-    position: absolute;
-    bottom: 1rem; /* Slightly up from bottom */
-    right: 4.5rem; /* To the left of the button stack */
-    left: auto; /* Reset left */
-    width: 360px;
+    position: fixed;
+    bottom: 0;
+    right: 6rem; /* Left of the toggle button */
+    left: auto;
+    width: 380px;
     height: 550px;
-    max-height: 70vh;
+    max-height: 85vh;
     background: #ffffff;
-    border-radius: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0 -5px 40px rgba(0,0,0,0.15);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transform-origin: bottom right; /* Animate from bottom right */
+    transform-origin: bottom right;
     border: 1px solid #e2e8f0;
-    z-index: 1000;
+    z-index: 1050; /* Above menu */
 }
 
 /* Header */
@@ -205,6 +218,7 @@ const handleProductClick = (id: number) => {
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 /* Body */
@@ -341,7 +355,8 @@ const handleProductClick = (id: number) => {
     border: 1px solid #e2e8f0;
     border-radius: 1rem;
     overflow: hidden;
-    max-width: 280px;
+    width: 300px; /* Wider for details */
+    max-width: 100%;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
@@ -364,9 +379,26 @@ const handleProductClick = (id: number) => {
     border: 1px solid #e2e8f0;
 }
 
-.detail-specs {
+.detail-content {
     padding: 1rem;
     background: #fff;
+    max-height: 250px; /* Limit height */
+    overflow-y: auto; /* Scroll internally */
+}
+
+/* Custom Scrollbar for details */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 /* Typing Indicator */

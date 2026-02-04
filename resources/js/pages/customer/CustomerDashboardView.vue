@@ -51,8 +51,7 @@
                 </div>
         </section>
         
-        <!-- Sticky Menu -->
-        <FloatingActionMenu />
+        <!-- Sticky Menu Removed (Global) -->
 
         <!-- Featured Products Section -->
         <section v-if="featuredProducts.length > 0" class="featured-products">
@@ -322,7 +321,6 @@ import useAxiosUtil from '@/utils/AxiosUtil'
 import CurrencyUtil from '@/utils/CurrencyUtil'
 import UrlUtil from '@/utils/UrlUtil'
 import Logo from "@/../img/logo.png";
-import FloatingActionMenu from "@/components/FloatingActionMenu.vue";
 
 const router = useRouter()
 const dashboardService = useAxiosUtil()

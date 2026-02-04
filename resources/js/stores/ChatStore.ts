@@ -114,27 +114,36 @@ export const useChatStore = defineStore("chat", {
         },
 
         async handleFetchProducts(category: string | null) {
-            const service = useAxiosUtil<null, ProductInterface[]>();
+            const service = useAxiosUtil<null, any>(); // Change generic to any to support search response structure
 
             try {
                 let endpoint = 'best-selling';
-                if (!category) endpoint = 'products/search'; // General search if browsing all
+                // If browsing all, we hit the search endpoint which returns paginated data (data.data)
+                if (!category) endpoint = 'products/search?search=';
 
                 await service.get(endpoint);
                 if (service.request.status === 200 && service.request.data) {
-                    const products: ProductInterface[] = service.request.data;
+                    let products: ProductInterface[] = [];
+
+                    if (category) {
+                        products = service.request.data as unknown as ProductInterface[];
+                    } else {
+                        // Search endpoint usually returns { data: [...] }
+                        const responseData = service.request.data;
+                        products = Array.isArray(responseData) ? responseData : (responseData.data || []);
+                    }
 
                     setTimeout(() => {
                         this.isTyping = false;
                         const text = category
                             ? "Here are some top picks:"
-                            : "Here are our latest products. Click one to see more details inside the chat:";
+                            : "Here are available products. Click one for full details:";
 
                         this.addMessage({ text: text, type: 'bot' });
-                        this.addMessage({ type: 'product_list', data: products.slice(0, 8) });
+                        this.addMessage({ type: 'product_list', data: products.slice(0, 10) });
 
                         this.currentOptions = [
-                            { label: "View All on Page", value: "browse_link", action: 'link' },
+                            { label: "View Full Catalog", value: "browse_link", action: 'link' },
                             { label: "⬅️ Back to Menu", value: "root", action: 'flow' }
                         ];
                     }, 500);
