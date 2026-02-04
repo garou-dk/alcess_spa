@@ -9,26 +9,13 @@
 
         <!-- Welcome Hero Section -->
         <section class="welcome-hero" id="home">
-            <div class="stripe-bg-container">
-                <div class="stripe-bg-slant">
-                    <div class="stripe-layer stripe-layer-1"></div>
-                    <div class="stripe-layer stripe-layer-2"></div>
-                    <div class="stripe-layer stripe-layer-3"></div>
-                    <div class="stripe-layer stripe-layer-4"></div>
-                </div>
-                <!-- Wavy Gradient Layers -->
-                <div class="welcome-wave wave-1"></div>
-                <div class="welcome-wave wave-2"></div>
-                <div class="welcome-wave wave-3"></div>
-                <!-- Decorative Orbs -->
-                <div class="welcome-orb orb-1"></div>
-                <div class="welcome-orb orb-2"></div>
-                <div class="welcome-orb orb-3"></div>
-                <!-- Circle Gradient Shapes -->
-                <div class="welcome-circle circle-1"></div>
-                <div class="welcome-circle circle-2"></div>
-                <div class="welcome-circle circle-3"></div>
-                <div class="welcome-circle circle-4"></div>
+            <div class="hero-bg-container">
+                <!-- Gradient Filled Circles -->
+                <div class="gradient-circle circle-1"></div>
+                <div class="gradient-circle circle-2"></div>
+                <div class="gradient-circle circle-3"></div>
+                <div class="gradient-circle circle-4"></div>
+                <div class="gradient-circle circle-5"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
@@ -545,41 +532,57 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
 
 /* Welcome Hero */
-/* Stripe-style Hero Background - LIGHT THEME */
-.welcome-hero { position: relative; background: #fdfeff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
-.stripe-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
-.stripe-bg-slant { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fafbff; z-index: 1; overflow: hidden; }
-.stripe-layer { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; filter: blur(50px); opacity: 0.22; animation: stripeLayerMove 20s linear infinite alternate; }
-.stripe-layer-1 { background: radial-gradient(circle at 20% 30%, rgba(255, 107, 107, 0.8) 0%, transparent 60%); top: -10%; left: -10%; } /* Soft Red/Pink */
-.stripe-layer-2 { background: radial-gradient(circle at 80% 20%, rgba(255, 159, 67, 0.8) 0%, transparent 60%); top: -20%; left: 30%; animation-delay: -5s; } /* Soft Orange */
-.stripe-layer-3 { background: radial-gradient(circle at 40% 80%, rgba(162, 155, 254, 0.8) 0%, transparent 60%); top: 40%; left: 10%; animation-delay: -10s; } /* Soft Violet */
-.stripe-layer-4 { background: radial-gradient(circle at 70% 60%, rgba(253, 121, 168, 0.8) 0%, transparent 60%); top: 20%; left: 60%; animation-delay: -15s; } /* Soft Pink */
-@keyframes stripeLayerMove { 
-    0% { transform: translate(-4%, -4%) rotate(0deg); }
-    100% { transform: translate(4%, 4%) rotate(4deg); }
+/* Clean White Background with Gradient-Filled Circles */
+.welcome-hero { position: relative; background: #ffffff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
+.hero-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+
+/* Gradient Filled Circles - Pairs with gradient text (blue to purple gradient) */
+.gradient-circle { position: absolute; border-radius: 50%; z-index: 1; }
+.gradient-circle.circle-1 { 
+    width: 400px; height: 400px; 
+    top: -120px; right: -80px; 
+    background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); 
+    opacity: 0.15; 
+    animation: floatCircle 20s ease-in-out infinite; 
+}
+.gradient-circle.circle-2 { 
+    width: 300px; height: 300px; 
+    bottom: -100px; left: -60px; 
+    background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); 
+    opacity: 0.12; 
+    animation: floatCircle 25s ease-in-out infinite reverse; 
+}
+.gradient-circle.circle-3 { 
+    width: 200px; height: 200px; 
+    top: 40%; left: 5%; 
+    background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%); 
+    opacity: 0.1; 
+    animation: floatCircle 18s ease-in-out infinite; 
+    animation-delay: -5s; 
+}
+.gradient-circle.circle-4 { 
+    width: 250px; height: 250px; 
+    top: 20%; right: 15%; 
+    background: linear-gradient(135deg, #7928ca 0%, #0070f3 100%); 
+    opacity: 0.08; 
+    animation: floatCircle 22s ease-in-out infinite; 
+    animation-delay: -10s; 
+}
+.gradient-circle.circle-5 { 
+    width: 150px; height: 150px; 
+    bottom: 20%; right: 10%; 
+    background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); 
+    opacity: 0.1; 
+    animation: floatCircle 16s ease-in-out infinite reverse; 
+    animation-delay: -3s; 
 }
 
-/* Wavy Gradient Layers - Soft Pastel */
-.welcome-wave { position: absolute; width: 250%; height: 60%; left: -75%; z-index: 2; opacity: 0.18; }
-.welcome-wave.wave-1 { bottom: -15%; background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(253, 121, 168, 0.6) 0%, transparent 60%); animation: welcomeWaveFloat 15s ease-in-out infinite; }
-.welcome-wave.wave-2 { bottom: -10%; background: radial-gradient(ellipse 80% 60% at 30% 100%, rgba(250, 177, 160, 0.6) 0%, transparent 55%); animation: welcomeWaveFloat 18s ease-in-out infinite reverse; }
-.welcome-wave.wave-3 { bottom: -5%; background: radial-gradient(ellipse 90% 70% at 70% 100%, rgba(162, 155, 254, 0.6) 0%, transparent 55%); animation: welcomeWaveFloat 20s ease-in-out infinite; animation-delay: -5s; }
-@keyframes welcomeWaveFloat { 0%, 100% { transform: translateX(-2%) translateY(0); } 50% { transform: translateX(2%) translateY(-10px); } }
-
-/* Decorative Orbs - High Clarity Soft */
-.welcome-orb { position: absolute; border-radius: 50%; filter: blur(60px); z-index: 2; opacity: 0.1; }
-.welcome-orb.orb-1 { width: 450px; height: 450px; top: 5%; right: -120px; background: radial-gradient(circle, #fab1a0 0%, transparent 70%); animation: welcomeOrbFloat 14s ease-in-out infinite; }
-.welcome-orb.orb-2 { width: 350px; height: 350px; bottom: 15%; left: -80px; background: radial-gradient(circle, #fd79a8 0%, transparent 70%); animation: welcomeOrbFloat 18s ease-in-out infinite reverse; }
-.welcome-orb.orb-3 { width: 300px; height: 300px; top: 35%; left: 45%; transform: translateX(-50%); background: radial-gradient(circle, #a29bfe 0%, transparent 70%); animation: welcomeOrbFloat 22s ease-in-out infinite; animation-delay: -6s; }
-@keyframes welcomeOrbFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
-
-/* Circle Gradient Shapes - Refined */
-.welcome-circle { position: absolute; border-radius: 50%; z-index: 3; opacity: 0.15; }
-.welcome-circle.circle-1 { width: 500px; height: 500px; top: -200px; left: -150px; background: transparent; border: 2.5px solid #a29bfe; animation: welcomeCircleFloat 22s ease-in-out infinite; }
-.welcome-circle.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -80px; background: radial-gradient(circle at 60% 40%, rgba(251, 177, 160, 0.1) 0%, transparent 50%); border: 2.5px solid #fab1a0; animation: welcomeCircleFloat 28s ease-in-out infinite reverse; }
-.welcome-circle.circle-3 { width: 200px; height: 200px; top: 25%; right: 15%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%); border: 2.5px solid #fd79a8; animation: welcomeCircleFloat 18s ease-in-out infinite; }
-.welcome-circle.circle-4 { width: 280px; height: 280px; bottom: 25%; left: 8%; background: radial-gradient(circle at 40% 60%, rgba(162, 155, 254, 0.1) 0%, transparent 50%); border: 2.5px solid #a29bfe; animation: welcomeCircleFloat 24s ease-in-out infinite; }
-@keyframes welcomeCircleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -25px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
+@keyframes floatCircle { 
+    0%, 100% { transform: translate(0, 0) scale(1); } 
+    25% { transform: translate(15px, -20px) scale(1.02); } 
+    50% { transform: translate(0, -30px) scale(1.05); } 
+    75% { transform: translate(-15px, -15px) scale(1.02); } 
+}
 
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
 .welcome-content { max-width: 900px; margin: 0 auto; text-align: center; }
@@ -590,7 +593,7 @@ onUnmounted(() => stopCarousel());
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.35rem); color: #4f566b; margin-bottom: 3.5rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 400; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
-.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(59,130,246,0.15); }
+.branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.08); }
 
 
 /* Brands Section */
