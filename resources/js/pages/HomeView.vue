@@ -22,7 +22,7 @@
                     <div class="welcome-badge-wrapper">
                         <span class="welcome-badge">Premium Tech Destination</span>
                     </div>
-                    <h1 class="welcome-headline">Elevate <span class="gradient-text">Your Setup</span></h1>
+                    <h1 class="welcome-headline">Elevate <span class="typewriter-text">{{ typewriterText }}</span><span class="cursor">|</span></h1>
                     <p class="welcome-subheadline">Your premier destination for high-performance PCs, premium laptops, and cutting-edge computer accessories. Built for creators, gamers, and professionals.</p>
                         <div class="welcome-actions">
                             <button @click="goToBrowseProducts" class="btn-primary btn-lg shine-effect">
@@ -310,6 +310,39 @@ let carouselInterval: number | null = null;
 const activeView = ref<'categories' | 'products'>('categories');
 const router = useRouter();
 
+// Typewriter Logic
+const typewriterWords = ["Your Setup", "Your Game", "Your Tech", "Your Life"];
+const typewriterText = ref("");
+const typewriterIndex = ref(0);
+const charIndex = ref(0);
+const isDeleting = ref(false);
+const typeSpeed = ref(150);
+
+const type = () => {
+    const currentWord = typewriterWords[typewriterIndex.value];
+    
+    if (isDeleting.value) {
+        typewriterText.value = currentWord.substring(0, charIndex.value - 1);
+        charIndex.value--;
+        typeSpeed.value = 50;
+    } else {
+        typewriterText.value = currentWord.substring(0, charIndex.value + 1);
+        charIndex.value++;
+        typeSpeed.value = 150;
+    }
+
+    if (!isDeleting.value && charIndex.value === currentWord.length) {
+        isDeleting.value = true;
+        typeSpeed.value = 2000; // Pause at end
+    } else if (isDeleting.value && charIndex.value === 0) {
+        isDeleting.value = false;
+        typewriterIndex.value = (typewriterIndex.value + 1) % typewriterWords.length;
+        typeSpeed.value = 500; // Pause before new word
+    }
+
+    setTimeout(type, typeSpeed.value);
+};
+
 
 const categoriesHeading = computed(() => CategoryStore.categories?.some((cat: any) => cat.is_popular) ? 'Popular Categories' : 'Categories');
 const productsHeading = computed(() => products.value?.some((prod: any) => prod.is_best_selling) ? 'Best Sellers' : 'Products');
@@ -500,8 +533,9 @@ onUnmounted(() => stopCarousel());
 .welcome-badge-wrapper { margin-bottom: 1.5rem; }
 .welcome-badge { display: inline-block; background: #fff; border: 1px solid #e2e8f0; color: #4b5563; font-size: 0.8125rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 9999px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 .welcome-headline { font-size: clamp(2.5rem, 10vw, 5.5rem); font-weight: 800; color: #1a1f36; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 2rem; }
-.gradient-text { background: linear-gradient(135deg, #1a1f36 0%, #0070f3 50%, #7928ca 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradientMove 8s ease infinite; }
-@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+.typewriter-text { color: #2563eb; background: linear-gradient(135deg, #2563eb 0%, #7928ca 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.cursor { color: #2563eb; display: inline-block; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
 .welcome-subheadline { font-size: clamp(1.125rem, 3vw, 1.35rem); color: #4f566b; margin-bottom: 3.5rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 400; }
 .welcome-actions { display: flex; align-items: center; justify-content: center; gap: 1.5rem; }
 .branch-footer-info { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.08); }

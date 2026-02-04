@@ -4,51 +4,9 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (White Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 opacity-50"></div>
-                    <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                </div>
-
-                <!-- Content -->
-                <div class="relative z-10 text-center">
-                    <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
-                        <img :src="Logo" alt="Alcess Logo" class="h-40 w-auto drop-shadow-xl" />
-                    </div>
-                    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Join the Community</h1>
-                    <p class="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
-                        Create your account today and unlock exclusive features, faster checkout, and order tracking.
-                    </p>
-                    
-                    <!-- Feature List -->
-                    <div class="mt-12 space-y-4 text-left inline-block">
-                        <div class="flex items-center gap-4 group">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                                <i class="pi pi-check text-emerald-600"></i>
-                            </div>
-                            <span class="text-gray-700 font-medium">Exclusive member discounts</span>
-                        </div>
-                        <div class="flex items-center gap-4 group">
-                            <div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">
-                                <i class="pi pi-check text-teal-600"></i>
-                            </div>
-                            <span class="text-gray-700 font-medium">Track your order history</span>
-                        </div>
-                        <div class="flex items-center gap-4 group">
-                            <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                                <i class="pi pi-check text-green-600"></i>
-                            </div>
-                            <span class="text-gray-700 font-medium">Fast and secure checkout</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-6 text-gray-400 text-xs text-center">
-                    &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
-                </div>
+            <!-- Left Side - Branding (GIF Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <img :src="RegisterGif" alt="Register Animation" class="w-full h-full object-cover" />
             </div>
 
             <!-- Right Side - Content -->
@@ -95,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import Logo from "@/../img/logo.png";
+import RegisterGif from "@/../img/auth/register.gif";
 import RegisterForm from "@/components/forms/RegisterForm.vue";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";

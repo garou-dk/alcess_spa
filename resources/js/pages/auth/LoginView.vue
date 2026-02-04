@@ -4,52 +4,9 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (White Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 opacity-50"></div>
-                    <!-- Abstract blobs -->
-                    <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                </div>
-
-                <!-- Content -->
-                <div class="relative z-10 text-center">
-                    <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
-                        <img :src="Logo" alt="Alcess Logo" class="h-40 w-auto drop-shadow-xl" />
-                    </div>
-                    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Welcome to Alcess</h1>
-                    <p class="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
-                        Your premium destination for quality tech. Sign in to access your account and manage your orders.
-                    </p>
-                    
-                    <!-- Trust Indicators -->
-                    <div class="mt-12 flex gap-8 justify-center text-gray-500">
-                        <div class="text-center group">
-                            <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-emerald-100 transition-colors">
-                                <i class="pi pi-shield text-xl text-emerald-600"></i>
-                            </div>
-                            <span class="text-xs font-semibold uppercase tracking-wider">Secure</span>
-                        </div>
-                        <div class="text-center group">
-                            <div class="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-teal-100 transition-colors">
-                                <i class="pi pi-bolt text-xl text-teal-600"></i>
-                            </div>
-                            <span class="text-xs font-semibold uppercase tracking-wider">Fast</span>
-                        </div>
-                        <div class="text-center group">
-                            <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-green-100 transition-colors">
-                                <i class="pi pi-heart text-xl text-green-600"></i>
-                            </div>
-                            <span class="text-xs font-semibold uppercase tracking-wider">Trusted</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-6 text-gray-400 text-xs text-center">
-                    &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
-                </div>
+            <!-- Left Side - Branding (GIF Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <img :src="LoginGif" alt="Login Animation" class="w-full h-full object-cover" />
             </div>
 
             <!-- Right Side - Content -->
@@ -100,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import Logo from "@/../img/logo.png";
+import LoginGif from "@/../img/auth/login.gif";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";

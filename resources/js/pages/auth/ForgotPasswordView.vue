@@ -4,40 +4,9 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (White Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 opacity-50"></div>
-                    <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                </div>
-
-                <!-- Content -->
-                <div class="relative z-10 text-center">
-                    <div class="mb-8 flex justify-center transform hover:scale-105 transition-transform duration-500">
-                        <img :src="Logo" alt="Alcess Logo" class="h-40 w-auto drop-shadow-xl" />
-                    </div>
-                    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Account Recovery</h1>
-                    <p class="text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
-                        Don't worry, we've got you covered. Follow the simple steps to regain access to your account.
-                    </p>
-                    
-                    <!-- Security Tip -->
-                    <div class="mt-12 p-6 bg-emerald-50/80 rounded-2xl border border-emerald-100 backdrop-blur-sm max-w-sm mx-auto text-left">
-                        <div class="flex items-start gap-4">
-                            <i class="pi pi-lock text-emerald-600 text-xl mt-1"></i>
-                            <div>
-                                <h3 class="font-semibold text-gray-900 mb-1">Security Tip</h3>
-                                <p class="text-sm text-gray-600">Never share your password or recovery codes with anyone. Alcess support will never ask for your password.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-6 text-gray-400 text-xs text-center">
-                    &copy; {{ new Date().getFullYear() }} Alcess. All rights reserved.
-                </div>
+            <!-- Left Side - Branding (GIF Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <img :src="ForgotGif" alt="Recovery Animation" class="w-full h-full object-cover" />
             </div>
 
             <!-- Right Side - Content -->
@@ -302,7 +271,7 @@ import Button from "primevue/button";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";
-import Logo from "@/../img/logo.png";
+import ForgotGif from "@/../img/auth/forgot.gif";
 
 const toast = useToast();
 const router = useRouter();
