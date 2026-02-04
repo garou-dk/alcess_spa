@@ -505,7 +505,7 @@ onUnmounted(() => stopCarousel());
 .hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
 .hero-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
 .hero-text { text-align: center; position: relative; z-index: 5; }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
+.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.06); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
 .hero-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; font-size: 0.75rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 9999px; margin-bottom: 1rem; position: relative; z-index: 2; }
 .hero-product-name { font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; }
 .hero-category { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; position: relative; z-index: 2; }
@@ -547,24 +547,21 @@ onUnmounted(() => stopCarousel());
     width: 420px; height: 420px; 
     top: -140px; right: -100px; 
     background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); 
-    opacity: 0.18; 
-    box-shadow: 0 0 80px rgba(0, 112, 243, 0.15);
+    opacity: 0.25; 
     animation: floatCircle 20s ease-in-out infinite; 
 }
 .gradient-circle.circle-2 { 
     width: 320px; height: 320px; 
     bottom: -120px; left: -80px; 
     background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); 
-    opacity: 0.15; 
-    box-shadow: 0 0 60px rgba(121, 40, 202, 0.12);
+    opacity: 0.22; 
     animation: floatCircle 25s ease-in-out infinite reverse; 
 }
 .gradient-circle.circle-3 { 
     width: 180px; height: 180px; 
     top: 35%; left: 3%; 
     background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%); 
-    opacity: 0.2; 
-    box-shadow: 0 0 40px rgba(0, 198, 255, 0.1);
+    opacity: 0.28; 
     animation: floatCircle 18s ease-in-out infinite; 
     animation-delay: -5s; 
 }
@@ -572,8 +569,7 @@ onUnmounted(() => stopCarousel());
     width: 140px; height: 140px; 
     top: 18%; right: 12%; 
     background: linear-gradient(135deg, #7928ca 0%, #0070f3 100%); 
-    opacity: 0.22; 
-    box-shadow: 0 0 35px rgba(121, 40, 202, 0.1);
+    opacity: 0.3; 
     animation: floatCircle 22s ease-in-out infinite; 
     animation-delay: -10s; 
 }
@@ -581,8 +577,7 @@ onUnmounted(() => stopCarousel());
     width: 100px; height: 100px; 
     bottom: 25%; right: 8%; 
     background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); 
-    opacity: 0.25; 
-    box-shadow: 0 0 30px rgba(255, 0, 128, 0.1);
+    opacity: 0.35; 
     animation: floatCircle 16s ease-in-out infinite reverse; 
     animation-delay: -3s; 
 }

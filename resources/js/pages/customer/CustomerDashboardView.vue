@@ -427,24 +427,21 @@ onUnmounted(() => stopCarousel())
     width: 380px; height: 380px; 
     top: -120px; right: -80px; 
     background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); 
-    opacity: 0.18; 
-    box-shadow: 0 0 70px rgba(0, 112, 243, 0.15);
+    opacity: 0.25; 
     animation: floatCircle 20s ease-in-out infinite; 
 }
 .gradient-circle.circle-2 { 
     width: 300px; height: 300px; 
     bottom: -100px; left: -70px; 
     background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); 
-    opacity: 0.15; 
-    box-shadow: 0 0 55px rgba(121, 40, 202, 0.12);
+    opacity: 0.22; 
     animation: floatCircle 25s ease-in-out infinite reverse; 
 }
 .gradient-circle.circle-3 { 
     width: 160px; height: 160px; 
     top: 30%; left: 4%; 
     background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%); 
-    opacity: 0.2; 
-    box-shadow: 0 0 35px rgba(0, 198, 255, 0.1);
+    opacity: 0.28; 
     animation: floatCircle 18s ease-in-out infinite; 
     animation-delay: -5s; 
 }
@@ -452,8 +449,7 @@ onUnmounted(() => stopCarousel())
     width: 120px; height: 120px; 
     top: 12%; right: 10%; 
     background: linear-gradient(135deg, #7928ca 0%, #0070f3 100%); 
-    opacity: 0.22; 
-    box-shadow: 0 0 30px rgba(121, 40, 202, 0.1);
+    opacity: 0.3; 
     animation: floatCircle 22s ease-in-out infinite; 
     animation-delay: -10s; 
 }
@@ -461,8 +457,7 @@ onUnmounted(() => stopCarousel())
     width: 90px; height: 90px; 
     bottom: 20%; right: 6%; 
     background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); 
-    opacity: 0.25; 
-    box-shadow: 0 0 25px rgba(255, 0, 128, 0.1);
+    opacity: 0.35; 
     animation: floatCircle 16s ease-in-out infinite reverse; 
     animation-delay: -3s; 
 }
