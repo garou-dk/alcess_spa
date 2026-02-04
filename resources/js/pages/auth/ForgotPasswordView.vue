@@ -8,9 +8,9 @@
             <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
                 <!-- Background Pattern -->
                 <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50"></div>
-                    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 opacity-50"></div>
+                    <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                 </div>
 
                 <!-- Content -->
@@ -24,9 +24,9 @@
                     </p>
                     
                     <!-- Security Tip -->
-                    <div class="mt-12 p-6 bg-blue-50/80 rounded-2xl border border-blue-100 backdrop-blur-sm max-w-sm mx-auto text-left">
+                    <div class="mt-12 p-6 bg-emerald-50/80 rounded-2xl border border-emerald-100 backdrop-blur-sm max-w-sm mx-auto text-left">
                         <div class="flex items-start gap-4">
-                            <i class="pi pi-lock text-blue-600 text-xl mt-1"></i>
+                            <i class="pi pi-lock text-emerald-600 text-xl mt-1"></i>
                             <div>
                                 <h3 class="font-semibold text-gray-900 mb-1">Security Tip</h3>
                                 <p class="text-sm text-gray-600">Never share your password or recovery codes with anyone. Alcess support will never ask for your password.</p>
@@ -357,10 +357,10 @@ const handleEmailSubmit = async () => {
         await authService.post('password/send-code', { email: form.email });
         
         if (authService.request.status === 200 || authService.request.status === 204) {
-            toast.success("Password reset link sent to your email!");
-            // form.email = ''; // Keep email in case they want to try another way
+            toast.success("Recovery code sent to your email!");
+            step.value = 'recovery-code'; // Auto-advance to code input
         } else {
-            toast.error(authService.request.message || "Failed to send reset link.");
+            toast.error(authService.request.message || "Failed to send reset code.");
             if (authService.request.errors?.email) {
                 errors.email = authService.request.errors.email;
             }

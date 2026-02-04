@@ -8,9 +8,9 @@
             <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center p-12 text-gray-900 border-r border-gray-100">
                 <!-- Background Pattern -->
                 <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-50"></div>
-                    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 opacity-50"></div>
+                    <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                    <div class="absolute -bottom-8 right-0 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                 </div>
 
                 <!-- Content -->
@@ -26,14 +26,14 @@
                     <!-- Feature List -->
                     <div class="mt-12 space-y-4 text-left inline-block">
                         <div class="flex items-center gap-4 group">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                                <i class="pi pi-check text-blue-600"></i>
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                <i class="pi pi-check text-emerald-600"></i>
                             </div>
                             <span class="text-gray-700 font-medium">Exclusive member discounts</span>
                         </div>
                         <div class="flex items-center gap-4 group">
-                            <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
-                                <i class="pi pi-check text-purple-600"></i>
+                            <div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">
+                                <i class="pi pi-check text-teal-600"></i>
                             </div>
                             <span class="text-gray-700 font-medium">Track your order history</span>
                         </div>
