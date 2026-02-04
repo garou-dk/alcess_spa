@@ -406,7 +406,11 @@ const addToCart = async (productId: number) => {
 
 const goToProductDetails = (productId: number) => router.push({ name: 'customer.product-info.index', params: { id: productId } });
 
-onMounted(() => { CategoryStore.fetchCategories(); loadBestSellingProducts(); });
+onMounted(() => { 
+    CategoryStore.fetchCategories(); 
+    loadBestSellingProducts(); 
+    setTimeout(type, 1000);
+});
 onUnmounted(() => stopCarousel());
 </script>
 

@@ -4,9 +4,26 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (GIF Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
-                <img :src="ForgotGif" alt="Recovery Animation" class="w-full h-full object-cover" />
+            <!-- Left Side - Branding (Creative Shapes Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-slate-50 relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <!-- Abstract Shapes -->
+                <div class="absolute inset-0 z-0">
+                    <div class="absolute top-1/4 left-10 w-32 h-32 border-8 border-emerald-50 rounded-full opacity-40 animate-pulse"></div>
+                    <div class="absolute bottom-1/3 right-10 w-40 h-40 bg-teal-50 rounded-3xl -rotate-12 opacity-30 animate-bounce" style="animation-duration: 5s"></div>
+                    <div class="absolute top-10 right-1/4 w-16 h-16 bg-green-100 rounded-full opacity-25"></div>
+                    <div class="absolute bottom-10 left-10 w-24 h-24 bg-slate-200 rotate-45 opacity-10"></div>
+                </div>
+
+                <!-- Branding Content -->
+                <div class="relative z-10 text-center px-12">
+                    <div class="mb-8 flex justify-center transform hover:scale-110 transition-transform duration-700">
+                        <img :src="Logo" alt="Alcess Logo" class="h-48 w-auto drop-shadow-2xl" />
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Restore Access</h1>
+                    <p class="text-slate-600 max-w-sm mx-auto leading-relaxed">
+                        Don't worry, we'll help you get back to your account in just a few steps.
+                    </p>
+                </div>
             </div>
 
             <!-- Right Side - Content -->
@@ -271,7 +288,7 @@ import Button from "primevue/button";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";
-import ForgotGif from "@/../img/auth/forgot.gif";
+import Logo from "@/../img/logo.png";
 
 const toast = useToast();
 const router = useRouter();

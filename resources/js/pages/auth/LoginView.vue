@@ -4,9 +4,31 @@
         <NavBar mode="guest" class="z-50 border-b border-gray-100" :transparent="false" />
 
         <div class="flex-1 flex">
-            <!-- Left Side - Branding (GIF Theme) -->
-            <div class="hidden lg:flex lg:w-1/2 bg-white relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
-                <img :src="LoginGif" alt="Login Animation" class="w-full h-full object-cover" />
+            <!-- Left Side - Branding (Creative Shapes Theme) -->
+            <div class="hidden lg:flex lg:w-1/2 bg-slate-50 relative overflow-hidden flex-col items-center justify-center border-r border-gray-100">
+                <!-- Abstract Shapes -->
+                <div class="absolute inset-0 z-0">
+                    <div class="absolute top-10 left-10 w-32 h-32 bg-emerald-100 rounded-3xl rotate-12 opacity-40 animate-pulse"></div>
+                    <div class="absolute bottom-20 right-10 w-48 h-48 bg-teal-100 rounded-full opacity-30 animate-bounce" style="animation-duration: 4s"></div>
+                    <div class="absolute top-1/2 left-1/4 w-12 h-12 bg-green-200 rounded-lg -rotate-45 opacity-20"></div>
+                    <div class="absolute bottom-1/4 left-10 w-24 h-24 border-4 border-emerald-50 rounded-full opacity-50"></div>
+                    <div class="absolute top-1/4 right-1/4 w-8 h-8 bg-teal-300 rounded-full opacity-10"></div>
+                </div>
+
+                <!-- Branding Content -->
+                <div class="relative z-10 text-center px-12">
+                    <div class="mb-8 flex justify-center transform hover:scale-110 transition-transform duration-700">
+                        <img :src="Logo" alt="Alcess Logo" class="h-48 w-auto drop-shadow-2xl" />
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Elevate Your Tech</h1>
+                    <p class="text-slate-600 max-w-sm mx-auto leading-relaxed">
+                        Join the future of retail with Alcess. Premium products, seamless experience.
+                    </p>
+                </div>
+
+                <div class="absolute bottom-10 text-slate-400 text-xs font-medium tracking-widest uppercase">
+                    Innovating Since 2024
+                </div>
             </div>
 
             <!-- Right Side - Content -->
@@ -57,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import LoginGif from "@/../img/auth/login.gif";
+import Logo from "@/../img/logo.png";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import NavBar from "@/components/NavBar.vue";
 import Footer from "@/components/Footer.vue";
