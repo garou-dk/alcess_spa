@@ -1,8 +1,9 @@
 <template>
     <div :class="getResponsiveClasses({
-        mobile: 'p-3 bg-gray-50 min-h-screen',
-        tablet: 'p-4 bg-gray-50 min-h-screen',
-        desktop: 'p-5 bg-gray-50 min-h-screen'
+        // Extra bottom padding to avoid overlap with floating action menu / chat
+        mobile: 'p-3 bg-gray-50 min-h-screen pb-24',
+        tablet: 'p-4 bg-gray-50 min-h-screen pb-24',
+        desktop: 'p-5 bg-gray-50 min-h-screen pb-24'
     })">
         <!-- Navigation Tabs -->
         <div :class="getResponsiveClasses({
