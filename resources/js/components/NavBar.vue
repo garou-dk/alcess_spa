@@ -458,8 +458,7 @@ const markAsRead = async (item: IOrderNotification | null = null) => {
     
     // Refresh notifications
     loadNotifications();
-};
-    
+
     // Hide popover
     if (notificationElement.value) {
         notificationElement.value.hide();
