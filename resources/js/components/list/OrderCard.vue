@@ -105,7 +105,7 @@
                         iconPos="right"
                         class="w-full sm:w-auto font-bold shadow-sm"
                         severity="info"
-                        @click.stop="$emit('pay', order)"
+                        @click="$emit('pay', order)"
                     />
                 </div>
             </div>
@@ -135,7 +135,7 @@
                     size="small"
                     outlined
                     icon="pi pi-times"
-                    @click.stop="$emit('cancel', order)"
+                    @click="$emit('cancel', order)"
                     class="relative z-10 cursor-pointer"
                 />
 
