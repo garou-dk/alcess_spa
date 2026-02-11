@@ -300,6 +300,7 @@ import { useEcho } from "@laravel/echo-vue";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
 import { RoleEnum, getStoreRoles } from "@/enums/RoleEnum";
 import { useChatStore } from "@/stores/ChatStore";
+import type { UserInterface } from "@/interfaces/UserInterface";
 
 const props = defineProps<{
     mode?: 'guest' | 'auth' | 'customer' | 'admin';
@@ -328,6 +329,30 @@ const userMenuRef = ref(null);
 const sideBar = inject('sideBar', ref(false));
 
 const cartCount = ref(0); // This should ideally come from a store or API for customers
+
+const RECENT_LOGIN_KEY = "recent_logins";
+
+const saveRecentLogin = (user: UserInterface | null) => {
+    if (!user) return;
+    try {
+        const raw = localStorage.getItem(RECENT_LOGIN_KEY);
+        const existing: any[] = raw ? JSON.parse(raw) : [];
+        const filtered = existing.filter(
+            (u) => u.user_id !== user.user_id && u.email !== user.email
+        );
+        const entry = {
+            user_id: user.user_id,
+            full_name: user.full_name,
+            email: user.email,
+            image: user.image,
+            last_login_at: new Date().toISOString(),
+        };
+        const updated = [entry, ...filtered].slice(0, 5);
+        localStorage.setItem(RECENT_LOGIN_KEY, JSON.stringify(updated));
+    } catch {
+        // ignore storage errors
+    }
+};
 
 // Search
 const searchQuery = ref('');
@@ -390,7 +415,9 @@ const userInitials = computed(() => {
 });
 
 const handleLogout = async () => {
+    const currentUser = Page.user as UserInterface | null;
     await useAxiosUtil().post('logout').then(() => {
+        saveRecentLogin(currentUser);
         Page.user = null;
         router.push({ name: 'auth.login' });
         toast.success("Logged out successfully");

@@ -26,6 +26,43 @@
             </div>
         </transition>
 
+        <!-- Recent Logins (Facebook-like quick profiles) -->
+        <div v-if="!props.admin && recentLogins.length" class="px-2 mb-1">
+            <p class="text-xs font-semibold text-gray-500 mb-2">Recent logins</p>
+            <div class="flex gap-3 overflow-x-auto pb-1">
+                <button
+                    v-for="user in recentLogins"
+                    :key="user.user_id"
+                    type="button"
+                    @click="selectRecentLogin(user)"
+                    class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 transition-colors cursor-pointer min-w-[180px]"
+                >
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold overflow-hidden">
+                            <img
+                                v-if="user.image"
+                                :src="user.image"
+                                alt="Avatar"
+                                class="w-full h-full object-cover"
+                            />
+                            <span v-else>{{ user.full_name.charAt(0).toUpperCase() }}</span>
+                        </div>
+                        <button
+                            type="button"
+                            @click.stop="removeRecentLogin(user)"
+                            class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white text-gray-400 hover:text-red-500 border border-gray-200 flex items-center justify-center text-[10px] cursor-pointer"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div class="flex-1 min-w-0 text-left">
+                        <p class="text-xs font-semibold text-gray-800 truncate">{{ user.full_name }}</p>
+                        <p class="text-[11px] text-gray-500 truncate">{{ user.email }}</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
         <div class="p-2">
             <InputForm
                 :errors="errors.email"
@@ -83,7 +120,7 @@ import {
 import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
@@ -95,6 +132,17 @@ const router = useRouter();
 const props = defineProps<Props>();
 const toast = useToast();
 const authService = useAxiosUtil<LoginFormInterface, UserInterface>();
+
+interface RecentLogin {
+    user_id: number;
+    full_name: string;
+    email: string;
+    image: string | null;
+    last_login_at?: string;
+}
+
+const RECENT_LOGIN_KEY = "recent_logins";
+const recentLogins = ref<RecentLogin[]>([]);
 const form: LoginFormInterface = reactive({
     email: null,
     password: null,
@@ -106,6 +154,64 @@ const errors: LoginFormErrorInterface = reactive({
 
 const showUnverifiedNotice = ref(false);
 const unverifiedMessage = ref('');
+
+const loadRecentLogins = () => {
+    try {
+        const raw = localStorage.getItem(RECENT_LOGIN_KEY);
+        if (!raw) {
+            recentLogins.value = [];
+            return;
+        }
+        const parsed = JSON.parse(raw) as RecentLogin[];
+        recentLogins.value = Array.isArray(parsed) ? parsed : [];
+    } catch {
+        recentLogins.value = [];
+    }
+};
+
+const saveRecentLogin = (user: UserInterface) => {
+    try {
+        const raw = localStorage.getItem(RECENT_LOGIN_KEY);
+        const existing: RecentLogin[] = raw ? JSON.parse(raw) : [];
+        const filtered = existing.filter(
+            (u) => u.user_id !== user.user_id && u.email !== user.email
+        );
+        const entry: RecentLogin = {
+            user_id: user.user_id,
+            full_name: user.full_name,
+            email: user.email,
+            image: user.image,
+            last_login_at: new Date().toISOString(),
+        };
+        const updated = [entry, ...filtered].slice(0, 5);
+        localStorage.setItem(RECENT_LOGIN_KEY, JSON.stringify(updated));
+        recentLogins.value = updated;
+    } catch {
+        // ignore storage errors
+    }
+};
+
+const selectRecentLogin = (user: RecentLogin) => {
+    form.email = user.email;
+    form.password = null;
+    clearErrors();
+    nextTick(() => {
+        const el = document.getElementById("password") as HTMLInputElement | null;
+        el?.focus();
+    });
+};
+
+const removeRecentLogin = (user: RecentLogin) => {
+    const updated = recentLogins.value.filter(
+        (u) => u.user_id !== user.user_id || u.email !== user.email
+    );
+    recentLogins.value = updated;
+    try {
+        localStorage.setItem(RECENT_LOGIN_KEY, JSON.stringify(updated));
+    } catch {
+        // ignore
+    }
+};
 
 const clearErrors = () => {
     Object.keys(errors).forEach((key) => {
@@ -128,6 +234,12 @@ const validate = () => {
 };
 
 const emit = defineEmits(['success']);
+
+onMounted(() => {
+    if (!props.admin) {
+        loadRecentLogins();
+    }
+});
 
 const handleSubmit = async () => {
     const data = validate();
