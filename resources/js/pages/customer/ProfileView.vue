@@ -20,14 +20,14 @@
                         <h1 class="text-lg md:text-xl font-semibold text-white/90">My Profile</h1>
                         <p class="text-xs md:text-sm text-slate-200/80">Manage your personal information, address, and security settings.</p>
                     </div>
-                    <button 
-                        @click="triggerCoverUpload" 
-                        class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/30 text-xs font-medium text-white bg-white/10 hover:bg-white/15 backdrop-blur-sm transition-colors"
-                    >
-                        <i class="pi pi-camera text-[11px]"></i>
-                        <span>Change cover</span>
-                    </button>
-                    <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
+            <button 
+                @click="triggerCoverUpload" 
+                class="absolute top-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl shadow-lg border border-blue-500/50 flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 z-20"
+            >
+                <i class="pi pi-camera text-lg"></i>
+                <span class="hidden sm:inline">Upload Cover</span>
+            </button>
+            <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
                 </div>
             </div>
         </div>
@@ -147,25 +147,30 @@
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <i class="pi pi-history text-slate-400 text-sm"></i>
-                                    Order Timeline
+                                    Order History
                                 </h2>
                                 <p class="text-slate-500 text-sm mt-1">Track the status of your recent purchases.</p>
                             </div>
-                            <router-link :to="{ name: 'customer.orders' }">
-                                <Button 
-                                    label="View full history" 
-                                    icon="pi pi-arrow-right" 
-                                    class="p-button-text font-semibold text-slate-700" 
-                                />
-                            </router-link>
                         </div>
 
-                        <div v-if="recentOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                            <div v-for="(order, index) in recentOrders" :key="order.order_id" class="relative flex gap-6 group">
+                        <!-- Order Status Tabs -->
+                        <div class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                            <button 
+                                v-for="tab in orderTabs" 
+                                :key="tab"
+                                @click="activeTab = tab"
+                                class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-all border"
+                                :class="activeTab === tab ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600'"
+                            >
+                                {{ tab }}
+                            </button>
+                        </div>
+
+                        <div v-if="filteredOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                            <div v-for="(order, index) in filteredOrders" :key="order.order_id" class="relative flex gap-6 group">
                                 <!-- Dot -->
                                 <div class="absolute -left-4 mt-1.5 w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10" :class="getStatusTimelineColor(order.status)">
-                                    <i class="pi" :class="getStatusIcon(order.status)" style="font-size: 0.6rem"></i>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white opacity-90"></div>
                                 </div>
                                 
                                 <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all">
@@ -195,9 +200,7 @@
                                             @click="buyAgain(order)" 
                                             label="Buy again" 
                                             icon="pi pi-refresh" 
-                                            size="small" 
-                                            outlined 
-                                            class="font-semibold rounded-lg text-xs" 
+                                            class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 font-bold rounded-xl text-xs px-4 py-2" 
                                         />
                                     </div>
                                 </div>
@@ -207,13 +210,13 @@
                             <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                                 <i class="pi pi-shopping-bag text-2xl text-slate-400"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-slate-900">No Orders Yet</h3>
-                            <p class="text-slate-500 text-sm mt-1 mb-6">Start shopping to see your timeline.</p>
+                            <h3 class="text-lg font-bold text-slate-900">No Orders Found</h3>
+                            <p class="text-slate-500 text-sm mt-1 mb-6">No orders found for this status.</p>
                             <router-link :to="{ name: 'customer.browse-products' }">
                                 <Button 
                                     label="Browse products" 
                                     icon="pi pi-shopping-cart" 
-                                    class="rounded-xl font-semibold" 
+                                    class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/20" 
                                 />
                             </router-link>
                         </div>
@@ -233,7 +236,7 @@
                                 @click="openAddressForm" 
                                 label="Edit address" 
                                 icon="pi pi-pencil" 
-                                class="p-button-outlined rounded-xl font-semibold" 
+                                class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold" 
                             />
                         </div>
 
@@ -292,7 +295,7 @@
                                 </div>
                                 <h3 class="text-lg font-bold text-slate-900">No Address Set</h3>
                                 <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">Add your delivery address to make checkout faster.</p>
-                                <Button @click="openAddressForm" label="Add address" icon="pi pi-plus" class="p-button-primary rounded-xl font-semibold" />
+                                <Button @click="openAddressForm" label="Add address" icon="pi pi-plus" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/30" />
                             </div>
                         </div>
                     </div>
@@ -322,7 +325,7 @@
                         </div>
 
                         <div class="mt-8 flex justify-end">
-                            <Button @click="updateName" :loading="savingName" label="Save changes" icon="pi pi-check" class="p-button-primary rounded-xl font-semibold px-6" />
+                            <Button @click="updateName" :loading="savingName" label="Save changes" icon="pi pi-check" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full md:w-auto px-6" />
                         </div>
                     </div>
 
@@ -356,7 +359,7 @@
                             </div>
                             
                             <div class="mt-6 flex justify-end">
-                                <Button @click="updatePassword" :loading="savingPassword" label="Update password" class="p-button-secondary p-button-outlined rounded-xl font-semibold px-6" />
+                                <Button @click="updatePassword" :loading="savingPassword" label="Update password" icon="pi pi-lock" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full md:w-auto px-6" />
                             </div>
                         </div>
 
@@ -389,7 +392,7 @@
                                 <p class="text-slate-600 text-xs font-medium leading-relaxed mb-6 h-10">
                                     Generate one-time codes in case you lose access to your email.
                                 </p>
-                                <Button @click="showCodesDialog = true" label="Manage Codes" class="w-full rounded-xl font-bold" outlined />
+                                <Button @click="showCodesDialog = true" label="Manage Codes" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full" />
                              </div>
                         </div>
                     </div>
@@ -415,7 +418,7 @@
             <template #footer>
                 <div class="flex gap-3">
                     <Button @click="showQuestionDialog = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="saveQuestion" :loading="savingQuestion" label="Save Security Question" class="rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
+                    <Button @click="saveQuestion" :loading="savingQuestion" label="Save Security Question" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
                 </div>
             </template>
         </Dialog>
@@ -436,7 +439,7 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-900">No Codes Generated</h3>
                     <p class="text-slate-500 text-sm font-medium mt-1 mb-8">Generate codes to start securing your account.</p>
-                    <Button @click="generateCodes" :loading="generatingCodes" label="Generate Codes" icon="pi pi-key" class="rounded-xl font-bold px-8 shadow-lg shadow-blue-500/20" />
+                    <Button @click="generateCodes" :loading="generatingCodes" label="Generate Codes" icon="pi pi-key" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold px-8" />
                 </div>
 
                 <div v-if="recoveryCodes.length > 0" class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3">
@@ -472,7 +475,7 @@
             <template #footer>
                 <div class="flex gap-3">
                     <Button @click="showCropper = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="uploadCroppedImage" :loading="uploadingImage" label="Save & Update" icon="pi pi-check" class="rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
+                    <Button @click="uploadCroppedImage" :loading="uploadingImage" label="Save & Update" icon="pi pi-check" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
                 </div>
             </template>
         </Dialog>
@@ -511,6 +514,9 @@ const confirm = useConfirm()
 const profileService = useAxiosUtil()
 
 // State
+const orderTabs = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Completed', 'Cancelled']
+const activeTab = ref('All')
+
 const profileForm = reactive({ full_name: Page.user?.full_name || '' })
 const passwordForm = reactive({ current_password: '', password: '', password_confirmation: '' })
 const questionForm = reactive({ customQuestion: Page.user?.security_question || '', answer: '' })
@@ -692,13 +698,28 @@ const loadOrders = async () => {
         if (profileService.request.status === 200) {
             const data = profileService.request.data;
             if (Array.isArray(data)) {
-                recentOrders.value = (data as any[]).slice(0, 3);
+                // Store all orders
+                recentOrders.value = data;
             } else {
                 recentOrders.value = [];
             }
         }
     });
 };
+
+const filteredOrders = computed(() => {
+    if (activeTab.value === 'All') return recentOrders.value;
+    
+    return recentOrders.value.filter(order => {
+        if (activeTab.value === 'Completed') {
+            return ['Completed', 'Delivered'].includes(order.status);
+        }
+        if (activeTab.value === 'Cancelled') {
+            return ['Cancelled', 'Declined'].includes(order.status);
+        }
+        return order.status === activeTab.value;
+    });
+});
 
 
 
