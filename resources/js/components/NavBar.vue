@@ -88,7 +88,7 @@
                                             <p class="text-xs text-gray-400 mt-1">We'll let you know when something happens</p>
                                         </div>
                                         <div v-else v-for="note in filteredNotifications" :key="note.order_notification_id" 
-                                            @click="markAsRead(note.order_notification_id)"
+                                            @click="markAsRead(note)"
                                             :class="['group p-4 border-b border-gray-50 hover:bg-blue-50/50 cursor-pointer transition-all duration-200', !note.is_read ? 'bg-blue-50/30' : '']">
                                             <div class="flex gap-4">
                                                 <div :class="['flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', getNotificationColor(note.notification_type)]">
@@ -185,7 +185,7 @@
                                             <router-link :to="{ name: 'customer.profile' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <i class="pi pi-user mr-2 text-blue-500"></i> Profile
                                             </router-link>
-                                            <router-link :to="{ name: 'customer.orders' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                            <router-link :to="{ name: 'customer.order.index' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <i class="pi pi-shopping-bag mr-2 text-blue-500"></i> My Orders
                                             </router-link>
                                         </template>
@@ -262,7 +262,7 @@
                             <router-link :to="{ name: 'customer.profile' }" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
                                 My Profile
                             </router-link>
-                            <router-link :to="{ name: 'customer.orders' }" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
+                            <router-link :to="{ name: 'customer.order.index' }" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
                                 My Orders
                             </router-link>
                          </template>
@@ -428,9 +428,14 @@ const toggleNotification = (event: Event) => {
 };
 
 const markAsRead = async (item: IOrderNotification | null = null) => {
+    if (!Page.user) return;
+
+    const isAdmin = getStoreRoles().includes(Page.user.role.role_name as RoleEnum);
+    const prefix = isAdmin ? 'admin' : 'customer';
+
     if (item) {
         if (!item.is_read) {
-            await submitMarkReadService.patch(`order-notifications/mark-as-read/${item.order_notification_id}`, {});
+            await submitMarkReadService.patch(`${prefix}/order-notifications/mark-as-read/${item.order_notification_id}`, {});
             // Update local state
             const index = notifications.value.findIndex(n => n.order_notification_id === item.order_notification_id);
             if (index !== -1) {
@@ -445,7 +450,7 @@ const markAsRead = async (item: IOrderNotification | null = null) => {
              router.push({ name: 'customer.order.index' });
         }
     } else {
-        await submitMarkReadService.patch("order-notifications/mark-all-as-read", {});
+        await submitMarkReadService.patch(`${prefix}/order-notifications/mark-all-as-read`, {});
         notifications.value.forEach(n => n.is_read = true);
         
         // Redirect based on role

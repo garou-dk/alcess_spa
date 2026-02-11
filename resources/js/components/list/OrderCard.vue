@@ -99,12 +99,13 @@
                 <!-- Independent Button Container -->
                 <div class="w-full sm:w-auto">
                     <Button 
+                        type="button"
                         label="Pay Now" 
                         icon="pi pi-arrow-right" 
                         iconPos="right"
                         class="w-full sm:w-auto font-bold shadow-sm"
                         severity="info"
-                        @click="$emit('pay', order)"
+                        @click.stop="$emit('pay', order)"
                     />
                 </div>
             </div>
