@@ -438,6 +438,29 @@
                             </Column>
                         </DataTable>
 
+                        <!-- Payment Pending Banner -->
+                        <div v-if="item.status === 'Processing' && item.admin_accepted && !item.proof_of_payment && item.payment_method === 'Online Payment'" class="bg-blue-50 border-t border-blue-100 p-4">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                                        <i class="pi pi-wallet text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-blue-900">Payment Required</p>
+                                        <p class="text-sm text-blue-700">Admin has accepted your order. Please complete payment to proceed.</p>
+                                    </div>
+                                </div>
+                                <Button 
+                                    label="Pay Now" 
+                                    icon="pi pi-arrow-right" 
+                                    iconPos="right"
+                                    severity="info"
+                                    class="w-full sm:w-auto font-bold shadow-sm relative z-10"
+                                    @click="openPaymentModal(item)"
+                                />
+                            </div>
+                        </div>
+
                         <!-- Order Footer -->
                         <div class="p-4 bg-gray-50 border-t">
                             <div class="flex flex-wrap gap-3 justify-between items-center">
@@ -465,7 +488,7 @@
                                     />
 
                                     <!-- Processing Status - Admin Accepted, Can Pay or Cancel -->
-                                    <template v-if="item.status === 'Processing' && item.admin_accepted && !item.proof_of_payment">
+                                    <div v-if="item.status === 'Processing' && item.admin_accepted && !item.proof_of_payment" class="relative z-10 flex gap-2">
                                         <Button
                                             label="Cancel Order"
                                             severity="danger"
@@ -473,17 +496,9 @@
                                             icon="pi pi-times"
                                             @click="cancelOrder(item)"
                                             type="button"
+                                            class="relative z-10"
                                         />
-                                        <Button
-                                            v-if="item.payment_method === 'Online Payment'"
-                                            label="Pay Now"
-                                            severity="success"
-                                            size="small"
-                                            icon="pi pi-money-bill"
-                                            @click="openPaymentModal(item)"
-                                            type="button"
-                                        />
-                                    </template>
+                                    </div>
 
                                     <!-- Processing Status - Payment Submitted, Awaiting Confirmation -->
                                     <div v-if="item.status === 'Processing' && item.admin_accepted && item.proof_of_payment" class="text-sm text-blue-600 font-medium">
@@ -687,7 +702,7 @@ import DateUtil from '@/utils/DateUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { useResponsive } from '@/composables/useResponsive';
 import { useEcho } from '@laravel/echo-vue';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 
@@ -913,13 +928,15 @@ const showCompleteAddress = (value: IOrder) => {
 };
 
 const openPaymentModal = (item: IOrder) => {
-    console.log('Open Payment Modal Clicked', item);
     if (!item) {
         console.error('No item provided to openPaymentModal');
         return;
     }
-    paymentModal.value.order = item;
-    paymentModal.value.visible = true;
+    // Use nextTick to ensure state updates cleanly after event bubbling
+    nextTick(() => {
+        paymentModal.value.order = item;
+        paymentModal.value.visible = true;
+    });
 };
 
 const buyAgainService = useAxiosUtil();
