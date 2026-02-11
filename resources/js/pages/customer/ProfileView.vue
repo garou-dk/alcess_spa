@@ -165,7 +165,7 @@
                             <div v-for="order in recentOrders" :key="order.order_id" class="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-start mb-2">
-                                        <span class="font-bold text-slate-900">Order #{{ order.order_id.substring(0, 8) }}</span>
+                                        <span class="font-bold text-slate-900">Order #{{ String(order.order_id || '').substring(0, 8) }}</span>
                                         <span :class="{'text-amber-600 bg-amber-100': order.status === 'Processing', 'text-blue-600 bg-blue-100': order.status === 'Confirmed', 'text-green-600 bg-green-100': order.status === 'Completed'}" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
                                             {{ order.status }}
                                         </span>
