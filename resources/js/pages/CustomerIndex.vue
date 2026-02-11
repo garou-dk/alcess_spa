@@ -10,8 +10,8 @@
             <RouterView />
         </div>
 
-        <!-- Sticky Menu -->
-        <FloatingActionMenu />
+        <!-- Sticky Menu (hidden on cart and orders to avoid covering actions) -->
+        <FloatingActionMenu v-if="showFloatingMenu" />
         
 
         <!-- Welcome Modal (Prompt to set up address) -->
@@ -210,6 +210,12 @@ const isProductPage = computed(() => {
 
 const isDashboard = computed(() => {
     return router.currentRoute.value.name === 'customer.home.index';
+});
+
+// Hide floating action menu on specific routes (e.g. cart and orders)
+const showFloatingMenu = computed(() => {
+    const hiddenRoutes = ['customer.cart.index', 'customer.order.index'];
+    return !hiddenRoutes.includes(router.currentRoute.value.name as string);
 });
 
 interface Notification {

@@ -427,6 +427,29 @@ const toggleNotification = (event: Event) => {
     notificationElement.value?.toggle(event);
 };
 
+const navigateFromNotification = (item: IOrderNotification | null, isAdmin: boolean) => {
+    if (isAdmin) {
+        if (item) {
+            const type = item.notification_type;
+            const targetByType: Record<string, any> = {
+                'Pending Order':   { name: 'admin.order.index', query: { status: 'Processing' } },
+                'Confirmed Order': { name: 'admin.order.index', query: { status: 'Confirmed' } },
+                'To Ship':         { name: 'admin.order.index', query: { status: 'Shipped' } },
+                'Cancelled Order': { name: 'admin.order.index', query: { status: 'Cancelled' } },
+                'Paid':            { name: 'admin.order.index' },
+                'Rejected Order':  { name: 'admin.order.index', query: { status: 'Cancelled' } },
+            };
+
+            const target = targetByType[type] || { name: 'admin.order.index' };
+            router.push(target);
+        } else {
+            router.push({ name: 'admin.order.index' });
+        }
+    } else {
+        router.push({ name: 'customer.order.index' });
+    }
+};
+
 const markAsRead = async (item: IOrderNotification | null = null) => {
     if (!Page.user) return;
 
@@ -442,23 +465,13 @@ const markAsRead = async (item: IOrderNotification | null = null) => {
                 notifications.value[index].is_read = true;
             }
         }
-        
-        // Redirect based on role
-        if (Page.user?.role?.role_id === RoleEnum.ADMIN || Page.user?.role?.role_id === RoleEnum.STAFF) {
-            router.push({ name: 'admin.order.index' });
-        } else {
-             router.push({ name: 'customer.order.index' });
-        }
+
+        navigateFromNotification(item, isAdmin);
     } else {
         await submitMarkReadService.patch(`${prefix}/order-notifications/mark-all-as-read`, {});
         notifications.value.forEach(n => n.is_read = true);
-        
-        // Redirect based on role
-        if (Page.user?.role?.role_id === RoleEnum.ADMIN || Page.user?.role?.role_id === RoleEnum.STAFF) {
-             router.push({ name: 'admin.order.index' });
-        } else {
-             router.push({ name: 'customer.order.index' });
-        }
+
+        navigateFromNotification(null, isAdmin);
     }
     
     // Refresh notifications
