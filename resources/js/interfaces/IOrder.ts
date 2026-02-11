@@ -24,6 +24,9 @@ interface IOrder {
     tracking_number: string;
     delivery_proof_images: string | null;
     delivery_proof_video: string | null;
+    admin_accepted: boolean;
+    admin_accepted_at: string | null;
+    proof_of_payment: string | null;
     created_at: string;
     updated_at: string;
     product_orders: IProductOrder[];

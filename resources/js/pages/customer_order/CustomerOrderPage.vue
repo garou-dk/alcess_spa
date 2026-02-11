@@ -480,7 +480,7 @@
                                             severity="success"
                                             size="small"
                                             icon="pi pi-money-bill"
-                                            @click="console.log('Pay Now Click from Template', item); openPaymentModal(item)"
+                                            @click="openPaymentModal(item)"
                                             type="button"
                                         />
                                     </template>
@@ -687,7 +687,7 @@ import DateUtil from '@/utils/DateUtil';
 import UrlUtil from '@/utils/UrlUtil';
 import { useResponsive } from '@/composables/useResponsive';
 import { useEcho } from '@laravel/echo-vue';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 
@@ -943,6 +943,44 @@ const paymentModalCb = () => {
     load();
 };
 
+// Check if any orders are awaiting admin review or pending action
+const hasPendingOrders = computed(() => {
+    return data.value.some(order => 
+        order.status === 'Processing' && !order.admin_accepted
+    );
+});
+
+// Auto-polling: refresh data every 15s when orders are awaiting admin review
+// This ensures "Pay Now" appears promptly even if WebSocket events are missed
+let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
+const startPolling = () => {
+    stopPolling();
+    pollingInterval = setInterval(() => {
+        if (hasPendingOrders.value) {
+            load();
+        } else {
+            stopPolling();
+        }
+    }, 15000);
+};
+
+const stopPolling = () => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    }
+};
+
+// Start/stop polling based on whether there are pending orders
+watch(hasPendingOrders, (pending) => {
+    if (pending) {
+        startPolling();
+    } else {
+        stopPolling();
+    }
+});
+
 const { leave } = useEcho(
     `detect-order.${Page.user.user_id}`,
     [".customer-order.event"],
@@ -957,7 +995,6 @@ onMounted(() => {
     // Add visibility change listener to reload when tab becomes visible
     const handleVisibilityChange = () => {
         if (!document.hidden) {
-            console.log('Page became visible, reloading orders...');
             load();
         }
     };
@@ -972,12 +1009,12 @@ onMounted(() => {
 
 onUnmounted(() => {
     leave();
+    stopPolling();
 });
 
 // Also reload when route changes back to this page
 watch(() => router.currentRoute.value.fullPath, (newPath, oldPath) => {
     if (newPath.includes('/orders') && oldPath && !oldPath.includes('/orders')) {
-        console.log('Navigated back to orders page, reloading...');
         load();
     }
 });

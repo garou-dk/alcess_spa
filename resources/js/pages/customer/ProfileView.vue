@@ -170,7 +170,7 @@
                                             {{ order.status }}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-slate-500 font-medium mb-3">{{ DateUtil.formatDate(order.created_at) }}</p>
+                                    <p class="text-xs text-slate-500 font-medium mb-3">{{ DateUtil.formatToMonthDayYear(order.created_at) }}</p>
                                     <div class="flex gap-2 overflow-x-auto pb-2">
                                         <div v-for="item in order.product_orders" :key="item.product_id" class="w-12 h-12 rounded-lg border border-slate-200 bg-white flex-shrink-0 overflow-hidden">
                                             <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
@@ -652,13 +652,11 @@ const loadOrders = async () => {
     loadingOrders.value = true;
     await profileService.get('customer/orders').then(() => {
         loadingOrders.value = false;
-        console.log('Recent Orders Response:', profileService.request);
         if (profileService.request.status === 200) {
             const data = profileService.request.data;
             if (Array.isArray(data)) {
                 recentOrders.value = (data as any[]).slice(0, 3);
             } else {
-                console.error('Expected array of orders, got:', data);
                 recentOrders.value = [];
             }
         }
