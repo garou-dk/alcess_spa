@@ -1,20 +1,34 @@
 <template>
     <div class="profile-view min-h-screen bg-slate-50/50 pb-20">
-        <!-- Hero Section (simplified, neutral) -->
-        <div class="border-b border-slate-200 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">My Profile</h1>
-                    <p class="text-sm text-slate-500 mt-1">Manage your personal information, address, and security settings.</p>
+        <!-- Hero Section with Cover Image (restored, slightly simplified) -->
+        <div class="relative group h-64 md:h-80 w-full overflow-hidden bg-slate-900">
+            <img 
+                v-if="Page.user?.cover_image" 
+                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
+                class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+            >
+            <!-- Fallback -->
+            <div v-else class="w-full h-full flex items-center justify-center">
+                <img :src="Logo" alt="logo" class="w-24 h-24 opacity-10 filter invert" />
+            </div>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent"></div>
+
+            <div class="absolute inset-x-0 bottom-0 pb-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-lg md:text-xl font-semibold text-white/90">My Profile</h1>
+                        <p class="text-xs md:text-sm text-slate-200/80">Manage your personal information, address, and security settings.</p>
+                    </div>
+                    <button 
+                        @click="triggerCoverUpload" 
+                        class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/30 text-xs font-medium text-white bg-white/10 hover:bg-white/15 backdrop-blur-sm transition-colors"
+                    >
+                        <i class="pi pi-camera text-[11px]"></i>
+                        <span>Change cover</span>
+                    </button>
+                    <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
                 </div>
-                <button 
-                    @click="triggerCoverUpload" 
-                    class="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
-                >
-                    <i class="pi pi-camera text-xs"></i>
-                    <span>Update cover photo</span>
-                </button>
-                <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
             </div>
         </div>
 
@@ -128,18 +142,22 @@
                 <!-- Right Column: Settings & Forms -->
                 <div class="lg:col-span-8 space-y-8">
                     
-                    <!-- 0. Order Timeline (Replaces Recent Orders) -->
-                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                    <!-- 0. Order Timeline -->
+                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <i class="pi pi-history text-blue-600"></i>
+                                    <i class="pi pi-history text-slate-400 text-sm"></i>
                                     Order Timeline
                                 </h2>
-                                <p class="text-slate-500 text-sm font-medium mt-1">Track the status of your purchases.</p>
+                                <p class="text-slate-500 text-sm mt-1">Track the status of your recent purchases.</p>
                             </div>
                             <router-link :to="{ name: 'customer.orders' }">
-                                <Button label="View Full History" icon="pi pi-arrow-right" class="p-button-text font-bold" />
+                                <Button 
+                                    label="View full history" 
+                                    icon="pi pi-arrow-right" 
+                                    class="p-button-text font-semibold text-slate-700" 
+                                />
                             </router-link>
                         </div>
 
@@ -150,7 +168,7 @@
                                     <i class="pi" :class="getStatusIcon(order.status)" style="font-size: 0.6rem"></i>
                                 </div>
                                 
-                                <div class="flex-1 bg-slate-50/50 rounded-2xl p-5 border border-slate-100 hover:bg-white hover:shadow-md transition-all">
+                                <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all">
                                     <div class="flex flex-wrap justify-between items-start gap-4 mb-3">
                                         <div>
                                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
@@ -165,15 +183,22 @@
 
                                     <!-- Product Images -->
                                     <div class="flex gap-2 overflow-x-auto pb-3 mb-2 scrollbar-hide">
-                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-16 h-16 rounded-lg border border-slate-200 bg-white flex-shrink-0 overflow-hidden relative group/img">
+                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-16 h-16 rounded-lg border border-slate-200 bg-slate-50 flex-shrink-0 overflow-hidden relative group/img">
                                             <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
                                             <div class="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"></div>
                                         </div>
                                     </div>
                                     
-                                    <div class="flex items-center justify-between pt-3 border-t border-slate-200/50">
+                                    <div class="flex items-center justify-between pt-3 border-t border-slate-100">
                                         <span class="font-bold text-slate-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
-                                        <Button @click="buyAgain(order)" label="Buy Again" icon="pi pi-refresh" size="small" outlined class="font-bold rounded-lg text-xs" />
+                                        <Button 
+                                            @click="buyAgain(order)" 
+                                            label="Buy again" 
+                                            icon="pi pi-refresh" 
+                                            size="small" 
+                                            outlined 
+                                            class="font-semibold rounded-lg text-xs" 
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -183,35 +208,42 @@
                                 <i class="pi pi-shopping-bag text-2xl text-slate-400"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-900">No Orders Yet</h3>
-                            <p class="text-slate-500 text-sm font-medium mt-1 mb-6">Start shopping to see your timeline!</p>
+                            <p class="text-slate-500 text-sm mt-1 mb-6">Start shopping to see your timeline.</p>
                             <router-link :to="{ name: 'customer.browse-products' }">
-                                <Button label="Browse Products" icon="pi pi-shopping-cart" class="rounded-xl font-bold shadow-lg shadow-blue-500/20" />
+                                <Button 
+                                    label="Browse products" 
+                                    icon="pi pi-shopping-cart" 
+                                    class="rounded-xl font-semibold" 
+                                />
                             </router-link>
                         </div>
                     </div>
                     
-                    <!-- 1. Contact & Address (Priority) -->
-                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                    <!-- 1. Contact & Address -->
+                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <i class="pi pi-map-marker text-blue-600"></i>
+                                    <i class="pi pi-map-marker text-slate-400 text-sm"></i>
                                     Delivery Address
                                 </h2>
-                                <p class="text-slate-500 text-sm font-medium mt-1">Manage your shipping details for faster checkout.</p>
+                                <p class="text-slate-500 text-sm mt-1">Manage your shipping details for faster checkout.</p>
                             </div>
-                            <Button @click="openAddressForm" label="Edit Address" icon="pi pi-pencil" class="p-button-outlined rounded-xl font-bold" />
+                            <Button 
+                                @click="openAddressForm" 
+                                label="Edit address" 
+                                icon="pi pi-pencil" 
+                                class="p-button-outlined rounded-xl font-semibold" 
+                            />
                         </div>
 
-                        <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-100 relative group overflow-hidden">
-                            <div class="absolute inset-0 bg-grid-pattern opacity-[0.03]"></div>
-                            
-                             <div v-if="Page.user?.address" class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-slate-50/60 rounded-2xl p-6 border border-slate-100">
+                             <div v-if="Page.user?.address" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-5">
                                     <div>
                                         <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Contact Number</label>
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm">
+                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
                                                 <i class="pi pi-phone"></i>
                                             </div>
                                             <span class="text-lg font-bold text-slate-800">{{ Page.user.address.contact_number || 'N/A' }}</span>
@@ -220,7 +252,7 @@
                                     <div>
                                         <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Postal Code</label>
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm">
+                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
                                                 <i class="pi pi-envelope"></i>
                                             </div>
                                             <span class="text-lg font-bold text-slate-800">{{ Page.user.address.postal_code || 'N/A' }}</span>
@@ -230,7 +262,7 @@
                                 
                                 <div>
                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Full Address</label>
-                                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm h-full">
+                                    <div class="bg-white rounded-xl p-4 border border-slate-200 h-full">
                                         <div class="flex gap-3">
                                             <i class="pi pi-home text-blue-500 mt-1"></i>
                                             <div>
@@ -243,7 +275,7 @@
                                                     <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">
                                                         {{ Page.user.address.barangay.municity?.province?.province_name }}
                                                     </p>
-                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
+                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
                                                         <i class="pi pi-map text-[10px]"></i>
                                                         {{ Page.user.address.barangay.municity.province.region.region_name }}
                                                     </div>
@@ -254,19 +286,19 @@
                                 </div>
                             </div>
                             
-                            <div v-else class="text-center py-10">
+                            <div v-else class="text-center py-10 bg-white rounded-2xl">
                                 <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500">
                                     <i class="pi pi-map-marker text-2xl"></i>
                                 </div>
                                 <h3 class="text-lg font-bold text-slate-900">No Address Set</h3>
-                                <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">Please add your delivery address to proceed with orders.</p>
-                                <Button @click="openAddressForm" label="Add Address Now" icon="pi pi-plus" class="p-button-primary rounded-xl font-bold shadow-lg shadow-blue-500/30" />
+                                <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">Add your delivery address to make checkout faster.</p>
+                                <Button @click="openAddressForm" label="Add address" icon="pi pi-plus" class="p-button-primary rounded-xl font-semibold" />
                             </div>
                         </div>
                     </div>
 
                     <!-- 2. Personal Information -->
-                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
                         <div class="mb-8 border-b border-slate-100 pb-4">
                             <h2 class="text-xl font-bold text-slate-900">Personal Details</h2>
                             <p class="text-slate-500 text-sm font-medium mt-1">Update how your name appears on your profile.</p>
@@ -290,21 +322,21 @@
                         </div>
 
                         <div class="mt-8 flex justify-end">
-                            <Button @click="updateName" :loading="savingName" label="Save Changes" icon="pi pi-check" class="p-button-primary rounded-xl font-bold px-6 shadow-lg shadow-blue-500/20" />
+                            <Button @click="updateName" :loading="savingName" label="Save changes" icon="pi pi-check" class="p-button-primary rounded-xl font-semibold px-6" />
                         </div>
                     </div>
 
-                    <!-- 3. Security Settings (Accordion Style) -->
+                    <!-- 3. Security Settings -->
                     <div class="space-y-4">
                         <!-- Password Update -->
-                        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                        <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
                             <div class="flex items-center justify-between mb-6">
                                 <div>
                                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                        <i class="pi pi-key text-slate-400"></i>
-                                        Change Password
+                                        <i class="pi pi-key text-slate-400 text-sm"></i>
+                                        Change password
                                     </h2>
-                                    <p class="text-slate-500 text-xs font-medium mt-1">Keep your account secure.</p>
+                                    <p class="text-slate-500 text-xs mt-1">Update your password regularly to keep your account secure.</p>
                                 </div>
                             </div>
 
@@ -324,40 +356,40 @@
                             </div>
                             
                             <div class="mt-6 flex justify-end">
-                                <Button @click="updatePassword" :loading="savingPassword" label="Update Password" class="p-button-secondary p-button-outlined rounded-xl font-bold px-6" />
+                                <Button @click="updatePassword" :loading="savingPassword" label="Update password" class="p-button-secondary p-button-outlined rounded-xl font-semibold px-6" />
                             </div>
                         </div>
 
                          <!-- Recovery Options -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div class="bg-indigo-50/50 rounded-3xl p-6 border border-indigo-100 hover:bg-indigo-50 transition-colors group">
+                             <div class="bg-white rounded-3xl p-6 border border-slate-100 hover:bg-slate-50 transition-colors group">
                                 <div class="flex items-center justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform">
                                         <i class="pi pi-question-circle"></i>
                                     </div>
-                                    <span :class="Page.user?.security_question ? 'text-emerald-600 bg-emerald-100' : 'text-amber-600 bg-amber-100'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                    <span :class="Page.user?.security_question ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-amber-700 bg-amber-50 border border-amber-100'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                                         {{ Page.user?.security_question ? 'Configured' : 'Recommended' }}
                                     </span>
                                 </div>
-                                <h4 class="font-bold text-indigo-900 text-base mb-1">Security Question</h4>
-                                <p class="text-indigo-800/60 text-xs font-medium leading-relaxed mb-6 h-10">
+                                <h4 class="font-bold text-slate-900 text-base mb-1">Security Question</h4>
+                                <p class="text-slate-600 text-xs font-medium leading-relaxed mb-6 h-10">
                                     {{ Page.user?.security_question ? 'Your custom question is set. Click to update.' : 'Set a question for account recovery.' }}
                                 </p>
-                                <Button @click="showQuestionDialog = true" :label="Page.user?.security_question ? 'Update Question' : 'Set Up Now'" class="w-full rounded-xl font-bold p-button-indigo" :outlined="!!Page.user?.security_question" />
+                                <Button @click="showQuestionDialog = true" :label="Page.user?.security_question ? 'Update Question' : 'Set Up Now'" class="w-full rounded-xl font-bold" :outlined="!!Page.user?.security_question" />
                              </div>
 
-                             <div class="bg-purple-50/50 rounded-3xl p-6 border border-purple-100 hover:bg-purple-50 transition-colors group">
+                             <div class="bg-white rounded-3xl p-6 border border-slate-100 hover:bg-slate-50 transition-colors group">
                                 <div class="flex items-center justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform">
                                         <i class="pi pi-shield"></i>
                                     </div>
-                                    <span v-if="recoveryCodes.length > 0" class="text-emerald-600 bg-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Active</span>
+                                    <span v-if="recoveryCodes.length > 0" class="text-emerald-700 bg-emerald-50 border border-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Active</span>
                                 </div>
-                                <h4 class="font-bold text-purple-900 text-base mb-1">Backup Codes</h4>
-                                <p class="text-purple-800/60 text-xs font-medium leading-relaxed mb-6 h-10">
+                                <h4 class="font-bold text-slate-900 text-base mb-1">Backup Codes</h4>
+                                <p class="text-slate-600 text-xs font-medium leading-relaxed mb-6 h-10">
                                     Generate one-time codes in case you lose access to your email.
                                 </p>
-                                <Button @click="showCodesDialog = true" label="Manage Codes" class="w-full rounded-xl font-bold p-button-help" outlined />
+                                <Button @click="showCodesDialog = true" label="Manage Codes" class="w-full rounded-xl font-bold" outlined />
                              </div>
                         </div>
                     </div>
