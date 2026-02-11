@@ -210,8 +210,6 @@ const errors: LoginFormErrorInterface = reactive({
 
 const showUnverifiedNotice = ref(false);
 const unverifiedMessage = ref('');
-const showLoginModal = ref(false);
-const selectedRecentUser = ref<RecentLogin | null>(null);
 
 const maskEmail = (email: string) => {
     if (!email) return '';
