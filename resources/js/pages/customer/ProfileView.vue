@@ -285,7 +285,7 @@
                             <p class="text-gray-500 text-xs leading-relaxed mb-4">
                                 {{ Page.user?.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
                             </p>
-                            <button @click="showQuestionDialog = true" class="w-full py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer">
+                            <button @click="showQuestionDialog = true" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
                                 {{ Page.user?.security_question ? 'Update Question' : 'Set Up Now' }}
                             </button>
                             </div>
@@ -385,10 +385,9 @@
                                             </span>
                                             <button
                                                 @click="buyAgain(order)" 
-                                                class="opacity-0 group-hover:opacity-100 text-[11px] font-medium text-blue-600 hover:text-blue-700 transition-all cursor-pointer whitespace-nowrap"
-                                                title="Buy again"
+                                                class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-[10px] font-bold transition-all cursor-pointer whitespace-nowrap"
                                             >
-                                                <i class="pi pi-refresh text-[10px]"></i>
+                                                Order again
                                             </button>
                                         </div>
                                     </div>

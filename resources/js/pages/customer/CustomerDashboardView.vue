@@ -265,17 +265,24 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="cta-section">
+        <!-- Newsletter Section -->
+        <section class="newsletter-section">
             <div class="container">
-                <h2>Ready to upgrade your tech?</h2>
-                <p>Explore our wide selection of laptops, phones, and computers at competitive prices.</p>
-                <div class="cta-buttons">
-                    <button @click="goToProducts" class="btn-primary btn-lg shine-effect">Browse Products <i class="pi pi-arrow-right"></i></button>
-                    <a href="https://www.facebook.com/alcesslaptopstore" target="_blank" class="btn-outline"><i class="pi pi-facebook"></i> Message Us</a>
+                <div class="newsletter-card">
+                    <div class="newsletter-content">
+                        <h3>Join the Tech Community</h3>
+                        <p>Subscribe to get notified about new arrivals, exclusive deals, and tech tips.</p>
+                    </div>
+                    <form class="newsletter-form" @submit.prevent>
+                        <input type="email" placeholder="Enter your email address" required />
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
                 </div>
             </div>
         </section>
+
+        <!-- Footer -->
+        <Footer />
     </div>
 </template>
 
@@ -287,6 +294,7 @@ import useAxiosUtil from '@/utils/AxiosUtil'
 import CurrencyUtil from '@/utils/CurrencyUtil'
 import UrlUtil from '@/utils/UrlUtil'
 import Logo from "@/../img/logo.png";
+import Footer from "@/components/Footer.vue";
 
 const router = useRouter()
 const dashboardService = useAxiosUtil()
@@ -573,11 +581,15 @@ onUnmounted(() => stopCarousel())
 
 
 
-/* CTA Section */
-.cta-section { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 3rem 1rem; text-align: center; }
-.cta-section h2 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
-.cta-section > .container > p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.875rem; }
-.cta-buttons { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
+/* Newsletter */
+.newsletter-section { padding: 4rem 0; background: #f8fafc; }
+.newsletter-card { background: #1e293b; border-radius: 2rem; padding: 3rem; display: flex; flex-direction: column; gap: 2rem; align-items: center; text-align: center; color: #fff; }
+.newsletter-content h3 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+.newsletter-content p { color: #94a3b8; font-size: 1rem; }
+.newsletter-form { display: flex; flex-direction: column; width: 100%; max-width: 500px; gap: 0.75rem; }
+.newsletter-form input { flex: 1; padding: 0.75rem 1.25rem; border-radius: 0.5rem; border: none; background: rgba(255,255,255,0.1); color: #fff; outline: none; border: 1px solid rgba(255,255,255,0.2); width: 100%; }
+.newsletter-form input:focus { border-color: #2563eb; background: rgba(255,255,255,0.15); }
+.newsletter-form button { width: 100%; justify-content: center; }
 
 /* Tablet */
 @media (min-width: 640px) {
@@ -602,6 +614,9 @@ onUnmounted(() => stopCarousel())
 @media (min-width: 1024px) {
     .action-grid { grid-template-columns: repeat(4, 1fr); }
     .product-grid { grid-template-columns: repeat(3, 1fr); }
+    .newsletter-card { flex-direction: row; text-align: left; justify-content: space-between; padding: 4rem; }
+    .newsletter-form { flex-direction: row; max-width: 400px; }
+    .newsletter-form button { width: auto; }
     .cta-section { padding: 4rem 2rem; }
     .cta-section h2 { font-size: 2rem; }
 }

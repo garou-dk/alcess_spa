@@ -254,22 +254,6 @@
             </div>
         </section>
 
-        <!-- Newsletter Section -->
-        <section class="newsletter-section">
-            <div class="container">
-                <div class="newsletter-card">
-                    <div class="newsletter-content">
-                        <h3>Join the Tech Community</h3>
-                        <p>Subscribe to get notified about new arrivals, exclusive deals, and tech tips.</p>
-                    </div>
-                    <form class="newsletter-form" @submit.prevent>
-                        <input type="email" placeholder="Enter your email address" required />
-                        <button type="submit" class="btn-primary">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
         <!-- Footer -->
         <Footer />
     </div>
@@ -659,13 +643,12 @@ onUnmounted(() => stopCarousel());
 .author-location { font-size: 0.6875rem; color: #64748b; }
 
 /* CTA */
-.cta-section { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 3rem 1rem; text-align: center; }
-.cta-section h2 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
-.cta-section > .container > p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.875rem; }
-.cta-buttons { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
-.cta-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
-.stat-number { display: block; font-size: 1.5rem; font-weight: 700; color: #fff; }
-.stat-label { font-size: 0.625rem; color: #64748b; }
+.cta-section { background: #ffffff; padding: 5rem 1rem; text-align: center; border-top: 1px solid #f1f5f9; }
+.cta-section h2 { font-size: 2.25rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.cta-section > .container > p { color: #64748b; margin-bottom: 2.5rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.cta-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; background: #f8fafc; color: #475569; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; text-decoration: none; font-size: 0.875rem; transition: all 0.3s ease; }
+.btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; color: #1e293b; transform: translateY(-2px); }
 
 /* Footer */
 .footer { background: #0f172a; color: #94a3b8; padding: 2rem 1rem; }
