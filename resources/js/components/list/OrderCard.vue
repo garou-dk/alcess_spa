@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="p-4 border-b border-gray-100 flex flex-wrap justify-between items-center gap-3 bg-gray-50/50">
             <div class="flex items-center gap-3">
-                <span class="font-bold text-gray-900">Order #{{ order.order_public_id }}</span>
+                <span class="font-bold text-gray-900">{{ order.order_public_id }}</span>
                 <span class="text-xs text-gray-500 hidden sm:inline">•</span>
                 <span class="text-sm text-gray-500">{{ DateUtil.formatToMonthDayYear(order.created_at) }}</span>
             </div>

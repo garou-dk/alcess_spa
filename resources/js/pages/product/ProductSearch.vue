@@ -39,6 +39,18 @@
         </div>
 
         <div :class="getResponsiveClasses({ mobile: 'px-3 py-4', tablet: 'px-4 py-5', desktop: 'px-6 py-6' })">
+            <!-- Page Header -->
+            <div :class="getResponsiveClasses({ mobile: 'mb-4', tablet: 'mb-5', desktop: 'mb-6 flex items-center justify-between' })">
+                <div>
+                    <h1 :class="getResponsiveTextSize('xl') + ' font-extrabold text-gray-900 tracking-tight'">
+                        Browse Products
+                    </h1>
+                    <p :class="getResponsiveTextSize('sm') + ' text-gray-500 mt-1 max-w-xl'">
+                        Explore our full catalog of laptops and accessories, filter by category and price, and quickly jump to product details.
+                    </p>
+                </div>
+            </div>
+
             <!-- Mobile Filter Toggle Button -->
             <div v-if="!isDesktop" class="mb-4">
                 <button
@@ -230,7 +242,7 @@
                             <div
                                 v-for="product in paginatedData"
                                 :key="product.product_id"
-                                class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col"
+                                class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 flex flex-col"
                             >
                                 <!-- Upper Part - Product Image -->
                                 <div :class="getResponsiveClasses({ mobile: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-40', tablet: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-48', desktop: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-56' })">
