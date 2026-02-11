@@ -652,9 +652,15 @@ const loadOrders = async () => {
     loadingOrders.value = true;
     await profileService.get('customer/orders').then(() => {
         loadingOrders.value = false;
+        console.log('Recent Orders Response:', profileService.request);
         if (profileService.request.status === 200) {
-            // Take top 3
-            recentOrders.value = (profileService.request.data as any[]).slice(0, 3); 
+            const data = profileService.request.data;
+            if (Array.isArray(data)) {
+                recentOrders.value = (data as any[]).slice(0, 3);
+            } else {
+                console.error('Expected array of orders, got:', data);
+                recentOrders.value = [];
+            }
         }
     });
 };

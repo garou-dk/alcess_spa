@@ -480,7 +480,7 @@
                                             severity="success"
                                             size="small"
                                             icon="pi pi-money-bill"
-                                            @click="openPaymentModal(item)"
+                                            @click="console.log('Pay Now Click from Template', item); openPaymentModal(item)"
                                             type="button"
                                         />
                                     </template>
