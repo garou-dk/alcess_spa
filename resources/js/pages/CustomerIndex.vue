@@ -190,9 +190,7 @@ const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
 const addressForm = ref<boolean>(false);
 const securityForm = ref<boolean>(false);
-const securityForm = ref<boolean>(false);
 const showWelcomeModal = ref<boolean>(false);
-const router = useRouter();
 const router = useRouter();
 
 // Check if current route is a product-related page or home page
