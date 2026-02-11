@@ -10,6 +10,44 @@ use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+    /**
+     * Register a customer (self-registration).
+     * Does NOT auto-verify email — sends verification email instead.
+     */
+    public function registerCustomer(array $data): User
+    {
+        return DB::transaction(function () use ($data) {
+            try {
+                $user = new User;
+                $user->full_name = $data['full_name'];
+                $user->email = $data['email'];
+                $user->password = $data['password'];
+                $user->role_id = 3; // Always customer role
+                // Do NOT set email_verified_at — user must verify via email
+
+                $user->save();
+
+                Log::info('Customer registered successfully', [
+                    'user_id' => $user->user_id,
+                    'email' => $user->email,
+                ]);
+
+                // Send verification email
+                $mailer = new MailerService;
+                $mailer->sendEmailVerification($user);
+
+                return $user;
+            } catch (\Throwable $e) {
+                Log::error('Failed to register customer', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'data' => array_diff_key($data, ['password' => '']),
+                ]);
+                throw $e;
+            }
+        });
+    }
+
     public function createUser(array $data): User
     {
         return DB::transaction(function () use ($data) {

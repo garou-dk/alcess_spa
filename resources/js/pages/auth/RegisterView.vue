@@ -78,7 +78,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const onRegisterSuccess = () => {
-    router.push({ name: 'home' });
+    router.push({ name: 'auth.login' });
 };
 </script>
 

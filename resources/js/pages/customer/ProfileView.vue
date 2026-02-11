@@ -1,343 +1,417 @@
 <template>
-    <div class="profile-view min-h-screen bg-gray-50 pb-10">
-        <!-- Profile Header with Cover Image -->
-        <div class="relative h-48 md:h-64 bg-slate-900 overflow-hidden group">
+    <div class="profile-view min-h-screen bg-slate-50/50 pb-20">
+        <!-- Hero Section with Cover Image -->
+        <div class="relative group h-64 md:h-80 w-full overflow-hidden">
+            <div class="absolute inset-0 bg-slate-900 transition-colors"></div>
+            
             <img 
                 v-if="Page.user?.cover_image" 
                 :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
             >
-            <!-- Default Davao Branch Watermark Pattern -->
+            <!-- Fallback Pattern -->
             <div v-else class="profile-watermark-container">
                 <div class="profile-moving-watermark">
                     <div class="profile-watermark-row" v-for="n in 8" :key="n">
                         <span v-for="m in 12" :key="m" class="profile-watermark-item">
                             <img :src="Logo" alt="logo" class="profile-watermark-logo" />
-                            DAVAO BRANCH &nbsp;&nbsp;&nbsp;&nbsp;
+                            ALCESS DAVAO
                         </span>
                     </div>
                 </div>
             </div>
             
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
-            
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-black/30"></div>
+
             <button 
                 @click="triggerCoverUpload" 
-                class="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-800 px-4 py-2 rounded-lg shadow-sm border border-gray-200 flex items-center gap-2 text-sm font-bold transition-all active:scale-95"
+                class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2.5 rounded-xl border border-white/20 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 group/btn"
             >
-                <i class="pi pi-camera"></i>
-                <span>Update Cover</span>
+                <i class="pi pi-camera text-lg group-hover/btn:scale-110 transition-transform"></i>
+                <span>Edit Cover</span>
             </button>
             <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
         </div>
 
-        <div class="max-w-6xl mx-auto px-4 -mt-16 md:-mt-24 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                <!-- Sidebar: User Summary -->
+                <!-- Left Column: User Profile Card -->
                 <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
-                        <div class="relative group mb-4">
-                            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                                <img 
-                                    v-if="Page.user?.image" 
-                                    :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)" 
-                                    class="w-full h-full object-cover"
-                                >
-                                <span v-else class="text-5xl font-bold text-gray-300">{{ Page.user?.full_name?.charAt(0) }}</span>
-                            </div>
-                            <button 
-                                @click="triggerAvatarUpload" 
-                                class="absolute bottom-1 right-1 bg-blue-600 text-white p-2.5 rounded-full shadow-lg hover:bg-blue-700 transition-transform hover:scale-110 active:scale-95 border-2 border-white"
-                            >
-                                <i class="pi pi-pencil text-xs"></i>
-                            </button>
-                            <input type="file" ref="avatarInput" class="hidden" @change="onAvatarChange" accept="image/*">
-                        </div>
+                    <!-- Main Profile Card -->
+                    <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
+                         <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
 
-                        <h2 class="text-2xl font-bold text-gray-900 leading-tight mb-1">{{ Page.user?.full_name }}</h2>
-                        <p class="text-gray-500 font-medium text-sm mb-6">{{ Page.user?.email }}</p>
-                        
-                        <div class="w-full space-y-2">
-                            <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Account Role</span>
-                                <span class="text-sm font-bold text-blue-600">{{ Page.user?.role?.role_name }}</span>
+                        <div class="flex flex-col items-center text-center -mt-12 mb-6">
+                            <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
+                                <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center relative z-10">
+                                    <img 
+                                        v-if="Page.user?.image" 
+                                        :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)" 
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    >
+                                    <span v-else class="text-6xl font-black text-slate-200">{{ Page.user?.full_name?.charAt(0) }}</span>
+                                </div>
+                                <div class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 rounded-full border-[6px] border-transparent">
+                                    <i class="pi pi-camera text-white text-2xl"></i>
+                                </div>
+                                <button 
+                                    class="absolute bottom-2 right-2 z-30 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110 active:scale-95 border-[3px] border-white"
+                                >
+                                    <i class="pi pi-pencil text-sm"></i>
+                                </button>
+                                <input type="file" ref="avatarInput" class="hidden" @change="onAvatarChange" accept="image/*">
                             </div>
-                            <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Verification Status</span>
-                                <div class="flex items-center gap-1.5 text-emerald-600">
-                                    <i class="pi pi-check-circle text-xs"></i>
-                                    <span class="text-sm font-bold">Verified</span>
+
+                            <div class="mt-4">
+                                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">{{ Page.user?.full_name }}</h1>
+                                <p class="text-slate-500 font-medium text-sm mt-1 flex items-center justify-center gap-1.5">
+                                    <i class="pi pi-envelope text-slate-400 text-xs"></i>
+                                    {{ Page.user?.email }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <i class="pi pi-id-card"></i>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Role</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-900 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">{{ Page.user?.role?.role_name }}</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                        <i class="pi pi-verified"></i>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                                    <i class="pi pi-check-circle text-[10px] font-bold"></i>
+                                    <span class="text-xs font-bold uppercase">Verified</span>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Member Since</span>
-                                <span class="text-sm font-bold text-gray-700">{{ Page.user?.created_at ? DateUtil.formatToMonthDayYear(Page.user.created_at) : '--' }}</span>
+
+                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
+                                        <i class="pi pi-calendar"></i>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">{{ Page.user?.created_at ? DateUtil.formatToMonthDayYear(Page.user.created_at) : '--' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Security Status -->
-                    <div class="bg-gray-900 rounded-2xl p-6 text-white shadow-lg overflow-hidden">
-                        <h3 class="text-base font-bold mb-5 flex items-center gap-2">
-                            <i class="pi pi-shield text-blue-400"></i>
-                            <span>Security Health</span>
+                    <!-- Security Health Widget -->
+                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-xl shadow-slate-900/10 overflow-hidden relative">
+                        <div class="absolute top-0 right-0 p-6 opacity-10">
+                            <i class="pi pi-shield text-9xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-6 flex items-center gap-2.5 relative z-10">
+                            <i class="pi pi-lock text-blue-400"></i>
+                            <span>Security Status</span>
                         </h3>
-                        <div class="space-y-4">
+                        <div class="space-y-6 relative z-10">
                             <div>
-                                <div class="flex justify-between text-xs font-bold mb-1.5">
-                                    <span class="text-gray-400">Password Strength</span>
-                                    <span class="text-emerald-400 uppercase tracking-tight">Healthy</span>
+                                <div class="flex justify-between text-xs font-bold mb-2">
+                                    <span class="text-slate-400">Password Strength</span>
+                                    <span class="text-emerald-400 uppercase tracking-wider text-[10px]">Good</span>
                                 </div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-500 h-full w-[85%]"></div>
+                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden backdrop-blur-sm">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full w-[85%] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                                 </div>
                             </div>
                             
                             <div>
-                                <div class="flex justify-between text-xs font-bold mb-1.5">
-                                    <span class="text-gray-400">Recovery Setup</span>
-                                    <span :class="Page.user?.security_question ? 'text-emerald-400' : 'text-amber-400'" class="uppercase tracking-tight">
-                                        {{ Page.user?.security_question ? 'Configured' : 'Incomplete' }}
+                                <div class="flex justify-between text-xs font-bold mb-2">
+                                    <span class="text-slate-400">Recovery Setup</span>
+                                    <span :class="Page.user?.security_question ? 'text-emerald-400' : 'text-amber-400'" class="uppercase tracking-wider text-[10px]">
+                                        {{ Page.user?.security_question ? 'Active' : 'Pending' }}
                                     </span>
                                 </div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                    <div :class="Page.user?.security_question ? 'bg-emerald-500 w-[100%]' : 'bg-amber-500 w-[20%]'" class="h-full"></div>
+                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden backdrop-blur-sm">
+                                    <div :class="Page.user?.security_question ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 w-full' : 'bg-gradient-to-r from-amber-500 to-amber-400 w-[20%]'" class="h-full transition-all duration-500 shadow-[0_0_10px_rgba(255,180,60,0.3)]"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Section: Forms -->
-                <div class="lg:col-span-8 space-y-6">
+                <!-- Right Column: Settings & Forms -->
+                <div class="lg:col-span-8 space-y-8">
                     
-                    <!-- Basic Information -->
-                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-                        <div class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-900">Personal Details</h2>
-                            <p class="text-gray-500 text-sm font-medium">Update your profile name and basic information.</p>
+                    <!-- 1. Contact & Address (Priority) -->
+                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="pi pi-map-marker text-blue-600"></i>
+                                    Delivery Address
+                                </h2>
+                                <p class="text-slate-500 text-sm font-medium mt-1">Manage your shipping details for faster checkout.</p>
+                            </div>
+                            <Button @click="openAddressForm" label="Edit Address" icon="pi pi-pencil" class="p-button-outlined rounded-xl font-bold" />
+                        </div>
+
+                        <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-100 relative group overflow-hidden">
+                            <div class="absolute inset-0 bg-grid-pattern opacity-[0.03]"></div>
+                            
+                             <div v-if="Page.user?.address" class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-5">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Contact Number</label>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm">
+                                                <i class="pi pi-phone"></i>
+                                            </div>
+                                            <span class="text-lg font-bold text-slate-800">{{ Page.user.address.contact_number || 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Postal Code</label>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-sm">
+                                                <i class="pi pi-envelope"></i>
+                                            </div>
+                                            <span class="text-lg font-bold text-slate-800">{{ Page.user.address.postal_code || 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Full Address</label>
+                                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm h-full">
+                                        <div class="flex gap-3">
+                                            <i class="pi pi-home text-blue-500 mt-1"></i>
+                                            <div>
+                                                <p class="text-sm font-bold text-slate-800 leading-relaxed">{{ Page.user.address.other_details }}</p>
+                                                <div v-if="Page.user.address.barangay" class="mt-3 pt-3 border-t border-slate-100">
+                                                     <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                        {{ Page.user.address.barangay.barangay_name }}, 
+                                                        {{ Page.user.address.barangay.municity?.municity_name }}
+                                                    </p>
+                                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                        {{ Page.user.address.barangay.municity?.province?.province_name }}
+                                                    </p>
+                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
+                                                        <i class="pi pi-map text-[10px]"></i>
+                                                        {{ Page.user.address.barangay.municity.province.region.region_name }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div v-else class="text-center py-10">
+                                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500">
+                                    <i class="pi pi-map-marker text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-slate-900">No Address Set</h3>
+                                <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">Please add your delivery address to proceed with orders.</p>
+                                <Button @click="openAddressForm" label="Add Address Now" icon="pi pi-plus" class="p-button-primary rounded-xl font-bold shadow-lg shadow-blue-500/30" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Personal Information -->
+                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                        <div class="mb-8 border-b border-slate-100 pb-4">
+                            <h2 class="text-xl font-bold text-slate-900">Personal Details</h2>
+                            <p class="text-slate-500 text-sm font-medium mt-1">Update how your name appears on your profile.</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Full Name</label>
-                                <div class="relative">
-                                    <input v-model="profileForm.full_name" type="text" class="form-input" placeholder="Enter your full name">
-                                    <i class="pi pi-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
+                                <div class="relative group">
+                                    <input v-model="profileForm.full_name" type="text" class="form-input pl-4 pr-10" placeholder="Enter your full name">
+                                    <i class="pi pi-user absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors"></i>
                                 </div>
                             </div>
-                            <div class="space-y-2 opacity-70">
-                                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Email (Read Only)</label>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Email (Read Only)</label>
                                 <div class="relative">
-                                    <input :value="Page.user?.email" type="email" readonly class="form-input bg-gray-50 cursor-not-allowed" placeholder="email@example.com">
-                                    <i class="pi pi-envelope absolute right-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                    <input :value="Page.user?.email" type="email" readonly class="form-input bg-slate-50 text-slate-500 cursor-not-allowed border-slate-200" placeholder="email@example.com">
+                                    <i class="pi pi-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-8 flex justify-end">
-                            <Button @click="updateName" :loading="savingName" label="Save Changes" icon="pi pi-check" class="p-button-primary rounded-xl font-bold px-6" />
+                            <Button @click="updateName" :loading="savingName" label="Save Changes" icon="pi pi-check" class="p-button-primary rounded-xl font-bold px-6 shadow-lg shadow-blue-500/20" />
                         </div>
                     </div>
 
-                    <!-- Contact & Location Registry -->
-                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-                        <div class="flex items-center justify-between mb-8">
-                            <div>
-                                <h2 class="text-xl font-bold text-gray-900">Contact & Address</h2>
-                                <p class="text-gray-500 text-sm font-medium">Your primary delivery and communication registry.</p>
+                    <!-- 3. Security Settings (Accordion Style) -->
+                    <div class="space-y-4">
+                        <!-- Password Update -->
+                        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="pi pi-key text-slate-400"></i>
+                                        Change Password
+                                    </h2>
+                                    <p class="text-slate-500 text-xs font-medium mt-1">Keep your account secure.</p>
+                                </div>
                             </div>
-                            <Button @click="openAddressForm" icon="pi pi-map-marker" label="Modify Address" severity="secondary" text class="font-bold text-sm" />
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <div class="md:col-span-4">
+                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">Current Password</label>
+                                     <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required" pt:input:class="form-input" />
+                                </div>
+                                <div class="md:col-span-4">
+                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">New Password</label>
+                                     <Password v-model="passwordForm.password" toggleMask fluid placeholder="Min. 8 chars" pt:input:class="form-input" />
+                                </div>
+                                <div class="md:col-span-4">
+                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">Confirm</label>
+                                     <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat" pt:input:class="form-input" />
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end">
+                                <Button @click="updatePassword" :loading="savingPassword" label="Update Password" class="p-button-secondary p-button-outlined rounded-xl font-bold px-6" />
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="space-y-6">
-                                <div>
-                                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Primary Contact</label>
-                                    <div class="flex items-center gap-3 text-gray-900 font-bold">
-                                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                                            <i class="pi pi-phone"></i>
-                                        </div>
-                                        <span>{{ Page.user?.address?.contact_number || 'No contact number provided' }}</span>
+                         <!-- Recovery Options -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div class="bg-indigo-50/50 rounded-3xl p-6 border border-indigo-100 hover:bg-indigo-50 transition-colors group">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                                        <i class="pi pi-question-circle"></i>
                                     </div>
+                                    <span :class="Page.user?.security_question ? 'text-emerald-600 bg-emerald-100' : 'text-amber-600 bg-amber-100'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                        {{ Page.user?.security_question ? 'Configured' : 'Recommended' }}
+                                    </span>
                                 </div>
-                                <div>
-                                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Postal System</label>
-                                    <div class="flex items-center gap-3 text-gray-900 font-bold">
-                                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                            <i class="pi pi-map"></i>
-                                        </div>
-                                        <span>{{ Page.user?.address?.postal_code || '--' }}</span>
+                                <h4 class="font-bold text-indigo-900 text-base mb-1">Security Question</h4>
+                                <p class="text-indigo-800/60 text-xs font-medium leading-relaxed mb-6 h-10">
+                                    {{ Page.user?.security_question ? 'Your custom question is set. Click to update.' : 'Set a question for account recovery.' }}
+                                </p>
+                                <Button @click="showQuestionDialog = true" :label="Page.user?.security_question ? 'Update Question' : 'Set Up Now'" class="w-full rounded-xl font-bold p-button-indigo" :outlined="!!Page.user?.security_question" />
+                             </div>
+
+                             <div class="bg-purple-50/50 rounded-3xl p-6 border border-purple-100 hover:bg-purple-50 transition-colors group">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
+                                        <i class="pi pi-shield"></i>
                                     </div>
+                                    <span v-if="recoveryCodes.length > 0" class="text-emerald-600 bg-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Active</span>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Detailed Location</label>
-                                <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-3">
-                                    <div class="flex gap-3">
-                                        <i class="pi pi-directions text-gray-400 mt-1"></i>
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-900">{{ Page.user?.address?.other_details || 'Address details missing' }}</p>
-                                            <p v-if="Page.user?.address?.barangay" class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-tight">
-                                                Brgy. {{ Page.user.address.barangay.barangay_name }}, 
-                                                {{ Page.user.address.barangay.municity?.municity_name }},
-                                                {{ Page.user.address.barangay.municity?.province?.province_name }}
-                                            </p>
-                                            <p v-if="Page.user?.address?.barangay?.municity?.province?.region" class="text-[10px] font-bold text-blue-600/60 mt-2 uppercase">
-                                                {{ Page.user.address.barangay.municity.province.region.region_name }} | 
-                                                {{ Page.user.address.barangay.municity.province.region.island_group?.island_name }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                <h4 class="font-bold text-purple-900 text-base mb-1">Backup Codes</h4>
+                                <p class="text-purple-800/60 text-xs font-medium leading-relaxed mb-6 h-10">
+                                    Generate one-time codes in case you lose access to your email.
+                                </p>
+                                <Button @click="showCodesDialog = true" label="Manage Codes" class="w-full rounded-xl font-bold p-button-help" outlined />
+                             </div>
                         </div>
                     </div>
 
-                    <!-- Password Update -->
-                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-                        <div class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-900">Change Password</h2>
-                            <p class="text-gray-500 text-sm font-medium">Reset your authentication credentials to stay secure.</p>
-                        </div>
-
-                        <div class="space-y-6 max-w-2xl">
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Current Password</label>
-                                <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required for verification" pt:input:class="form-input" />
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">New Password</label>
-                                    <Password v-model="passwordForm.password" toggleMask fluid placeholder="At least 8 characters" pt:input:class="form-input" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Confirm New Password</label>
-                                    <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat new password" pt:input:class="form-input" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 flex justify-end">
-                            <Button @click="updatePassword" :loading="savingPassword" label="Update Password" icon="pi pi-lock" class="p-button-secondary rounded-xl font-bold px-6" />
-                        </div>
-                    </div>
-
-                    <!-- Account Recovery -->
-                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-                        <div class="mb-8">
-                            <h2 class="text-xl font-bold text-gray-900">Account Recovery</h2>
-                            <p class="text-gray-500 text-sm font-medium">Methods to regain access if you forget your password.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="p-5 rounded-xl bg-blue-50 border border-blue-100 flex flex-col justify-between">
-                                <div>
-                                    <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider mb-2">Security Question</h4>
-                                    <p class="text-blue-800/80 text-sm font-medium leading-relaxed mb-4">
-                                        {{ Page.user?.security_question || 'Not yet configured. Recommended for manual account recovery.' }}
-                                    </p>
-                                </div>
-                                <Button @click="showQuestionDialog = true" :label="Page.user?.security_question ? 'Update Question' : 'Setup Question'" text class="font-bold text-sm p-0 justify-start" />
-                            </div>
-
-                            <div class="p-5 rounded-xl bg-purple-50 border border-purple-100 flex flex-col justify-between">
-                                <div>
-                                    <h4 class="font-bold text-purple-900 text-xs uppercase tracking-wider mb-2">Recovery Codes</h4>
-                                    <p class="text-purple-800/80 text-sm font-medium leading-relaxed mb-4">
-                                        One-time use backup codes for emergency access.
-                                    </p>
-                                </div>
-                                <Button @click="showCodesDialog = true" label="View Codes" text class="font-bold text-sm p-0 justify-start" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Security Question Dialog -->
-        <Dialog v-model:visible="showQuestionDialog" modal header="Set Security Question" :style="{ width: '30rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-2xl" pt:header:class="p-6 border-b border-gray-100" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100">
-            <div class="space-y-6">
+        <!-- Dialogs (Styled consistently) -->
+        <Dialog v-model:visible="showQuestionDialog" modal header="Set Security Question" :style="{ width: '30rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0" pt:header:class="p-6 border-b border-gray-100 bg-gray-50/50 rounded-t-3xl" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
+            <div class="space-y-5">
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Question</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Question</label>
                     <input v-model="questionForm.customQuestion" type="text" class="form-input" placeholder="e.g. What was your first pet's name?">
                 </div>
                 
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Secret Answer</label>
-                    <Password v-model="questionForm.answer" toggleMask fluid :feedback="false" placeholder="Enter answer here" pt:input:class="form-input" />
-                    <p class="text-[11px] text-gray-400 font-medium mt-1">Answers are case-insensitive and securely encrypted.</p>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Answer</label>
+                    <Password v-model="questionForm.answer" toggleMask fluid :feedback="false" placeholder="Enter secure answer" pt:input:class="form-input" />
+                    <p class="text-[10px] text-slate-400 font-medium">Answers are case-insensitive and encrypted.</p>
                 </div>
             </div>
             <template #footer>
                 <div class="flex gap-3">
                     <Button @click="showQuestionDialog = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="saveQuestion" :loading="savingQuestion" label="Save Security Question" class="rounded-xl font-bold flex-1" />
+                    <Button @click="saveQuestion" :loading="savingQuestion" label="Save Security Question" class="rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
                 </div>
             </template>
         </Dialog>
 
-        <!-- Recovery Codes Dialog -->
-        <Dialog v-model:visible="showCodesDialog" modal header="Emergency Recovery Codes" :style="{ width: '36rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-2xl" pt:header:class="p-6 border-b border-gray-100" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100">
+        <Dialog v-model:visible="showCodesDialog" modal header="Recovery Codes" :style="{ width: '36rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0" pt:header:class="p-6 border-b border-gray-100 bg-gray-50/50 rounded-t-3xl" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
             <div class="space-y-6">
                 <div v-if="recoveryCodes.length > 0" class="grid grid-cols-2 gap-3">
-                    <div v-for="(code, index) in recoveryCodes" :key="index" class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl">
-                        <code class="text-sm font-bold text-gray-700 font-mono tracking-wider">{{ code }}</code>
-                        <button @click="copyToClipboard(code)" class="text-gray-400 hover:text-blue-600 transition-colors">
+                    <div v-for="(code, index) in recoveryCodes" :key="index" class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl group hover:border-blue-200 transition-colors">
+                        <code class="text-sm font-bold text-slate-700 font-mono tracking-wider">{{ code }}</code>
+                        <button @click="copyToClipboard(code)" class="text-slate-400 hover:text-blue-600 transition-colors">
                             <i class="pi pi-copy"></i>
                         </button>
                     </div>
                 </div>
                 <div v-else class="text-center py-10">
-                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="pi pi-lock text-2xl text-gray-300"></i>
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                        <i class="pi pi-lock text-2xl text-slate-400"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900">Generate Backup Keys</h3>
-                    <p class="text-gray-500 text-sm font-medium mt-1 mb-8">Each code can only be used once to recover your account.</p>
-                    <Button @click="generateCodes" :loading="generatingCodes" label="Generate Codes" icon="pi pi-key" class="rounded-xl font-bold px-8" />
+                    <h3 class="text-lg font-bold text-slate-900">No Codes Generated</h3>
+                    <p class="text-slate-500 text-sm font-medium mt-1 mb-8">Generate codes to start securing your account.</p>
+                    <Button @click="generateCodes" :loading="generatingCodes" label="Generate Codes" icon="pi pi-key" class="rounded-xl font-bold px-8 shadow-lg shadow-blue-500/20" />
                 </div>
 
-                <div v-if="recoveryCodes.length > 0" class="p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-3">
-                    <i class="pi pi-info-circle text-amber-600 text-lg flex-shrink-0"></i>
-                    <p class="text-[11px] text-amber-800 font-medium leading-relaxed">
-                        Store these codes securely. If you use a code, it becomes invalid. We recommend downloading or copying them to a safe location.
+                <div v-if="recoveryCodes.length > 0" class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3">
+                    <i class="pi pi-info-circle text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-amber-800 font-medium leading-relaxed">
+                        <strong>Important:</strong> Save these codes in a safe place. Each code can be used once. We recommend downloading them immediately.
                     </p>
                 </div>
             </div>
             <template #footer v-if="recoveryCodes.length > 0">
                 <div class="flex gap-3 w-full">
-                    <Button @click="downloadCodes" label="Save as TXT" icon="pi pi-download" severity="secondary" outlined class="rounded-xl font-bold flex-1" />
-                    <Button @click="confirmRegenerate" label="Regenerate All" icon="pi pi-refresh" severity="danger" class="rounded-xl font-bold flex-1" />
+                    <Button @click="downloadCodes" label="Download .txt" icon="pi pi-download" severity="secondary" outlined class="rounded-xl font-bold flex-1" />
+                    <Button @click="confirmRegenerate" label="Regenerate" icon="pi pi-refresh" severity="danger" class="rounded-xl font-bold flex-1" />
                 </div>
             </template>
         </Dialog>
 
-        <!-- Image Cropper Dialog -->
-        <Dialog v-model:visible="showCropper" modal :header="cropMode === 'avatar' ? 'Crop Profile Image' : 'Crop Cover Image'" :style="{ width: '34rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-2xl" pt:footer:class="p-6 border-t border-gray-100">
-            <div class="p-4 bg-gray-50" v-if="selectedFile">
+        <Dialog v-model:visible="showCropper" modal :header="cropMode === 'avatar' ? 'Crop Profile Photo' : 'Crop Cover Photo'" :style="{ width: '34rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0 !p-0" pt:header:class="p-6 border-b border-gray-100 rounded-t-3xl" pt:content:class="!p-0" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
+            <div class="bg-slate-100 flex items-center justify-center py-4" v-if="selectedFile">
                 <VuePictureCropper
-                    :boxStyle="{ width: '100%', height: '350px', backgroundColor: '#f8fafc', margin: 'auto' }"
+                    :boxStyle="{ width: '100%', height: '400px', backgroundColor: '#f1f5f9', margin: 'auto' }"
                     :img="selectedFile"
                     :options="{ 
                         viewMode: 1, 
                         dragMode: 'move', 
                         aspectRatio: cropMode === 'avatar' ? 1 : 16/6, 
                         cropBoxResizable: true, 
+                        guides: false,
+                        background: false
                     }"
                 />
             </div>
             <template #footer>
                 <div class="flex gap-3">
                     <Button @click="showCropper = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="uploadCroppedImage" :loading="uploadingImage" label="Save Selection" class="rounded-xl font-bold flex-1" />
+                    <Button @click="uploadCroppedImage" :loading="uploadingImage" label="Save & Update" icon="pi pi-check" class="rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
                 </div>
             </template>
         </Dialog>
 
-        <ConfirmDialog pt:root:class="rounded-2xl" pt:header:class="font-bold px-6 pt-6" pt:content:class="px-6 pb-4" pt:footer:class="px-6 pb-6" />
+        <ConfirmDialog pt:root:class="rounded-3xl shadow-2xl border-0 w-96" pt:header:class="hidden" pt:content:class="p-8 text-center" pt:footer:class="p-6 border-t border-gray-50 flex gap-3 justify-center bg-gray-50 rounded-b-3xl">
+             <template #message="slotProps">
+                <div class="flex flex-col items-center w-full">
+                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500">
+                        <i :class="slotProps.message.icon" class="text-3xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-2">{{ slotProps.message.header }}</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">{{ slotProps.message.message }}</p>
+                </div>
+            </template>
+        </ConfirmDialog>
     </div>
 </template>
 
@@ -509,6 +583,7 @@ const confirmRegenerate = () => {
     confirm.require({
         header: 'Regenerate Codes?',
         message: 'Existing codes will be replaced with new ones. Continue?',
+        icon: 'pi pi-exclamation-triangle',
         acceptLabel: 'Generate New Codes',
         rejectLabel: 'Cancel',
         accept: () => generateCodes()
@@ -538,10 +613,20 @@ onMounted(() => {
 
 <style scoped>
 .form-input {
-    width: 100%; background-color: #fff; border: 1px solid #e5e7eb; border-radius: 0.75rem;
-    padding: 0.75rem 1rem; font-weight: 500; color: #111827; transition: all 0.2s ease;
+    width: 100%; 
+    background-color: #ffffff; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem; 
+    font-weight: 500; 
+    color: #0f172a; 
+    transition: all 0.2s ease;
 }
-.form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+.form-input:focus { 
+    outline: none; 
+    border-color: #3b82f6; 
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+}
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
 
 /* Profile Cover Watermark Styles */
@@ -549,7 +634,7 @@ onMounted(() => {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    opacity: 0.15;
+    opacity: 0.1;
 }
 
 .profile-moving-watermark {
@@ -557,7 +642,7 @@ onMounted(() => {
     flex-direction: column;
     gap: 0.5rem;
     animation: profile-watermark-scroll 30s linear infinite;
-    transform: rotate(-12deg) translateX(-10%);
+    transform: rotate(-12deg) translateX(-10%) scale(1.2);
 }
 
 .profile-watermark-row {
@@ -589,12 +674,16 @@ onMounted(() => {
 }
 
 @keyframes profile-watermark-scroll {
-    0% { transform: rotate(-12deg) translateX(-10%); }
-    100% { transform: rotate(-12deg) translateX(-30%); }
+    0% { transform: rotate(-12deg) translateX(-10%) scale(1.2); }
+    100% { transform: rotate(-12deg) translateX(-30%) scale(1.2); }
 }
 
 @keyframes profile-watermark-scroll-reverse {
     0% { transform: translateX(-20%); }
     100% { transform: translateX(0%); }
+}
+
+.bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm1 1h38v38H1V1z' fill='%23000000' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
 </style>

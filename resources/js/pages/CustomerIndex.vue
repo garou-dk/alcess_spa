@@ -14,6 +14,71 @@
         <FloatingActionMenu />
         
 
+        <!-- Welcome Modal (Prompt to set up address) -->
+        <Dialog
+            v-model:visible="showWelcomeModal"
+            modal
+            :closable="true"
+            :dismissableMask="true"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            pt:root:class="!border-0 !shadow-2xl rounded-2xl! overflow-hidden!"
+            pt:header:class="hidden"
+            pt:content:class="!p-0"
+        >
+            <div class="relative bg-white">
+                <!-- Header with confetti feel -->
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 px-6 pt-10 pb-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3 ring-4 ring-white/10 shadow-xl">
+                            <i class="pi pi-gift text-white text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Welcome to Alcess!</h2>
+                        <p class="text-blue-100 text-sm font-medium px-4 leading-relaxed">
+                            We're excited to have you on board.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6">
+                    <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-100 mb-6 flex gap-4 items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
+                            <i class="pi pi-map-marker text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-900 mb-1">Complete your delivery profile</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                To start ordering your favorite items, please set up your delivery address in your profile.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <Button 
+                            @click="goToProfileSetup" 
+                            label="Set Up Address Now" 
+                            icon="pi pi-arrow-right" 
+                            iconPos="right"
+                            class="w-full font-bold shadow-lg shadow-blue-500/20"
+                            pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-xl! py-3! border-0!"
+                        />
+                        <Button 
+                            @click="showWelcomeModal = false" 
+                            label="I'll do it later" 
+                            severity="secondary" 
+                            text 
+                            class="w-full font-bold text-gray-500 hover:text-gray-700" 
+                            pt:root:class="rounded-xl!"
+                        />
+                    </div>
+                </div>
+            </div>
+        </Dialog>
+
+        <!-- Regular Address Form Dialog -->
         <Dialog
             v-model:visible="addressForm"
             modal
@@ -125,6 +190,9 @@ const avatarElement = ref<null | InstanceType<typeof Popover>>();
 const notificationElement = ref<null | InstanceType<typeof Popover>>();
 const addressForm = ref<boolean>(false);
 const securityForm = ref<boolean>(false);
+const securityForm = ref<boolean>(false);
+const showWelcomeModal = ref<boolean>(false);
+const router = useRouter();
 const router = useRouter();
 
 // Check if current route is a product-related page or home page
@@ -253,24 +321,18 @@ const openAddressForm = () => {
 };
 
 const goToOrder = () => {
-    loginFormVisible.value = false;
-    registerFormVisible.value = false;
     addressForm.value = false;
     router.push({ name: "customer-order" });
     avatarElement.value?.hide();
 };
 
 const goToInvoice = () => {
-    loginFormVisible.value = false;
-    registerFormVisible.value = false;
     addressForm.value = false;
     router.push({ name: "customer-invoice" });
     avatarElement.value?.hide();
 };
 
 const openSecurityForm = () => {
-    loginFormVisible.value = false;
-    registerFormVisible.value = false;
     addressForm.value = false;
     avatarElement.value?.hide();
     nextTick(() => {
@@ -285,6 +347,11 @@ const goToBrowseProducts = () => {
 const goToProfile = () => {
     router.push({ name: "customer.profile" });
     avatarElement.value?.hide();
+};
+
+const goToProfileSetup = () => {
+    showWelcomeModal.value = false;
+    router.push({ name: "customer.profile" });
 };
 
 const handleSearch = () => {
@@ -323,10 +390,21 @@ const loadNotifications = async () => {
     });
 };
 
+// Check if the user needs to set up their address
+const checkAddressSetup = () => {
+    if (Page.user && !Page.user.address) {
+        showWelcomeModal.value = true;
+    }
+};
+
+
+
 let leave: (() => void) | null = null;
 
 const chatStore = useChatStore();
 
+// Notification logic moved to NavBar.vue to avoid duplicates
+/*
 if (Page.user) {
     const echoResult = useEcho(
         `order.${Page.user.user_id}`,
@@ -339,6 +417,7 @@ if (Page.user) {
     );
     leave = echoResult.leave;
 }
+*/
 
 // Watch for route query changes to sync search input with URL
 watch(() => router.currentRoute.value.query.q, (newQuery, oldQuery) => {
@@ -362,7 +441,10 @@ watch(() => router.currentRoute.value.query.q, (newQuery, oldQuery) => {
 
 onMounted(() => {
     if (Page.user) {
-        loadNotifications();
+        // loadNotifications(); // Moved to NavBar
+        // Check if user needs address setup
+        // Check if user needs address setup
+        checkAddressSetup();
     }
     window.addEventListener('open-security-form', openSecurityForm);
     window.addEventListener('open-address-form', openAddressForm);

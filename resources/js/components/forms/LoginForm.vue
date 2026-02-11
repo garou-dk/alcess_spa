@@ -1,5 +1,31 @@
 <template>
     <form @submit.prevent="handleSubmit()">
+        <!-- Unverified Account Notice -->
+        <transition name="notice-slide">
+            <div v-if="showUnverifiedNotice" class="mx-2 mb-4 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 mt-0.5">
+                        <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center">
+                            <i class="pi pi-envelope text-amber-600 text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-semibold text-amber-800 mb-1">Account Not Verified</h4>
+                        <p class="text-xs text-amber-700 leading-relaxed">
+                            {{ unverifiedMessage }}
+                        </p>
+                    </div>
+                    <button 
+                        type="button" 
+                        @click="showUnverifiedNotice = false" 
+                        class="flex-shrink-0 text-amber-400 hover:text-amber-600 transition-colors"
+                    >
+                        <i class="pi pi-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </transition>
+
         <div class="p-2">
             <InputForm
                 :errors="errors.email"
@@ -57,7 +83,7 @@ import {
 import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
@@ -77,6 +103,9 @@ const errors: LoginFormErrorInterface = reactive({
     email: [],
     password: [],
 });
+
+const showUnverifiedNotice = ref(false);
+const unverifiedMessage = ref('');
 
 const clearErrors = () => {
     Object.keys(errors).forEach((key) => {
@@ -103,6 +132,9 @@ const emit = defineEmits(['success']);
 const handleSubmit = async () => {
     const data = validate();
     if (data) {
+        // Reset notice on new attempt
+        showUnverifiedNotice.value = false;
+
         await authService
             .post(props.admin ? "admin/login" : "login", data)
             .then(async () => {
@@ -126,9 +158,19 @@ const handleSubmit = async () => {
                     // Then close modal after navigation completes
                     emit('success');
                 } else {
-                    toast.error(
-                        authService.request.message ?? "Please try again.",
-                    );
+                    const message = authService.request.message ?? "Please try again.";
+                    
+                    // Check if it's an email verification issue
+                    if (
+                        authService.request.status === 401 &&
+                        message.toLowerCase().includes('verify')
+                    ) {
+                        showUnverifiedNotice.value = true;
+                        unverifiedMessage.value = message;
+                    } else {
+                        toast.error(message);
+                    }
+                    
                     if (authService.request.errors) {
                         Object.keys(authService.request.errors).forEach(
                             (key) => {
@@ -143,3 +185,31 @@ const handleSubmit = async () => {
     }
 };
 </script>
+<style scoped>
+.notice-slide-enter-active {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.notice-slide-leave-active {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notice-slide-enter-from {
+    opacity: 0;
+    transform: translateY(-12px);
+    max-height: 0;
+}
+.notice-slide-enter-to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+}
+.notice-slide-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+}
+.notice-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+}
+</style>

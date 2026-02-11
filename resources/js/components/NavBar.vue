@@ -88,7 +88,7 @@
                                             <p class="text-xs text-gray-400 mt-1">We'll let you know when something happens</p>
                                         </div>
                                         <div v-else v-for="note in filteredNotifications" :key="note.order_notification_id" 
-                                            @click="markAsRead(note)"
+                                            @click="markAsRead(note.order_notification_id)"
                                             :class="['group p-4 border-b border-gray-50 hover:bg-blue-50/50 cursor-pointer transition-all duration-200', !note.is_read ? 'bg-blue-50/30' : '']">
                                             <div class="flex gap-4">
                                                 <div :class="['flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110', getNotificationColor(note.notification_type)]">
@@ -299,6 +299,7 @@ import { useToast } from 'vue-toastification';
 import { useEcho } from "@laravel/echo-vue";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
 import { RoleEnum, getStoreRoles } from "@/enums/RoleEnum";
+import { useChatStore } from "@/stores/ChatStore";
 
 const props = defineProps<{
     mode?: 'guest' | 'auth' | 'customer' | 'admin';
@@ -425,14 +426,21 @@ const toggleNotification = (event: Event) => {
     notificationElement.value?.toggle(event);
 };
 
-const markAsRead = async (notification: IOrderNotification) => {
-    if (notification.is_read) return;
+const markAsRead = async (id: number) => {
+    const notification = notifications.value.find(n => n.order_notification_id === id);
+    if (notification && !notification.is_read) {
+        notification.is_read = true;
+        // Optimistic update
+        await submitMarkReadService.patch(`customer/order-notifications/mark-as-read/${id}`, null);
+    }
     
-    notification.is_read = true;
+    // Redirect to orders page (specific item redirect would require backend change to include order_id)
+    router.push({ name: 'customer.order.index' });
     
-    const isAdmin = getStoreRoles().includes(Page.user?.role.role_name as RoleEnum);
-    const prefix = isAdmin ? 'admin' : 'customer';
-    await useAxiosUtil().patch(`${prefix}/order-notifications/mark-as-read/${notification.order_notification_id}`, null);
+    // Hide popover
+    if (notificationElement.value) {
+        notificationElement.value.hide();
+    }
 };
 
 const markAllAsRead = async () => {
@@ -495,9 +503,11 @@ const setupEcho = () => {
     if (!Page.user) return;
     
     const isAdmin = getStoreRoles().includes(Page.user.role.role_name as RoleEnum);
+    let leave: (() => void) | undefined;
+    let echoResult: ReturnType<typeof useEcho> | undefined;
     
     if (isAdmin) {
-         const { leave } = useEcho(
+         echoResult = useEcho(
             "admin-order-notification",
             [".admin-order-notification.event"],
             (value: IOrderNotification) => {
@@ -505,9 +515,39 @@ const setupEcho = () => {
                 toast.info(`New Notification: ${value.message}`);
             },
         );
-        onUnmounted(() => leave());
+        onUnmounted(() => leave?.());
     } else {
-        // Customer private channel logic could go here
+        // Customer listeners
+        echoResult = useEcho(
+            `order.${Page.user.user_id}`,
+            [".customer-order.event"],
+            (value: IOrderNotification) => {
+                notifications.value.unshift(value);
+                toast.info(`New Notification: ${value.message}`);
+                // Also update chat store if needed
+                useChatStore().handleNotification(value);
+            },
+        );
+        
+        // Cart listener
+        const cartEcho = useEcho(
+            `cart.${Page.user.user_id}`,
+            [".cart.count"],
+            (value: { count: number }) => {
+                cartCount.value = value.count;
+            }
+        );
+        
+        // Combine leave functions
+        const originalLeave = echoResult.leave;
+        echoResult.leave = () => {
+             originalLeave();
+             cartEcho.leave();
+        };
+    }
+
+    if (echoResult) {
+        leave = echoResult.leave;
     }
 };
 

@@ -37,7 +37,7 @@ class UserController extends Controller
     public function registerCustomer(UserRequest $request)
     {
         try {
-            $result = $this->service->createUser($request->validated());
+            $result = $this->service->registerCustomer($request->validated());
 
             return ApiResponse::success()
                 ->data($result)

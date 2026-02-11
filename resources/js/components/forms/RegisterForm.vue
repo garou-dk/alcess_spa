@@ -142,6 +142,7 @@ import { useToast } from "vue-toastification";
 
 const registerService = useAxiosUtil<RegisterFormInterface, UserInterface>();
 const toast = useToast();
+const emit = defineEmits(['success']);
 
 const strongRegex = ref(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/);
 const mediumRegex = ref(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/);
@@ -220,6 +221,7 @@ const handleSubmit = async () => {
             ) {
                 clearForm();
                 toast.success(registerService.request.message);
+                emit('success');
             } else {
                 toast.error(
                     registerService.request.message ?? "Please try again.",

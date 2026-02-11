@@ -189,7 +189,8 @@
                     label="Save Address" 
                     icon="pi pi-save" 
                     :loading="submitService.request.loading"
-                    class="w-full sm:w-auto !bg-blue-600 hover:!bg-blue-700 !border-blue-600 text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 shadow-lg hover:shadow-xl transition-all duration-200"
+                    fluid
+                    pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-xl! text-base! font-bold! py-3! shadow-lg! hover:shadow-xl! transition-all!"
                     :class="{ 'opacity-50': submitService.request.loading }"
                 />
             </div>
@@ -237,6 +238,7 @@ interface IFormError {
 }
 
 const toast = useToast();
+const emit = defineEmits(['saved']);
 
 const form = reactive<IForm>({
     barangay_id: null,
@@ -483,6 +485,7 @@ const handleSubmit = async () => {
             .then(() => {
                 if (submitService.request.status === 200) {
                     toast.success(submitService.request.message ?? 'Address saved successfully.');
+                    emit('saved');
                 }
                 else {
                     toast.error(submitService.request.message ?? 'Failed to save address.');
