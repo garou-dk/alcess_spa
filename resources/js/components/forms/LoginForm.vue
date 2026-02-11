@@ -57,11 +57,62 @@
                     </div>
                     <div class="flex-1 min-w-0 text-left">
                         <p class="text-xs font-semibold text-gray-800 truncate">{{ user.full_name }}</p>
-                        <p class="text-[11px] text-gray-500 truncate">{{ user.email }}</p>
+                        <p class="text-[11px] text-gray-500 truncate">{{ maskEmail(user.email) }}</p>
                     </div>
                 </button>
             </div>
         </div>
+
+        <Dialog
+            v-model:visible="showLoginModal"
+            modal
+            :header="`Welcome Back`"
+            :style="{ width: '25rem' }"
+            :draggable="false"
+            class="p-0"
+        >
+            <div class="flex flex-col items-center pt-4">
+                 <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold overflow-hidden mb-4 shadow-sm border-2 border-white">
+                    <img
+                        v-if="selectedRecentUser?.image"
+                        :src="selectedRecentUser.image"
+                        alt="Avatar"
+                        class="w-full h-full object-cover"
+                    />
+                    <span v-else>{{ selectedRecentUser?.full_name?.charAt(0).toUpperCase() }}</span>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800">{{ selectedRecentUser?.full_name }}</h3>
+                <p class="text-sm text-gray-500 mb-6">{{ selectedRecentUser ? maskEmail(selectedRecentUser.email) : '' }}</p>
+
+                <form @submit.prevent="handleSubmit" class="w-full">
+                     <div class="mb-4">
+                        <Password
+                            v-model="form.password"
+                            :invalid="errors.password.length > 0"
+                            placeholder="Password"
+                            fluid
+                            :feedback="false"
+                            :toggleMask="true"
+                            input-id="modal-password"
+                            class="w-full"
+                            :autofocus="true"
+                        />
+                         <small v-if="errors.password.length > 0" class="text-red-500 text-xs mt-1 block">
+                            {{ errors.password[0] }}
+                        </small>
+                    </div>
+
+                    <Button
+                        type="submit"
+                        label="Log In"
+                        :loading="authService.request.loading"
+                        fluid
+                        pt:root:class="bg-blue-600! hover:bg-blue-700! rounded-xl!"
+                    />
+                </form>
+            </div>
+        </Dialog>
 
         <div class="p-2">
             <InputForm
@@ -154,6 +205,18 @@ const errors: LoginFormErrorInterface = reactive({
 
 const showUnverifiedNotice = ref(false);
 const unverifiedMessage = ref('');
+const showLoginModal = ref(false);
+const selectedRecentUser = ref<RecentLogin | null>(null);
+
+const maskEmail = (email: string) => {
+    if (!email) return '';
+    const [name, domain] = email.split('@');
+    if (!name || !domain) return email;
+    const maskedName = name.length > 2 
+        ? name[0] + '*'.repeat(name.length - 2) + name[name.length - 1] 
+        : name + '***';
+    return `${maskedName}@${domain}`;
+};
 
 const loadRecentLogins = () => {
     try {
@@ -192,11 +255,16 @@ const saveRecentLogin = (user: UserInterface) => {
 };
 
 const selectRecentLogin = (user: RecentLogin) => {
+    selectedRecentUser.value = user;
     form.email = user.email;
     form.password = null;
     clearErrors();
+    showLoginModal.value = true;
+    
+    // Focus is handled by autofocus on the password input in the modal, 
+    // but we can ensure it focuses after render if needed.
     nextTick(() => {
-        const el = document.getElementById("password") as HTMLInputElement | null;
+        const el = document.getElementById("modal-password") as HTMLInputElement | null;
         el?.focus();
     });
 };
@@ -254,6 +322,11 @@ const handleSubmit = async () => {
                     authService.request.status === 200 &&
                     authService.request.data
                 ) {
+                    // Update recent login with successful login time and ensure it's saved/moved to top
+                    if (!props.admin) {
+                        saveRecentLogin(authService.request.data);
+                    }
+
                     Page.user = authService.request.data;
                     
                     // Navigate first
