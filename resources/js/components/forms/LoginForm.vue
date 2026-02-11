@@ -57,22 +57,23 @@
                     </div>
                     <div class="flex-1 min-w-0 text-left">
                         <p class="text-xs font-semibold text-gray-800 truncate">{{ user.full_name }}</p>
-                        <p class="text-[11px] text-gray-500 truncate">{{ maskEmail(user.email) }}</p>
+                        <p class="text-[11px] text-gray-500 truncate">••••••••••</p>
                     </div>
                 </button>
             </div>
         </div>
 
+        <!-- Quick login modal for recent accounts -->
         <Dialog
             v-model:visible="showLoginModal"
             modal
-            :header="`Welcome Back`"
+            header="Welcome back"
             :style="{ width: '25rem' }"
             :draggable="false"
             class="p-0"
         >
             <div class="flex flex-col items-center pt-4">
-                 <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold overflow-hidden mb-4 shadow-sm border-2 border-white">
+                <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold overflow-hidden mb-4 shadow-sm border-2 border-white">
                     <img
                         v-if="selectedRecentUser?.image"
                         :src="selectedRecentUser.image"
@@ -82,11 +83,11 @@
                     <span v-else>{{ selectedRecentUser?.full_name?.charAt(0).toUpperCase() }}</span>
                 </div>
                 
-                <h3 class="text-xl font-bold text-gray-800">{{ selectedRecentUser?.full_name }}</h3>
-                <p class="text-sm text-gray-500 mb-6">{{ selectedRecentUser ? maskEmail(selectedRecentUser.email) : '' }}</p>
+                <h3 class="text-lg font-bold text-gray-800">{{ selectedRecentUser?.full_name }}</h3>
+                <p class="text-xs text-gray-500 mb-4">Enter password to continue</p>
 
                 <form @submit.prevent="handleSubmit" class="w-full">
-                     <div class="mb-4">
+                    <div class="mb-4">
                         <Password
                             v-model="form.password"
                             :invalid="errors.password.length > 0"
@@ -98,7 +99,7 @@
                             class="w-full"
                             :autofocus="true"
                         />
-                         <small v-if="errors.password.length > 0" class="text-red-500 text-xs mt-1 block">
+                        <small v-if="errors.password.length > 0" class="text-red-500 text-xs mt-1 block">
                             {{ errors.password[0] }}
                         </small>
                     </div>
@@ -172,6 +173,7 @@ import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { reactive, ref, onMounted, nextTick } from "vue";
+import Dialog from "primevue/dialog";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
@@ -194,6 +196,9 @@ interface RecentLogin {
 
 const RECENT_LOGIN_KEY = "recent_logins";
 const recentLogins = ref<RecentLogin[]>([]);
+const selectedRecentUser = ref<RecentLogin | null>(null);
+const showLoginModal = ref(false);
+
 const form: LoginFormInterface = reactive({
     email: null,
     password: null,
@@ -256,13 +261,10 @@ const saveRecentLogin = (user: UserInterface) => {
 
 const selectRecentLogin = (user: RecentLogin) => {
     selectedRecentUser.value = user;
-    form.email = user.email;
     form.password = null;
     clearErrors();
     showLoginModal.value = true;
     
-    // Focus is handled by autofocus on the password input in the modal, 
-    // but we can ensure it focuses after render if needed.
     nextTick(() => {
         const el = document.getElementById("modal-password") as HTMLInputElement | null;
         el?.focus();
@@ -289,7 +291,12 @@ const clearErrors = () => {
 
 const validate = () => {
     clearErrors();
-    if (!form.email) {
+    
+    const effectiveEmail = selectedRecentUser.value
+        ? selectedRecentUser.value.email
+        : form.email;
+
+    if (!effectiveEmail) {
         errors.email.push("Email is required");
     }
     if (!form.password) {
@@ -298,7 +305,14 @@ const validate = () => {
 
     const hasErrors = [errors.email.length > 0, errors.password.length > 0];
 
-    return hasErrors.includes(true) ? false : form;
+    if (hasErrors.includes(true)) {
+        return false;
+    }
+
+    return {
+        email: effectiveEmail,
+        password: form.password,
+    } as LoginFormInterface;
 };
 
 const emit = defineEmits(['success']);

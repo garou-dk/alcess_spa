@@ -1,29 +1,21 @@
 <template>
     <div class="profile-view min-h-screen bg-slate-50/50 pb-20">
-        <!-- Hero Section with Cover Image -->
-        <div class="relative group h-64 md:h-80 w-full overflow-hidden">
-            <div class="absolute inset-0 bg-slate-900 transition-colors"></div>
-            
-            <img 
-                v-if="Page.user?.cover_image" 
-                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
-                class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
-            >
-            <!-- Fallback Pattern -->
-            <div v-else class="w-full h-full bg-slate-800 flex items-center justify-center">
-                 <img :src="Logo" alt="logo" class="w-24 h-24 opacity-10 filter invert" />
+        <!-- Hero Section (simplified, neutral) -->
+        <div class="border-b border-slate-200 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">My Profile</h1>
+                    <p class="text-sm text-slate-500 mt-1">Manage your personal information, address, and security settings.</p>
+                </div>
+                <button 
+                    @click="triggerCoverUpload" 
+                    class="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                >
+                    <i class="pi pi-camera text-xs"></i>
+                    <span>Update cover photo</span>
+                </button>
+                <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
             </div>
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-black/30"></div>
-
-            <button 
-                @click="triggerCoverUpload" 
-                class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2.5 rounded-xl border border-white/20 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 group/btn"
-            >
-                <i class="pi pi-camera text-lg group-hover/btn:scale-110 transition-transform"></i>
-                <span>Edit Cover</span>
-            </button>
-            <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
@@ -33,8 +25,6 @@
                 <div class="lg:col-span-4 space-y-6">
                     <!-- Main Profile Card -->
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative">
-                         <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-t-3xl"></div>
-
                         <div class="flex flex-col items-center text-center -mt-12 mb-6">
                             <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
                                 <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center relative z-10">
@@ -101,36 +91,35 @@
                         </div>
                     </div>
 
-                    <!-- Security Health Widget -->
-                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-xl shadow-slate-900/10 overflow-hidden relative">
-                        <div class="absolute top-0 right-0 p-6 opacity-10">
-                            <i class="pi pi-shield text-9xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold mb-6 flex items-center gap-2.5 relative z-10">
-                            <i class="pi pi-lock text-blue-400"></i>
-                            <span>Security Status</span>
+                    <!-- Security Summary (neutral) -->
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="pi pi-lock text-blue-500 text-xs"></i>
+                            <span>Account security</span>
                         </h3>
-                        <div class="space-y-6 relative z-10">
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-2">
-                                    <span class="text-slate-400">Password Strength</span>
-                                    <span class="text-emerald-400 uppercase tracking-wider text-[10px]">Good</span>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-600">Password</p>
+                                    <p class="text-xs text-slate-500">Use a strong, unique password.</p>
                                 </div>
-                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden backdrop-blur-sm">
-                                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full w-[85%] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-                                </div>
+                                <span class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                                    <i class="pi pi-check-circle text-green-500 text-[10px]"></i>
+                                    OK
+                                </span>
                             </div>
-                            
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-2">
-                                    <span class="text-slate-400">Recovery Setup</span>
-                                    <span :class="Page.user?.security_question ? 'text-emerald-400' : 'text-amber-400'" class="uppercase tracking-wider text-[10px]">
-                                        {{ Page.user?.security_question ? 'Active' : 'Pending' }}
-                                    </span>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-600">Recovery question</p>
+                                    <p class="text-xs text-slate-500">Helps you recover access if you forget your password.</p>
                                 </div>
-                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden backdrop-blur-sm">
-                                    <div :class="Page.user?.security_question ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 w-full' : 'bg-gradient-to-r from-amber-500 to-amber-400 w-[20%]'" class="h-full transition-all duration-500 shadow-[0_0_10px_rgba(255,180,60,0.3)]"></div>
-                                </div>
+                                <span
+                                    :class="Page.user?.security_question ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'"
+                                    class="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide"
+                                >
+                                    <i :class="Page.user?.security_question ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'" class="text-[10px]"></i>
+                                    {{ Page.user?.security_question ? 'Configured' : 'Recommended' }}
+                                </span>
                             </div>
                         </div>
                     </div>
