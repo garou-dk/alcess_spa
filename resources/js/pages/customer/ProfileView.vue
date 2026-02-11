@@ -1,6 +1,6 @@
 <template>
-    <div class="profile-view min-h-screen bg-slate-50/50 pb-20">
-        <!-- Hero Section with Cover Image (restored, slightly simplified) -->
+    <div class="profile-view min-h-screen bg-gradient-to-b from-slate-50 via-slate-50/80 to-white pb-20">
+        <!-- Hero Section with Cover Image -->
         <div class="relative group h-64 md:h-80 w-full overflow-hidden bg-slate-900">
             <img 
                 v-if="Page.user?.cover_image" 
@@ -143,37 +143,69 @@
                 <div class="lg:col-span-8 space-y-8">
                     
                     <!-- 0. Order Timeline -->
-                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
+                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100 order-section">
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-blue-50 text-blue-500 mr-1">
+                                        <i class="pi pi-shopping-bag text-sm"></i>
+                                    </span>
                                     Order History
                                 </h2>
                                 <p class="text-slate-500 text-sm mt-1">Track the status of your recent purchases.</p>
                             </div>
+                            <span v-if="recentOrders.length > 0" class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full">
+                                {{ recentOrders.length }} order{{ recentOrders.length !== 1 ? 's' : '' }}
+                            </span>
                         </div>
 
                         <!-- Order Status Tabs -->
-                        <div class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                        <div class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory">
                             <button 
                                 v-for="tab in orderTabs" 
                                 :key="tab"
                                 @click="activeTab = tab"
-                                class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-all border"
-                                :class="activeTab === tab ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600'"
+                                class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-all duration-300 border snap-start"
+                                :class="activeTab === tab ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm'"
                             >
                                 {{ tab }}
+                                <span v-if="getTabCount(tab) > 0" class="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold" :class="activeTab === tab ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'">
+                                    {{ getTabCount(tab) }}
+                                </span>
                             </button>
                         </div>
 
-                        <div v-if="filteredOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                            <div v-for="(order, index) in filteredOrders" :key="order.order_id" class="relative flex gap-6 group">
+                        <!-- Loading Skeleton -->
+                        <div v-if="loadingOrders" class="space-y-6">
+                            <div v-for="n in 3" :key="n" class="animate-pulse flex gap-6">
+                                <div class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0"></div>
+                                <div class="flex-1 bg-slate-100 rounded-2xl p-5 space-y-3">
+                                    <div class="flex justify-between">
+                                        <div class="space-y-2">
+                                            <div class="h-3 w-20 bg-slate-200 rounded"></div>
+                                            <div class="h-4 w-36 bg-slate-200 rounded"></div>
+                                        </div>
+                                        <div class="h-5 w-16 bg-slate-200 rounded-full"></div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <div v-for="i in 3" :key="i" class="w-16 h-16 bg-slate-200 rounded-lg"></div>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                                        <div class="h-5 w-24 bg-slate-200 rounded"></div>
+                                        <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else-if="filteredOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                            <div v-for="(order, index) in filteredOrders" :key="order.order_id" class="relative flex gap-6 group order-card" :style="{ animationDelay: `${index * 80}ms` }">
                                 <!-- Dot -->
                                 <div class="absolute -left-4 mt-1.5 w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10" :class="getStatusTimelineColor(order.status)">
                                     <div class="w-2.5 h-2.5 rounded-full bg-white opacity-90"></div>
                                 </div>
                                 
-                                <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all">
+                                <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-100 hover:border-blue-100 hover:shadow-md hover:shadow-blue-50 transition-all duration-300">
                                     <div class="flex flex-wrap justify-between items-start gap-4 mb-3">
                                         <div>
                                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
@@ -206,17 +238,17 @@
                                 </div>
                             </div>
                         </div>
-                         <div v-else class="text-center py-10">
-                            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                                <i class="pi pi-shopping-bag text-2xl text-slate-400"></i>
+                         <div v-else class="text-center py-14">
+                            <div class="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-slate-100 empty-icon-float">
+                                <i class="pi pi-shopping-bag text-3xl text-slate-300"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-900">No Orders Found</h3>
-                            <p class="text-slate-500 text-sm mt-1 mb-6">No orders found for this status.</p>
+                            <p class="text-slate-500 text-sm mt-1.5 mb-8 max-w-xs mx-auto">{{ activeTab === 'All' ? 'You haven\'t placed any orders yet. Start shopping!' : `No ${activeTab.toLowerCase()} orders at the moment.` }}</p>
                             <router-link :to="{ name: 'customer.browse-products' }">
                                 <Button 
                                     label="Browse products" 
                                     icon="pi pi-shopping-cart" 
-                                    class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/20" 
+                                    class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30" 
                                 />
                             </router-link>
                         </div>
@@ -495,7 +527,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import Page from '@/stores/Page'
 import UrlUtil from '@/utils/UrlUtil'
 import useAxiosUtil from '@/utils/AxiosUtil'
@@ -721,6 +753,13 @@ const filteredOrders = computed(() => {
     });
 });
 
+const getTabCount = (tab: string) => {
+    if (tab === 'All') return recentOrders.value.length;
+    if (tab === 'Completed') return recentOrders.value.filter(o => ['Completed', 'Delivered'].includes(o.status)).length;
+    if (tab === 'Cancelled') return recentOrders.value.filter(o => ['Cancelled', 'Declined'].includes(o.status)).length;
+    return recentOrders.value.filter(o => o.status === tab).length;
+};
+
 
 
 const getStatusTimelineColor = (status: string) => {
@@ -789,13 +828,64 @@ onMounted(() => {
     padding: 0.75rem 1rem; 
     font-weight: 500; 
     color: #0f172a; 
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .form-input:focus { 
     outline: none; 
     border-color: #3b82f6; 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08), 0 1px 2px rgba(0,0,0,0.05); 
+    background-color: #fafbff;
+}
+.form-input:hover:not(:focus) {
+    border-color: #cbd5e1;
 }
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
 
+/* Order card entrance animation */
+.order-card {
+    animation: orderSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes orderSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Floating empty state icon */
+.empty-icon-float {
+    animation: gentleFloat 3s ease-in-out infinite;
+}
+@keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Order section entrance */
+.order-section {
+    animation: sectionFadeIn 0.6s ease-out;
+}
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hide scrollbar for tabs */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
 </style>
