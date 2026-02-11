@@ -214,7 +214,7 @@ const isDashboard = computed(() => {
 
 // Hide floating action menu on specific routes (e.g. cart and orders)
 const showFloatingMenu = computed(() => {
-    const hiddenRoutes = ['customer.cart.index', 'customer.order.index'];
+    const hiddenRoutes = ['customer.cart.index', 'customer.order.index', 'customer.profile'];
     return !hiddenRoutes.includes(router.currentRoute.value.name as string);
 });
 

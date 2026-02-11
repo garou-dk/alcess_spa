@@ -120,6 +120,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Change Password (moved here to fill space) -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100">
+                            <h2 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                <i class="pi pi-key text-blue-600 text-xs"></i>
+                                Change Password
+                            </h2>
+                            <p class="text-[11px] text-gray-400 mt-0.5">Keep your account secure with a strong password</p>
+                        </div>
+
+                        <div class="p-5 space-y-4">
+                            <div class="space-y-1.5">
+                                    <label class="text-[11px] font-semibold text-gray-600">Current Password</label>
+                                    <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required" pt:input:class="form-input-minimal" />
+                            </div>
+                            <div class="space-y-1.5">
+                                    <label class="text-[11px] font-semibold text-gray-600">New Password</label>
+                                    <Password v-model="passwordForm.password" toggleMask fluid placeholder="Min. 8 chars" pt:input:class="form-input-minimal" />
+                            </div>
+                            <div class="space-y-1.5">
+                                    <label class="text-[11px] font-semibold text-gray-600">Confirm Password</label>
+                                    <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat" pt:input:class="form-input-minimal" />
+                            </div>
+                            <button @click="updatePassword" :disabled="savingPassword" class="w-full mt-2 px-5 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2">
+                                <i v-if="savingPassword" class="pi pi-spin pi-spinner text-xs"></i>
+                                <i v-else class="pi pi-lock text-xs"></i>
+                                Update Password
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Right Column -->
@@ -239,82 +270,44 @@
                         </div>
                     </div>
 
-                    <!-- Security Section -->
-                    <div class="space-y-5">
-                        <!-- Change Password -->
-                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div class="px-5 py-4 border-b border-gray-100">
-                                <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
-                                    <i class="pi pi-key text-gray-400 text-sm"></i>
-                                    Change Password
-                                </h2>
-                                <p class="text-xs text-gray-500 mt-0.5">Update your password regularly to keep your account secure</p>
+                    <!-- Recovery Options -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                    <i class="pi pi-question-circle text-sm"></i>
+                                </div>
+                                <span :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border">
+                                    {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-0.5">Security Question</h4>
+                            <p class="text-gray-500 text-xs leading-relaxed mb-4">
+                                {{ Page.user?.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
+                            </p>
+                            <button @click="showQuestionDialog = true" class="w-full py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer">
+                                {{ Page.user?.security_question ? 'Update Question' : 'Set Up Now' }}
+                            </button>
                             </div>
 
-                            <div class="p-5">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                    <div class="space-y-1.5">
-                                         <label class="text-xs font-semibold text-gray-600">Current Password</label>
-                                         <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required" pt:input:class="form-input" />
-                                    </div>
-                                    <div class="space-y-1.5">
-                                         <label class="text-xs font-semibold text-gray-600">New Password</label>
-                                         <Password v-model="passwordForm.password" toggleMask fluid placeholder="Min. 8 chars" pt:input:class="form-input" />
-                                    </div>
-                                    <div class="space-y-1.5">
-                                         <label class="text-xs font-semibold text-gray-600">Confirm</label>
-                                         <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat" pt:input:class="form-input" />
-                                    </div>
+                            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                    <i class="pi pi-shield text-sm"></i>
                                 </div>
-                                <div class="mt-5 flex justify-end">
-                                    <button @click="updatePassword" :disabled="savingPassword" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2">
-                                        <i v-if="savingPassword" class="pi pi-spin pi-spinner text-sm"></i>
-                                        <i v-else class="pi pi-lock text-sm"></i>
-                                        Update Password
-                                    </button>
-                                </div>
+                                <span v-if="recoveryCodes.length > 0" class="text-green-700 bg-green-50 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
                             </div>
-                        </div>
-
-                        <!-- Recovery Options -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                        <i class="pi pi-question-circle text-sm"></i>
-                                    </div>
-                                    <span :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border">
-                                        {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
-                                    </span>
-                                </div>
-                                <h4 class="font-bold text-gray-900 text-sm mb-0.5">Security Question</h4>
-                                <p class="text-gray-500 text-xs leading-relaxed mb-4">
-                                    {{ Page.user?.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
-                                </p>
-                                <button @click="showQuestionDialog = true" class="w-full py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer">
-                                    {{ Page.user?.security_question ? 'Update Question' : 'Set Up Now' }}
-                                </button>
-                             </div>
-
-                             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                        <i class="pi pi-shield text-sm"></i>
-                                    </div>
-                                    <span v-if="recoveryCodes.length > 0" class="text-green-700 bg-green-50 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
-                                </div>
-                                <h4 class="font-bold text-gray-900 text-sm mb-0.5">Backup Codes</h4>
-                                <p class="text-gray-500 text-xs leading-relaxed mb-4">
-                                    Generate one-time codes in case you lose access to your email.
-                                </p>
-                                <button @click="showCodesDialog = true" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
-                                    Manage Codes
-                                </button>
-                             </div>
-                        </div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-0.5">Backup Codes</h4>
+                            <p class="text-gray-500 text-xs leading-relaxed mb-4">
+                                Generate one-time codes in case you lose access to your email.
+                            </p>
+                            <button @click="showCodesDialog = true" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
+                                Manage Codes
+                            </button>
+                            </div>
                     </div>
 
-                    <!-- Order History (below security) -->
+                    <!-- Order History (below recovery) -->
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
@@ -375,10 +368,10 @@
 
                                         <!-- Order info -->
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-medium text-gray-800 truncate">
+                                            <p class="text-xs font-bold text-black truncate">
                                                 {{ getOrderProductNames(order) }}
                                             </p>
-                                            <p class="text-[11px] text-gray-400 mt-0.5">
+                                            <p class="text-[11px] text-gray-800 mt-0.5 font-semibold">
                                                 {{ DateUtil.formatToMonthDayYear(order.created_at) }}
                                                 <span class="text-gray-300 mx-1">·</span>
                                                 ₱{{ (Number(order.total_amount) || 0).toLocaleString() }}
@@ -883,7 +876,32 @@ onMounted(() => {
 .form-input:hover:not(:focus):not(:read-only) {
     border-color: #d1d5db;
 }
-:deep(.p-password-input) { border-radius: 0.75rem !important; }
+
+/* Minimalist form input for card sections */
+.form-input-minimal {
+    width: 100%; 
+    background-color: #f9fafb; 
+    border: 1px solid #e5e7eb; 
+    border-radius: 0.625rem;
+    padding: 0.5rem 0.75rem; 
+    font-size: 0.8125rem;
+    font-weight: 500; 
+    color: #111827; 
+    transition: all 0.2s ease;
+}
+.form-input-minimal:focus { 
+    outline: none; 
+    border-color: #3b82f6; 
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.08);
+}
+.form-input-minimal::placeholder {
+    font-size: 0.8125rem;
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+:deep(.p-password-input) { border-radius: 0.625rem !important; }
 
 /* Scrollbar hide */
 .scrollbar-hide {
