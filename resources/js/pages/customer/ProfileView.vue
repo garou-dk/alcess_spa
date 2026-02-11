@@ -10,15 +10,8 @@
                 class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
             >
             <!-- Fallback Pattern -->
-            <div v-else class="profile-watermark-container">
-                <div class="profile-moving-watermark">
-                    <div class="profile-watermark-row" v-for="n in 8" :key="n">
-                        <span v-for="m in 12" :key="m" class="profile-watermark-item">
-                            <img :src="Logo" alt="logo" class="profile-watermark-logo" />
-                            ALCESS DAVAO
-                        </span>
-                    </div>
-                </div>
+            <div v-else class="w-full h-full bg-slate-800 flex items-center justify-center">
+                 <img :src="Logo" alt="logo" class="w-24 h-24 opacity-10 filter invert" />
             </div>
             
             <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-black/30"></div>
@@ -39,8 +32,8 @@
                 <!-- Left Column: User Profile Card -->
                 <div class="lg:col-span-4 space-y-6">
                     <!-- Main Profile Card -->
-                    <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
-                         <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative">
+                         <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-t-3xl"></div>
 
                         <div class="flex flex-col items-center text-center -mt-12 mb-6">
                             <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
@@ -146,42 +139,65 @@
                 <!-- Right Column: Settings & Forms -->
                 <div class="lg:col-span-8 space-y-8">
                     
-                    <!-- 0. Recent Orders (New) -->
-                    <div v-if="recentOrders.length > 0" class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                    <!-- 0. Order Timeline (Replaces Recent Orders) -->
+                    <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <i class="pi pi-shopping-bag text-blue-600"></i>
-                                    Recent Orders
+                                    <i class="pi pi-history text-blue-600"></i>
+                                    Order Timeline
                                 </h2>
-                                <p class="text-slate-500 text-sm font-medium mt-1">Track your latest purchases.</p>
+                                <p class="text-slate-500 text-sm font-medium mt-1">Track the status of your purchases.</p>
                             </div>
                             <router-link :to="{ name: 'customer.orders' }">
-                                <Button label="View All" icon="pi pi-arrow-right" class="p-button-text font-bold" />
+                                <Button label="View Full History" icon="pi pi-arrow-right" class="p-button-text font-bold" />
                             </router-link>
                         </div>
 
-                        <div class="space-y-4">
-                            <div v-for="order in recentOrders" :key="order.order_id" class="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all">
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <span class="font-bold text-slate-900">Order #{{ String(order.order_id || '').substring(0, 8) }}</span>
-                                        <span :class="{'text-amber-600 bg-amber-100': order.status === 'Processing', 'text-blue-600 bg-blue-100': order.status === 'Confirmed', 'text-green-600 bg-green-100': order.status === 'Completed'}" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                        <div v-if="recentOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                            <div v-for="(order, index) in recentOrders" :key="order.order_id" class="relative flex gap-6 group">
+                                <!-- Dot -->
+                                <div class="absolute -left-4 mt-1.5 w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10" :class="getStatusTimelineColor(order.status)">
+                                    <i class="pi" :class="getStatusIcon(order.status)" style="font-size: 0.6rem"></i>
+                                </div>
+                                
+                                <div class="flex-1 bg-slate-50/50 rounded-2xl p-5 border border-slate-100 hover:bg-white hover:shadow-md transition-all">
+                                    <div class="flex flex-wrap justify-between items-start gap-4 mb-3">
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                                                {{ DateUtil.formatToMonthDayYear(order.created_at) }}
+                                            </span>
+                                            <h4 class="text-base font-bold text-slate-800">Order #{{ String(order.order_id || '').substring(0, 8) }}</h4>
+                                        </div>
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusBadgeClass(order.status)">
                                             {{ order.status }}
                                         </span>
                                     </div>
-                                    <p class="text-xs text-slate-500 font-medium mb-3">{{ DateUtil.formatToMonthDayYear(order.created_at) }}</p>
-                                    <div class="flex gap-2 overflow-x-auto pb-2">
-                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-12 h-12 rounded-lg border border-slate-200 bg-white flex-shrink-0 overflow-hidden">
+
+                                    <!-- Product Images -->
+                                    <div class="flex gap-2 overflow-x-auto pb-3 mb-2 scrollbar-hide">
+                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-16 h-16 rounded-lg border border-slate-200 bg-white flex-shrink-0 overflow-hidden relative group/img">
                                             <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
+                                            <div class="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"></div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="flex flex-col justify-between items-end gap-2">
-                                    <span class="font-bold text-slate-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
-                                    <Button @click="buyAgain(order)" label="Buy Again" icon="pi pi-refresh" size="small" outlined class="w-full sm:w-auto font-bold rounded-lg" />
+                                    
+                                    <div class="flex items-center justify-between pt-3 border-t border-slate-200/50">
+                                        <span class="font-bold text-slate-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
+                                        <Button @click="buyAgain(order)" label="Buy Again" icon="pi pi-refresh" size="small" outlined class="font-bold rounded-lg text-xs" />
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                         <div v-else class="text-center py-10">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                                <i class="pi pi-shopping-bag text-2xl text-slate-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900">No Orders Yet</h3>
+                            <p class="text-slate-500 text-sm font-medium mt-1 mb-6">Start shopping to see your timeline!</p>
+                            <router-link :to="{ name: 'customer.browse-products' }">
+                                <Button label="Browse Products" icon="pi pi-shopping-cart" class="rounded-xl font-bold shadow-lg shadow-blue-500/20" />
+                            </router-link>
                         </div>
                     </div>
                     
@@ -663,6 +679,50 @@ const loadOrders = async () => {
     });
 };
 
+
+
+const getStatusTimelineColor = (status: string) => {
+    switch (status) {
+        case 'Completed':
+        case 'Delivered': return 'bg-emerald-500 text-white';
+        case 'Processing': return 'bg-blue-500 text-white';
+        case 'Shipped': return 'bg-indigo-500 text-white';
+        case 'Confirmed': return 'bg-sky-500 text-white';
+        case 'Pending': return 'bg-amber-400 text-white';
+        case 'Cancelled': 
+        case 'Declined': return 'bg-red-500 text-white';
+        default: return 'bg-slate-300 text-white';
+    }
+};
+
+const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+        case 'Completed':
+        case 'Delivered': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+        case 'Processing': return 'bg-blue-50 text-blue-600 border-blue-100';
+        case 'Shipped': return 'bg-indigo-50 text-indigo-600 border-indigo-100';
+        case 'Confirmed': return 'bg-sky-50 text-sky-600 border-sky-100';
+        case 'Pending': return 'bg-amber-50 text-amber-600 border-amber-100';
+        case 'Cancelled': 
+        case 'Declined': return 'bg-red-50 text-red-600 border-red-100';
+        default: return 'bg-slate-50 text-slate-600 border-slate-100';
+    }
+};
+
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'Completed':
+        case 'Delivered': return 'pi-check';
+        case 'Processing': return 'pi-cog pi-spin';
+        case 'Shipped': return 'pi-truck';
+        case 'Confirmed': return 'pi-thumbs-up';
+        case 'Pending': return 'pi-clock';
+        case 'Cancelled': 
+        case 'Declined': return 'pi-times';
+        default: return 'pi-circle-fill';
+    }
+};
+
 const buyAgain = async (order: any) => {
     await profileService.post(`customer/orders/buy-again/${order.order_id}`, {});
     if (profileService.request.status === 200) {
@@ -696,61 +756,4 @@ onMounted(() => {
 }
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
 
-/* Profile Cover Watermark Styles */
-.profile-watermark-container {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    opacity: 0.1;
-}
-
-.profile-moving-watermark {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    animation: profile-watermark-scroll 30s linear infinite;
-    transform: rotate(-12deg) translateX(-10%) scale(1.2);
-}
-
-.profile-watermark-row {
-    display: flex;
-    white-space: nowrap;
-    gap: 1.5rem;
-}
-
-.profile-watermark-row:nth-child(even) {
-    animation: profile-watermark-scroll-reverse 25s linear infinite;
-}
-
-.profile-watermark-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.15em;
-    color: #fff;
-    text-transform: uppercase;
-}
-
-.profile-watermark-logo {
-    width: 18px;
-    height: 18px;
-    opacity: 0.8;
-    filter: brightness(0) invert(1);
-}
-
-@keyframes profile-watermark-scroll {
-    0% { transform: rotate(-12deg) translateX(-10%) scale(1.2); }
-    100% { transform: rotate(-12deg) translateX(-30%) scale(1.2); }
-}
-
-@keyframes profile-watermark-scroll-reverse {
-    0% { transform: translateX(-20%); }
-    100% { transform: translateX(0%); }
-}
-
-.bg-grid-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm1 1h38v38H1V1z' fill='%23000000' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
-}
 </style>

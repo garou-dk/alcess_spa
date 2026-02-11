@@ -225,13 +225,14 @@
             <div class="container">
                 <div class="recommendations-grid">
                     <!-- Recommendations -->
-                    <div class="recommendations-column">
+                    <!-- Recommendations (Full Width) -->
+                    <div class="col-span-1 md:col-span-2">
                         <div class="section-header-left">
                             <p class="section-label">Recommendations</p>
                             <h2 class="section-title">Picked for You</h2>
                         </div>
                         
-                        <div v-if="featuredProducts.length > 0" class="recommendation-cards">
+                        <div v-if="featuredProducts.length > 0" class="recommendation-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div 
                                 v-for="product in featuredProducts.slice(0, 4)" 
                                 :key="product.product_id"
@@ -258,41 +259,6 @@
                             <div class="empty-icon"><i class="pi pi-star"></i></div>
                             <h3>No Recommendations Yet</h3>
                             <p>Browse our products to get personalized picks!</p>
-                        </div>
-                    </div>
-
-                    <!-- Order Timeline -->
-                    <div class="timeline-column">
-                        <div class="section-header-left">
-                            <p class="section-label">Activity</p>
-                            <!-- Stats displayed here -->
-                            <h2 class="section-title">Order Timeline <span v-if="stats.total_orders" class="text-sm font-normal text-gray-500 ml-2">({{ stats.total_orders }} orders)</span></h2>
-                        </div>
-
-                        <div class="timeline-container">
-                            <div v-if="recentOrders.length > 0" class="timeline-list">
-                                <div v-for="(order, index) in recentOrders" :key="order.order_id" class="timeline-item">
-                                    <div class="timeline-dot-wrapper">
-                                        <div class="timeline-dot" :class="getStatusTimelineClass(order.status)">
-                                            <i :class="getStatusIcon(order.status)"></i>
-                                        </div>
-                                        <div v-if="index !== recentOrders.length - 1" class="timeline-line"></div>
-                                    </div>
-                                    <div class="timeline-content">
-                                        <span class="timeline-date">{{ new Date(order.created_at).toLocaleDateString() }}</span>
-                                        <h4 class="timeline-order-id">Order #{{ order.order_public_id }}</h4>
-                                        <p class="timeline-product">{{ order.product_orders?.[0]?.product?.product_name || 'Electronics' }}</p>
-                                        <div class="timeline-status" :class="getStatusTextColor(order.status)">
-                                            <span>{{ order.status }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="empty-state">
-                                <div class="empty-icon"><i class="pi pi-history"></i></div>
-                                <h3>No Recent Orders</h3>
-                                <p>Your order history will appear here.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -605,34 +571,7 @@ onUnmounted(() => stopCarousel())
 .recommendation-price { font-size: 0.875rem; font-weight: 700; color: #2563eb; }
 .recommendation-category { font-size: 0.625rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 0.25rem; }
 
-/* Timeline Container */
-.timeline-container { background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; min-height: 300px; }
-.timeline-list { display: flex; flex-direction: column; gap: 0; }
-.timeline-item { display: flex; gap: 1rem; }
-.timeline-dot-wrapper { display: flex; flex-direction: column; align-items: center; }
-.timeline-dot { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.75rem; }
-.timeline-dot.status-completed { background: #10b981; color: #fff; }
-.timeline-dot.status-processing { background: #3b82f6; color: #fff; animation: pulse 2s infinite; }
-.timeline-dot.status-shipped { background: #8b5cf6; color: #fff; }
-.timeline-dot.status-cancelled { background: #ef4444; color: #fff; }
-.timeline-dot.status-default { background: #e2e8f0; color: #64748b; }
-.timeline-line { width: 2px; flex: 1; min-height: 2rem; background: #e2e8f0; }
-.timeline-content { flex: 1; padding-bottom: 1.5rem; }
-.timeline-date { font-size: 0.625rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-.timeline-order-id { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin: 0.25rem 0; }
-.timeline-product { font-size: 0.75rem; color: #64748b; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.timeline-status { margin-top: 0.5rem; }
-.timeline-status span { font-size: 0.625rem; font-weight: 700; text-transform: uppercase; background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
-.text-completed { color: #10b981; }
-.text-processing { color: #3b82f6; }
-.text-shipped { color: #8b5cf6; }
-.text-cancelled { color: #ef4444; }
-.text-default { color: #64748b; }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
 
 /* CTA Section */
 .cta-section { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); padding: 3rem 1rem; text-align: center; }
