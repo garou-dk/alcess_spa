@@ -427,16 +427,38 @@ const toggleNotification = (event: Event) => {
     notificationElement.value?.toggle(event);
 };
 
-const markAsRead = async (id: number) => {
-    const notification = notifications.value.find(n => n.order_notification_id === id);
-    if (notification && !notification.is_read) {
-        notification.is_read = true;
-        // Optimistic update
-        await submitMarkReadService.patch(`customer/order-notifications/mark-as-read/${id}`, null);
+const markAsRead = async (item: IOrderNotification | null = null) => {
+    if (item) {
+        if (!item.is_read) {
+            await submitMarkReadService.patch(`order-notifications/mark-as-read/${item.order_notification_id}`, {});
+            // Update local state
+            const index = notifications.value.findIndex(n => n.order_notification_id === item.order_notification_id);
+            if (index !== -1) {
+                notifications.value[index].is_read = true;
+            }
+        }
+        
+        // Redirect based on role
+        if (Page.user?.role?.role_id === RoleEnum.ADMIN || Page.user?.role?.role_id === RoleEnum.STAFF) {
+            router.push({ name: 'admin.order.index' });
+        } else {
+             router.push({ name: 'customer.order.index' });
+        }
+    } else {
+        await submitMarkReadService.patch("order-notifications/mark-all-as-read", {});
+        notifications.value.forEach(n => n.is_read = true);
+        
+        // Redirect based on role
+        if (Page.user?.role?.role_id === RoleEnum.ADMIN || Page.user?.role?.role_id === RoleEnum.STAFF) {
+             router.push({ name: 'admin.order.index' });
+        } else {
+             router.push({ name: 'customer.order.index' });
+        }
     }
     
-    // Redirect to orders page (specific item redirect would require backend change to include order_id)
-    router.push({ name: 'customer.order.index' });
+    // Refresh notifications
+    loadNotifications();
+};
     
     // Hide popover
     if (notificationElement.value) {

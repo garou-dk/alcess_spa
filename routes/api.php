@@ -290,6 +290,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                 ->prefix('orders')
                 ->group(function () {
                     Route::post('/', 'orderProducts');
+                    Route::post('/buy-again/{id}', 'buyAgain');
                     Route::get('/paid', 'getPaidOrders');
                     Route::get('/{id}', 'getOrder');
                     Route::get('/', 'getCustomerOrders');

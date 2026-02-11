@@ -146,6 +146,45 @@
                 <!-- Right Column: Settings & Forms -->
                 <div class="lg:col-span-8 space-y-8">
                     
+                    <!-- 0. Recent Orders (New) -->
+                    <div v-if="recentOrders.length > 0" class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="pi pi-shopping-bag text-blue-600"></i>
+                                    Recent Orders
+                                </h2>
+                                <p class="text-slate-500 text-sm font-medium mt-1">Track your latest purchases.</p>
+                            </div>
+                            <router-link :to="{ name: 'customer.orders' }">
+                                <Button label="View All" icon="pi pi-arrow-right" class="p-button-text font-bold" />
+                            </router-link>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div v-for="order in recentOrders" :key="order.order_id" class="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all">
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="font-bold text-slate-900">Order #{{ order.order_id.substring(0, 8) }}</span>
+                                        <span :class="{'text-amber-600 bg-amber-100': order.status === 'Processing', 'text-blue-600 bg-blue-100': order.status === 'Confirmed', 'text-green-600 bg-green-100': order.status === 'Completed'}" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                                            {{ order.status }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-medium mb-3">{{ DateUtil.formatDate(order.created_at) }}</p>
+                                    <div class="flex gap-2 overflow-x-auto pb-2">
+                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-12 h-12 rounded-lg border border-slate-200 bg-white flex-shrink-0 overflow-hidden">
+                                            <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col justify-between items-end gap-2">
+                                    <span class="font-bold text-slate-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
+                                    <Button @click="buyAgain(order)" label="Buy Again" icon="pi pi-refresh" size="small" outlined class="w-full sm:w-auto font-bold rounded-lg" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- 1. Contact & Address (Priority) -->
                     <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -606,9 +645,33 @@ const downloadCodes = () => {
     toast.success('Codes downloaded.')
 }
 
+const recentOrders = ref<any[]>([]); // Using any[] for now or IOrder if imported
+const loadingOrders = ref(false);
+
+const loadOrders = async () => {
+    loadingOrders.value = true;
+    await profileService.get('customer/orders').then(() => {
+        loadingOrders.value = false;
+        if (profileService.request.status === 200) {
+            // Take top 3
+            recentOrders.value = (profileService.request.data as any[]).slice(0, 3); 
+        }
+    });
+};
+
+const buyAgain = async (order: any) => {
+    await profileService.post(`customer/orders/buy-again/${order.order_id}`, {});
+    if (profileService.request.status === 200) {
+        toast.success('Items added to cart!');
+    } else {
+        toast.error(profileService.request.message || 'Failed to add items to cart.');
+    }
+};
+
 onMounted(() => {
+    loadOrders();
     if (Page.user?.recovery_codes) recoveryCodes.value = Page.user.recovery_codes
-})
+});
 </script>
 
 <style scoped>

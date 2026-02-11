@@ -913,8 +913,24 @@ const showCompleteAddress = (value: IOrder) => {
 };
 
 const openPaymentModal = (item: IOrder) => {
+    console.log('Open Payment Modal Clicked', item);
+    if (!item) {
+        console.error('No item provided to openPaymentModal');
+        return;
+    }
     paymentModal.value.order = item;
     paymentModal.value.visible = true;
+};
+
+const buyAgainService = useAxiosUtil();
+const buyAgain = async (order: IOrder) => {
+    await buyAgainService.post(`customer/orders/buy-again/${order.order_id}`, {});
+    if (buyAgainService.request.status === 200) {
+        toast.success('Items added to cart!');
+        // Ideally prompt to go to cart
+    } else {
+        toast.error(buyAgainService.request.message || 'Failed to add items to cart.');
+    }
 };
 
 const closePaymentModal = () => {

@@ -161,6 +161,18 @@ class OrderController extends Controller
             ->response();
     }
 
+    public function buyAgain(string $id) {
+        $authService = new AuthService();
+        $user = $authService->getAuth();
+        
+        $data = ['order_id' => $id, 'user_id' => $user->user_id];
+        
+        return ApiResponse::success()
+            ->data($this->service->buyAgain($data))
+            ->message('Items added to cart successfully')
+            ->response();
+    }
+
     public function setPayment(string $id, SetPaymentRequest $request) {
         $authService = new AuthService();
         $user = $authService->getAuth();

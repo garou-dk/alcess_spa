@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\OrderNotification;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Services\CartService;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
@@ -137,8 +138,52 @@ class OrderService
 
             OrderNotificationEvent::dispatch($notification->toArray());
 
+            // Cart Cleanup
+            $productIds = collect($products)->pluck('product_id')->toArray();
+            if (!empty($productIds)) {
+                \App\Models\Cart::where('user_id', $data['user_id'])
+                    ->whereIn('product_id', $productIds)
+                    ->delete();
+                
+                // Dispatch Cart Count Event
+                $cartCount = \App\Models\Cart::where('user_id', $data['user_id'])->count();
+                \App\Events\CartCountEvent::dispatch($cartCount, $data['user_id']);
+            }
+
             return $order;
         });
+    }
+
+    public function buyAgain(array $data)
+    {
+        $order = Order::query()
+            ->with(['productOrders'])
+            ->where('order_id', $data['order_id'])
+            ->where('user_id', $data['user_id'])
+            ->firstOrFail();
+
+        $cartService = new CartService();
+        $addedItems = 0;
+
+        foreach ($order->productOrders as $item) {
+            try {
+                // Reuse existing addCart logic which handles stock checks
+                $cartService->addCart([
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity
+                ]);
+                $addedItems++;
+            } catch (\Exception $e) {
+                // Continue if one item fails (e.g. out of stock), but maybe we should warn?
+                // For now, let's just try to add as many as possible.
+            }
+        }
+        
+        if ($addedItems === 0) {
+            abort(400, 'Unable to add items to cart. Items may be out of stock or unavailable.');
+        }
+
+        return $cartService->cartCount();
     }
 
     public function getOrder(array $data)
