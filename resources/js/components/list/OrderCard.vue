@@ -43,7 +43,7 @@
                             <h4 class="font-medium text-gray-900 truncate" :title="item.product.product_name">{{ item.product.product_name }}</h4>
                             <div class="flex items-center justify-between mt-1">
                                 <p class="text-sm text-gray-500">Qty: {{ item.quantity }}</p>
-                                <p class="font-semibold text-gray-900">{{ CurrencyUtil.formatCurrency(item.price) }}</p>
+                                <p class="font-semibold text-gray-900">{{ CurrencyUtil.formatCurrency(item.price * item.quantity) }}</p>
                             </div>
                         </div>
 
@@ -65,16 +65,13 @@
                                 label="Rated"
                                 size="small"
                                 severity="warning"
-                                class="!py-1 !px-2 !text-xs h-7 pointer-events-none opacity-80"
+                                class="!py-1 !px-2 !text-xs h-7 opacity-90"
                                 @click="$emit('view-rating', item.rate)"
                             />
                         </div>
                     </div>
 
-                    <!-- Subtotal (Desktop only maybe?) -->
-                    <div class="hidden sm:block text-right self-center">
-                        <p class="font-bold text-gray-900">{{ CurrencyUtil.formatCurrency(item.price * item.quantity) }}</p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -129,14 +126,16 @@
             <!-- Secondary Actions -->
             <div class="flex gap-2 flex-wrap justify-end">
                 <!-- Cancel Button -->
-                 <Button
+                <Button
                     v-if="showCancelButton"
+                    type="button"
                     label="Cancel Order"
                     severity="danger"
                     size="small"
                     outlined
                     icon="pi pi-times"
-                    @click="$emit('cancel', order)"
+                    @click.stop="$emit('cancel', order)"
+                    class="relative z-10 cursor-pointer"
                 />
 
                 <!-- Mark As Delivered Component -->

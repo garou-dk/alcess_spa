@@ -605,8 +605,21 @@ const router = useRouter();
 
 const markAsRead = async (notification: IOrderNotification) => {
     notification.is_read = true;
-    router.push({ name: 'admin.order.index' });
+    
+    // Route based on notification type
+    // All current notifications are for online orders
+    const onlineOrderTypes = ['New Order', 'Pending Order', 'Order Accepted', 'Order Declined', 'Confirmed Order', 'To Ship', 'Paid', 'Cancelled Order', 'Rejected Order'];
+    
+    if (onlineOrderTypes.includes(notification.notification_type)) {
+        router.push({ name: 'admin.order.index' });
+    } else {
+        // Default fallback to orders page
+        router.push({ name: 'admin.order.index' });
+    }
+    
     notificationElement.value?.hide();
+    isNotificationOpen.value = false;
+    
     await submitMarkReadService.patch(`admin/order-notifications/mark-as-read/${notification.order_notification_id}`, null).then(() => {
     });
 };
