@@ -88,7 +88,7 @@
             :dismissableMask="true"
             pt:header:class="bg-blue-600! text-white! rounded-t-lg! rounded-b-none!"
         >
-            <AddressForm />
+            <AddressForm @saved="onAddressSaved" />
         </Dialog>
         <Dialog
             v-model:visible="securityForm"
@@ -316,6 +316,15 @@ const markAllAsRead = () => {
 const openAddressForm = () => {
     addressForm.value = true;
     avatarElement.value?.hide();
+};
+
+const onAddressSaved = () => {
+    addressForm.value = false;
+    // Reload user to get updated address if needed, or rely on store update
+    if (Page.user) {
+         // Force reload or Page store might be updated by AddressForm if it does so.
+         // For now just close the modal as requested.
+    }
 };
 
 const goToOrder = () => {

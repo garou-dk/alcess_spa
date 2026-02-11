@@ -406,6 +406,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 // Notification Logic
 const loadService = useAxiosUtil<null, IOrderNotification[]>();
+const submitMarkReadService = useAxiosUtil();
 const loadNotifications = async () => {
     if (!Page.user) return;
     
