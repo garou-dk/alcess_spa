@@ -216,7 +216,6 @@ class OrderService
                 'sale.saleItems.product'
             ])
             ->where('user_id', $data['user_id'])
-            ->where('status', '!=', OrderStatusEnum::CANCELLED->value)
             ->latest()
             ->get();
 

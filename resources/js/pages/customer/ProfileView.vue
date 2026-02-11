@@ -1,316 +1,323 @@
 <template>
-    <div class="profile-view min-h-screen bg-gradient-to-b from-slate-50 via-slate-50/80 to-white pb-20">
-        <!-- Hero Section with Cover Image -->
-        <div class="relative group h-64 md:h-80 w-full overflow-hidden bg-slate-900">
+    <div class="min-h-screen bg-gray-50 pb-20">
+        <!-- Cover Section -->
+        <div class="relative group h-56 md:h-72 w-full overflow-hidden bg-gray-900">
             <img 
                 v-if="Page.user?.cover_image" 
                 :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
                 class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
             >
-            <!-- Fallback -->
             <div v-else class="w-full h-full flex items-center justify-center">
-                <img :src="Logo" alt="logo" class="w-24 h-24 opacity-10 filter invert" />
+                <img :src="Logo" alt="logo" class="w-20 h-20 opacity-10 filter invert" />
             </div>
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/30 to-transparent"></div>
 
-            <div class="absolute inset-x-0 bottom-0 pb-4">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end justify-between gap-4">
-                    <div>
-                        <h1 class="text-lg md:text-xl font-semibold text-white/90">My Profile</h1>
-                        <p class="text-xs md:text-sm text-slate-200/80">Manage your personal information, address, and security settings.</p>
-                    </div>
             <button 
                 @click="triggerCoverUpload" 
-                class="absolute top-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl shadow-lg border border-blue-500/50 flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 z-20"
+                class="absolute top-4 right-4 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl shadow-lg flex items-center gap-2 text-xs font-semibold transition-colors cursor-pointer z-20"
             >
-                <i class="pi pi-camera text-lg"></i>
-                <span class="hidden sm:inline">Upload Cover</span>
+                <i class="pi pi-camera text-sm"></i>
+                <span class="hidden sm:inline">Change Cover</span>
             </button>
             <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
+
+            <div class="absolute inset-x-0 bottom-0 pb-5">
+                <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
+                    <h1 class="text-lg md:text-xl font-bold text-white">My Profile</h1>
+                    <p class="text-sm text-white/70 mt-0.5">Manage your account settings and preferences</p>
                 </div>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-16 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Left Column: User Profile Card -->
-                <div class="lg:col-span-4 space-y-6">
-                    <!-- Main Profile Card -->
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative">
-                        <div class="flex flex-col items-center text-center -mt-12 mb-6">
+                <!-- Left Column -->
+                <div class="lg:col-span-4 space-y-5">
+                    <!-- Profile Card -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative">
+                        <div class="flex flex-col items-center text-center -mt-16 mb-5">
                             <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
-                                <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center relative z-10">
+                                <div class="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex items-center justify-center">
                                     <img 
                                         v-if="Page.user?.image" 
                                         :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)" 
-                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     >
-                                    <span v-else class="text-6xl font-black text-slate-200">{{ Page.user?.full_name?.charAt(0) }}</span>
+                                    <span v-else class="text-5xl font-bold text-gray-200">{{ Page.user?.full_name?.charAt(0) }}</span>
                                 </div>
-                                <div class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 rounded-full border-[6px] border-transparent">
-                                    <i class="pi pi-camera text-white text-2xl"></i>
+                                <div class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity border-4 border-transparent">
+                                    <i class="pi pi-camera text-white text-xl"></i>
                                 </div>
                                 <button 
-                                    class="absolute bottom-2 right-2 z-30 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110 active:scale-95 border-[3px] border-white"
+                                    class="absolute bottom-1 right-1 z-30 bg-blue-600 text-white p-2 rounded-full shadow-md hover:bg-blue-700 transition-colors border-2 border-white cursor-pointer"
                                 >
-                                    <i class="pi pi-pencil text-sm"></i>
+                                    <i class="pi pi-pencil text-[10px]"></i>
                                 </button>
                                 <input type="file" ref="avatarInput" class="hidden" @change="onAvatarChange" accept="image/*">
                             </div>
 
-                            <div class="mt-4">
-                                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">{{ Page.user?.full_name }}</h1>
-                                <p class="text-slate-500 font-medium text-sm mt-1 flex items-center justify-center gap-1.5">
-                                    <i class="pi pi-envelope text-slate-400 text-xs"></i>
-                                    {{ Page.user?.email }}
-                                </p>
+                            <div class="mt-3">
+                                <h2 class="text-xl font-bold text-gray-900">{{ Page.user?.full_name }}</h2>
+                                <p class="text-sm text-gray-500 mt-0.5">{{ Page.user?.email }}</p>
                             </div>
                         </div>
                         
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
-                                        <i class="pi pi-id-card"></i>
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Role</span>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="pi pi-id-card text-sm text-gray-400"></i>
+                                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Role</span>
                                 </div>
-                                <span class="text-sm font-bold text-slate-900 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">{{ Page.user?.role?.role_name }}</span>
+                                <span class="text-xs font-semibold text-gray-800 bg-white px-2.5 py-1 rounded-full border border-gray-200">{{ Page.user?.role?.role_name }}</span>
                             </div>
-
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
-                                        <i class="pi pi-verified"></i>
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</span>
+                            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="pi pi-verified text-sm text-green-500"></i>
+                                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span>
                                 </div>
-                                <div class="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-                                    <i class="pi pi-check-circle text-[10px] font-bold"></i>
-                                    <span class="text-xs font-bold uppercase">Verified</span>
-                                </div>
+                                <span class="text-xs font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full border border-green-100">Verified</span>
                             </div>
-
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-colors hover:bg-slate-100/80">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
-                                        <i class="pi pi-calendar"></i>
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</span>
+                            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="pi pi-calendar text-sm text-gray-400"></i>
+                                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</span>
                                 </div>
-                                <span class="text-sm font-bold text-slate-700">{{ Page.user?.created_at ? DateUtil.formatToMonthDayYear(Page.user.created_at) : '--' }}</span>
+                                <span class="text-xs font-semibold text-gray-700">{{ Page.user?.created_at ? DateUtil.formatToMonthDayYear(Page.user.created_at) : '--' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Security Summary (neutral) -->
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                            <i class="pi pi-lock text-blue-500 text-xs"></i>
-                            <span>Account security</span>
+                    <!-- Security Summary -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                        <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="pi pi-lock text-blue-600 text-xs"></i>
+                            Account Security
                         </h3>
-                        <div class="space-y-4">
+                        <div class="space-y-3.5">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-xs font-medium text-slate-600">Password</p>
-                                    <p class="text-xs text-slate-500">Use a strong, unique password.</p>
+                                    <p class="text-xs font-medium text-gray-700">Password</p>
+                                    <p class="text-[11px] text-gray-400">Use a strong, unique password.</p>
                                 </div>
-                                <span class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                                    <i class="pi pi-check-circle text-green-500 text-[10px]"></i>
-                                    OK
+                                <span class="inline-flex items-center gap-1 rounded-full bg-green-50 border border-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 uppercase tracking-wide">
+                                    <i class="pi pi-check-circle text-[10px]"></i> OK
                                 </span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-xs font-medium text-slate-600">Recovery question</p>
-                                    <p class="text-xs text-slate-500">Helps you recover access if you forget your password.</p>
+                                    <p class="text-xs font-medium text-gray-700">Recovery question</p>
+                                    <p class="text-[11px] text-gray-400">Helps recover your account.</p>
                                 </div>
                                 <span
-                                    :class="Page.user?.security_question ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'"
-                                    class="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide"
+                                    :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'"
+                                    class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                                 >
                                     <i :class="Page.user?.security_question ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'" class="text-[10px]"></i>
-                                    {{ Page.user?.security_question ? 'Configured' : 'Recommended' }}
+                                    {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Settings & Forms -->
-                <div class="lg:col-span-8 space-y-8">
+                <!-- Right Column -->
+                <div class="lg:col-span-8 space-y-6">
                     
-                    <!-- 0. Order Timeline -->
-                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100 order-section">
-                        <div class="flex items-center justify-between mb-6">
+                    <!-- Order History -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-blue-50 text-blue-500 mr-1">
-                                        <i class="pi pi-shopping-bag text-sm"></i>
-                                    </span>
-                                    Order History
-                                </h2>
-                                <p class="text-slate-500 text-sm mt-1">Track the status of your recent purchases.</p>
+                                <h2 class="text-base font-bold text-gray-900">Order History</h2>
+                                <p class="text-xs text-gray-500 mt-0.5">Track the status of your purchases</p>
                             </div>
-                            <span v-if="recentOrders.length > 0" class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full">
-                                {{ recentOrders.length }} order{{ recentOrders.length !== 1 ? 's' : '' }}
+                            <span v-if="recentOrders.length > 0" class="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+                                {{ filteredOrders.length }} of {{ recentOrders.length }}
                             </span>
                         </div>
 
-                        <!-- Order Status Tabs -->
-                        <div class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide scroll-smooth snap-x snap-mandatory">
-                            <button 
-                                v-for="tab in orderTabs" 
-                                :key="tab"
-                                @click="activeTab = tab"
-                                class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-all duration-300 border snap-start"
-                                :class="activeTab === tab ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm'"
-                            >
-                                {{ tab }}
-                                <span v-if="getTabCount(tab) > 0" class="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold" :class="activeTab === tab ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'">
-                                    {{ getTabCount(tab) }}
-                                </span>
-                            </button>
-                        </div>
-
-                        <!-- Loading Skeleton -->
-                        <div v-if="loadingOrders" class="space-y-6">
-                            <div v-for="n in 3" :key="n" class="animate-pulse flex gap-6">
-                                <div class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0"></div>
-                                <div class="flex-1 bg-slate-100 rounded-2xl p-5 space-y-3">
-                                    <div class="flex justify-between">
-                                        <div class="space-y-2">
-                                            <div class="h-3 w-20 bg-slate-200 rounded"></div>
-                                            <div class="h-4 w-36 bg-slate-200 rounded"></div>
-                                        </div>
-                                        <div class="h-5 w-16 bg-slate-200 rounded-full"></div>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <div v-for="i in 3" :key="i" class="w-16 h-16 bg-slate-200 rounded-lg"></div>
-                                    </div>
-                                    <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-                                        <div class="h-5 w-24 bg-slate-200 rounded"></div>
-                                        <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
-                                    </div>
-                                </div>
+                        <!-- Status Filter Tabs -->
+                        <div class="px-5 pt-4 pb-0">
+                            <div class="flex items-center gap-1.5 overflow-x-auto pb-3 scrollbar-hide">
+                                <button 
+                                    v-for="tab in orderTabs" 
+                                    :key="tab"
+                                    @click="activeTab = tab; orderPage = 1"
+                                    class="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer"
+                                    :class="activeTab === tab 
+                                        ? 'bg-blue-600 text-white' 
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                                >
+                                    {{ tab }}
+                                    <span v-if="getTabCount(tab) > 0" class="ml-0.5">({{ getTabCount(tab) }})</span>
+                                </button>
                             </div>
                         </div>
 
-                        <div v-else-if="filteredOrders.length > 0" class="relative pl-4 space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                            <div v-for="(order, index) in filteredOrders" :key="order.order_id" class="relative flex gap-6 group order-card" :style="{ animationDelay: `${index * 80}ms` }">
-                                <!-- Dot -->
-                                <div class="absolute -left-4 mt-1.5 w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10" :class="getStatusTimelineColor(order.status)">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-white opacity-90"></div>
+                        <div class="p-5 pt-2">
+                            <!-- Loading Skeleton -->
+                            <div v-if="loadingOrders" class="space-y-3">
+                                <div v-for="n in 3" :key="n" class="animate-pulse bg-gray-50 rounded-xl p-4 flex gap-4">
+                                    <div class="w-14 h-14 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                                    <div class="flex-1 space-y-2 py-1">
+                                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                                    </div>
                                 </div>
-                                
-                                <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-100 hover:border-blue-100 hover:shadow-md hover:shadow-blue-50 transition-all duration-300">
-                                    <div class="flex flex-wrap justify-between items-start gap-4 mb-3">
-                                        <div>
-                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                                                {{ DateUtil.formatToMonthDayYear(order.created_at) }}
+                            </div>
+
+                            <!-- Order Cards (Paginated) -->
+                            <div v-else-if="filteredOrders.length > 0">
+                                <div class="space-y-3">
+                                    <div 
+                                        v-for="order in paginatedOrders" 
+                                        :key="order.order_id" 
+                                        class="bg-gray-50 hover:bg-gray-100/80 rounded-xl border border-gray-100 hover:border-gray-200 p-4 transition-all"
+                                    >
+                                        <div class="flex items-start justify-between gap-3 mb-3">
+                                            <div>
+                                                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                                                    {{ DateUtil.formatToMonthDayYear(order.created_at) }}
+                                                </p>
+                                                <p class="text-sm font-bold text-gray-800 mt-0.5">Order #{{ String(order.order_id || '').substring(0, 8) }}</p>
+                                            </div>
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" :class="getStatusBadgeClass(order.status)">
+                                                {{ order.status }}
                                             </span>
-                                            <h4 class="text-base font-bold text-slate-800">Order #{{ String(order.order_id || '').substring(0, 8) }}</h4>
                                         </div>
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusBadgeClass(order.status)">
-                                            {{ order.status }}
-                                        </span>
-                                    </div>
 
-                                    <!-- Product Images -->
-                                    <div class="flex gap-2 overflow-x-auto pb-3 mb-2 scrollbar-hide">
-                                        <div v-for="item in order.product_orders" :key="item.product_id" class="w-16 h-16 rounded-lg border border-slate-200 bg-slate-50 flex-shrink-0 overflow-hidden relative group/img">
-                                            <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"></div>
+                                        <!-- Product Thumbnails -->
+                                        <div class="flex gap-2 mb-3 overflow-x-auto scrollbar-hide">
+                                            <div 
+                                                v-for="item in order.product_orders" 
+                                                :key="item.product_id" 
+                                                class="w-12 h-12 rounded-lg border border-gray-200 bg-white flex-shrink-0 overflow-hidden"
+                                            >
+                                                <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
+                                            </div>
+                                            <div v-if="order.product_orders?.length > 4" class="w-12 h-12 rounded-lg border border-gray-200 bg-white flex-shrink-0 flex items-center justify-center">
+                                                <span class="text-[10px] font-bold text-gray-400">+{{ order.product_orders.length - 4 }}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-                                        <span class="font-bold text-slate-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
-                                        <Button 
-                                            @click="buyAgain(order)" 
-                                            label="Buy again" 
-                                            icon="pi pi-refresh" 
-                                            class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 font-bold rounded-xl text-xs px-4 py-2" 
-                                        />
+                                        
+                                        <div class="flex items-center justify-between pt-3 border-t border-gray-200/60">
+                                            <span class="text-sm font-bold text-gray-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
+                                            <Button 
+                                                @click="buyAgain(order)" 
+                                                label="Buy again" 
+                                                icon="pi pi-refresh" 
+                                                class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 font-semibold rounded-lg text-xs px-3 py-1.5 cursor-pointer" 
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- Pagination -->
+                                <div v-if="orderTotalPages > 1" class="flex justify-center items-center gap-1.5 mt-5 pt-4 border-t border-gray-100">
+                                    <button
+                                        @click="orderPage > 1 && orderPage--"
+                                        :disabled="orderPage === 1"
+                                        class="pagination-btn cursor-pointer"
+                                        :class="orderPage === 1 ? 'pagination-btn-disabled' : 'pagination-btn-active'"
+                                    >
+                                        <i class="pi pi-chevron-left" style="font-size: 0.625rem;"></i>
+                                    </button>
+                                    <button
+                                        v-for="page in orderPaginationRange"
+                                        :key="page"
+                                        @click="orderPage = page"
+                                        class="pagination-btn cursor-pointer"
+                                        :class="orderPage === page ? 'pagination-btn-current' : 'pagination-btn-active'"
+                                    >
+                                        {{ page }}
+                                    </button>
+                                    <button
+                                        @click="orderPage < orderTotalPages && orderPage++"
+                                        :disabled="orderPage === orderTotalPages"
+                                        class="pagination-btn cursor-pointer"
+                                        :class="orderPage === orderTotalPages ? 'pagination-btn-disabled' : 'pagination-btn-active'"
+                                    >
+                                        <i class="pi pi-chevron-right" style="font-size: 0.625rem;"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                         <div v-else class="text-center py-14">
-                            <div class="w-20 h-20 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-slate-100 empty-icon-float">
-                                <i class="pi pi-shopping-bag text-3xl text-slate-300"></i>
+
+                            <!-- Empty State -->
+                            <div v-else class="text-center py-12">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                                    <i class="pi pi-shopping-bag text-2xl text-gray-400"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-gray-800 mb-1">No orders found</h3>
+                                <p class="text-xs text-gray-500 max-w-xs mx-auto mb-5">
+                                    {{ activeTab === 'All' ? 'You haven\'t placed any orders yet.' : `No ${activeTab.toLowerCase()} orders at the moment.` }}
+                                </p>
+                                <router-link :to="{ name: 'customer.browse-products' }">
+                                    <button class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
+                                        Browse Products
+                                    </button>
+                                </router-link>
                             </div>
-                            <h3 class="text-lg font-bold text-slate-900">No Orders Found</h3>
-                            <p class="text-slate-500 text-sm mt-1.5 mb-8 max-w-xs mx-auto">{{ activeTab === 'All' ? 'You haven\'t placed any orders yet. Start shopping!' : `No ${activeTab.toLowerCase()} orders at the moment.` }}</p>
-                            <router-link :to="{ name: 'customer.browse-products' }">
-                                <Button 
-                                    label="Browse products" 
-                                    icon="pi pi-shopping-cart" 
-                                    class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30" 
-                                />
-                            </router-link>
                         </div>
                     </div>
                     
-                    <!-- 1. Contact & Address -->
-                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <!-- Delivery Address -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <i class="pi pi-map-marker text-slate-400 text-sm"></i>
+                                <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                                    <i class="pi pi-map-marker text-gray-400 text-sm"></i>
                                     Delivery Address
                                 </h2>
-                                <p class="text-slate-500 text-sm mt-1">Manage your shipping details for faster checkout.</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Manage your shipping details for faster checkout</p>
                             </div>
-                            <Button 
+                            <button 
                                 @click="openAddressForm" 
-                                label="Edit address" 
-                                icon="pi pi-pencil" 
-                                class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold" 
-                            />
+                                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                            >
+                                <i class="pi pi-pencil text-[10px]"></i> Edit Address
+                            </button>
                         </div>
 
-                        <div class="bg-slate-50/60 rounded-2xl p-6 border border-slate-100">
-                             <div v-if="Page.user?.address" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-5">
+                        <div class="p-5">
+                             <div v-if="Page.user?.address" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4">
                                     <div>
-                                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Contact Number</label>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                                                <i class="pi pi-phone"></i>
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Contact Number</label>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
+                                                <i class="pi pi-phone text-xs"></i>
                                             </div>
-                                            <span class="text-lg font-bold text-slate-800">{{ Page.user.address.contact_number || 'N/A' }}</span>
+                                            <span class="text-sm font-semibold text-gray-800">{{ Page.user.address.contact_number || 'N/A' }}</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Postal Code</label>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                                                <i class="pi pi-envelope"></i>
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Postal Code</label>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
+                                                <i class="pi pi-envelope text-xs"></i>
                                             </div>
-                                            <span class="text-lg font-bold text-slate-800">{{ Page.user.address.postal_code || 'N/A' }}</span>
+                                            <span class="text-sm font-semibold text-gray-800">{{ Page.user.address.postal_code || 'N/A' }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Full Address</label>
-                                    <div class="bg-white rounded-xl p-4 border border-slate-200 h-full">
-                                        <div class="flex gap-3">
-                                            <i class="pi pi-home text-blue-500 mt-1"></i>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Full Address</label>
+                                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 h-full">
+                                        <div class="flex gap-2.5">
+                                            <i class="pi pi-home text-blue-600 text-xs mt-0.5"></i>
                                             <div>
-                                                <p class="text-sm font-bold text-slate-800 leading-relaxed">{{ Page.user.address.other_details }}</p>
-                                                <div v-if="Page.user.address.barangay" class="mt-3 pt-3 border-t border-slate-100">
-                                                     <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                <p class="text-sm font-medium text-gray-800 leading-relaxed">{{ Page.user.address.other_details }}</p>
+                                                <div v-if="Page.user.address.barangay" class="mt-2 pt-2 border-t border-gray-200">
+                                                     <p class="text-xs font-medium text-gray-600">
                                                         {{ Page.user.address.barangay.barangay_name }}, 
                                                         {{ Page.user.address.barangay.municity?.municity_name }}
                                                     </p>
-                                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                    <p class="text-xs text-gray-500 mt-0.5">
                                                         {{ Page.user.address.barangay.municity?.province?.province_name }}
                                                     </p>
-                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase">
+                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-500">
                                                         <i class="pi pi-map text-[10px]"></i>
                                                         {{ Page.user.address.barangay.municity.province.region.region_name }}
                                                     </div>
@@ -321,110 +328,124 @@
                                 </div>
                             </div>
                             
-                            <div v-else class="text-center py-10 bg-white rounded-2xl">
-                                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500">
-                                    <i class="pi pi-map-marker text-2xl"></i>
+                            <div v-else class="text-center py-10">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
+                                    <i class="pi pi-map-marker text-xl text-blue-500"></i>
                                 </div>
-                                <h3 class="text-lg font-bold text-slate-900">No Address Set</h3>
-                                <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">Add your delivery address to make checkout faster.</p>
-                                <Button @click="openAddressForm" label="Add address" icon="pi pi-plus" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold shadow-lg shadow-blue-500/30" />
+                                <h3 class="text-sm font-bold text-gray-800">No Address Set</h3>
+                                <p class="text-xs text-gray-500 mb-5 max-w-xs mx-auto">Add your delivery address to make checkout faster.</p>
+                                <button @click="openAddressForm" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
+                                    Add Address
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 2. Personal Information -->
-                    <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
-                        <div class="mb-8 border-b border-slate-100 pb-4">
-                            <h2 class="text-xl font-bold text-slate-900">Personal Details</h2>
-                            <p class="text-slate-500 text-sm font-medium mt-1">Update how your name appears on your profile.</p>
+                    <!-- Personal Details -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100">
+                            <h2 class="text-base font-bold text-gray-900">Personal Details</h2>
+                            <p class="text-xs text-gray-500 mt-0.5">Update how your name appears on your profile</p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
-                                <div class="relative group">
-                                    <input v-model="profileForm.full_name" type="text" class="form-input pl-4 pr-10" placeholder="Enter your full name">
-                                    <i class="pi pi-user absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors"></i>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Email (Read Only)</label>
-                                <div class="relative">
-                                    <input :value="Page.user?.email" type="email" readonly class="form-input bg-slate-50 text-slate-500 cursor-not-allowed border-slate-200" placeholder="email@example.com">
-                                    <i class="pi pi-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 flex justify-end">
-                            <Button @click="updateName" :loading="savingName" label="Save changes" icon="pi pi-check" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full md:w-auto px-6" />
-                        </div>
-                    </div>
-
-                    <!-- 3. Security Settings -->
-                    <div class="space-y-4">
-                        <!-- Password Update -->
-                        <div class="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-slate-100">
-                            <div class="flex items-center justify-between mb-6">
-                                <div>
-                                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                        <i class="pi pi-key text-slate-400 text-sm"></i>
-                                        Change password
-                                    </h2>
-                                    <p class="text-slate-500 text-xs mt-1">Update your password regularly to keep your account secure.</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                                <div class="md:col-span-4">
-                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">Current Password</label>
-                                     <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required" pt:input:class="form-input" />
-                                </div>
-                                <div class="md:col-span-4">
-                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">New Password</label>
-                                     <Password v-model="passwordForm.password" toggleMask fluid placeholder="Min. 8 chars" pt:input:class="form-input" />
-                                </div>
-                                <div class="md:col-span-4">
-                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">Confirm</label>
-                                     <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat" pt:input:class="form-input" />
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 flex justify-end">
-                                <Button @click="updatePassword" :loading="savingPassword" label="Update password" icon="pi pi-lock" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full md:w-auto px-6" />
-                            </div>
-                        </div>
-
-                         <!-- Recovery Options -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div class="bg-white rounded-3xl p-6 border border-slate-100 hover:bg-slate-50 transition-colors group">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform">
-                                        <i class="pi pi-question-circle"></i>
+                        <div class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="space-y-1.5">
+                                    <label class="text-xs font-semibold text-gray-600">Full Name</label>
+                                    <div class="relative">
+                                        <input v-model="profileForm.full_name" type="text" class="form-input pl-3.5 pr-10" placeholder="Enter your full name">
+                                        <i class="pi pi-user absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
                                     </div>
-                                    <span :class="Page.user?.security_question ? 'text-emerald-700 bg-emerald-50 border border-emerald-100' : 'text-amber-700 bg-amber-50 border border-amber-100'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                        {{ Page.user?.security_question ? 'Configured' : 'Recommended' }}
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-xs font-semibold text-gray-600">Email (Read Only)</label>
+                                    <div class="relative">
+                                        <input :value="Page.user?.email" type="email" readonly class="form-input bg-gray-50 text-gray-500 cursor-not-allowed pl-3.5 pr-10" placeholder="email@example.com">
+                                        <i class="pi pi-lock absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 flex justify-end">
+                                <button @click="updateName" :disabled="savingName" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2">
+                                    <i v-if="savingName" class="pi pi-spin pi-spinner text-sm"></i>
+                                    <i v-else class="pi pi-check text-sm"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="space-y-5">
+                        <!-- Change Password -->
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div class="px-5 py-4 border-b border-gray-100">
+                                <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                                    <i class="pi pi-key text-gray-400 text-sm"></i>
+                                    Change Password
+                                </h2>
+                                <p class="text-xs text-gray-500 mt-0.5">Update your password regularly to keep your account secure</p>
+                            </div>
+
+                            <div class="p-5">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                    <div class="space-y-1.5">
+                                         <label class="text-xs font-semibold text-gray-600">Current Password</label>
+                                         <Password v-model="passwordForm.current_password" toggleMask fluid :feedback="false" placeholder="Required" pt:input:class="form-input" />
+                                    </div>
+                                    <div class="space-y-1.5">
+                                         <label class="text-xs font-semibold text-gray-600">New Password</label>
+                                         <Password v-model="passwordForm.password" toggleMask fluid placeholder="Min. 8 chars" pt:input:class="form-input" />
+                                    </div>
+                                    <div class="space-y-1.5">
+                                         <label class="text-xs font-semibold text-gray-600">Confirm</label>
+                                         <Password v-model="passwordForm.password_confirmation" toggleMask fluid :feedback="false" placeholder="Repeat" pt:input:class="form-input" />
+                                    </div>
+                                </div>
+                                <div class="mt-5 flex justify-end">
+                                    <button @click="updatePassword" :disabled="savingPassword" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2">
+                                        <i v-if="savingPassword" class="pi pi-spin pi-spinner text-sm"></i>
+                                        <i v-else class="pi pi-lock text-sm"></i>
+                                        Update Password
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recovery Options -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                        <i class="pi pi-question-circle text-sm"></i>
+                                    </div>
+                                    <span :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border">
+                                        {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
                                     </span>
                                 </div>
-                                <h4 class="font-bold text-slate-900 text-base mb-1">Security Question</h4>
-                                <p class="text-slate-600 text-xs font-medium leading-relaxed mb-6 h-10">
-                                    {{ Page.user?.security_question ? 'Your custom question is set. Click to update.' : 'Set a question for account recovery.' }}
+                                <h4 class="font-bold text-gray-900 text-sm mb-0.5">Security Question</h4>
+                                <p class="text-gray-500 text-xs leading-relaxed mb-4">
+                                    {{ Page.user?.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
                                 </p>
-                                <Button @click="showQuestionDialog = true" :label="Page.user?.security_question ? 'Update Question' : 'Set Up Now'" class="w-full rounded-xl font-bold" :outlined="!!Page.user?.security_question" />
+                                <button @click="showQuestionDialog = true" class="w-full py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer">
+                                    {{ Page.user?.security_question ? 'Update Question' : 'Set Up Now' }}
+                                </button>
                              </div>
 
-                             <div class="bg-white rounded-3xl p-6 border border-slate-100 hover:bg-slate-50 transition-colors group">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-110 transition-transform">
-                                        <i class="pi pi-shield"></i>
+                             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:border-gray-300 transition-colors group">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                        <i class="pi pi-shield text-sm"></i>
                                     </div>
-                                    <span v-if="recoveryCodes.length > 0" class="text-emerald-700 bg-emerald-50 border border-emerald-100 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Active</span>
+                                    <span v-if="recoveryCodes.length > 0" class="text-green-700 bg-green-50 border border-green-100 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
                                 </div>
-                                <h4 class="font-bold text-slate-900 text-base mb-1">Backup Codes</h4>
-                                <p class="text-slate-600 text-xs font-medium leading-relaxed mb-6 h-10">
+                                <h4 class="font-bold text-gray-900 text-sm mb-0.5">Backup Codes</h4>
+                                <p class="text-gray-500 text-xs leading-relaxed mb-4">
                                     Generate one-time codes in case you lose access to your email.
                                 </p>
-                                <Button @click="showCodesDialog = true" label="Manage Codes" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold w-full" />
+                                <button @click="showCodesDialog = true" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
+                                    Manage Codes
+                                </button>
                              </div>
                         </div>
                     </div>
@@ -433,66 +454,76 @@
             </div>
         </div>
 
-        <!-- Dialogs (Styled consistently) -->
-        <Dialog v-model:visible="showQuestionDialog" modal header="Set Security Question" :style="{ width: '30rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0" pt:header:class="p-6 border-b border-gray-100 bg-gray-50/50 rounded-t-3xl" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
-            <div class="space-y-5">
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Question</label>
+        <!-- Dialogs -->
+        <Dialog v-model:visible="showQuestionDialog" modal header="Set Security Question" :style="{ width: '28rem' }" :breakpoints="{ '575px': '90vw' }" :pt="{ root: { class: 'rounded-2xl overflow-hidden' }, header: { class: 'px-6 py-4 border-b border-gray-100' }, content: { class: 'px-6 py-5' }, footer: { class: 'px-6 pb-5 pt-0' } }">
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-600">Your Question</label>
                     <input v-model="questionForm.customQuestion" type="text" class="form-input" placeholder="e.g. What was your first pet's name?">
                 </div>
-                
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Answer</label>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-600">Your Answer</label>
                     <Password v-model="questionForm.answer" toggleMask fluid :feedback="false" placeholder="Enter secure answer" pt:input:class="form-input" />
-                    <p class="text-[10px] text-slate-400 font-medium">Answers are case-insensitive and encrypted.</p>
+                    <p class="text-[10px] text-gray-400">Answers are case-insensitive and encrypted.</p>
                 </div>
             </div>
             <template #footer>
-                <div class="flex gap-3">
-                    <Button @click="showQuestionDialog = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="saveQuestion" :loading="savingQuestion" label="Save Security Question" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
+                <div class="flex gap-3 mt-3">
+                    <button @click="showQuestionDialog = false" class="flex-1 px-4 py-2.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-colors cursor-pointer">Cancel</button>
+                    <button @click="saveQuestion" :disabled="savingQuestion" class="flex-1 px-4 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i v-if="savingQuestion" class="pi pi-spin pi-spinner text-sm"></i>
+                        Save
+                    </button>
                 </div>
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="showCodesDialog" modal header="Recovery Codes" :style="{ width: '36rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0" pt:header:class="p-6 border-b border-gray-100 bg-gray-50/50 rounded-t-3xl" pt:content:class="p-6" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
-            <div class="space-y-6">
-                <div v-if="recoveryCodes.length > 0" class="grid grid-cols-2 gap-3">
-                    <div v-for="(code, index) in recoveryCodes" :key="index" class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl group hover:border-blue-200 transition-colors">
-                        <code class="text-sm font-bold text-slate-700 font-mono tracking-wider">{{ code }}</code>
-                        <button @click="copyToClipboard(code)" class="text-slate-400 hover:text-blue-600 transition-colors">
-                            <i class="pi pi-copy"></i>
+        <Dialog v-model:visible="showCodesDialog" modal header="Recovery Codes" :style="{ width: '34rem' }" :breakpoints="{ '575px': '90vw' }" :pt="{ root: { class: 'rounded-2xl overflow-hidden' }, header: { class: 'px-6 py-4 border-b border-gray-100' }, content: { class: 'px-6 py-5' }, footer: { class: 'px-6 pb-5 pt-0' } }">
+            <div class="space-y-5">
+                <div v-if="recoveryCodes.length > 0" class="grid grid-cols-2 gap-2.5">
+                    <div v-for="(code, index) in recoveryCodes" :key="index" class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl group hover:border-blue-200 transition-colors">
+                        <code class="text-sm font-semibold text-gray-700 font-mono tracking-wider">{{ code }}</code>
+                        <button @click="copyToClipboard(code)" class="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer">
+                            <i class="pi pi-copy text-xs"></i>
                         </button>
                     </div>
                 </div>
-                <div v-else class="text-center py-10">
-                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                        <i class="pi pi-lock text-2xl text-slate-400"></i>
+                <div v-else class="text-center py-8">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-3">
+                        <i class="pi pi-lock text-xl text-gray-400"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900">No Codes Generated</h3>
-                    <p class="text-slate-500 text-sm font-medium mt-1 mb-8">Generate codes to start securing your account.</p>
-                    <Button @click="generateCodes" :loading="generatingCodes" label="Generate Codes" icon="pi pi-key" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold px-8" />
+                    <h3 class="text-sm font-bold text-gray-800">No Codes Generated</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-5">Generate codes to start securing your account.</p>
+                    <button @click="generateCodes" :disabled="generatingCodes" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 mx-auto">
+                        <i v-if="generatingCodes" class="pi pi-spin pi-spinner text-sm"></i>
+                        <i v-else class="pi pi-key text-sm"></i>
+                        Generate Codes
+                    </button>
                 </div>
 
-                <div v-if="recoveryCodes.length > 0" class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3">
-                    <i class="pi pi-info-circle text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
-                    <p class="text-xs text-amber-800 font-medium leading-relaxed">
-                        <strong>Important:</strong> Save these codes in a safe place. Each code can be used once. We recommend downloading them immediately.
+                <div v-if="recoveryCodes.length > 0" class="p-3.5 bg-amber-50 rounded-xl border border-amber-100 flex gap-2.5">
+                    <i class="pi pi-info-circle text-amber-600 text-sm flex-shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-amber-800 leading-relaxed">
+                        <strong>Important:</strong> Save these codes in a safe place. Each code can be used once.
                     </p>
                 </div>
             </div>
             <template #footer v-if="recoveryCodes.length > 0">
-                <div class="flex gap-3 w-full">
-                    <Button @click="downloadCodes" label="Download .txt" icon="pi pi-download" severity="secondary" outlined class="rounded-xl font-bold flex-1" />
-                    <Button @click="confirmRegenerate" label="Regenerate" icon="pi pi-refresh" severity="danger" class="rounded-xl font-bold flex-1" />
+                <div class="flex gap-3 mt-3">
+                    <button @click="downloadCodes" class="flex-1 px-4 py-2.5 text-sm text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-xl font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="pi pi-download text-sm"></i> Download
+                    </button>
+                    <button @click="confirmRegenerate" class="flex-1 px-4 py-2.5 text-sm text-white bg-red-500 hover:bg-red-600 rounded-xl font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                        <i class="pi pi-refresh text-sm"></i> Regenerate
+                    </button>
                 </div>
             </template>
         </Dialog>
 
-        <Dialog v-model:visible="showCropper" modal :header="cropMode === 'avatar' ? 'Crop Profile Photo' : 'Crop Cover Photo'" :style="{ width: '34rem' }" :breakpoints="{ '575px': '90vw' }" pt:root:class="rounded-3xl shadow-2xl border-0 !p-0" pt:header:class="p-6 border-b border-gray-100 rounded-t-3xl" pt:content:class="!p-0" pt:footer:class="p-6 border-t border-gray-100 rounded-b-3xl">
-            <div class="bg-slate-100 flex items-center justify-center py-4" v-if="selectedFile">
+        <Dialog v-model:visible="showCropper" modal :header="cropMode === 'avatar' ? 'Crop Profile Photo' : 'Crop Cover Photo'" :style="{ width: '34rem' }" :breakpoints="{ '575px': '90vw' }" :pt="{ root: { class: 'rounded-2xl overflow-hidden !p-0' }, header: { class: 'px-6 py-4 border-b border-gray-100' }, content: { class: '!p-0' }, footer: { class: 'px-6 py-4 border-t border-gray-100' } }">
+            <div class="bg-gray-100 flex items-center justify-center py-4" v-if="selectedFile">
                 <VuePictureCropper
-                    :boxStyle="{ width: '100%', height: '400px', backgroundColor: '#f1f5f9', margin: 'auto' }"
+                    :boxStyle="{ width: '100%', height: '400px', backgroundColor: '#f3f4f6', margin: 'auto' }"
                     :img="selectedFile"
                     :options="{ 
                         viewMode: 1, 
@@ -506,20 +537,24 @@
             </div>
             <template #footer>
                 <div class="flex gap-3">
-                    <Button @click="showCropper = false" label="Cancel" text severity="secondary" class="rounded-xl font-bold" />
-                    <Button @click="uploadCroppedImage" :loading="uploadingImage" label="Save & Update" icon="pi pi-check" class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 rounded-xl font-bold flex-1 shadow-lg shadow-blue-500/20" />
+                    <button @click="showCropper = false" class="flex-1 px-4 py-2.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold transition-colors cursor-pointer">Cancel</button>
+                    <button @click="uploadCroppedImage" :disabled="uploadingImage" class="flex-1 px-4 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
+                        <i v-if="uploadingImage" class="pi pi-spin pi-spinner text-sm"></i>
+                        <i v-else class="pi pi-check text-sm"></i>
+                        Save & Update
+                    </button>
                 </div>
             </template>
         </Dialog>
 
-        <ConfirmDialog pt:root:class="rounded-3xl shadow-2xl border-0 w-96" pt:header:class="hidden" pt:content:class="p-8 text-center" pt:footer:class="p-6 border-t border-gray-50 flex gap-3 justify-center bg-gray-50 rounded-b-3xl">
+        <ConfirmDialog :pt="{ root: { class: 'rounded-2xl overflow-hidden w-96' }, header: { class: 'hidden' }, content: { class: 'p-8 text-center' }, footer: { class: 'p-5 border-t border-gray-100 flex gap-3 justify-center bg-gray-50' } }">
              <template #message="slotProps">
                 <div class="flex flex-col items-center w-full">
-                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500">
-                        <i :class="slotProps.message.icon" class="text-3xl"></i>
+                    <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mb-3 text-red-500">
+                        <i :class="slotProps.message.icon" class="text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold text-slate-900 mb-2">{{ slotProps.message.header }}</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed">{{ slotProps.message.message }}</p>
+                    <h4 class="text-lg font-bold text-gray-900 mb-1.5">{{ slotProps.message.header }}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed">{{ slotProps.message.message }}</p>
                 </div>
             </template>
         </ConfirmDialog>
@@ -546,7 +581,7 @@ const confirm = useConfirm()
 const profileService = useAxiosUtil()
 
 // State
-const orderTabs = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Completed', 'Cancelled']
+const orderTabs = ['All', 'Processing', 'Confirmed', 'Shipped', 'Completed', 'Cancelled']
 const activeTab = ref('All')
 
 const profileForm = reactive({ full_name: Page.user?.full_name || '' })
@@ -568,6 +603,10 @@ const selectedFile = ref<string | null>(null)
 
 const avatarInput = ref<HTMLInputElement | null>(null)
 const coverInput = ref<HTMLInputElement | null>(null)
+
+// Pagination for orders
+const ordersPerPage = 5
+const orderPage = ref(1)
 
 // Methods
 const triggerAvatarUpload = () => avatarInput.value?.click()
@@ -720,7 +759,7 @@ const downloadCodes = () => {
     toast.success('Codes downloaded.')
 }
 
-const recentOrders = ref<any[]>([]); // Using any[] for now or IOrder if imported
+const recentOrders = ref<any[]>([]);
 const loadingOrders = ref(false);
 
 const loadOrders = async () => {
@@ -730,7 +769,6 @@ const loadOrders = async () => {
         if (profileService.request.status === 200) {
             const data = profileService.request.data;
             if (Array.isArray(data)) {
-                // Store all orders
                 recentOrders.value = data;
             } else {
                 recentOrders.value = [];
@@ -747,46 +785,51 @@ const filteredOrders = computed(() => {
             return ['Completed', 'Delivered'].includes(order.status);
         }
         if (activeTab.value === 'Cancelled') {
-            return ['Cancelled', 'Declined'].includes(order.status);
+            return order.status === 'Cancelled';
         }
         return order.status === activeTab.value;
     });
 });
 
+const paginatedOrders = computed(() => {
+    const start = (orderPage.value - 1) * ordersPerPage;
+    return filteredOrders.value.slice(start, start + ordersPerPage);
+});
+
+const orderTotalPages = computed(() => {
+    return Math.ceil(filteredOrders.value.length / ordersPerPage);
+});
+
+const orderPaginationRange = computed(() => {
+    const range = [];
+    const delta = 2;
+    const left = orderPage.value - delta;
+    const right = orderPage.value + delta + 1;
+    for (let i = 1; i <= orderTotalPages.value; i++) {
+        if (i === 1 || i === orderTotalPages.value || (i >= left && i < right)) {
+            range.push(i);
+        }
+    }
+    return range;
+});
+
 const getTabCount = (tab: string) => {
     if (tab === 'All') return recentOrders.value.length;
     if (tab === 'Completed') return recentOrders.value.filter(o => ['Completed', 'Delivered'].includes(o.status)).length;
-    if (tab === 'Cancelled') return recentOrders.value.filter(o => ['Cancelled', 'Declined'].includes(o.status)).length;
+    if (tab === 'Cancelled') return recentOrders.value.filter(o => o.status === 'Cancelled').length;
     return recentOrders.value.filter(o => o.status === tab).length;
-};
-
-
-
-const getStatusTimelineColor = (status: string) => {
-    switch (status) {
-        case 'Completed':
-        case 'Delivered': return 'bg-emerald-500 text-white';
-        case 'Processing': return 'bg-blue-500 text-white';
-        case 'Shipped': return 'bg-indigo-500 text-white';
-        case 'Confirmed': return 'bg-sky-500 text-white';
-        case 'Pending': return 'bg-amber-400 text-white';
-        case 'Cancelled': 
-        case 'Declined': return 'bg-red-500 text-white';
-        default: return 'bg-slate-300 text-white';
-    }
 };
 
 const getStatusBadgeClass = (status: string) => {
     switch (status) {
         case 'Completed':
-        case 'Delivered': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-        case 'Processing': return 'bg-blue-50 text-blue-600 border-blue-100';
-        case 'Shipped': return 'bg-indigo-50 text-indigo-600 border-indigo-100';
-        case 'Confirmed': return 'bg-sky-50 text-sky-600 border-sky-100';
-        case 'Pending': return 'bg-amber-50 text-amber-600 border-amber-100';
-        case 'Cancelled': 
-        case 'Declined': return 'bg-red-50 text-red-600 border-red-100';
-        default: return 'bg-slate-50 text-slate-600 border-slate-100';
+        case 'Delivered': return 'bg-green-50 text-green-700 border border-green-100';
+        case 'Processing': return 'bg-blue-50 text-blue-700 border border-blue-100';
+        case 'Shipped': return 'bg-purple-50 text-purple-700 border border-purple-100';
+        case 'Confirmed': return 'bg-sky-50 text-sky-700 border border-sky-100';
+        case 'Pending': return 'bg-amber-50 text-amber-700 border border-amber-100';
+        case 'Cancelled': return 'bg-red-50 text-red-700 border border-red-100';
+        default: return 'bg-gray-50 text-gray-700 border border-gray-100';
     }
 };
 
@@ -798,8 +841,7 @@ const getStatusIcon = (status: string) => {
         case 'Shipped': return 'pi-truck';
         case 'Confirmed': return 'pi-thumbs-up';
         case 'Pending': return 'pi-clock';
-        case 'Cancelled': 
-        case 'Declined': return 'pi-times';
+        case 'Cancelled': return 'pi-times';
         default: return 'pi-circle-fill';
     }
 };
@@ -823,64 +865,59 @@ onMounted(() => {
 .form-input {
     width: 100%; 
     background-color: #ffffff; 
-    border: 1px solid #e2e8f0; 
+    border: 1px solid #e5e7eb; 
     border-radius: 0.75rem;
-    padding: 0.75rem 1rem; 
+    padding: 0.625rem 0.875rem; 
+    font-size: 0.875rem;
     font-weight: 500; 
-    color: #0f172a; 
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #111827; 
+    transition: all 0.2s ease;
 }
 .form-input:focus { 
     outline: none; 
     border-color: #3b82f6; 
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08), 0 1px 2px rgba(0,0,0,0.05); 
-    background-color: #fafbff;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15); 
+    background-color: #fff;
 }
-.form-input:hover:not(:focus) {
-    border-color: #cbd5e1;
+.form-input:hover:not(:focus):not(:read-only) {
+    border-color: #d1d5db;
 }
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
 
-/* Order card entrance animation */
-.order-card {
-    animation: orderSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+/* Pagination buttons matching browse page */
+.pagination-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
 }
-@keyframes orderSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.pagination-btn-active {
+    background: white;
+    border: 1px solid #e5e7eb;
+    color: #374151;
 }
-
-/* Floating empty state icon */
-.empty-icon-float {
-    animation: gentleFloat 3s ease-in-out infinite;
+.pagination-btn-active:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
-@keyframes gentleFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+.pagination-btn-current {
+    background: #2563eb;
+    color: white;
+    border: 1px solid #2563eb;
 }
-
-/* Order section entrance */
-.order-section {
-    animation: sectionFadeIn 0.6s ease-out;
-}
-@keyframes sectionFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.pagination-btn-disabled {
+    background: #f9fafb;
+    color: #d1d5db;
+    border: 1px solid #e5e7eb;
+    cursor: not-allowed;
 }
 
-/* Hide scrollbar for tabs */
+/* Scrollbar hide */
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
