@@ -12,11 +12,12 @@
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/30 to-transparent"></div>
 
+            <!-- Cover upload button - top right corner -->
             <button 
                 @click="triggerCoverUpload" 
-                class="absolute top-4 right-4 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl shadow-lg flex items-center gap-2 text-xs font-semibold transition-colors cursor-pointer z-20"
+                class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-[11px] font-medium transition-all cursor-pointer z-20 border border-white/20"
             >
-                <i class="pi pi-camera text-sm"></i>
+                <i class="pi pi-camera text-xs"></i>
                 <span class="hidden sm:inline">Change Cover</span>
             </button>
             <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
@@ -123,143 +124,6 @@
 
                 <!-- Right Column -->
                 <div class="lg:col-span-8 space-y-6">
-                    
-                    <!-- Order History -->
-                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <div>
-                                <h2 class="text-base font-bold text-gray-900">Order History</h2>
-                                <p class="text-xs text-gray-500 mt-0.5">Track the status of your purchases</p>
-                            </div>
-                            <span v-if="recentOrders.length > 0" class="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
-                                {{ filteredOrders.length }} of {{ recentOrders.length }}
-                            </span>
-                        </div>
-
-                        <!-- Status Filter Tabs -->
-                        <div class="px-5 pt-4 pb-0">
-                            <div class="flex items-center gap-1.5 overflow-x-auto pb-3 scrollbar-hide">
-                                <button 
-                                    v-for="tab in orderTabs" 
-                                    :key="tab"
-                                    @click="activeTab = tab; orderPage = 1"
-                                    class="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer"
-                                    :class="activeTab === tab 
-                                        ? 'bg-blue-600 text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                >
-                                    {{ tab }}
-                                    <span v-if="getTabCount(tab) > 0" class="ml-0.5">({{ getTabCount(tab) }})</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="p-5 pt-2">
-                            <!-- Loading Skeleton -->
-                            <div v-if="loadingOrders" class="space-y-3">
-                                <div v-for="n in 3" :key="n" class="animate-pulse bg-gray-50 rounded-xl p-4 flex gap-4">
-                                    <div class="w-14 h-14 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                                    <div class="flex-1 space-y-2 py-1">
-                                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
-                                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                                        <div class="h-3 bg-gray-200 rounded w-1/4"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Order Cards (Paginated) -->
-                            <div v-else-if="filteredOrders.length > 0">
-                                <div class="space-y-3">
-                                    <div 
-                                        v-for="order in paginatedOrders" 
-                                        :key="order.order_id" 
-                                        class="bg-gray-50 hover:bg-gray-100/80 rounded-xl border border-gray-100 hover:border-gray-200 p-4 transition-all"
-                                    >
-                                        <div class="flex items-start justify-between gap-3 mb-3">
-                                            <div>
-                                                <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
-                                                    {{ DateUtil.formatToMonthDayYear(order.created_at) }}
-                                                </p>
-                                                <p class="text-sm font-bold text-gray-800 mt-0.5">Order #{{ String(order.order_id || '').substring(0, 8) }}</p>
-                                            </div>
-                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" :class="getStatusBadgeClass(order.status)">
-                                                {{ order.status }}
-                                            </span>
-                                        </div>
-
-                                        <!-- Product Thumbnails -->
-                                        <div class="flex gap-2 mb-3 overflow-x-auto scrollbar-hide">
-                                            <div 
-                                                v-for="item in order.product_orders" 
-                                                :key="item.product_id" 
-                                                class="w-12 h-12 rounded-lg border border-gray-200 bg-white flex-shrink-0 overflow-hidden"
-                                            >
-                                                <img :src="UrlUtil.getBaseAppUrl(`storage/images/product/${item.product.product_image}`)" class="w-full h-full object-cover">
-                                            </div>
-                                            <div v-if="order.product_orders?.length > 4" class="w-12 h-12 rounded-lg border border-gray-200 bg-white flex-shrink-0 flex items-center justify-center">
-                                                <span class="text-[10px] font-bold text-gray-400">+{{ order.product_orders.length - 4 }}</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="flex items-center justify-between pt-3 border-t border-gray-200/60">
-                                            <span class="text-sm font-bold text-gray-900">₱{{ (Number(order.total_amount) || 0).toLocaleString() }}</span>
-                                            <Button 
-                                                @click="buyAgain(order)" 
-                                                label="Buy again" 
-                                                icon="pi pi-refresh" 
-                                                class="!bg-blue-600 hover:!bg-blue-700 text-white border-0 font-semibold rounded-lg text-xs px-3 py-1.5 cursor-pointer" 
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Pagination -->
-                                <div v-if="orderTotalPages > 1" class="flex justify-center items-center gap-1.5 mt-5 pt-4 border-t border-gray-100">
-                                    <button
-                                        @click="orderPage > 1 && orderPage--"
-                                        :disabled="orderPage === 1"
-                                        class="pagination-btn cursor-pointer"
-                                        :class="orderPage === 1 ? 'pagination-btn-disabled' : 'pagination-btn-active'"
-                                    >
-                                        <i class="pi pi-chevron-left" style="font-size: 0.625rem;"></i>
-                                    </button>
-                                    <button
-                                        v-for="page in orderPaginationRange"
-                                        :key="page"
-                                        @click="orderPage = page"
-                                        class="pagination-btn cursor-pointer"
-                                        :class="orderPage === page ? 'pagination-btn-current' : 'pagination-btn-active'"
-                                    >
-                                        {{ page }}
-                                    </button>
-                                    <button
-                                        @click="orderPage < orderTotalPages && orderPage++"
-                                        :disabled="orderPage === orderTotalPages"
-                                        class="pagination-btn cursor-pointer"
-                                        :class="orderPage === orderTotalPages ? 'pagination-btn-disabled' : 'pagination-btn-active'"
-                                    >
-                                        <i class="pi pi-chevron-right" style="font-size: 0.625rem;"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Empty State -->
-                            <div v-else class="text-center py-12">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                                    <i class="pi pi-shopping-bag text-2xl text-gray-400"></i>
-                                </div>
-                                <h3 class="text-sm font-bold text-gray-800 mb-1">No orders found</h3>
-                                <p class="text-xs text-gray-500 max-w-xs mx-auto mb-5">
-                                    {{ activeTab === 'All' ? 'You haven\'t placed any orders yet.' : `No ${activeTab.toLowerCase()} orders at the moment.` }}
-                                </p>
-                                <router-link :to="{ name: 'customer.browse-products' }">
-                                    <button class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
-                                        Browse Products
-                                    </button>
-                                </router-link>
-                            </div>
-                        </div>
-                    </div>
                     
                     <!-- Delivery Address -->
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -450,6 +314,146 @@
                         </div>
                     </div>
 
+                    <!-- Order History (below security) -->
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="pi pi-shopping-bag text-gray-400 text-xs"></i>
+                                    Order History
+                                </h3>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Track the status of your purchases</p>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span v-if="recentOrders.length > 0" class="text-[10px] font-medium text-gray-400">
+                                    {{ filteredOrders.length }} result{{ filteredOrders.length !== 1 ? 's' : '' }}
+                                </span>
+                                <div class="relative">
+                                    <select
+                                        v-model="activeTab"
+                                        @change="orderPage = 1"
+                                        class="appearance-none bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-300 transition-colors"
+                                    >
+                                        <option v-for="tab in orderTabs" :key="tab" :value="tab">
+                                            {{ tab }}{{ getTabCount(tab) > 0 ? ` (${getTabCount(tab)})` : '' }}
+                                        </option>
+                                    </select>
+                                    <i class="pi pi-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" style="font-size: 0.6rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5">
+                            <!-- Loading -->
+                            <div v-if="loadingOrders" class="space-y-2">
+                                <div v-for="n in 4" :key="n" class="animate-pulse flex items-center gap-3 py-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0"></div>
+                                    <div class="flex-1 space-y-1.5">
+                                        <div class="h-3 bg-gray-100 rounded w-2/5"></div>
+                                        <div class="h-2.5 bg-gray-100 rounded w-1/4"></div>
+                                    </div>
+                                    <div class="h-5 bg-gray-100 rounded-full w-16"></div>
+                                </div>
+                            </div>
+
+                            <!-- Order List -->
+                            <div v-else-if="filteredOrders.length > 0">
+                                <div class="divide-y divide-gray-100">
+                                    <div 
+                                        v-for="order in paginatedOrders" 
+                                        :key="order.order_id" 
+                                        class="flex items-center gap-3 py-3 first:pt-0 last:pb-0 group"
+                                    >
+                                        <!-- Product thumbnail -->
+                                        <div class="w-10 h-10 rounded-lg border border-gray-200 bg-gray-50 flex-shrink-0 overflow-hidden">
+                                            <img 
+                                                v-if="order.product_orders?.[0]?.product?.product_image" 
+                                                :src="UrlUtil.getBaseAppUrl(`storage/images/product/${order.product_orders[0].product.product_image}`)" 
+                                                class="w-full h-full object-cover"
+                                            >
+                                        </div>
+
+                                        <!-- Order info -->
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-medium text-gray-800 truncate">
+                                                {{ getOrderProductNames(order) }}
+                                            </p>
+                                            <p class="text-[11px] text-gray-400 mt-0.5">
+                                                {{ DateUtil.formatToMonthDayYear(order.created_at) }}
+                                                <span class="text-gray-300 mx-1">·</span>
+                                                ₱{{ (Number(order.total_amount) || 0).toLocaleString() }}
+                                            </p>
+                                        </div>
+
+                                        <!-- Status + action -->
+                                        <div class="flex items-center gap-2 flex-shrink-0">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold" :class="getStatusBadgeClass(order.status)">
+                                                {{ order.status }}
+                                            </span>
+                                            <button
+                                                @click="buyAgain(order)" 
+                                                class="opacity-0 group-hover:opacity-100 text-[11px] font-medium text-blue-600 hover:text-blue-700 transition-all cursor-pointer whitespace-nowrap"
+                                                title="Buy again"
+                                            >
+                                                <i class="pi pi-refresh text-[10px]"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div v-if="orderTotalPages > 1" class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+                                    <p class="text-[11px] text-gray-400">
+                                        Page {{ orderPage }} of {{ orderTotalPages }}
+                                    </p>
+                                    <div class="flex items-center gap-1">
+                                        <button
+                                            @click="orderPage > 1 && orderPage--"
+                                            :disabled="orderPage === 1"
+                                            class="w-7 h-7 flex items-center justify-center rounded-md text-xs transition-colors cursor-pointer"
+                                            :class="orderPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'"
+                                        >
+                                            <i class="pi pi-chevron-left" style="font-size: 0.6rem;"></i>
+                                        </button>
+                                        <button
+                                            v-for="page in orderPaginationRange"
+                                            :key="page"
+                                            @click="orderPage = page"
+                                            class="w-7 h-7 flex items-center justify-center rounded-md text-[11px] font-medium transition-colors cursor-pointer"
+                                            :class="orderPage === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                                        >
+                                            {{ page }}
+                                        </button>
+                                        <button
+                                            @click="orderPage < orderTotalPages && orderPage++"
+                                            :disabled="orderPage === orderTotalPages"
+                                            class="w-7 h-7 flex items-center justify-center rounded-md text-xs transition-colors cursor-pointer"
+                                            :class="orderPage === orderTotalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'"
+                                        >
+                                            <i class="pi pi-chevron-right" style="font-size: 0.6rem;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Empty -->
+                            <div v-else class="text-center py-10">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                                    <i class="pi pi-shopping-bag text-lg text-gray-400"></i>
+                                </div>
+                                <h4 class="text-xs font-bold text-gray-700 mb-0.5">No orders found</h4>
+                                <p class="text-[11px] text-gray-400 max-w-xs mx-auto mb-4">
+                                    {{ activeTab === 'All' ? 'You haven\'t placed any orders yet.' : `No ${activeTab.toLowerCase()} orders.` }}
+                                </p>
+                                <router-link :to="{ name: 'customer.browse-products' }">
+                                    <button class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
+                                        Browse Products
+                                    </button>
+                                </router-link>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -605,7 +609,7 @@ const avatarInput = ref<HTMLInputElement | null>(null)
 const coverInput = ref<HTMLInputElement | null>(null)
 
 // Pagination for orders
-const ordersPerPage = 5
+const ordersPerPage = 6
 const orderPage = ref(1)
 
 // Methods
@@ -801,7 +805,7 @@ const orderTotalPages = computed(() => {
 });
 
 const orderPaginationRange = computed(() => {
-    const range = [];
+    const range: number[] = [];
     const delta = 2;
     const left = orderPage.value - delta;
     const right = orderPage.value + delta + 1;
@@ -820,29 +824,26 @@ const getTabCount = (tab: string) => {
     return recentOrders.value.filter(o => o.status === tab).length;
 };
 
+const getOrderProductNames = (order: any) => {
+    if (!order.product_orders || order.product_orders.length === 0) return 'Order';
+    const names = order.product_orders.map((po: any) => po.product?.product_name || 'Item').slice(0, 2);
+    const remaining = order.product_orders.length - 2;
+    if (remaining > 0) {
+        return names.join(', ') + ` +${remaining} more`;
+    }
+    return names.join(', ');
+};
+
 const getStatusBadgeClass = (status: string) => {
     switch (status) {
         case 'Completed':
-        case 'Delivered': return 'bg-green-50 text-green-700 border border-green-100';
-        case 'Processing': return 'bg-blue-50 text-blue-700 border border-blue-100';
-        case 'Shipped': return 'bg-purple-50 text-purple-700 border border-purple-100';
-        case 'Confirmed': return 'bg-sky-50 text-sky-700 border border-sky-100';
-        case 'Pending': return 'bg-amber-50 text-amber-700 border border-amber-100';
-        case 'Cancelled': return 'bg-red-50 text-red-700 border border-red-100';
-        default: return 'bg-gray-50 text-gray-700 border border-gray-100';
-    }
-};
-
-const getStatusIcon = (status: string) => {
-    switch (status) {
-        case 'Completed':
-        case 'Delivered': return 'pi-check';
-        case 'Processing': return 'pi-cog pi-spin';
-        case 'Shipped': return 'pi-truck';
-        case 'Confirmed': return 'pi-thumbs-up';
-        case 'Pending': return 'pi-clock';
-        case 'Cancelled': return 'pi-times';
-        default: return 'pi-circle-fill';
+        case 'Delivered': return 'bg-green-50 text-green-700';
+        case 'Processing': return 'bg-blue-50 text-blue-700';
+        case 'Shipped': return 'bg-purple-50 text-purple-700';
+        case 'Confirmed': return 'bg-sky-50 text-sky-700';
+        case 'Pending': return 'bg-amber-50 text-amber-700';
+        case 'Cancelled': return 'bg-red-50 text-red-700';
+        default: return 'bg-gray-50 text-gray-700';
     }
 };
 
@@ -883,39 +884,6 @@ onMounted(() => {
     border-color: #d1d5db;
 }
 :deep(.p-password-input) { border-radius: 0.75rem !important; }
-
-/* Pagination buttons matching browse page */
-.pagination-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    transition: all 0.15s ease;
-}
-.pagination-btn-active {
-    background: white;
-    border: 1px solid #e5e7eb;
-    color: #374151;
-}
-.pagination-btn-active:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
-}
-.pagination-btn-current {
-    background: #2563eb;
-    color: white;
-    border: 1px solid #2563eb;
-}
-.pagination-btn-disabled {
-    background: #f9fafb;
-    color: #d1d5db;
-    border: 1px solid #e5e7eb;
-    cursor: not-allowed;
-}
 
 /* Scrollbar hide */
 .scrollbar-hide {
