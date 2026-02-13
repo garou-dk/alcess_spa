@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-screen bg-gray-50" :class="getResponsivePadding()">
-        <div class="mx-auto max-w-6xl">
+    <div class="min-h-screen bg-gray-50 overflow-x-hidden" :class="getResponsivePadding()">
+        <div class="mx-auto max-w-6xl w-full px-1 sm:px-0">
             <!-- Header -->
             <div class="mb-6 flex items-center gap-3">
                 <button
@@ -37,13 +37,13 @@
             </div>
 
             <!-- Cart Content -->
-            <div v-else class="grid gap-6 lg:grid-cols-3">
+            <div v-else class="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
 
                 <!-- Cart Items Column -->
                 <div class="lg:col-span-2 space-y-0">
 
                     <!-- Select All Bar -->
-                    <div class="bg-white rounded-t-2xl border border-gray-200 px-5 py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                    <div class="bg-white rounded-t-2xl border border-gray-200 px-3 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                         <div class="flex items-center gap-3">
                             <Checkbox
                                 v-model="selectAll"
@@ -76,7 +76,7 @@
                             :key="cart.cart_id"
                             class="p-5 hover:bg-gray-50/50 transition-colors"
                         >
-                            <div class="flex items-start gap-4">
+                            <div class="flex items-start gap-2 sm:gap-4">
                                 <!-- Checkbox -->
                                 <Checkbox
                                     v-model="form.carts[index].checked"
@@ -145,7 +145,7 @@
                                     </p>
 
                                     <!-- Quantity Controls & Delete -->
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between flex-wrap gap-2">
                                         <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                                             <button
                                                 type="button"
@@ -258,6 +258,9 @@
             </div>
         </div>
 
+        <!-- Footer -->
+        <Footer class="mt-8" />
+
         <!-- Checkout Dialog -->
         <Dialog
             v-model:visible="showCheckout"
@@ -288,6 +291,7 @@
 
 <script setup lang="ts">
 import CheckoutForm from "@/components/forms/CheckoutForm.vue";
+import Footer from "@/components/Footer.vue";
 import { CartInterface } from "@/interfaces/CartInterface";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import useAxiosUtil from "@/utils/AxiosUtil";

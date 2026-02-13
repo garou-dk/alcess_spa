@@ -554,6 +554,9 @@
                 </div>
             </template>
         </ConfirmDialog>
+
+        <!-- Footer -->
+        <Footer class="mt-8" />
     </div>
 </template>
 
@@ -571,6 +574,7 @@ import {
 } from 'primevue'
 import DateUtil from '@/utils/DateUtil'
 import Logo from "@/../img/logo.png"
+import Footer from '@/components/Footer.vue'
 
 const toast = useToast()
 const confirm = useConfirm()

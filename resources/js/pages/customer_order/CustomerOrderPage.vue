@@ -266,6 +266,9 @@
             />
         </Dialog>
 
+        <!-- Footer -->
+        <Footer class="mt-8" />
+
     </div>
 </template>
 
@@ -276,6 +279,7 @@ import MarkAsDelivered from '@/components/forms/MarkAsDelivered.vue';
 import PaymentForm from '@/components/forms/PaymentForm.vue';
 import RateForm from '@/components/forms/RateForm.vue';
 import OrderCard from '@/components/list/OrderCard.vue';
+import Footer from '@/components/Footer.vue';
 import { IOrder } from '@/interfaces/IOrder';
 import { IOrderNotification } from '@/interfaces/IOrderNotification';
 import IProductOrder from '@/interfaces/IProductOrder';

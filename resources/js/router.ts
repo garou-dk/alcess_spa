@@ -196,7 +196,7 @@ router.beforeEach(async (to, _from, next) => {
 
         if (
             Array.isArray(to.meta.access) &&
-            to.meta.access.includes(Page.user.role.role_name)
+            (to.meta.access.includes(Page.user.role.role_name) || to.meta.access.includes(null))
         ) {
             // console.log("User has access, proceeding to route");
             next();

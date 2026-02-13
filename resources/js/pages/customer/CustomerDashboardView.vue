@@ -264,23 +264,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Newsletter Section -->
-        <section class="newsletter-section">
-            <div class="container">
-                <div class="newsletter-card">
-                    <div class="newsletter-content">
-                        <h3>Join the Tech Community</h3>
-                        <p>Subscribe to get notified about new arrivals, exclusive deals, and tech tips.</p>
-                    </div>
-                    <form class="newsletter-form" @submit.prevent>
-                        <input type="email" placeholder="Enter your email address" required />
-                        <button type="submit" class="btn-primary">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
         <!-- Footer -->
         <Footer />
     </div>

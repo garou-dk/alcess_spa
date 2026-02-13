@@ -41,7 +41,7 @@
                         <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold overflow-hidden">
                             <img
                                 v-if="user.image"
-                                :src="user.image"
+                                :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${user.image}`)"
                                 alt="Avatar"
                                 class="w-full h-full object-cover"
                             />
@@ -76,7 +76,7 @@
                 <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold overflow-hidden mb-4 shadow-sm border-2 border-white">
                     <img
                         v-if="selectedRecentUser?.image"
-                        :src="selectedRecentUser.image"
+                        :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${selectedRecentUser.image}`)"
                         alt="Avatar"
                         class="w-full h-full object-cover"
                     />
@@ -172,6 +172,7 @@ import {
 import { UserInterface } from "@/interfaces/UserInterface";
 import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
+import UrlUtil from "@/utils/UrlUtil";
 import { reactive, ref, onMounted, nextTick } from "vue";
 import Dialog from "primevue/dialog";
 import { useRouter } from "vue-router";
@@ -246,7 +247,7 @@ const saveRecentLogin = (user: UserInterface) => {
             user_id: user.user_id,
             full_name: user.full_name,
             email: user.email,
-            image: user.image,
+            image: user.profile_picture || user.image,
             last_login_at: new Date().toISOString(),
         };
         const updated = [entry, ...filtered].slice(0, 5);

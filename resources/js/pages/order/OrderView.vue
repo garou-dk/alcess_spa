@@ -248,11 +248,6 @@
                             </div>
                         </template>
                     </Column>
-                    <Column field="order_public_id" header="Order ID" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="text-xs font-medium text-gray-700">{{ data.order_public_id }}</span>
-                        </template>
-                    </Column>
                     <Column header="Product Name">
                         <template #body="{ data }">
                             <div class="flex flex-col gap-1">

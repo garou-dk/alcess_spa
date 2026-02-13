@@ -17,6 +17,7 @@ interface UserInterface {
     created_at: string;
     updated_at: string;
     address: IAddress | null;
+    profile_picture: string | null;
 }
 
 interface UserSearchInterface extends SearchInterface {

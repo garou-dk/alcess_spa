@@ -272,7 +272,13 @@
                     <i class="pi pi-map-marker text-3xl sm:text-4xl text-red-600"></i>
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">No Address Set</h3>
-                <p class="text-sm sm:text-base text-gray-600">Please set your delivery address before placing an order.</p>
+                <p class="text-sm sm:text-base text-gray-600 mb-5">Please set your delivery address before placing an order.</p>
+                <Button
+                    label="Set Address"
+                    icon="pi pi-map-marker"
+                    class="!bg-blue-600 hover:!bg-blue-700 !border-blue-600 text-white font-semibold px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200"
+                    @click="router.push({ name: 'customer.profile' })"
+                />
             </div>
         </div>
 
