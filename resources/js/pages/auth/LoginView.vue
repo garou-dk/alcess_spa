@@ -18,7 +18,9 @@
                     <div class="mb-8 flex justify-center transform hover:scale-110 transition-transform duration-700">
                         <img :src="Logo" alt="Alcess Logo" class="h-48 w-auto drop-shadow-2xl" />
                     </div>
-                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Elevate Your Tech</h1>
+                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4 h-10">
+                        <BinaryCodeText text="Elevate Your Tech" />
+                    </h1>
                     <p class="text-slate-600 max-w-sm mx-auto leading-relaxed">
                         Join the future of retail with Alcess. Premium products, seamless experience.
                     </p>
@@ -77,6 +79,7 @@
 </template>
 
 <script setup lang="ts">
+import BinaryCodeText from "@/components/BinaryCodeText.vue";
 import Logo from "@/../img/logo.png";
 import LoginForm from "@/components/forms/LoginForm.vue";
 import NavBar from "@/components/NavBar.vue";

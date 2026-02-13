@@ -18,7 +18,9 @@
                     <div class="mb-8 flex justify-center transform hover:scale-110 transition-transform duration-700">
                         <img :src="Logo" alt="Alcess Logo" class="h-48 w-auto drop-shadow-2xl" />
                     </div>
-                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Restore Access</h1>
+                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4 h-10">
+                        <BinaryCodeText text="Restore Access" />
+                    </h1>
                     <p class="text-slate-600 max-w-sm mx-auto leading-relaxed">
                         Don't worry, we'll help you get back to your account in just a few steps.
                     </p>
@@ -278,6 +280,7 @@
 </template>
 
 <script setup lang="ts">
+import BinaryCodeText from "@/components/BinaryCodeText.vue";
 import { reactive, ref, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
