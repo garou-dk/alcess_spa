@@ -1,5 +1,5 @@
 <template>
-<template>
+
     <div class="min-h-screen bg-gray-50 flex flex-col">
         <div class="flex-grow" :class="getResponsiveClasses({
             mobile: 'p-3 pb-24',
