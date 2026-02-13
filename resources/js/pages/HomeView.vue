@@ -3,7 +3,7 @@
         <!-- Header -->
         <NavBar 
             v-if="$route.name === 'home'" 
-            mode="guest" 
+            :mode="navbarMode" 
             :transparent="false" 
         />
 
@@ -282,7 +282,14 @@ import CurrencyUtil from "@/utils/CurrencyUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
 
+import Page from "@/stores/Page";
 const { isMobile } = useResponsive();
+const navbarMode = computed(() => {
+    if (!Page.user) return 'guest';
+    const customerRoles = ['Customer', 'Client']; // Adjust based on your role names
+    return customerRoles.includes(Page.user.role?.role_name) ? 'customer' : 'guest';
+});
+
 const appName = import.meta.env.VITE_APP_NAME;
 
 const CategoryStore = useCategoryStore();

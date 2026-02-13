@@ -228,40 +228,6 @@ interface Notification {
     color: string;
 }
 
-const activeTab = ref<'all' | 'unread'>('all');
-
-const notifications = ref<IOrderNotification[]>([
-]);
-
-const unreadCount = computed(() => {
-    return notifications.value.filter(n => !n.is_read).length;
-});
-
-const filteredNotifications = computed(() => {
-    if (activeTab.value === 'unread') {
-        return notifications.value.filter(n => !n.is_read);
-    }
-    return notifications.value;
-});
-
-const openAvatar = (event: Event) => {
-    if (avatarElement.value) {
-        avatarElement.value.toggle(event);
-    }
-};
-
-const openNotifications = (event: Event) => {
-    if (notificationElement.value) {
-        if (isNotificationOpen.value) {
-            notificationElement.value.hide();
-            isNotificationOpen.value = false;
-        } else {
-            notificationElement.value.show(event);
-            isNotificationOpen.value = true;
-        }
-    }
-};
-
 const isNotificationOpen = ref(false);
 let clickOutsideListener: ((event: MouseEvent) => void) | null = null;
 
@@ -293,31 +259,7 @@ const onNotificationShow = () => {
     }, 100);
 };
 
-const onNotificationHide = () => {
-    isNotificationOpen.value = false;
-    if (clickOutsideListener) {
-        document.removeEventListener('click', clickOutsideListener);
-        clickOutsideListener = null;
-    }
-};
 
-const submitMarkReadService = useAxiosUtil();
-
-const markAsRead = async (id: number) => {
-    const notification = notifications.value.find(n => n.order_notification_id === id);
-    if (notification && !notification.is_read) {
-        notification.is_read = true;
-    }
-    notificationElement.value?.hide();
-    isNotificationOpen.value = false;
-    router.push({ name: 'customer.order.index' });
-    await submitMarkReadService.patch(`customer/order-notifications/mark-as-read/${notification.order_notification_id}`, null).then(() => {
-    });
-};
-
-const markAllAsRead = () => {
-    notifications.value.forEach(n => n.is_read = true);
-};
 
 const openAddressForm = () => {
     addressForm.value = true;
@@ -390,18 +332,7 @@ const handleSearch = () => {
     }
 };
 
-const loadService = useAxiosUtil<null, IOrderNotification[]>();
-const toast = useToast();
 
-const loadNotifications = async () => {
-    await loadService.get("customer/order-notifications").then(() => {
-        if (loadService.request.status === 200 && loadService.request.data) {
-            notifications.value = loadService.request.data;
-        } else {
-            toast.error(loadService.request.message ?? "Failed to load notifications");
-        }
-    });
-};
 
 // Check if the user needs to set up their address
 const checkAddressSetup = () => {

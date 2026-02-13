@@ -182,6 +182,9 @@
                                             </router-link>
                                         </template>
                                         <template v-else>
+                                            <router-link :to="{ name: 'customer.home.index' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-50">
+                                                <i class="pi pi-th-large mr-2 text-blue-500"></i> Dashboard
+                                            </router-link>
                                             <router-link :to="{ name: 'customer.profile' }" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <i class="pi pi-user mr-2 text-blue-500"></i> Profile
                                             </router-link>
@@ -388,6 +391,8 @@ const toggleSidebar = () => {
 const goHome = () => {
     if (props.mode === 'admin') {
         router.push({ name: 'admin.dashboard.index' });
+    } else if (Page.user && (Page.user.role?.role_name === 'Customer' || getStoreCustomers().includes(Page.user.role?.role_name as RoleEnum))) {
+        router.push({ name: 'customer.home.index' });
     } else {
         router.push({ name: 'home' });
     }
