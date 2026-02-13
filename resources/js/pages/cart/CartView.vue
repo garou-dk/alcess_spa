@@ -71,14 +71,118 @@
                                 :key="cart.cart_id"
                                 class="p-4 sm:p-5 hover:bg-gray-50/50 transition-colors group relative"
                             > 
-                                <CartItem :cart="cart" :index="index" 
-                                    @add-quantity="addQuantity(index, cart.product.product_quantity)"
-                                    @remove-quantity="removeQuantity(index)"
-                                    @validate-quantity="validateQuantity(index, cart.product.product_quantity)"
-                                    @remove-single-item="removeSingleItem(index)"
-                                    v-model:checked="form.carts[index].checked"
-                                    v-model:quantity="form.carts[index].quantity"
-                                />
+                                <div class="flex items-start gap-2 sm:gap-4">
+                                    <!-- Checkbox -->
+                                    <Checkbox
+                                        v-model="form.carts[index].checked"
+                                        :binary="true"
+                                        class="cart-checkbox mt-2"
+                                        @change="toggleSelectAll"
+                                    />
+
+                                    <!-- Product Image -->
+                                    <div class="flex-shrink-0">
+                                        <div :class="getResponsiveClasses({
+                                            mobile: 'h-20 w-20',
+                                            tablet: 'h-24 w-24',
+                                            desktop: 'h-24 w-24'
+                                        })" class="overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                                            <img
+                                                v-if="cart.product.product_image"
+                                                :src="UrlUtil.getBaseAppUrl(`storage/images/product/${cart.product.product_image}`)"
+                                                :alt="cart.product.product_name"
+                                                class="h-full w-full object-cover"
+                                            />
+                                            <div v-else class="flex h-full w-full items-center justify-center">
+                                                <i class="pi pi-image text-2xl text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Info -->
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-bold text-gray-900 line-clamp-2 leading-snug mb-1" :class="getResponsiveClasses({
+                                            mobile: 'text-sm',
+                                            tablet: 'text-base',
+                                            desktop: 'text-base'
+                                        })">
+                                            {{ cart.product.product_name }}
+                                        </h3>
+
+                                        <!-- Stock & Rating -->
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <span class="text-xs text-green-600 flex items-center gap-1 font-medium">
+                                                <i class="pi pi-check-circle text-[10px]"></i>
+                                                {{ cart.product.product_quantity }} in stock
+                                            </span>
+                                            <span class="text-gray-300">•</span>
+                                            <div class="flex items-center gap-1">
+                                                <i
+                                                    v-for="star in 5"
+                                                    :key="star"
+                                                    :class="star <= Math.round(Number(cart.product.rates_avg_rate) || 0)
+                                                        ? 'pi pi-star-fill text-yellow-400'
+                                                        : 'pi pi-star text-gray-300'"
+                                                    class="text-[10px]"
+                                                ></i>
+                                                <span class="text-xs text-gray-500 ml-0.5">
+                                                    {{ cart.product.rates_avg_rate ? Number(cart.product.rates_avg_rate).toFixed(1) : '0.0' }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <p class="font-bold text-gray-900 mb-3" :class="getResponsiveClasses({
+                                            mobile: 'text-base',
+                                            tablet: 'text-lg',
+                                            desktop: 'text-lg'
+                                        })">
+                                            {{ CurrencyUtil.formatCurrency(cart.product.product_price) }}
+                                        </p>
+
+                                        <!-- Quantity Controls & Delete -->
+                                        <div class="flex items-center justify-between flex-wrap gap-2">
+                                            <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                                                <button
+                                                    type="button"
+                                                    @click="removeQuantity(index)"
+                                                    :disabled="form.carts[index].quantity <= 1"
+                                                    class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                                >
+                                                    <i class="pi pi-minus text-xs"></i>
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    v-model.number="form.carts[index].quantity"
+                                                    :min="1"
+                                                    :max="cart.product.product_quantity"
+                                                    class="w-10 h-8 text-center font-semibold text-sm border-x border-gray-200 focus:outline-none bg-white qty-input"
+                                                    @input="validateQuantity(index, cart.product.product_quantity)"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    @click="addQuantity(index, cart.product.product_quantity)"
+                                                    :disabled="form.carts[index].quantity >= cart.product.product_quantity"
+                                                    class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                                >
+                                                    <i class="pi pi-plus text-xs"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="flex items-center gap-3">
+                                                <span class="font-bold text-blue-600 hidden sm:block">
+                                                    {{ CurrencyUtil.formatCurrency(cart.product.product_price * form.carts[index].quantity) }}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    @click="removeSingleItem(index)"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                >
+                                                    <i class="pi pi-trash text-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,7 +272,7 @@
 <script setup lang="ts">
 import CheckoutForm from "@/components/forms/CheckoutForm.vue";
 import Footer from "@/components/Footer.vue";
-import CartItem from "@/components/CartItem.vue"; // Assuming this exists or I should inline it? Wait, Step 312 had inlined code in previous version?
+
 // Step 306 ReplacementContent had `<CartItem>` component usage!
 // But Step 312 Original content had INLINED content for cart items.
 // I must have replaced inlined content with component usage in Step 306, but I didn't verify CartItem exists.
