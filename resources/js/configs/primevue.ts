@@ -22,7 +22,7 @@ const config = {
             },
         }),
         options: {
-            darkModeSelector: '.dark',
+            darkModeSelector: false,
         },
     },
     pt: {

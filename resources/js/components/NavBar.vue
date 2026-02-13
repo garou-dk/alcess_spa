@@ -1,5 +1,5 @@
 <template>
-    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-sm']">
+    <header :class="['w-full z-50 transition-all duration-300', transparent ? 'fixed top-0 left-0' : 'sticky top-0', transparent && !isScrolled ? 'bg-transparent' : 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm']">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Admin Sidebar Toggle & Logo -->
@@ -43,13 +43,6 @@
                         </div>
                     </div>
                     
-                    <!-- Theme Toggle -->
-                    <button @click="themeStore.toggleTheme" 
-                        :class="['p-2 rounded-full transition-all border-2 flex items-center justify-center w-10 h-10', 
-                            transparent && !isScrolled ? 'text-white border-white/30 hover:bg-white hover:text-blue-600 hover:border-white' : 'text-slate-600 border-slate-200 hover:bg-slate-100 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800']">
-                        <i :class="['pi text-lg font-bold', themeStore.isDark ? 'pi-sun' : 'pi-moon']"></i>
-                    </button>
-
                     <template v-if="Page.user">
                         <!-- Notifications -->
                         <div v-if="mode === 'customer' || mode === 'admin'" class="relative">
@@ -255,15 +248,10 @@
                                 <img v-if="userImage" :src="userImage" class="w-full h-full object-cover" />
                                 <span v-else>{{ userInitials }}</span>
                             </Avatar>
-                            <div class="flex-1">
-                                <p class="font-bold text-slate-900 dark:text-white">{{ Page.user.full_name }}</p>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ Page.user.email }}</p>
+                            <div>
+                                <p class="font-bold text-slate-900">{{ Page.user.full_name }}</p>
+                                <p class="text-sm text-slate-500">{{ Page.user.email }}</p>
                             </div>
-                            <!-- Theme Toggle Mobile -->
-                             <button @click="themeStore.toggleTheme" 
-                                class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                <i :class="['pi text-lg', themeStore.isDark ? 'pi-sun' : 'pi-moon']"></i>
-                            </button>
                         </div>
                          <template v-if="mode === 'admin'">
                              <router-link :to="{ name: 'admin.dashboard.index' }" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600">
@@ -313,12 +301,9 @@ import useAxiosUtil from '@/utils/AxiosUtil';
 import { useToast } from 'vue-toastification';
 import { useEcho } from "@laravel/echo-vue";
 import { IOrderNotification } from "@/interfaces/IOrderNotification";
-import { RoleEnum, getStoreRoles, getStoreCustomers } from "@/enums/RoleEnum";
+import { RoleEnum, getStoreRoles } from "@/enums/RoleEnum";
 import { useChatStore } from "@/stores/ChatStore";
-import { useThemeStore } from "@/stores/ThemeStore";
 import type { UserInterface } from "@/interfaces/UserInterface";
-
-const themeStore = useThemeStore();
 
 const props = defineProps<{
     mode?: 'guest' | 'auth' | 'customer' | 'admin';

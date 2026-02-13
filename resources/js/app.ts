@@ -54,9 +54,4 @@ app.component("Vue3Barcode", Vue3Barcode);
 app.component("InputForm", InputForm);
 app.component("PageLoader", PageLoader);
 app.component("BoxShadow", BoxShadow);
-
-// Initialize Theme
-import { useThemeStore } from "@/stores/ThemeStore";
-useThemeStore();
-
 app.mount("#app");
