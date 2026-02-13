@@ -1,10 +1,11 @@
 <template>
-    <div :class="getResponsiveClasses({
-        // Extra bottom padding to avoid overlap with floating action menu / chat
-        mobile: 'p-3 bg-gray-50 min-h-screen pb-24',
-        tablet: 'p-4 bg-gray-50 min-h-screen pb-24',
-        desktop: 'p-5 bg-gray-50 min-h-screen pb-24'
-    })">
+<template>
+    <div class="min-h-screen bg-gray-50 flex flex-col">
+        <div class="flex-grow" :class="getResponsiveClasses({
+            mobile: 'p-3 pb-24',
+            tablet: 'p-4 pb-24',
+            desktop: 'p-5 pb-24'
+        })">
         <!-- Navigation Tabs -->
         <div :class="getResponsiveClasses({
             mobile: 'card mb-4 bg-white p-3 rounded-lg shadow-sm',
@@ -266,6 +267,7 @@
             />
         </Dialog>
 
+        </div>
         <!-- Footer -->
         <Footer class="mt-8" />
 

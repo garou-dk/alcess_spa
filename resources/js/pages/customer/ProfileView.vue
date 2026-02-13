@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 pb-20">
+    <div class="min-h-screen bg-gray-50 flex flex-col">
         <!-- Cover Section -->
         <div class="relative group h-56 md:h-72 w-full overflow-hidden bg-gray-900">
             <img 
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-16 relative z-10">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-16 relative z-10 pb-20 flex-grow">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <!-- Left Column -->

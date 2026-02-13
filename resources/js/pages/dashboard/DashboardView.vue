@@ -49,16 +49,17 @@
             <div id="new-orders-section" class="scroll-mt-28">
                 <PendingReport />
             </div>
+            <!-- Best Selling Products -->
+            <div id="best-selling-products-section" class="scroll-mt-28">
+                <TopSoldProducts />
+            </div>
+
 
             <!-- Main Transaction/Orders Section -->
             <div id="confirmed-orders-section" class="scroll-mt-28">
                 <DashboardOrdersTable />
             </div>
 
-            <!-- Best Selling Products -->
-            <div id="best-selling-products-section" class="scroll-mt-28">
-                <TopSoldProducts />
-            </div>
 
             <!-- Charts Section - Side by Side -->
             <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
