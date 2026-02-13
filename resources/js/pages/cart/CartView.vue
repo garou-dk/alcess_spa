@@ -77,7 +77,7 @@
                                         v-model="form.carts[index].checked"
                                         :binary="true"
                                         class="cart-checkbox mt-2"
-                                        @change="toggleSelectAll"
+                                        @change="checkIfAllSelected"
                                     />
 
                                     <!-- Product Image -->
@@ -225,7 +225,7 @@
                                 icon="pi pi-lock"
                                 class="w-full font-bold py-3.5 mb-3 shadow-lg shadow-blue-500/20"
                                 :disabled="!hasSelectedItems"
-                                @click="showCheckout = true"
+                                @click="checkoutItems"
                                 size="large"
                                 pt:root:class="bg-blue-600 border-none hover:bg-blue-700 rounded-xl"
                             />
@@ -330,6 +330,14 @@ const toggleSelectAll = () => {
     form.carts.forEach((cart) => {
         cart.checked = selectAll.value;
     });
+};
+
+const checkIfAllSelected = () => {
+    if (form.carts.length === 0) {
+        selectAll.value = false;
+        return;
+    }
+    selectAll.value = form.carts.every(cart => cart.checked);
 };
 
 const checkoutItems = () => {
