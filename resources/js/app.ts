@@ -15,7 +15,7 @@ import { configureEcho } from "@laravel/echo-vue";
 // This suppresses the console warnings about non-passive touch event listeners
 if (typeof window !== 'undefined') {
     const originalAddEventListener = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type, listener, options) {
+    EventTarget.prototype.addEventListener = function (type, listener, options) {
         // Make touch events passive by default to improve mobile performance
         if (type === 'touchstart' || type === 'touchmove' || type === 'touchend') {
             if (typeof options === 'boolean') {
@@ -54,4 +54,9 @@ app.component("Vue3Barcode", Vue3Barcode);
 app.component("InputForm", InputForm);
 app.component("PageLoader", PageLoader);
 app.component("BoxShadow", BoxShadow);
+
+// Initialize Theme
+import { useThemeStore } from "@/stores/ThemeStore";
+useThemeStore();
+
 app.mount("#app");

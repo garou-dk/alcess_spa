@@ -134,7 +134,8 @@ html {
 }
 
 body {
-    background-color: #f5f5f5;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     font-family: 'Poppins', sans-serif;
 }
 

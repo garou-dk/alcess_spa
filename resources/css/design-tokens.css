@@ -1,20 +1,28 @@
 :root {
   /* Typography */
   --font-family-primary: 'Poppins', sans-serif;
-  
+
   /* Primary Colors */
   --color-primary: #2563EB;
   --color-primary-hover: #1D4ED8;
   --color-primary-light: #DBEAFE;
-  
-  /* Neutral Colors */
+
+  /* Semantic Backgrounds & Text */
+  --bg-main: #FFFFFF;
+  --bg-surface: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --text-main: #111827;
+  --text-muted: #6B7280;
+  --border-color: #E5E7EB;
+
+  /* Neutral Colors (Legacy) */
   --color-gray-50: #F9FAFB;
   --color-gray-100: #F3F4F6;
   --color-gray-200: #E5E7EB;
   --color-gray-500: #6B7280;
   --color-gray-700: #374151;
   --color-gray-900: #111827;
-  
+
   /* Spacing Scale */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -22,19 +30,19 @@
   --spacing-lg: 16px;
   --spacing-xl: 24px;
   --spacing-2xl: 32px;
-  
+
   /* Border Radius */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  
+
   /* Typography Scale */
   --font-size-xs: 12px;
   --font-size-sm: 14px;
@@ -43,15 +51,32 @@
   --font-size-xl: 20px;
   --font-size-2xl: 24px;
   --font-size-3xl: 30px;
-  
+
   /* Font Weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   /* Line Heights */
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
+}
+
+.dark {
+  --bg-main: #0B0E14;
+  --bg-surface: #121721;
+  --bg-card: #1A202C;
+  --text-main: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --border-color: #2D3748;
+
+  /* Override Gray Scale for Dark Mode */
+  --color-gray-50: #121721;
+  --color-gray-100: #1A202C;
+  --color-gray-200: #2D3748;
+  --color-gray-500: #9CA3AF;
+  --color-gray-700: #E5E7EB;
+  --color-gray-900: #F9FAFB;
 }
