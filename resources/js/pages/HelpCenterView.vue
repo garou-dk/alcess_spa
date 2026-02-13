@@ -60,13 +60,22 @@
                 </div>
             </div>
 
-            <!-- Contact Support -->
-            <div class="mt-12 text-center">
-                <p class="text-gray-600 mb-4">Still need help?</p>
-                <button class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2">
-                    <i class="pi pi-envelope"></i>
-                    Contact Support
-                </button>
+            <!-- Verified Account Details -->
+            <div class="mt-12 text-center bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 mb-4 text-green-600">
+                    <i class="pi pi-verified text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Verified Account Information</h3>
+                <p class="text-sm text-gray-500 mb-4">Your account is secured and verified with the following credential:</p>
+                <div class="inline-block px-6 py-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <p class="text-sm font-semibold text-blue-600 flex items-center gap-2">
+                        <i class="pi pi-envelope"></i>
+                        {{ Page.user?.email }}
+                    </p>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-4 italic">
+                    This email was verified during your registration process.
+                </p>
             </div>
         </div>
     </div>
@@ -75,6 +84,7 @@
 <script setup lang="ts">
 import NavBar from "@/components/NavBar.vue";
 import { ref } from 'vue';
+import Page from '@/stores/Page';
 
 const faqs = ref([
     {

@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Database\Eloquent\Builder::macro('whereLike', function ($attributes, $searchTerm) {
             $this->where(function ($query) use ($attributes, $searchTerm) {
-                foreach (array_wrap($attributes) as $attribute) {
+                foreach (\Illuminate\Support\Arr::wrap($attributes) as $attribute) {
                     $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
                 }
             });

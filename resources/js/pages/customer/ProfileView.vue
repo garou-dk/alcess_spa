@@ -22,12 +22,7 @@
             </button>
             <input type="file" ref="coverInput" class="hidden" @change="onCoverChange" accept="image/*">
 
-            <div class="absolute inset-x-0 bottom-0 pb-5">
-                <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-                    <h1 class="text-lg md:text-xl font-bold text-white">My Profile</h1>
-                    <p class="text-sm text-white/70 mt-0.5">Manage your account settings and preferences</p>
-                </div>
-            </div>
+            <!-- Removed Profile Header Text -->
         </div>
 
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 -mt-16 relative z-10 pb-20 flex-grow">

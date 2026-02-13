@@ -21,6 +21,7 @@
                                 v-model="form.search"
                                 type="text"
                                 placeholder="Search products..."
+                                @keyup.enter="handleSearch"
                                 :class="getResponsiveTextSize('sm') + ' w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all'"
                             />
                             <button
@@ -692,7 +693,8 @@ const load = async () => {
     loading.value = true;
     await loadService.get('products/search', form).then(() => {
         if (loadService.request.status === 200 && loadService.request.data) {
-            data.value = loadService.request.data;
+            const responseData = loadService.request.data;
+            data.value = responseData.data || responseData;
             hasSearched.value = true;
             addToRecentSearches(form.search);
         }
@@ -947,9 +949,8 @@ watch(() => route.query.q, (newQuery, oldQuery) => {
 }, { immediate: true });
 
 // Watch for form.search changes with debounce for real-time search
-watch(() => form.search, (newValue, oldValue) => {
+watch(() => form.search, (newValue) => {
     if (isUpdatingFromRoute) {
-        isUpdatingFromRoute = false;
         return;
     }
     
@@ -972,6 +973,15 @@ watch(() => form.search, (newValue, oldValue) => {
             router.push({ name: 'customer.browse-products' });
         }
     }, 500);
+});
+
+// Reset isUpdatingFromRoute after a tick to allow user input to trigger searches again
+watch(() => form.search, () => {
+    if (isUpdatingFromRoute) {
+        setTimeout(() => {
+            isUpdatingFromRoute = false;
+        }, 100);
+    }
 });
 
 // Watch for route name changes
