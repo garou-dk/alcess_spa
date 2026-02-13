@@ -60,22 +60,36 @@
                 </div>
             </div>
 
-            <!-- Verified Account Details -->
-            <div class="mt-12 text-center bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 mb-4 text-green-600">
-                    <i class="pi pi-verified text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Verified Account Information</h3>
-                <p class="text-sm text-gray-500 mb-4">Your account is secured and verified with the following credential:</p>
-                <div class="inline-block px-6 py-3 bg-gray-50 rounded-xl border border-gray-200">
-                    <p class="text-sm font-semibold text-blue-600 flex items-center gap-2">
-                        <i class="pi pi-envelope"></i>
-                        {{ Page.user?.email }}
+            <!-- Contact Support Section -->
+            <div class="mt-12 bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full blur-2xl opacity-60"></div>
+                <div class="absolute -left-4 -bottom-4 w-32 h-32 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-200 rotate-3 transition-transform">
+                        <i class="pi pi-comments text-2xl text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Still have questions?</h2>
+                    <p class="text-gray-500 max-w-sm mx-auto mb-8 text-sm">
+                        Can't find the answer you're looking for? Our dedicated support team is available to assist you.
                     </p>
+
+                    <div class="inline-flex flex-col items-center gap-3">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Official Support Channel</span>
+                        <a 
+                            href="mailto:support@alcess.com" 
+                            class="flex items-center gap-4 bg-gray-900 text-white px-8 py-4 rounded-xl hover:bg-black transition-all transform hover:-translate-y-1 shadow-xl shadow-gray-200 group"
+                        >
+                            <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="pi pi-envelope text-blue-400 text-sm"></i>
+                            </span>
+                            <span class="font-bold tracking-tight">support@alcess.com</span>
+                        </a>
+                        <p class="text-[11px] text-gray-400 mt-2">Response time: Within 24 hours</p>
+                    </div>
                 </div>
-                <p class="text-[11px] text-gray-400 mt-4 italic">
-                    This email was verified during your registration process.
-                </p>
             </div>
         </div>
     </div>
@@ -84,7 +98,6 @@
 <script setup lang="ts">
 import NavBar from "@/components/NavBar.vue";
 import { ref } from 'vue';
-import Page from '@/stores/Page';
 
 const faqs = ref([
     {

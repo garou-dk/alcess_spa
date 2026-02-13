@@ -363,6 +363,29 @@ const playNotificationSound = () => {
     });
 };
 
+let originalTitle = document.title;
+let blinkInterval: any = null;
+
+const startTabBlink = () => {
+    // Only blink if user is in another tab
+    if (document.visibilityState === 'visible' || blinkInterval) return;
+    
+    originalTitle = document.title;
+    let showNotif = true;
+    blinkInterval = setInterval(() => {
+        document.title = showNotif ? '(1) New Notification!' : originalTitle;
+        showNotif = !showNotif;
+    }, 1000);
+};
+
+const stopTabBlink = () => {
+    if (blinkInterval) {
+        clearInterval(blinkInterval);
+        blinkInterval = null;
+        document.title = originalTitle;
+    }
+};
+
 // Search
 const searchQuery = ref('');
 
@@ -590,6 +613,7 @@ const setupEcho = () => {
             [".admin-order-notification.event"],
             (value: IOrderNotification) => {
                 playNotificationSound();
+                startTabBlink();
                 notifications.value.unshift(value);
                 toast.info(`New Notification: ${value.message}`);
             },
@@ -602,6 +626,7 @@ const setupEcho = () => {
             [".customer-order.event"],
             (value: IOrderNotification) => {
                 playNotificationSound();
+                startTabBlink();
                 notifications.value.unshift(value);
                 toast.info(`New Notification: ${value.message}`);
                 // Also update chat store if needed
@@ -656,6 +681,11 @@ watch(() => Page.user, (newUser) => {
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('click', handleClickOutside);
+    window.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            stopTabBlink();
+        }
+    });
 });
 
 onUnmounted(() => {
