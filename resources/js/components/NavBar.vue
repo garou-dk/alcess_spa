@@ -341,10 +341,9 @@ const saveRecentLogin = (user: UserInterface | null) => {
         const raw = localStorage.getItem(RECENT_LOGIN_KEY);
         const existing: any[] = raw ? JSON.parse(raw) : [];
         const filtered = existing.filter(
-            (u) => u.user_id !== user.user_id && u.email !== user.email
+            (u) => u.email !== user.email
         );
         const entry = {
-            user_id: user.user_id,
             full_name: user.full_name,
             email: user.email,
             image: user.image,
@@ -355,6 +354,13 @@ const saveRecentLogin = (user: UserInterface | null) => {
     } catch {
         // ignore storage errors
     }
+};
+
+const playNotificationSound = () => {
+    const audio = new Audio('/audio/notification.mp3');
+    audio.play().catch(() => {
+        // Silent catch: Browser might block auto-play if user hasn't interacted yet
+    });
 };
 
 // Search
@@ -583,6 +589,7 @@ const setupEcho = () => {
             "admin-order-notification",
             [".admin-order-notification.event"],
             (value: IOrderNotification) => {
+                playNotificationSound();
                 notifications.value.unshift(value);
                 toast.info(`New Notification: ${value.message}`);
             },
@@ -594,6 +601,7 @@ const setupEcho = () => {
             `order.${Page.user.user_id}`,
             [".customer-order.event"],
             (value: IOrderNotification) => {
+                playNotificationSound();
                 notifications.value.unshift(value);
                 toast.info(`New Notification: ${value.message}`);
                 // Also update chat store if needed
