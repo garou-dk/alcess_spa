@@ -243,7 +243,7 @@ const clearForm = () => {
     form.bank_name = null;
     form.customer_name = null;
     form.contact_number = null;
-    selectedFile.value = null;
+    form.payment_proof = null;
 }
 
 const validate = () => {
