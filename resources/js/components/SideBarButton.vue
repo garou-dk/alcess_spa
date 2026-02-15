@@ -18,42 +18,44 @@
                         : 'group flex items-center gap-4 px-4 py-3 transition-all duration-300 ease-in-out cursor-pointer relative'
                 })"
                 :style="{
-                    color: isActive ? '#2563eb' : '#ffffff',
-                    backgroundColor: isActive ? '#f8fafc' : 'transparent',
+                    color: isActive ? '#ffffff' : '#e0e7ff',
+                    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                    backdropFilter: isActive ? 'blur(4px)' : 'none',
                     borderRadius: isActive ? (isMobile ? '0' : '8px 0 0 8px') : (isMobile ? '0' : '8px'),
                     marginRight: isActive ? (isMobile ? '0' : isTablet ? '-10px' : '-12px') : '0',
-                    paddingRight: isActive ? (isMobile ? '1rem' : isTablet ? 'calc(0.75rem + 10px)' : 'calc(1rem + 12px)') : (isMobile ? '1rem' : isTablet ? '0.75rem' : '1rem')
+                    paddingRight: isActive ? (isMobile ? '1rem' : isTablet ? 'calc(0.75rem + 10px)' : 'calc(1rem + 12px)') : (isMobile ? '1rem' : isTablet ? '0.75rem' : '1rem'),
+                    boxShadow: isActive ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' : 'none'
                 }"
                 @mouseenter="handleMouseEnter"
                 @mouseleave="handleMouseLeave"
             >
                 <i :class="[props.icon, getResponsiveClasses({
                     mobile: props.isSubItem 
-                        ? 'text-sm transition-colors duration-200 opacity-90'
-                        : 'text-base transition-colors duration-200',
+                        ? 'text-xs transition-colors duration-200 opacity-80'
+                        : 'text-sm transition-colors duration-200',
                     tablet: props.isSubItem
-                        ? 'text-sm transition-colors duration-200 opacity-90'
-                        : 'text-base transition-colors duration-200',
+                        ? 'text-xs transition-colors duration-200 opacity-80'
+                        : 'text-sm transition-colors duration-200',
                     desktop: props.isSubItem
-                        ? 'text-base transition-colors duration-200 opacity-90'
-                        : 'text-lg transition-colors duration-200'
+                        ? 'text-sm transition-colors duration-200 opacity-80'
+                        : 'text-base transition-colors duration-200'
                 })]" />
                 <span :class="getResponsiveClasses({
                     mobile: props.isSubItem
-                        ? 'text-xs font-semibold'
-                        : 'text-sm font-semibold',
+                        ? 'text-[11px] font-medium'
+                        : 'text-[12px] font-semibold',
                     tablet: props.isSubItem
-                        ? 'text-xs font-semibold'
-                        : 'text-sm font-semibold',
+                        ? 'text-[11px] font-medium'
+                        : 'text-[12px] font-semibold',
                     desktop: props.isSubItem
-                        ? 'text-sm font-semibold'
-                        : 'text-base font-semibold'
+                        ? 'text-[12px] font-medium'
+                        : 'text-[13px] font-semibold'
                 })">{{ props.label }}</span>
 
                 <!-- Badge Support -->
                 <div v-if="props.badge !== undefined && props.badge !== null && props.badge !== 0" 
-                    class="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center shadow-sm"
-                    :class="isActive ? 'bg-blue-600 text-white' : 'bg-red-500 text-white'"
+                    class="ml-auto px-1.5 py-0.5 rounded-full text-[9px] font-bold min-w-[17px] h-[17px] flex items-center justify-center shadow-sm"
+                    :class="isActive ? 'bg-white text-blue-600' : 'bg-red-500 text-white'"
                 >
                     {{ props.badge > 99 ? '99+' : props.badge }}
                 </div>
@@ -102,7 +104,7 @@ const isActive = computed(() => {
 const handleMouseEnter = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
-        target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+        target.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
         target.style.color = '#ffffff';
         
         if (isMobile.value) {
@@ -125,7 +127,7 @@ const handleMouseLeave = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
         target.style.backgroundColor = 'transparent';
-        target.style.color = '#ffffff';
+        target.style.color = '#e0e7ff';
         target.style.marginRight = '0';
         
         if (isMobile.value) {

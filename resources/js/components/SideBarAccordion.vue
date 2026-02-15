@@ -17,24 +17,24 @@
             @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
         >
             <i :class="[props.icon, getResponsiveClasses({
-                mobile: 'text-base',
-                tablet: 'text-base',
-                desktop: 'text-lg'
+                mobile: 'text-sm',
+                tablet: 'text-sm',
+                desktop: 'text-base'
             })]" />
             <span :class="getResponsiveClasses({
-                mobile: 'text-sm font-medium',
-                tablet: 'text-sm font-medium',
-                desktop: 'text-base font-medium'
+                mobile: 'text-[11px] font-semibold',
+                tablet: 'text-[11px] font-semibold',
+                desktop: 'text-[12px] font-semibold'
             })">{{ props.label }}</span>
             <i v-if="isActive" :class="getResponsiveClasses({
-                mobile: 'pi pi-chevron-up ml-auto text-sm',
-                tablet: 'pi pi-chevron-up ml-auto text-xs',
-                desktop: 'pi pi-chevron-up ml-auto text-sm'
+                mobile: 'pi pi-chevron-up ml-auto text-[10px]',
+                tablet: 'pi pi-chevron-up ml-auto text-[10px]',
+                desktop: 'pi pi-chevron-up ml-auto text-[11px]'
             })" />
             <i v-else :class="getResponsiveClasses({
-                mobile: 'pi pi-chevron-down ml-auto text-sm',
-                tablet: 'pi pi-chevron-down ml-auto text-xs',
-                desktop: 'pi pi-chevron-down ml-auto text-sm'
+                mobile: 'pi pi-chevron-down ml-auto text-[10px]',
+                tablet: 'pi pi-chevron-down ml-auto text-[10px]',
+                desktop: 'pi pi-chevron-down ml-auto text-[11px]'
             })" />
         </button>
 

@@ -30,11 +30,11 @@
         </div>
 
         <!-- Navigation Section -->
-        <div class="flex-1 overflow-y-auto scrollbar-hide py-4">
-            <nav class="px-2 space-y-1">
+        <div class="flex-1 overflow-y-auto scrollbar-hide py-3">
+            <nav class="px-2 space-y-0.5">
                 <!-- DASHBOARD Section Label -->
-                <div class="px-4 pb-2">
-                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">Dashboard</span>
+                <div class="px-3 pb-1.5 pt-1">
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboard</span>
                 </div>
     
                 <!-- New order priority items -->
@@ -78,11 +78,11 @@
                 />
     
                 <!-- Divider -->
-                <div class="mx-4 my-4 border-t border-white/5"></div>
+                <div class="mx-3 my-3 border-t border-white/5"></div>
     
                 <!-- MANAGEMENT Section Label -->
-                <div class="px-4 pb-2">
-                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">Management</span>
+                <div class="px-3 pb-1.5">
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">Management</span>
                 </div>
     
                 <SideBarAccordion
@@ -129,11 +129,11 @@
                 />
     
                 <!-- Divider -->
-                <div class="mx-4 my-4 border-t border-white/5"></div>
+                <div class="mx-3 my-3 border-t border-white/5"></div>
     
                 <!-- SYSTEM Section Label -->
-                <div class="px-4 pb-2">
-                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">System</span>
+                <div class="px-3 pb-1.5">
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">System</span>
                 </div>
     
                 <SideBarButton
