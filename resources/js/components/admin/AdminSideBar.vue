@@ -4,26 +4,32 @@
         tablet: 'h-full flex flex-col',
         desktop: 'h-full flex flex-col scrollbar-hide'
     })" :style="getResponsiveStyles()">
-        <!-- Premium Header Area -->
+        <!-- Clickable Large Dashboard Header -->
         <div :class="getResponsiveClasses({
-            mobile: 'flex items-center justify-between gap-2 px-4 py-4',
-            tablet: 'flex items-center justify-between gap-2 px-5 py-5',
-            desktop: 'flex items-center justify-start px-6 py-6'
-        })" class="border-b border-white/10 bg-[#1e40af]/30 backdrop-blur-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg transition-transform duration-300">
-                    <i class="pi pi-shield text-[#2563eb] text-lg"></i>
+            mobile: 'px-4 py-8',
+            tablet: 'px-5 py-10',
+            desktop: 'px-6 py-12'
+        })" class="border-b border-white/5">
+            <RouterLink 
+                :to="{ name: 'admin.dashboard.index', hash: '#overview-section' }"
+                class="block group transition-transform duration-300 active:scale-95"
+            >
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-1 h-6 bg-white rounded-full transition-all duration-300 group-hover:h-8 group-hover:bg-blue-400"></div>
+                    <h1 class="text-3xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-blue-200 transition-colors">
+                        Dashboard
+                    </h1>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-sm font-black text-white tracking-tight leading-none uppercase">Alcess</span>
-                    <span class="text-[9px] font-bold text-blue-100/60 tracking-[0.2em] mt-1 uppercase">Admin System</span>
-                </div>
-            </div>
+                <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] ml-3 transition-opacity duration-300 group-hover:opacity-100">
+                    System Overview
+                </p>
+            </RouterLink>
+            
             <!-- Close button for mobile only -->
             <button 
                 v-if="isMobile"
                 @click="closeSidebar"
-                class="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
+                class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
@@ -32,11 +38,6 @@
         <!-- Navigation Section -->
         <div class="flex-1 overflow-y-auto scrollbar-hide py-3">
             <nav class="px-2 space-y-0.5">
-                <!-- DASHBOARD Section Label -->
-                <div class="px-3 pb-1.5 pt-1">
-                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboard</span>
-                </div>
-    
                 <!-- New order priority items -->
                 <SideBarButton
                     to="admin.dashboard.index"
@@ -78,7 +79,7 @@
                 />
     
                 <!-- Divider -->
-                <div class="mx-3 my-3 border-t border-white/5"></div>
+                <div class="mx-3 my-4 border-t border-white/5"></div>
     
                 <!-- MANAGEMENT Section Label -->
                 <div class="px-3 pb-1.5">
@@ -129,7 +130,7 @@
                 />
     
                 <!-- Divider -->
-                <div class="mx-3 my-3 border-t border-white/5"></div>
+                <div class="mx-3 my-4 border-t border-white/5"></div>
     
                 <!-- SYSTEM Section Label -->
                 <div class="px-3 pb-1.5">
@@ -180,49 +181,20 @@
                 />
             </nav>
         </div>
-
-        <!-- Premium Footer -->
-        <div class="p-4 border-t border-white/10 bg-[#172554]/40 backdrop-blur-md">
-            <div class="flex items-center gap-3 px-2 mb-4">
-                <div class="relative">
-                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#2563eb] font-black text-xs shadow-lg uppercase tracking-tighter">
-                        {{ userInitials }}
-                    </div>
-                    <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[#1e3a8a] rounded-full shadow-sm"></div>
-                </div>
-                <div class="flex flex-col min-w-0">
-                    <span class="text-[13px] font-black text-white truncate leading-tight">{{ userName }}</span>
-                    <span class="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest mt-0.5">Administrator</span>
-                </div>
-            </div>
-            
-            <button 
-                @click="handleLogout"
-                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 text-xs font-black border border-white/5 shadow-inner active:scale-95 group"
-            >
-                <i class="pi pi-sign-out group-hover:translate-x-0.5 transition-transform duration-300"></i>
-                <span>SIGN OUT</span>
-            </button>
-        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import SideBarButton from "@/components/SideBarButton.vue";
 import SideBarAccordion from "@/components/SideBarAccordion.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import Page from "@/stores/Page";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { useResponsive } from "@/composables/useResponsive";
 import { computed, inject, onMounted } from "vue";
-import useAxiosUtil from "@/utils/AxiosUtil";
-import { useToast } from "vue-toastification";
 import { useDashboardData } from "@/composables/useDashboardData";
 
 const route = useRoute();
-const router = useRouter();
-const toast = useToast();
-const logoutService = useAxiosUtil();
 
 // Inject sideBar ref from parent
 const sideBar = inject("sideBar");
@@ -232,7 +204,6 @@ const responsive = useResponsive();
 const { 
     isMobile, 
     isTablet, 
-    isDesktop 
 } = responsive;
 
 // Dashboard data for live badges
@@ -250,26 +221,6 @@ const closeSidebar = () => {
         (sideBar as any).value = false;
     }
 };
-
-const handleLogout = async () => {
-    await logoutService.post("logout", null).then(() => {
-        Page.user = null;
-        router.push({ name: "admin.login" });
-        toast.success("Logged out successfully");
-    });
-};
-
-const userName = computed(() => Page.user?.full_name || 'Admin User');
-
-const userInitials = computed(() => {
-    const name = userName.value;
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-});
 
 const getResponsiveStyles = () => {
     const baseStyle = 'background: linear-gradient(180deg, #1e40af 0%, #172554 100%); border-right: 1px solid rgba(255, 255, 255, 0.1);';
