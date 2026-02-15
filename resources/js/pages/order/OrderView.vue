@@ -967,11 +967,19 @@ const onRowClick = (event: any) => {
 
 // Handler functions for actions from ViewOrderForm
 // Simplified status display - no more mapping needed
+// Simplified status display - no more mapping needed
 const getAdminStatusDisplay = (order: IOrder) => {
+    if (order.status === 'Processing' && order.admin_accepted && order.proof_of_payment) {
+        return 'Processing (Payment Verification)';
+    }
     return order.status;
 };
 
 const getAdminStatusClass = (order: IOrder) => {
+    if (order.status === 'Processing' && order.admin_accepted && order.proof_of_payment) {
+        return 'bg-teal-50 text-teal-700';
+    }
+    
     const statusClasses: Record<string, string> = {
         'Processing': 'bg-yellow-50 text-yellow-700',
         'Confirmed': 'bg-blue-50 text-blue-700',

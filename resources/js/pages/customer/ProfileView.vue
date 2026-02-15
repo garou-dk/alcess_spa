@@ -3,8 +3,8 @@
         <!-- Cover Section -->
         <div class="relative group h-56 md:h-72 w-full overflow-hidden bg-gray-900">
             <img 
-                v-if="Page.user?.cover_image" 
-                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${Page.user.cover_image}`)" 
+                v-if="displayUser.cover_image" 
+                :src="UrlUtil.getBaseAppUrl(`storage/images/cover/${displayUser.cover_image}`)" 
                 class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
             >
             <div v-else class="w-full h-full flex items-center justify-center">
@@ -36,11 +36,11 @@
                             <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
                                 <div class="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex items-center justify-center">
                                     <img 
-                                        v-if="Page.user?.image" 
-                                        :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${Page.user.image}`)" 
+                                        v-if="displayUser.image" 
+                                        :src="UrlUtil.getBaseAppUrl(`storage/images/profile/${displayUser.image}`)" 
                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     >
-                                    <span v-else class="text-5xl font-bold text-gray-200">{{ Page.user?.full_name?.charAt(0) }}</span>
+                                    <span v-else class="text-5xl font-bold text-gray-200">{{ displayUser.full_name?.charAt(0) }}</span>
                                 </div>
                                 <div class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity border-4 border-transparent">
                                     <i class="pi pi-camera text-white text-xl"></i>
@@ -54,8 +54,8 @@
                             </div>
 
                             <div class="mt-3">
-                                <h2 class="text-xl font-bold text-gray-900">{{ Page.user?.full_name }}</h2>
-                                <p class="text-sm text-gray-500 mt-0.5">{{ Page.user?.email }}</p>
+                                <h2 class="text-xl font-bold text-gray-900">{{ displayUser.full_name }}</h2>
+                                <p class="text-sm text-gray-500 mt-0.5">{{ displayUser.email }}</p>
                             </div>
                         </div>
                         
@@ -65,7 +65,7 @@
                                     <i class="pi pi-id-card text-sm text-gray-400"></i>
                                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Role</span>
                                 </div>
-                                <span class="text-xs font-semibold text-gray-800 bg-white px-2.5 py-1 rounded-full border border-gray-200">{{ Page.user?.role?.role_name }}</span>
+                                <span class="text-xs font-semibold text-gray-800 bg-white px-2.5 py-1 rounded-full border border-gray-200">{{ displayUser.role?.role_name }}</span>
                             </div>
                             <div class="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
                                 <div class="flex items-center gap-2.5">
@@ -79,7 +79,7 @@
                                     <i class="pi pi-calendar text-sm text-gray-400"></i>
                                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</span>
                                 </div>
-                                <span class="text-xs font-semibold text-gray-700">{{ Page.user?.created_at ? DateUtil.formatToMonthDayYear(Page.user.created_at) : '--' }}</span>
+                                <span class="text-xs font-semibold text-gray-700">{{ displayUser.created_at ? DateUtil.formatToMonthDayYear(displayUser.created_at) : '--' }}</span>
                             </div>
                         </div>
                     </div>
@@ -106,11 +106,11 @@
                                     <p class="text-[11px] text-gray-400">Helps recover your account.</p>
                                 </div>
                                 <span
-                                    :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'"
+                                    :class="displayUser.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'"
                                     class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                                 >
-                                    <i :class="Page.user?.security_question ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'" class="text-[10px]"></i>
-                                    {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
+                                    <i :class="displayUser.security_question ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'" class="text-[10px]"></i>
+                                    {{ displayUser.security_question ? 'Set' : 'Recommended' }}
                                 </span>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
                         </div>
 
                         <div class="p-5">
-                             <div v-if="Page.user?.address" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div v-if="displayUser.address" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-4">
                                     <div>
                                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Contact Number</label>
@@ -178,7 +178,7 @@
                                             <div class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
                                                 <i class="pi pi-phone text-xs"></i>
                                             </div>
-                                            <span class="text-sm font-semibold text-gray-800">{{ Page.user.address.contact_number || 'N/A' }}</span>
+                                            <span class="text-sm font-semibold text-gray-800">{{ displayUser.address.contact_number || 'N/A' }}</span>
                                         </div>
                                     </div>
                                     <div>
@@ -187,7 +187,7 @@
                                             <div class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-500">
                                                 <i class="pi pi-envelope text-xs"></i>
                                             </div>
-                                            <span class="text-sm font-semibold text-gray-800">{{ Page.user.address.postal_code || 'N/A' }}</span>
+                                            <span class="text-sm font-semibold text-gray-800">{{ displayUser.address.postal_code || 'N/A' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -198,18 +198,18 @@
                                         <div class="flex gap-2.5">
                                             <i class="pi pi-home text-blue-600 text-xs mt-0.5"></i>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-800 leading-relaxed">{{ Page.user.address.other_details }}</p>
-                                                <div v-if="Page.user.address.barangay" class="mt-2 pt-2 border-t border-gray-200">
+                                                <p class="text-sm font-medium text-gray-800 leading-relaxed">{{ displayUser.address.other_details }}</p>
+                                                <div v-if="displayUser.address.barangay" class="mt-2 pt-2 border-t border-gray-200">
                                                      <p class="text-xs font-medium text-gray-600">
-                                                        {{ Page.user.address.barangay.barangay_name }}, 
-                                                        {{ Page.user.address.barangay.municity?.municity_name }}
+                                                        {{ displayUser.address.barangay.barangay_name }}, 
+                                                        {{ displayUser.address.barangay.municity?.municity_name }}
                                                     </p>
                                                     <p class="text-xs text-gray-500 mt-0.5">
-                                                        {{ Page.user.address.barangay.municity?.province?.province_name }}
+                                                        {{ displayUser.address.barangay.municity?.province?.province_name }}
                                                     </p>
-                                                    <div v-if="Page.user.address.barangay?.municity?.province?.region" class="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-500">
+                                                    <div v-if="displayUser.address.barangay?.municity?.province?.region" class="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-500">
                                                         <i class="pi pi-map text-[10px]"></i>
-                                                        {{ Page.user.address.barangay.municity.province.region.region_name }}
+                                                        {{ displayUser.address.barangay.municity.province.region.region_name }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -272,16 +272,16 @@
                                 <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                                     <i class="pi pi-question-circle text-sm"></i>
                                 </div>
-                                <span :class="Page.user?.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border">
-                                    {{ Page.user?.security_question ? 'Set' : 'Recommended' }}
+                                <span :class="displayUser.security_question ? 'text-green-700 bg-green-50 border-green-100' : 'text-amber-700 bg-amber-50 border-amber-100'" class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border">
+                                    {{ displayUser.security_question ? 'Set' : 'Recommended' }}
                                 </span>
                             </div>
                             <h4 class="font-bold text-gray-900 text-sm mb-0.5">Security Question</h4>
                             <p class="text-gray-500 text-xs leading-relaxed mb-4">
-                                {{ Page.user?.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
+                                {{ displayUser.security_question ? 'Your question is set. Click to update.' : 'Set a question for account recovery.' }}
                             </p>
                             <button @click="showQuestionDialog = true" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors cursor-pointer">
-                                {{ Page.user?.security_question ? 'Update Question' : 'Set Up Now' }}
+                                {{ displayUser.security_question ? 'Update Question' : 'Set Up Now' }}
                             </button>
                             </div>
 
@@ -556,7 +556,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import Page from '@/stores/Page'
 import UrlUtil from '@/utils/UrlUtil'
 import useAxiosUtil from '@/utils/AxiosUtil'
@@ -578,6 +578,19 @@ const profileService = useAxiosUtil()
 // State
 const orderTabs = ['All', 'Processing', 'Confirmed', 'Shipped', 'Completed', 'Cancelled']
 const activeTab = ref('All')
+
+// Local reactive copies of user data for immediate UI updates
+const displayUser = reactive({
+    full_name: Page.user?.full_name || '',
+    email: Page.user?.email || '',
+    image: Page.user?.image || '',
+    cover_image: Page.user?.cover_image || '',
+    role: Page.user?.role || null,
+    security_question: Page.user?.security_question || '',
+    created_at: Page.user?.created_at || '',
+    address: Page.user?.address || null,
+    recovery_codes: Page.user?.recovery_codes || [],
+})
 
 const profileForm = reactive({ full_name: Page.user?.full_name || '' })
 const passwordForm = reactive({ current_password: '', password: '', password_confirmation: '' })
@@ -654,8 +667,10 @@ const uploadCroppedImage = async () => {
                 if (Page.user) {
                     if (cropMode.value === 'avatar') {
                         Page.user.image = profileService.request.data.image
+                        displayUser.image = profileService.request.data.image
                     } else {
                         Page.user.cover_image = profileService.request.data.cover_image
+                        displayUser.cover_image = profileService.request.data.cover_image
                     }
                 }
             } else {
@@ -673,6 +688,8 @@ const updateName = async () => {
         if (profileService.request.status === 200) {
             toast.success('Profile updated.')
             if (Page.user) Page.user.full_name = profileForm.full_name
+            // Immediately update displayed name
+            displayUser.full_name = profileForm.full_name
         } else {
             toast.error(profileService.request.message || 'Failed to update name.')
         }
@@ -710,6 +727,7 @@ const saveQuestion = async () => {
             toast.success('Security question saved.')
             showQuestionDialog.value = false
             if (Page.user) Page.user.security_question = questionForm.customQuestion
+            displayUser.security_question = questionForm.customQuestion
         } else {
             toast.error(profileService.request.message || 'Failed to save question.')
         }
@@ -847,10 +865,26 @@ const buyAgain = async (order: any) => {
     }
 };
 
+// Listen for address form updates (emitted by the address form component)
+const handleAddressUpdate = () => {
+    // Re-sync displayUser address from Page store
+    if (Page.user?.address) {
+        displayUser.address = JSON.parse(JSON.stringify(Page.user.address))
+    }
+}
+
 onMounted(() => {
     loadOrders();
     if (Page.user?.recovery_codes) recoveryCodes.value = Page.user.recovery_codes
+    window.addEventListener('address-updated', handleAddressUpdate)
 });
+
+// Watch for changes in Page.user.address to sync displayUser
+watch(() => Page.user?.address, (newAddress) => {
+    if (newAddress) {
+        displayUser.address = JSON.parse(JSON.stringify(newAddress))
+    }
+}, { deep: true });
 </script>
 
 <style scoped>

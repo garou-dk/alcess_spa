@@ -49,15 +49,15 @@
             <div id="new-orders-section" class="scroll-mt-28">
                 <PendingReport />
             </div>
+
+            <!-- Confirmed Orders -->
+            <div id="confirmed-orders-section" class="scroll-mt-28">
+                <DashboardOrdersTable />
+            </div>
+
             <!-- Best Selling Products -->
             <div id="best-selling-products-section" class="scroll-mt-28">
                 <TopSoldProducts />
-            </div>
-
-
-            <!-- Main Transaction/Orders Section -->
-            <div id="confirmed-orders-section" class="scroll-mt-28">
-                <DashboardOrdersTable />
             </div>
 
 
