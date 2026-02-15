@@ -18,36 +18,36 @@
                         : 'group flex items-center gap-4 px-4 py-3 transition-all duration-300 ease-in-out cursor-pointer relative'
                 })"
                 :style="{
-                    color: isActive ? '#ffffff' : '#64748b',
-                    backgroundColor: isActive ? '#2563eb' : 'transparent',
-                    borderRadius: isActive ? (isMobile ? '0' : '8px 0 0 8px') : (isMobile ? '0' : '8px'),
-                    marginRight: isActive ? (isMobile ? '0' : isTablet ? '-10px' : '-12px') : '0',
-                    paddingRight: isActive ? (isMobile ? '1rem' : isTablet ? 'calc(0.75rem + 10px)' : 'calc(1rem + 12px)') : (isMobile ? '1rem' : isTablet ? '0.75rem' : '1rem')
+                    color: isActive ? '#2563eb' : '#000000',
+                    backgroundColor: isActive ? '#eff6ff' : 'transparent',
+                    boxShadow: isActive ? 'inset 4px 0 0 0 #2563eb' : 'none',
+                    borderRadius: isActive ? (isMobile ? '0' : '0 8px 8px 0') : (isMobile ? '0' : '8px'),
+                    marginRight: isActive ? '0' : '0',
                 }"
                 @mouseenter="handleMouseEnter"
                 @mouseleave="handleMouseLeave"
             >
                 <i :class="[props.icon, getResponsiveClasses({
                     mobile: props.isSubItem 
-                        ? 'text-sm transition-colors duration-200 opacity-90'
+                        ? 'text-sm transition-colors duration-200'
                         : 'text-base transition-colors duration-200',
                     tablet: props.isSubItem
-                        ? 'text-sm transition-colors duration-200 opacity-90'
+                        ? 'text-sm transition-colors duration-200'
                         : 'text-base transition-colors duration-200',
                     desktop: props.isSubItem
-                        ? 'text-base transition-colors duration-200 opacity-90'
-                        : 'text-lg transition-colors duration-200'
+                        ? 'text-sm transition-colors duration-200'
+                        : 'text-base transition-colors duration-200'
                 })]" />
                 <span :class="getResponsiveClasses({
                     mobile: props.isSubItem
-                        ? 'text-xs font-semibold opacity-95'
-                        : 'text-sm font-semibold',
+                        ? 'text-xs font-black'
+                        : 'text-sm font-black',
                     tablet: props.isSubItem
-                        ? 'text-xs font-semibold opacity-95'
-                        : 'text-sm font-semibold',
+                        ? 'text-xs font-black'
+                        : 'text-sm font-black',
                     desktop: props.isSubItem
-                        ? 'text-sm font-semibold opacity-95'
-                        : 'text-base font-semibold'
+                        ? 'text-[13px] font-black'
+                        : 'text-[14px] font-black'
                 })">{{ props.label }}</span>
             </div>
         </RouterLink>
@@ -94,20 +94,6 @@ const handleMouseEnter = (event: MouseEvent) => {
         const target = event.currentTarget as HTMLElement;
         target.style.backgroundColor = '#f8fafc';
         target.style.color = '#2563eb';
-        
-        if (isMobile.value) {
-            target.style.borderRadius = '0';
-            target.style.marginRight = '0';
-            target.style.paddingRight = '1rem';
-        } else if (isTablet.value) {
-            target.style.borderRadius = '8px 0 0 8px';
-            target.style.marginRight = '-10px';
-            target.style.paddingRight = 'calc(0.75rem + 10px)';
-        } else {
-            target.style.borderRadius = '8px 0 0 8px';
-            target.style.marginRight = '-12px';
-            target.style.paddingRight = 'calc(1rem + 12px)';
-        }
     }
 };
 
@@ -115,19 +101,7 @@ const handleMouseLeave = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
         target.style.backgroundColor = 'transparent';
-        target.style.color = '#64748b';
-        target.style.marginRight = '0';
-        
-        if (isMobile.value) {
-            target.style.borderRadius = '0';
-            target.style.paddingRight = '1rem';
-        } else if (isTablet.value) {
-            target.style.borderRadius = '8px';
-            target.style.paddingRight = '0.75rem';
-        } else {
-            target.style.borderRadius = '8px';
-            target.style.paddingRight = '1rem';
-        }
+        target.style.color = '#000000';
     }
 };
 </script>

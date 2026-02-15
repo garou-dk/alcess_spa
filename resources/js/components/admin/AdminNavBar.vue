@@ -2,13 +2,12 @@
     <header class="sticky top-0 z-10">
         <nav 
             :class="[
-                'relative z-20 flex items-center justify-between bg-gray-100 transition-all duration-200',
+                'relative z-20 flex items-center justify-between bg-white/80 backdrop-blur-md transition-all duration-200 border-b border-gray-100',
                 getResponsiveClasses({
                     mobile: 'p-3',
                     tablet: 'p-4',
                     desktop: 'p-5'
-                }),
-                { 'border-b border-gray-200': isScrolled }
+                })
             ]"
         >
             <!-- Left Side: Hamburger Menu and Page Info -->
@@ -31,8 +30,8 @@
                         ]"
                         :style="getResponsiveButtonStyles()"
                         @click="sideBar = !sideBar"
-                        @mouseenter="$event.currentTarget.style.backgroundColor = '#DBEAFE'"
-                        @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+                        @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = '#eff6ff'; ($event.currentTarget as HTMLElement).style.color = '#2563eb'"
+                        @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; ($event.currentTarget as HTMLElement).style.color = '#000000'"
                     >
                         <i class="pi pi-bars"></i>
                     </button>
@@ -67,8 +66,8 @@
                 <div class="relative">
                     <div 
                         class="rounded-lg transition-all duration-200 inline-block"
-                        @mouseenter="$event.currentTarget.style.backgroundColor = '#DBEAFE'"
-                        @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+                        @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = '#eff6ff'; ($event.currentTarget as HTMLElement).style.color = '#2563eb'"
+                        @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; ($event.currentTarget as HTMLElement).style.color = '#000000'"
                     >
                         <OverlayBadge
                             :value="notifications.filter(n => !n.is_read).length"
