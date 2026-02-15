@@ -1,21 +1,18 @@
 <template>
-    <div class="h-full flex flex-col bg-[#2563eb] text-white shadow-2xl transition-all duration-300 relative overflow-hidden border-r border-white/10">
-        <!-- Subtle Pattern Overlay -->
-        <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiAvPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ0cmFuc3BhcmVudCIgLz4KPC9zdmc+')]"></div>
-        
-        <!-- Premium Header Area -->
+    <div class="h-full flex flex-col bg-[#2563eb] text-white shadow-xl transition-all duration-300 relative overflow-hidden">
+        <!-- Sidebar Header -->
         <div :class="getResponsiveClasses({
             mobile: 'flex items-center justify-between h-16 px-4 border-b border-white/10 relative z-10',
             tablet: 'flex items-center justify-between h-20 px-5 border-b border-white/10 relative z-10',
-            desktop: 'flex items-center gap-3.5 h-20 px-6 border-b border-white/20 relative z-10'
-        })" class="bg-[#1e40af]/40 backdrop-blur-sm">
+            desktop: 'flex items-center gap-3 h-20 px-6 border-b border-white/10 relative z-10'
+        })">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg transition-transform duration-300">
-                    <i class="pi pi-shield text-[#2563eb] text-lg"></i>
+                <div class="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center shadow-sm">
+                    <i class="pi pi-th-large text-white text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-black text-lg leading-none tracking-tight">ALCESS</span>
-                    <span class="text-[10px] font-bold text-blue-100 uppercase tracking-[0.2em] mt-1 opacity-80">Admin Core</span>
+                    <h1 class="font-bold text-lg tracking-wide uppercase leading-none">Alcess</h1>
+                    <span class="text-[10px] text-blue-100 font-medium tracking-widest mt-1">ADMIN PANEL</span>
                 </div>
             </div>
             
@@ -23,116 +20,67 @@
             <button 
                 v-if="!isDesktop"
                 @click="emit('closeSidebar')"
-                class="p-2 rounded-xl hover:bg-white/15 transition-all text-white active:scale-95"
+                class="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
         </div>
 
         <!-- Scrollable Navigation Area -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar py-6 relative z-10">
-            <div class="flex flex-col gap-6 px-4">
+        <div class="flex-1 overflow-y-auto custom-scrollbar py-4 relative z-10">
+            <div class="flex flex-col gap-1 px-3">
                 
-                <!-- Main Dashboard Section -->
-                <nav>
-                    <p class="px-3 text-[10px] font-extrabold text-blue-100/60 uppercase tracking-[0.15em] mb-3">Core Monitor</p>
-                    <div class="space-y-1">
-                        <SideBarButton 
-                            icon="pi pi-home" 
-                            label="Dashboard Overview" 
-                            to="admin.dashboard" 
-                            hash="#overview-section"
-                        />
-                        <SideBarButton 
-                            icon="pi pi-bell" 
-                            label="New Orders" 
-                            to="admin.dashboard" 
-                            hash="#new-orders-section"
-                        />
-                        <SideBarButton 
-                            icon="pi pi-check-circle" 
-                            label="Confirmed Orders" 
-                            to="admin.dashboard" 
-                            hash="#confirmed-orders-section"
-                        />
-                    </div>
+                <!-- Main Dashboard -->
+                <nav class="mb-2">
+                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 opacity-70">Main Dashboard</p>
+                    <SideBarButton icon="pi pi-home" label="Dashboard" to="admin.dashboard" />
+                    <SideBarButton icon="pi pi-calculator" label="POS" to="admin.pos.index" />
+                    <SideBarButton icon="pi pi-shopping-bag" label="Orders" to="admin.order.index" />
                 </nav>
 
-                <!-- Reports Section -->
-                <nav>
-                    <p class="px-3 text-[10px] font-extrabold text-blue-100/60 uppercase tracking-[0.15em] mb-3 pt-2">Analytics</p>
-                    <div class="space-y-1">
-                        <SideBarButton 
-                            icon="pi pi-chart-line" 
-                            label="Sales & Revenue" 
-                            to="admin.dashboard" 
-                            hash="#sales-revenue-section"
-                        />
-                        <SideBarButton 
-                            icon="pi pi-exclamation-circle" 
-                            label="Stock Alerts" 
-                            to="admin.dashboard" 
-                            hash="#nearly-out-of-stock-section"
-                        />
-                         <SideBarButton 
-                            icon="pi pi-star" 
-                            label="Best Selling" 
-                            to="admin.dashboard" 
-                            hash="#best-selling-products-section"
-                        />
-                        <SideBarButton 
-                            icon="pi pi-arrow-right-arrow-left" 
-                            label="Stock Movement" 
-                            to="admin.dashboard" 
-                            hash="#inventory-movement-section"
-                        />
-                    </div>
+                <!-- Inventory -->
+                <nav class="mb-2 pt-2 border-t border-white/10">
+                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Inventory</p>
+                    <SideBarButton icon="pi pi-box" label="Products" to="admin.product.index" />
+                    <SideBarButton icon="pi pi-tags" label="Categories" to="admin.category.index" />
+                    <SideBarButton icon="pi pi-ticket" label="Units" to="admin.unit.index" />
                 </nav>
 
-                <!-- Management Section -->
-                <nav>
-                    <p class="px-3 text-[10px] font-extrabold text-blue-100/60 uppercase tracking-[0.15em] mb-3 pt-2">Management</p>
-                    <div class="space-y-1">
-                        <SideBarButton icon="pi pi-shopping-cart" label="Order Handling" to="admin.order.index" />
-                        <SideBarButton icon="pi pi-users" label="Customer Base" to="admin.customer.index" />
-                        <SideBarButton icon="pi pi-box" label="Product Catalog" to="admin.product.index" />
-                        <SideBarButton icon="pi pi-tags" label="Categories" to="admin.category.index" />
-                        <SideBarButton icon="pi pi-ticket" label="Unit Specs" to="admin.unit.index" />
-                        <SideBarButton icon="pi pi-calculator" label="Point of Sale" to="admin.pos.index" />
-                    </div>
+                <!-- Sales Record -->
+                <nav class="mb-2 pt-2 border-t border-white/10">
+                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Sales Record</p>
+                    <SideBarButton icon="pi pi-user-plus" label="Walk-in Sales" to="admin.sales.walkin" />
+                    <SideBarButton icon="pi pi-globe" label="Online Sales" to="admin.sales.online" />
                 </nav>
 
-                <!-- System Section -->
-                <nav>
-                    <p class="px-3 text-[10px] font-extrabold text-blue-100/60 uppercase tracking-[0.15em] mb-3 pt-2">Infrastructure</p>
-                    <div class="space-y-1">
-                        <SideBarButton icon="pi pi-users" label="Staff Accounts" to="admin.user.index" />
-                        <SideBarButton icon="pi pi-cog" label="System Config" to="admin.settings.index" />
-                    </div>
+                <!-- System & Management -->
+                <nav class="mb-2 pt-2 border-t border-white/10">
+                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Management</p>
+                    <SideBarButton icon="pi pi-users" label="Users" to="admin.users.index" />
+                    <SideBarButton icon="pi pi-chart-bar" label="Reports" to="admin.report.index" />
+                    <SideBarButton icon="pi pi-star" label="Ratings" to="admin.rate.index" />
+                    <SideBarButton icon="pi pi-cog" label="Settings" to="admin.settings.index" />
                 </nav>
             </div>
         </div>
 
-        <!-- User Profile Area -->
-        <div class="p-5 border-t border-white/10 bg-[#1e40af]/30 backdrop-blur-md relative z-10">
-            <div class="flex items-center gap-3.5 mb-4 px-1">
-                <div class="relative group">
-                    <div class="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-xl flex items-center justify-center text-white font-black text-sm shadow-xl border border-white/20 group-hover:scale-105 transition-transform duration-300">
-                        {{ userInitials }}
-                    </div>
-                    <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-[#2563eb] rounded-full shadow-sm"></div>
+        <!-- User Information & Logout -->
+        <div class="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md relative z-10">
+            <div class="flex items-center gap-3 mb-3 px-2">
+                <div class="w-10 h-10 rounded-full bg-[#2563eb] flex items-center justify-center text-white font-bold border-2 border-white/20 shadow-sm">
+                    {{ userInitials }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-bold text-white truncate drop-shadow-sm">{{ userName }}</p>
-                    <p class="text-[10px] font-medium text-blue-100/80 truncate uppercase tracking-widest mt-0.5">Administrator</p>
+                    <p class="text-sm font-semibold text-white truncate">{{ userName }}</p>
+                    <p class="text-[11px] text-blue-100 truncate opacity-80 capitalize">{{ userRole }}</p>
                 </div>
             </div>
             
             <button 
                 @click="handleLogout" 
-                class="w-full flex items-center justify-center gap-2.5 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 text-[13px] font-bold border border-white/5 shadow-inner active:scale-[0.98] group"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-200 text-sm font-medium border border-white/5 active:scale-95 group"
             >
-                <i class="pi pi-sign-out text-blue-100 group-hover:translate-x-0.5 transition-transform duration-300"></i>
+                <i class="pi pi-sign-out text-white group-hover:translate-x-1 transition-transform"></i>
                 <span>Sign Out</span>
             </button>
         </div>
@@ -156,15 +104,8 @@ const logoutService = useAxiosUtil();
 // Use responsive composable
 const { isDesktop, getResponsiveClasses } = useResponsive();
 
-const handleLogout = async () => {
-    await logoutService.post("logout", null).then(() => {
-        Page.user = null;
-        router.push({ name: "admin.login" });
-        toast.success("Logged out successfully");
-    });
-};
-
 const userName = computed(() => Page.user?.full_name || 'Admin User');
+const userRole = computed(() => Page.user?.role?.role_name || 'Administrator');
 
 const userInitials = computed(() => {
     const name = userName.value;
@@ -175,28 +116,37 @@ const userInitials = computed(() => {
         .toUpperCase()
         .slice(0, 2);
 });
+
+const handleLogout = async () => {
+    await logoutService.post("logout", null).then(() => {
+        Page.user = null;
+        router.push({ name: "admin.login" });
+        toast.success("Logged out successfully");
+    });
+};
 </script>
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
 }
 
-/* Ensure SideBarButton works well with our specific blue background */
-:deep(.p-router-link-active) {
-    background: rgba(255, 255, 255, 0.1) !important;
+/* Ensure SideBarButton has consistent hover/active behavior for this blue theme */
+:deep(.router-link-active > div) {
+    background-color: white !important;
+    color: #2563eb !important;
 }
 </style>
