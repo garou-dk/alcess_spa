@@ -92,7 +92,7 @@ const isActive = computed(() => {
 const handleMouseEnter = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
-        target.style.backgroundColor = '#1E40AF';
+        target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
         
         if (isMobile.value) {
             // Mobile: just change background, no border radius or margin adjustments
