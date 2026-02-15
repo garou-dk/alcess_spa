@@ -129,7 +129,7 @@
             </div>
             
             <button 
-                @click="authService.logout()" 
+                @click="handleLogout" 
                 class="w-full flex items-center justify-center gap-2.5 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 text-[13px] font-bold border border-white/5 shadow-inner active:scale-[0.98] group"
             >
                 <i class="pi pi-sign-out text-blue-100 group-hover:translate-x-0.5 transition-transform duration-300"></i>
@@ -141,17 +141,28 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import AuthService from "@/services/AuthService";
 import SideBarButton from "../SideBarButton.vue";
 import Page from "@/stores/Page";
 import { useResponsive } from "@/composables/useResponsive";
+import useAxiosUtil from "@/utils/AxiosUtil";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 
 const emit = defineEmits(['closeSidebar']);
+const router = useRouter();
+const toast = useToast();
+const logoutService = useAxiosUtil();
 
 // Use responsive composable
 const { isDesktop, getResponsiveClasses } = useResponsive();
 
-const authService = new AuthService();
+const handleLogout = async () => {
+    await logoutService.post("logout", null).then(() => {
+        Page.user = null;
+        router.push({ name: "admin.login" });
+        toast.success("Logged out successfully");
+    });
+};
 
 const userName = computed(() => Page.user?.full_name || 'Admin User');
 
