@@ -1,152 +1,248 @@
 <template>
-    <div class="h-full flex flex-col bg-[#2563eb] text-white shadow-xl transition-all duration-300 relative overflow-hidden">
-        <!-- Sidebar Header -->
+    <div :class="getResponsiveClasses({
+        mobile: 'h-full overflow-auto',
+        tablet: 'h-full overflow-auto pb-2',
+        desktop: 'h-full overflow-auto pb-2 scrollbar-hide'
+    })" :style="getResponsiveStyles()">
+        <!-- Clean Header - No Logo/Name -->
         <div :class="getResponsiveClasses({
-            mobile: 'flex items-center justify-between h-16 px-4 border-b border-white/10 relative z-10',
-            tablet: 'flex items-center justify-between h-20 px-5 border-b border-white/10 relative z-10',
-            desktop: 'flex items-center gap-3 h-20 px-6 border-b border-white/10 relative z-10'
-        })">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center shadow-sm">
-                    <i class="pi pi-th-large text-white text-lg"></i>
+            mobile: 'flex items-center justify-between gap-2 px-4 py-3',
+            tablet: 'flex items-center justify-between gap-2 px-4 py-3',
+            desktop: 'flex items-center justify-center px-5 py-4'
+        })" class="border-b border-white/10">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                    <i class="pi pi-th-large text-white/90 text-sm"></i>
                 </div>
-                <div class="flex flex-col">
-                    <h1 class="font-bold text-lg tracking-wide uppercase leading-none">Alcess</h1>
-                    <span class="text-[10px] text-blue-100 font-medium tracking-widest mt-1">ADMIN PANEL</span>
-                </div>
+                <span class="text-sm font-semibold text-white/90 tracking-wide uppercase">Admin Panel</span>
             </div>
-            
-            <!-- Mobile Toggle -->
+            <!-- Close button for mobile only -->
             <button 
-                v-if="!isDesktop"
-                @click="emit('closeSidebar')"
-                class="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+                v-if="isMobile"
+                @click="closeSidebar"
+                class="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
         </div>
 
-        <!-- Scrollable Navigation Area -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar py-4 relative z-10">
-            <div class="flex flex-col gap-1 px-3">
-                
-                <!-- Main Dashboard -->
-                <nav class="mb-2">
-                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 opacity-70">Main Dashboard</p>
-                    <SideBarButton icon="pi pi-home" label="Dashboard" to="admin.dashboard" />
-                    <SideBarButton icon="pi pi-calculator" label="POS" to="admin.pos.index" />
-                    <SideBarButton icon="pi pi-shopping-bag" label="Orders" to="admin.order.index" />
-                </nav>
-
-                <!-- Inventory -->
-                <nav class="mb-2 pt-2 border-t border-white/10">
-                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Inventory</p>
-                    <SideBarButton icon="pi pi-box" label="Products" to="admin.product.index" />
-                    <SideBarButton icon="pi pi-tags" label="Categories" to="admin.category.index" />
-                    <SideBarButton icon="pi pi-ticket" label="Units" to="admin.unit.index" />
-                </nav>
-
-                <!-- Sales Record -->
-                <nav class="mb-2 pt-2 border-t border-white/10">
-                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Sales Record</p>
-                    <SideBarButton icon="pi pi-user-plus" label="Walk-in Sales" to="admin.sales.walkin" />
-                    <SideBarButton icon="pi pi-globe" label="Online Sales" to="admin.sales.online" />
-                </nav>
-
-                <!-- System & Management -->
-                <nav class="mb-2 pt-2 border-t border-white/10">
-                    <p class="px-3 text-[11px] font-bold text-blue-200 uppercase tracking-wider mb-2 mt-1 opacity-70">Management</p>
-                    <SideBarButton icon="pi pi-users" label="Users" to="admin.users.index" />
-                    <SideBarButton icon="pi pi-chart-bar" label="Reports" to="admin.report.index" />
-                    <SideBarButton icon="pi pi-star" label="Ratings" to="admin.rate.index" />
-                    <SideBarButton icon="pi pi-cog" label="Settings" to="admin.settings.index" />
-                </nav>
+        <!-- Navigation Section -->
+        <nav class="px-2 py-3 space-y-0.5">
+            <!-- DASHBOARD Section Label -->
+            <div class="px-3 pt-3 pb-1.5">
+                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Dashboard</span>
             </div>
-        </div>
 
-        <!-- User Information & Logout -->
-        <div class="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md relative z-10">
-            <div class="flex items-center gap-3 mb-3 px-2">
-                <div class="w-10 h-10 rounded-full bg-[#2563eb] flex items-center justify-center text-white font-bold border-2 border-white/20 shadow-sm">
-                    {{ userInitials }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-white truncate">{{ userName }}</p>
-                    <p class="text-[11px] text-blue-100 truncate opacity-80 capitalize">{{ userRole }}</p>
-                </div>
+            <!-- Dashboard overview link -->
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-objects-column"
+                label="Overview"
+                :hash="'#overview-section'"
+            />
+
+            <!-- Dashboard sub-items displayed directly -->
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-plus-circle"
+                label="New Orders"
+                :hash="'#new-orders-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-check-circle"
+                label="Confirmed Orders"
+                :hash="'#confirmed-orders-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-chart-pie"
+                label="Sales / Revenue"
+                :hash="'#sales-distribution-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-exclamation-triangle"
+                label="Nearly Out of Stock"
+                :hash="'#nearly-out-of-stock-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-star"
+                label="Best Selling Products"
+                :hash="'#best-selling-products-section'"
+                :isSubItem="true"
+            />
+            <SideBarButton
+                to="admin.dashboard.index"
+                icon="pi pi-arrows-h"
+                label="Inventory Movement"
+                :hash="'#inventory-movement-section'"
+                :isSubItem="true"
+            />
+
+            <!-- Divider -->
+            <div class="mx-3 my-2 border-t border-white/10"></div>
+
+            <!-- MANAGEMENT Section Label -->
+            <div class="px-3 pt-2 pb-1.5">
+                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Management</span>
             </div>
-            
-            <button 
-                @click="handleLogout" 
-                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-200 text-sm font-medium border border-white/5 active:scale-95 group"
+
+            <SideBarAccordion
+                icon="pi pi-shopping-cart"
+                label="Orders"
+                :active="['admin.order.index', 'admin.pos.index', 'admin.pos.find'].includes(route.name as string)"
             >
-                <i class="pi pi-sign-out text-white group-hover:translate-x-1 transition-transform"></i>
-                <span>Sign Out</span>
-            </button>
-        </div>
+                <SideBarButton
+                    to="admin.pos.index"
+                    icon="pi pi-shop"
+                    label="Walk-In"
+                    :isSubItem="true"
+                />
+                <SideBarButton
+                    to="admin.order.index"
+                    icon="pi pi-globe"
+                    label="Online"
+                    :isSubItem="true"
+                />
+            </SideBarAccordion>
+            <SideBarAccordion
+                v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
+                icon="pi pi-dollar"
+                label="Sales"
+                :active="['admin.sales.walkin', 'admin.sales.online'].includes(route.name as string)"
+            >
+                <SideBarButton
+                    to="admin.sales.walkin"
+                    icon="pi pi-shop"
+                    label="Walk-In"
+                    :isSubItem="true"
+                />
+                <SideBarButton
+                    to="admin.sales.online"
+                    icon="pi pi-globe"
+                    label="Online"
+                    :isSubItem="true"
+                />
+            </SideBarAccordion>
+            <SideBarButton
+                to="admin.product.index"
+                icon="pi pi-book"
+                label="Inventory"
+            />
+
+            <!-- Divider -->
+            <div class="mx-3 my-2 border-t border-white/10"></div>
+
+            <!-- SYSTEM Section Label -->
+            <div class="px-3 pt-2 pb-1.5">
+                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">System</span>
+            </div>
+
+            <SideBarButton
+                v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
+                to="admin.users.index"
+                icon="pi pi-users"
+                label="Users"
+            />
+            <SideBarAccordion
+                v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
+                icon="pi pi-cog"
+                label="Settings"
+                :active="['admin.unit.index', 'admin.category.index', 'admin.setting.index'].includes(route.name as string)"
+            >
+                <SideBarButton
+                    to="admin.unit.index"
+                    icon="pi pi-box"
+                    label="Units"
+                    :isSubItem="true"
+                />
+                <SideBarButton
+                    to="admin.category.index"
+                    icon="pi pi-tag"
+                    label="Categories"
+                    :isSubItem="true"
+                />
+                <SideBarButton
+                    to="admin.setting.index"
+                    icon="pi pi-cog"
+                    label="Settings"
+                    :isSubItem="true"
+                />
+            </SideBarAccordion>
+            <SideBarButton
+                v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
+                to="admin.report.index"
+                icon="pi pi-chart-bar"
+                label="Reports"
+            />
+            <SideBarButton
+                to="admin.rate.index"
+                icon="pi pi-star"
+                label="Ratings"
+            />
+        </nav>
     </div>
 </template>
-
 <script setup lang="ts">
-import { computed } from "vue";
-import SideBarButton from "../SideBarButton.vue";
+import SideBarButton from "@/components/SideBarButton.vue";
+import SideBarAccordion from "@/components/SideBarAccordion.vue";
+import { useRoute, useRouter } from "vue-router";
 import Page from "@/stores/Page";
+import { RoleEnum } from "@/enums/RoleEnum";
 import { useResponsive } from "@/composables/useResponsive";
-import useAxiosUtil from "@/utils/AxiosUtil";
-import { useRouter } from "vue-router";
-import { useToast } from "vue-toastification";
+import { inject } from "vue";
 
-const emit = defineEmits(['closeSidebar']);
+const route = useRoute();
 const router = useRouter();
-const toast = useToast();
-const logoutService = useAxiosUtil();
+
+// Inject sideBar ref from parent
+const sideBar = inject("sideBar");
 
 // Use responsive composable
-const { isDesktop, getResponsiveClasses } = useResponsive();
+const responsive = useResponsive();
+const { 
+    isMobile, 
+    isTablet, 
+    isDesktop 
+} = responsive;
 
-const userName = computed(() => Page.user?.full_name || 'Admin User');
-const userRole = computed(() => Page.user?.role?.role_name || 'Administrator');
+// Extract the function separately to ensure it's available
+const getResponsiveClasses = responsive.getResponsiveClasses;
 
-const userInitials = computed(() => {
-    const name = userName.value;
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-});
+const closeSidebar = () => {
+    if (sideBar) {
+        sideBar.value = false;
+    }
+};
 
-const handleLogout = async () => {
-    await logoutService.post("logout", null).then(() => {
-        Page.user = null;
-        router.push({ name: "admin.login" });
-        toast.success("Logged out successfully");
-    });
+const getResponsiveStyles = () => {
+    const baseStyle = 'background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 50%, #172554 100%);';
+    
+    if (isMobile.value) {
+        return `${baseStyle} width: 100%; min-width: 100%; min-height: 100vh;`;
+    }
+    if (isTablet.value) {
+        return `${baseStyle} width: 260px; min-width: 260px;`;
+    }
+    // Desktop - original size
+    return `${baseStyle} width: 272px; min-width: 272px;`;
 };
 </script>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+.scrollbar-hide {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* Ensure SideBarButton has consistent hover/active behavior for this blue theme */
-:deep(.router-link-active > div) {
-    background-color: white !important;
-    color: #2563eb !important;
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 </style>
