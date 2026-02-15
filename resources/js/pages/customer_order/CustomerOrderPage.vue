@@ -482,9 +482,24 @@ const closePaymentModal = () => {
     paymentModal.value.visible = false;
 };
 
-const paymentModalCb = () => {
+const paymentModalCb = (updatedOrder?: IOrder) => {
     paymentModal.value.visible = false;
-    load();
+
+    if (updatedOrder) {
+        // Update the order in the main list
+        const index = data.value.findIndex(o => o.order_id === updatedOrder.order_id);
+        if (index !== -1) {
+            data.value[index] = updatedOrder;
+        }
+
+        // Update in filtered list too if necessary
+        const filteredIndex = filtered.value.findIndex(o => o.order_id === updatedOrder.order_id);
+        if (filteredIndex !== -1) {
+            filtered.value[filteredIndex] = updatedOrder;
+        }
+    } else {
+        load();
+    }
 };
 
 // Check if any orders are awaiting admin review or pending action
