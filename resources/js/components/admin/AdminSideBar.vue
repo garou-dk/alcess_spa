@@ -4,97 +4,85 @@
         tablet: 'h-full flex flex-col',
         desktop: 'h-full flex flex-col scrollbar-hide'
     })" :style="getResponsiveStyles()">
-        <!-- Clean Header - No Logo/Name -->
+        <!-- Premium Header Area -->
         <div :class="getResponsiveClasses({
             mobile: 'flex items-center justify-between gap-2 px-4 py-4',
             tablet: 'flex items-center justify-between gap-2 px-5 py-5',
             desktop: 'flex items-center justify-start px-6 py-6'
-        })" class="border-b border-gray-50">
+        })" class="border-b border-white/10 bg-[#1e40af]/30 backdrop-blur-sm">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
-                    <i class="pi pi-shield text-white text-base"></i>
+                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg transition-transform duration-300">
+                    <i class="pi pi-shield text-[#2563eb] text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-sm font-black text-black tracking-tight leading-none uppercase">Alcess</span>
-                    <span class="text-[9px] font-bold text-gray-700 tracking-[0.2em] mt-1 uppercase">Admin System</span>
+                    <span class="text-sm font-black text-white tracking-tight leading-none uppercase">Alcess</span>
+                    <span class="text-[9px] font-bold text-blue-100/60 tracking-[0.2em] mt-1 uppercase">Admin System</span>
                 </div>
             </div>
             <!-- Close button for mobile only -->
             <button 
                 v-if="isMobile"
                 @click="closeSidebar"
-                class="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
+                class="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
         </div>
 
         <!-- Navigation Section -->
-        <div class="flex-1 overflow-y-auto scrollbar-hide">
-            <nav class="px-2 py-4 space-y-1">
+        <div class="flex-1 overflow-y-auto scrollbar-hide py-4">
+            <nav class="px-2 space-y-1">
                 <!-- DASHBOARD Section Label -->
-                <div class="px-4 pt-2 pb-2">
-                    <span class="text-[11px] font-black text-black uppercase tracking-[0.15em]">Dashboard</span>
+                <div class="px-4 pb-2">
+                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">Dashboard</span>
                 </div>
     
-                <!-- Dashboard link -->
-                <SideBarButton
-                    to="admin.dashboard.index"
-                    icon="pi pi-objects-column"
-                    label="Dashboard"
-                    :hash="'#overview-section'"
-                />
-    
-                <!-- Dashboard sub-items displayed directly -->
+                <!-- New order priority items -->
                 <SideBarButton
                     to="admin.dashboard.index"
                     icon="pi pi-plus-circle"
                     label="New Orders"
                     :hash="'#new-orders-section'"
-                    :isSubItem="true"
+                    :badge="pendingOrdersCount"
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
                     icon="pi pi-check-circle"
                     label="Confirmed Orders"
                     :hash="'#confirmed-orders-section'"
-                    :isSubItem="true"
+                />
+                <SideBarButton
+                    to="admin.dashboard.index"
+                    icon="pi pi-star"
+                    label="Best Selling Product"
+                    :hash="'#best-selling-products-section'"
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
                     icon="pi pi-chart-pie"
                     label="Sales / Revenue"
                     :hash="'#sales-distribution-section'"
-                    :isSubItem="true"
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
                     icon="pi pi-exclamation-triangle"
-                    label="Nearly Out of Stock"
+                    label="Nearly out of stock"
                     :hash="'#nearly-out-of-stock-section'"
-                    :isSubItem="true"
-                />
-                <SideBarButton
-                    to="admin.dashboard.index"
-                    icon="pi pi-star"
-                    label="Best Selling Products"
-                    :hash="'#best-selling-products-section'"
-                    :isSubItem="true"
+                    :badge="lowStockCount"
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
                     icon="pi pi-arrows-h"
-                    label="Inventory Movement"
+                    label="Inventory movement"
                     :hash="'#inventory-movement-section'"
-                    :isSubItem="true"
                 />
     
                 <!-- Divider -->
-                <div class="mx-4 my-4 border-t border-gray-50"></div>
+                <div class="mx-4 my-4 border-t border-white/5"></div>
     
                 <!-- MANAGEMENT Section Label -->
-                <div class="px-4 pt-2 pb-2">
-                    <span class="text-[11px] font-black text-black uppercase tracking-[0.15em]">Management</span>
+                <div class="px-4 pb-2">
+                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">Management</span>
                 </div>
     
                 <SideBarAccordion
@@ -141,11 +129,11 @@
                 />
     
                 <!-- Divider -->
-                <div class="mx-4 my-4 border-t border-gray-50"></div>
+                <div class="mx-4 my-4 border-t border-white/5"></div>
     
                 <!-- SYSTEM Section Label -->
-                <div class="px-4 pt-2 pb-2">
-                    <span class="text-[11px] font-black text-black uppercase tracking-[0.15em]">System</span>
+                <div class="px-4 pb-2">
+                    <span class="text-[11px] font-black text-white/40 uppercase tracking-[0.15em]">System</span>
                 </div>
     
                 <SideBarButton
@@ -194,32 +182,31 @@
         </div>
 
         <!-- Premium Footer -->
-        <div class="p-4 border-t border-gray-50 bg-gray-50/30">
+        <div class="p-4 border-t border-white/10 bg-[#172554]/40 backdrop-blur-md">
             <div class="flex items-center gap-3 px-2 mb-4">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-blue-100 uppercase tracking-tighter">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#2563eb] font-black text-xs shadow-lg uppercase tracking-tighter">
                         {{ userInitials }}
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full shadow-sm"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[#1e3a8a] rounded-full shadow-sm"></div>
                 </div>
                 <div class="flex flex-col min-w-0">
-                    <span class="text-[13px] font-black text-black truncate leading-tight">{{ userName }}</span>
-                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">Administrator</span>
+                    <span class="text-[13px] font-black text-white truncate leading-tight">{{ userName }}</span>
+                    <span class="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest mt-0.5">Administrator</span>
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 gap-2">
-                <button 
-                    @click="handleLogout"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-red-50 text-black hover:text-red-600 rounded-xl transition-all duration-300 text-xs font-black border border-gray-100 shadow-sm active:scale-95 group"
-                >
-                    <i class="pi pi-sign-out group-hover:translate-x-0.5 transition-transform duration-300"></i>
-                    <span>SIGN OUT</span>
-                </button>
-            </div>
+            <button 
+                @click="handleLogout"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 text-xs font-black border border-white/5 shadow-inner active:scale-95 group"
+            >
+                <i class="pi pi-sign-out group-hover:translate-x-0.5 transition-transform duration-300"></i>
+                <span>SIGN OUT</span>
+            </button>
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
 import SideBarButton from "@/components/SideBarButton.vue";
 import SideBarAccordion from "@/components/SideBarAccordion.vue";
@@ -227,9 +214,10 @@ import { useRoute, useRouter } from "vue-router";
 import Page from "@/stores/Page";
 import { RoleEnum } from "@/enums/RoleEnum";
 import { useResponsive } from "@/composables/useResponsive";
-import { computed, inject } from "vue";
+import { computed, inject, onMounted } from "vue";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { useToast } from "vue-toastification";
+import { useDashboardData } from "@/composables/useDashboardData";
 
 const route = useRoute();
 const router = useRouter();
@@ -246,6 +234,13 @@ const {
     isTablet, 
     isDesktop 
 } = responsive;
+
+// Dashboard data for live badges
+const { dashboardData, loadDashboardData } = useDashboardData();
+
+// Computed properties for live badges
+const pendingOrdersCount = computed(() => dashboardData.pending_orders?.count || dashboardData.pending_orders_list?.length || 0);
+const lowStockCount = computed(() => dashboardData.nearly_out_of_stock?.length || 0);
 
 // Extract the function separately to ensure it's available
 const getResponsiveClasses = responsive.getResponsiveClasses;
@@ -277,7 +272,7 @@ const userInitials = computed(() => {
 });
 
 const getResponsiveStyles = () => {
-    const baseStyle = 'background: #ffffff; border-right: 1px solid #f1f5f9;';
+    const baseStyle = 'background: linear-gradient(180deg, #1e40af 0%, #172554 100%); border-right: 1px solid rgba(255, 255, 255, 0.1);';
     
     if (isMobile.value) {
         return `${baseStyle} width: 100%; min-width: 100%; min-height: 100vh;`;
@@ -288,6 +283,11 @@ const getResponsiveStyles = () => {
     // Desktop - original size
     return `${baseStyle} width: 272px; min-width: 272px;`;
 };
+
+onMounted(() => {
+    // Load dashboard data for badges if not already loaded
+    loadDashboardData();
+});
 </script>
 
 <style scoped>
