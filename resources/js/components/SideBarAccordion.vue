@@ -12,9 +12,9 @@
                 tablet: 'flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 transition-all duration-200',
                 desktop: 'flex w-full cursor-pointer items-center gap-4 px-4 py-3 transition-all duration-200'
             })"
-            style="color: #ffffff; border-radius: 8px; background-color: transparent;"
-            @mouseenter="$event.currentTarget.style.backgroundColor = '#1E40AF'"
-            @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+            style="color: #64748b; border-radius: 8px; background-color: transparent;"
+            @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = '#f8fafc'; ($event.currentTarget as HTMLElement).style.color = '#2563eb'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; ($event.currentTarget as HTMLElement).style.color = '#64748b'"
         >
             <i :class="[props.icon, getResponsiveClasses({
                 mobile: 'text-base',

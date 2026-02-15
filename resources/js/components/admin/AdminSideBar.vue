@@ -9,18 +9,18 @@
             mobile: 'flex items-center justify-between gap-2 px-4 py-3',
             tablet: 'flex items-center justify-between gap-2 px-4 py-3',
             desktop: 'flex items-center justify-center px-5 py-4'
-        })" class="border-b border-white/10">
+        })" class="border-b border-gray-100">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center">
-                    <i class="pi pi-th-large text-white/90 text-sm"></i>
+                <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <i class="pi pi-th-large text-blue-600 text-sm"></i>
                 </div>
-                <span class="text-sm font-semibold text-white/90 tracking-wide uppercase">Admin Panel</span>
+                <span class="text-sm font-bold text-gray-800 tracking-wide uppercase">Admin Panel</span>
             </div>
             <!-- Close button for mobile only -->
             <button 
                 v-if="isMobile"
                 @click="closeSidebar"
-                class="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
+                class="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
             >
                 <i class="pi pi-times text-lg"></i>
             </button>
@@ -30,14 +30,14 @@
         <nav class="px-2 py-3 space-y-0.5">
             <!-- DASHBOARD Section Label -->
             <div class="px-3 pt-3 pb-1.5">
-                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Dashboard</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dashboard</span>
             </div>
 
-            <!-- Dashboard overview link -->
+            <!-- Dashboard link -->
             <SideBarButton
                 to="admin.dashboard.index"
                 icon="pi pi-objects-column"
-                label="Overview"
+                label="Dashboard"
                 :hash="'#overview-section'"
             />
 
@@ -90,7 +90,7 @@
 
             <!-- MANAGEMENT Section Label -->
             <div class="px-3 pt-2 pb-1.5">
-                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Management</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Management</span>
             </div>
 
             <SideBarAccordion
@@ -141,7 +141,7 @@
 
             <!-- SYSTEM Section Label -->
             <div class="px-3 pt-2 pb-1.5">
-                <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">System</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System</span>
             </div>
 
             <SideBarButton
@@ -222,7 +222,7 @@ const closeSidebar = () => {
 };
 
 const getResponsiveStyles = () => {
-    const baseStyle = 'background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 50%, #172554 100%);';
+    const baseStyle = 'background: #ffffff; border-right: 1px solid #f1f5f9;';
     
     if (isMobile.value) {
         return `${baseStyle} width: 100%; min-width: 100%; min-height: 100vh;`;

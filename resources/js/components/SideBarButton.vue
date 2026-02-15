@@ -18,8 +18,8 @@
                         : 'group flex items-center gap-4 px-4 py-3 transition-all duration-300 ease-in-out cursor-pointer relative'
                 })"
                 :style="{
-                    color: isActive ? '#2563EB' : '#ffffff',
-                    backgroundColor: isActive ? '#F3F4F6' : 'transparent',
+                    color: isActive ? '#ffffff' : '#64748b',
+                    backgroundColor: isActive ? '#2563eb' : 'transparent',
                     borderRadius: isActive ? (isMobile ? '0' : '8px 0 0 8px') : (isMobile ? '0' : '8px'),
                     marginRight: isActive ? (isMobile ? '0' : isTablet ? '-10px' : '-12px') : '0',
                     paddingRight: isActive ? (isMobile ? '1rem' : isTablet ? 'calc(0.75rem + 10px)' : 'calc(1rem + 12px)') : (isMobile ? '1rem' : isTablet ? '0.75rem' : '1rem')
@@ -40,14 +40,14 @@
                 })]" />
                 <span :class="getResponsiveClasses({
                     mobile: props.isSubItem
-                        ? 'text-xs font-medium opacity-95'
-                        : 'text-sm font-medium',
+                        ? 'text-xs font-semibold opacity-95'
+                        : 'text-sm font-semibold',
                     tablet: props.isSubItem
-                        ? 'text-xs font-medium opacity-95'
-                        : 'text-sm font-medium',
+                        ? 'text-xs font-semibold opacity-95'
+                        : 'text-sm font-semibold',
                     desktop: props.isSubItem
-                        ? 'text-sm font-medium opacity-95'
-                        : 'text-base font-medium'
+                        ? 'text-sm font-semibold opacity-95'
+                        : 'text-base font-semibold'
                 })">{{ props.label }}</span>
             </div>
         </RouterLink>
@@ -92,10 +92,10 @@ const isActive = computed(() => {
 const handleMouseEnter = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
-        target.style.backgroundColor = '#1E40AF';
+        target.style.backgroundColor = '#f8fafc';
+        target.style.color = '#2563eb';
         
         if (isMobile.value) {
-            // Mobile: just change background, no border radius or margin adjustments
             target.style.borderRadius = '0';
             target.style.marginRight = '0';
             target.style.paddingRight = '1rem';
@@ -104,7 +104,6 @@ const handleMouseEnter = (event: MouseEvent) => {
             target.style.marginRight = '-10px';
             target.style.paddingRight = 'calc(0.75rem + 10px)';
         } else {
-            // Desktop: apply same styling for both main items and sub-items
             target.style.borderRadius = '8px 0 0 8px';
             target.style.marginRight = '-12px';
             target.style.paddingRight = 'calc(1rem + 12px)';
@@ -116,6 +115,7 @@ const handleMouseLeave = (event: MouseEvent) => {
     if (!isActive.value) {
         const target = event.currentTarget as HTMLElement;
         target.style.backgroundColor = 'transparent';
+        target.style.color = '#64748b';
         target.style.marginRight = '0';
         
         if (isMobile.value) {
@@ -125,7 +125,6 @@ const handleMouseLeave = (event: MouseEvent) => {
             target.style.borderRadius = '8px';
             target.style.paddingRight = '0.75rem';
         } else {
-            // Desktop: reset styling for both main items and sub-items
             target.style.borderRadius = '8px';
             target.style.paddingRight = '1rem';
         }
