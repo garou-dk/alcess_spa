@@ -9,14 +9,14 @@
             mobile: 'flex items-center justify-between gap-2 px-4 py-4',
             tablet: 'flex items-center justify-between gap-2 px-5 py-5',
             desktop: 'flex items-center justify-start px-6 py-6'
-        })" class="border-b border-white/10 bg-white/5 backdrop-blur-sm">
+        })" class="border-b border-white/10 bg-[#1e40af]/30 backdrop-blur-sm">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-lg transition-transform duration-300">
-                    <i class="pi pi-shield text-[#2563eb] text-base"></i>
+                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg transition-transform duration-300">
+                    <i class="pi pi-shield text-[#2563eb] text-lg"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-[13px] font-bold text-white tracking-tight leading-none uppercase">Alcess</span>
-                    <span class="text-[8.5px] font-bold text-white/50 tracking-[0.2em] mt-1 uppercase">Admin System</span>
+                    <span class="text-sm font-black text-white tracking-tight leading-none uppercase">Alcess</span>
+                    <span class="text-[9px] font-bold text-blue-100/60 tracking-[0.2em] mt-1 uppercase">Admin System</span>
                 </div>
             </div>
             <!-- Close button for mobile only -->
@@ -34,7 +34,7 @@
             <nav class="px-2 space-y-0.5">
                 <!-- DASHBOARD Section Label -->
                 <div class="px-3 pb-1.5 pt-1">
-                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">Dashboard</span>
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboard</span>
                 </div>
     
                 <!-- New order priority items -->
@@ -82,7 +82,7 @@
     
                 <!-- MANAGEMENT Section Label -->
                 <div class="px-3 pb-1.5">
-                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">Management</span>
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">Management</span>
                 </div>
     
                 <SideBarAccordion
@@ -133,7 +133,7 @@
     
                 <!-- SYSTEM Section Label -->
                 <div class="px-3 pb-1.5">
-                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">System</span>
+                    <span class="text-[9.5px] font-bold text-white/40 uppercase tracking-[0.2em]">System</span>
                 </div>
     
                 <SideBarButton
@@ -182,23 +182,23 @@
         </div>
 
         <!-- Premium Footer -->
-        <div class="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md">
+        <div class="p-4 border-t border-white/10 bg-[#172554]/40 backdrop-blur-md">
             <div class="flex items-center gap-3 px-2 mb-4">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#2563eb] font-bold text-xs shadow-lg uppercase tracking-tighter">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#2563eb] font-black text-xs shadow-lg uppercase tracking-tighter">
                         {{ userInitials }}
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-[#2563eb] rounded-full"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[#1e3a8a] rounded-full shadow-sm"></div>
                 </div>
                 <div class="flex flex-col min-w-0">
-                    <span class="text-[12px] font-bold text-white truncate leading-tight">{{ userName }}</span>
-                    <span class="text-[9px] font-bold text-white/40 uppercase tracking-widest mt-0.5">Administrator</span>
+                    <span class="text-[13px] font-black text-white truncate leading-tight">{{ userName }}</span>
+                    <span class="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest mt-0.5">Administrator</span>
                 </div>
             </div>
             
             <button 
                 @click="handleLogout"
-                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-300 text-[11px] font-bold border border-white/5 active:scale-95 group"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 text-xs font-black border border-white/5 shadow-inner active:scale-95 group"
             >
                 <i class="pi pi-sign-out group-hover:translate-x-0.5 transition-transform duration-300"></i>
                 <span>SIGN OUT</span>
@@ -272,7 +272,7 @@ const userInitials = computed(() => {
 });
 
 const getResponsiveStyles = () => {
-    const baseStyle = 'background: #2563eb;';
+    const baseStyle = 'background: linear-gradient(180deg, #1e40af 0%, #172554 100%); border-right: 1px solid rgba(255, 255, 255, 0.1);';
     
     if (isMobile.value) {
         return `${baseStyle} width: 100%; min-width: 100%; min-height: 100vh;`;
