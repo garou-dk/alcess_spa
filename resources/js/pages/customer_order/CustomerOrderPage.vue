@@ -322,6 +322,7 @@ const navs = ref([
     { label: 'Confirmed', icon: 'pi pi-check-circle', active: false },
     { label: 'Shipped', icon: 'pi pi-truck', active: false },
     { label: 'Completed', icon: 'pi pi-box', active: false },
+    { label: 'Cancelled', icon: 'pi pi-times-circle', active: false },
 ]);
 
 const cancelModal = ref({ visible: false, order: null as IOrder | null });
