@@ -1331,6 +1331,20 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Modal Actions -->
+                        <div :class="getResponsiveClasses({
+                            mobile: 'mt-6 flex justify-center',
+                            tablet: 'mt-6 flex justify-end',
+                            desktop: 'mt-6 flex justify-end'
+                        })">
+                            <Button
+                                label="Print Invoice"
+                                icon="pi pi-print"
+                                class="!bg-blue-600 hover:!bg-blue-700 !text-white"
+                                @click="handleViewInvoice(selectedSale)"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1760,6 +1774,17 @@ const loadSalesHistory = async () => {
 const onSaleRowClick = (event: any) => {
     selectedSale.value = event.data;
     viewSaleModal.value = true;
+};
+
+const handleViewInvoice = (sale: ISale) => {
+    if (sale.sale_id) {
+        router.push({
+            name: 'admin.pos.find',
+            params: {
+                id: sale.sale_id
+            }
+        });
+    }
 };
 
 // Load daily statistics and sales history when component mounts

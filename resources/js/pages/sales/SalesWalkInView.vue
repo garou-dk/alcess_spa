@@ -277,6 +277,16 @@
                             </span>
                         </template>
                     </Column>
+                    <Column header="Action">
+                        <template #body="{ data }">
+                            <Button 
+                                icon="pi pi-print" 
+                                label="Print Invoice"
+                                class="!bg-blue-600 hover:!bg-blue-700 !text-white !text-xs"
+                                @click.stop="handleViewInvoice(data)"
+                            />
+                        </template>
+                    </Column>
                     <template #empty>
                         <div class="text-center py-12">
                             <div class="mb-4">
@@ -802,6 +812,20 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Actions -->
+                <div :class="getResponsiveClasses({
+                    mobile: 'mt-6 flex justify-center',
+                    tablet: 'mt-6 flex justify-end',
+                    desktop: 'mt-6 flex justify-end'
+                })">
+                    <Button
+                        label="Print Invoice"
+                        icon="pi pi-print"
+                        class="!bg-blue-600 hover:!bg-blue-700 !text-white"
+                        @click="handleViewInvoice(selectedSale)"
+                    />
+                </div>
             </div>
         </Dialog>
     </div>
@@ -949,6 +973,17 @@ const viewSaleModal = ref(false);
 const onRowClick = (event: any) => {
     selectedSale.value = event.data;
     viewSaleModal.value = true;
+}
+
+const handleViewInvoice = (sale: ISale) => {
+    if (sale.sale_id) {
+        router.push({
+            name: 'admin.pos.find',
+            params: {
+                id: sale.sale_id
+            }
+        });
+    }
 }
 
 onMounted(() => {

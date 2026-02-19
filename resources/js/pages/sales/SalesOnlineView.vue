@@ -506,6 +506,7 @@
                 v-if="selectedOrder"
                 :data="selectedOrder"
                 @viewPayment="handleViewPayment"
+                @viewInvoice="handleViewInvoice"
             />
         </Dialog>
 
@@ -687,6 +688,18 @@ const onRowClick = (event: any) => {
 const handleViewPayment = (order: IOrder) => {
     paymentOrder.value = order;
     viewPaymentModal.value = true;
+}
+
+const handleViewInvoice = (order: IOrder) => {
+    if (order.sale_id) {
+        router.push({
+            name: 'admin.order.invoice',
+            params: {
+                orderId: order.order_id,
+                saleId: order.sale_id
+            }
+        });
+    }
 }
 
 onMounted(() => {
