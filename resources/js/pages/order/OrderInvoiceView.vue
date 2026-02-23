@@ -449,7 +449,8 @@
 
                 <div style="margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.6;">
                     <p style="margin: 5px 0; font-weight: bold;">"LCD, misuse, negligence NOT INCLUDED for Warrantys"</p>
-                    <p style="margin: 5px 0; font-weight: bold;">"1 YEAR WARRANTY FOR BRANDNEW AFTER 1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
+                    <p style="margin: 5px 0; font-weight: bold;">"1 YEAR WARRANTY FOR BRANDNEW"</p>
+                    <p style="margin: 5px 0; font-weight: bold;">"1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
                 </div>
             </div>
         </div>

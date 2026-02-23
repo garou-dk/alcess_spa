@@ -800,6 +800,7 @@ class OrderService
                 'total_amount' => $totalAmount,
                 'customer_name' => $order->user->full_name,
                 'customer_address' => $customerAddress,
+                'customer_phone' => $order->contact_number,
                 'prepared_by' => $adminUser->full_name,
                 'payment_method' => $salePaymentMethod
             ]);
