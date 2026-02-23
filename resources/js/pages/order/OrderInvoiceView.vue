@@ -348,6 +348,7 @@
                         <p style="margin: 2px 0;"><strong>Order ID:</strong> {{ orderData?.order_public_id || 'N/A' }}</p>
                         <p style="margin: 2px 0;"><strong>Customer:</strong> {{ data.customer_name || 'N/A' }}</p>
                         <p style="margin: 2px 0;"><strong>Address:</strong> {{ data.customer_address || 'N/A' }}</p>
+                        <p style="margin: 2px 0;"><strong>Contact No.:</strong> {{ data.customer_phone || 'N/A' }}</p>
                     </div>
                     <div style="text-align: right;">
                         <p style="margin: 2px 0;"><strong>Date:</strong> {{ DateUtil.formatToMonthDayYear(data.created_at) }}</p>
@@ -448,7 +449,7 @@
 
                 <div style="margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.6;">
                     <p style="margin: 5px 0; font-weight: bold;">"LCD, misuse, negligence NOT INCLUDED for Warrantys"</p>
-                    <p style="margin: 5px 0; font-weight: bold;">"1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
+                    <p style="margin: 5px 0; font-weight: bold;">"1 YEAR WARRANTY FOR BRANDNEW AFTER 1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
                 </div>
             </div>
         </div>
@@ -511,10 +512,25 @@ const printReport = () => {
     const logoUrl = new URL(Logo, window.location.origin).href;
     const html = printElement.innerHTML.replace('src="LOGO_PLACEHOLDER"', `src="${logoUrl}"`);
 
-    const printWindow = window.open("", "_blank", "width=1000,height=600");
-    if (!printWindow) return;
+    // Create a hidden iframe for printing
+    let iframe = document.getElementById('print-iframe') as HTMLIFrameElement;
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'print-iframe';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+    }
 
-    printWindow.document.write(`
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`
     <html>
       <head>
         <title>Sales Invoice</title>
@@ -529,28 +545,20 @@ const printReport = () => {
       <body>${html}</body>
     </html>
   `);
+    doc.close();
 
-    printWindow.document.close();
-    printWindow.focus();
-    
-    // Wait for images to load before printing
-    printWindow.onload = () => {
-        // Small delay to ensure images are loaded
-        setTimeout(() => {
-            printWindow.print();
-        }, 250);
-    };
-    
-    // Handle after print - redirect back to orders with auto-open modal
-    printWindow.onafterprint = () => {
-        printWindow.close();
-        handleAfterPrint();
-    };
-    
-    // Fallback for browsers that don't support onafterprint
-    printWindow.onbeforeunload = () => {
-        handleAfterPrint();
-    };
+    // Small delay to ensure content and images are loaded
+    setTimeout(() => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            
+            // Handle after print logic
+            setTimeout(() => {
+                handleAfterPrint();
+            }, 1000);
+        }
+    }, 500);
 };
 
 const handleAfterPrint = () => {

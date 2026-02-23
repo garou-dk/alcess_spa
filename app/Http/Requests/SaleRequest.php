@@ -28,6 +28,7 @@ class SaleRequest extends FormRequest
             'products.*.quantity' => ['required', 'integer', 'min:1'],
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_address' => ['required', 'string'],
+            'customer_phone' => ['required', 'string', 'max:20'],
             'prepared_by' => ['required', 'string', 'max:255'],
             'payment_method' => ['required', 'string', 'max:255']
         ];

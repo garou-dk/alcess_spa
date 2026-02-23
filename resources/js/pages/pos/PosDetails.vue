@@ -363,6 +363,7 @@
                     <div>
                         <p style="margin: 2px 0;"><strong>Customer:</strong> {{ data.customer_name || 'N/A' }}</p>
                         <p style="margin: 2px 0;"><strong>Address:</strong> {{ data.customer_address || 'N/A' }}</p>
+                        <p style="margin: 2px 0;"><strong>Contact No.:</strong> {{ data.customer_phone || 'N/A' }}</p>
                     </div>
                     <div style="text-align: right;">
                         <p style="margin: 2px 0;"><strong>Date:</strong> {{ DateUtil.formatToMonthDayYear(data.created_at) }}</p>
@@ -458,7 +459,7 @@
 
                 <div style="margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.6;">
                     <p style="margin: 5px 0; font-weight: bold;">"LCD, misuse, negligence NOT INCLUDED for Warrantys"</p>
-                    <p style="margin: 5px 0; font-weight: bold;">"1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
+                    <p style="margin: 5px 0; font-weight: bold;">"1 YEAR WARRANTY FOR BRANDNEW AFTER 1 MONTH WARRANTY - 1 WEEK REPLACEMENT"</p>
                 </div>
             </div>
         </div>
@@ -500,32 +501,52 @@ const printReport = () => {
     const printElement = document.getElementById("sales-report");
     if (!printElement) return;
 
-    const logoUrl = Logo;
+    // Convert logo to absolute URL if possible
+    const logoUrl = new URL(Logo, window.location.origin).href;
     const html = printElement.innerHTML.replace('src="LOGO_PLACEHOLDER"', `src="${logoUrl}"`);
 
-    const printWindow = window.open("", "_blank", "width=1000,height=600");
-    if (!printWindow) return;
+    // Create a hidden iframe for printing
+    let iframe = document.getElementById('print-iframe') as HTMLIFrameElement;
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'print-iframe';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+    }
 
-    printWindow.document.write(`
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`
     <html>
       <head>
         <title>Sales Report</title>
-        <base href="${window.location.origin}/">
         <style>
-          body { font-family: Arial, sans-serif; }
+          body { font-family: Arial, sans-serif; margin: 20px; }
           img { width: 100px; height: auto; display: block; }
+          @media print {
+            body { margin: 0; }
+          }
         </style>
       </head>
       <body>${html}</body>
     </html>
   `);
+    doc.close();
 
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close();
-    };
+    // Small delay to ensure content and images are loaded
+    setTimeout(() => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }
+    }, 500);
 };
 
 

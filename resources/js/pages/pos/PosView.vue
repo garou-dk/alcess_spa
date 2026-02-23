@@ -620,6 +620,25 @@
                                     mobile: 'block text-sm font-medium text-gray-700 mb-2',
                                     tablet: 'block text-sm font-medium text-gray-700 mb-2',
                                     desktop: 'block text-sm font-medium text-gray-700 mb-2'
+                                })">Customer Phone</label>
+                                <InputText
+                                    v-model="form.customer_phone"
+                                    placeholder="Enter customer phone number"
+                                    class="w-full"
+                                    :invalid="errors.customer_phone.length > 0"
+                                />
+                                <p v-if="errors.customer_phone.length > 0" :class="getResponsiveClasses({
+                                    mobile: 'text-xs text-red-600 mt-1',
+                                    tablet: 'text-xs text-red-600 mt-1',
+                                    desktop: 'text-xs text-red-600 mt-1'
+                                })">{{ errors.customer_phone[0] }}</p>
+                            </div>
+
+                            <div>
+                                <label :class="getResponsiveClasses({
+                                    mobile: 'block text-sm font-medium text-gray-700 mb-2',
+                                    tablet: 'block text-sm font-medium text-gray-700 mb-2',
+                                    desktop: 'block text-sm font-medium text-gray-700 mb-2'
                                 })">Prepared by</label>
                                 <InputText
                                     v-model="form.prepared_by"
@@ -1412,6 +1431,7 @@ interface IForm {
     }[];
     customer_name: string | null;
     customer_address: string | null;
+    customer_phone: string | null;
     prepared_by: string | null;
     payment_method: string | null;
     installment_type: string | null;
@@ -1420,6 +1440,7 @@ interface IForm {
 interface IFormError {
     customer_name: string[];
     customer_address: string[];
+    customer_phone: string[];
     prepared_by: string[];
     payment_method: string[];
     installment_type: string[];
@@ -1429,6 +1450,7 @@ const form : IForm = reactive({
     products: [],
     customer_name: null,
     customer_address: null,
+    customer_phone: null,
     prepared_by: null,
     payment_method: null,
     installment_type: null,
@@ -1437,6 +1459,7 @@ const form : IForm = reactive({
 const errors : IFormError = reactive({
     customer_name: [],
     customer_address: [],
+    customer_phone: [],
     prepared_by: [],
     payment_method: [],
     installment_type: [],
@@ -1661,6 +1684,11 @@ const validate = () => {
         errors.customer_address.push("Customer address is required");
     }
 
+    if (!form.customer_phone) {
+        noError = false;
+        errors.customer_phone.push("Customer phone is required");
+    }
+
     if (!form.prepared_by) {
         noError = false;
         errors.prepared_by.push("Prepared by is required");
@@ -1715,6 +1743,7 @@ const handleSubmit = async () => {
             selectedProducts.products = [];
             form.customer_name = null;
             form.customer_address = null;
+            form.customer_phone = null;
             form.prepared_by = null;
             form.payment_method = null;
             form.installment_type = null;

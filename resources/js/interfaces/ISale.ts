@@ -8,6 +8,7 @@ interface ISale {
     total_amount: number;
     customer_name: string;
     customer_address: string;
+    customer_phone: string;
     prepared_by: string;
     created_at: string;
     sale_items: ISaleItem[];

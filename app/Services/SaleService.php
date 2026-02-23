@@ -82,6 +82,7 @@ class SaleService
                 "total_amount" => $total_amount,
                 "customer_name" => $data["customer_name"],
                 "customer_address" => $data["customer_address"],
+                "customer_phone" => $data["customer_phone"],
                 "prepared_by" => $data["prepared_by"],
                 "payment_method" => $data["payment_method"]
             ]);

@@ -14,6 +14,7 @@ class Sale extends Model
         "total_amount",
         "customer_name",
         "customer_address",
+        "customer_phone",
         "prepared_by",
         "payment_method"
     ];
