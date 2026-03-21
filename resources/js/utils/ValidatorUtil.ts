@@ -13,7 +13,7 @@ class ValidatorUtil {
     }
 
     public static isValidImageFormat(file: File): boolean {
-        const allowedFormats = ["image/jpeg", "image/jpg", "image/png"];
+        const allowedFormats: string[] = [];
         return allowedFormats.includes(file.type);
     }
 
