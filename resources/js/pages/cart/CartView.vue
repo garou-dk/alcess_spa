@@ -359,7 +359,7 @@ const checkoutItems = () => {
 const subTotal = () => {
     let total = 0;
     form.carts.forEach((cart) => {
-        if (cart.selected) {
+        if (cart.checked) {
             const find = carts.value.find((c) => c.cart_id === cart.cart_id);
             if (find) {
                 total += find.product.product_price * cart.quantity;
@@ -373,7 +373,7 @@ const subTotal = () => {
 const totalCalculated = computed(() => { // Replaces subTotal() call in template if needed, but subTotal is function
     let total = 0;
     form.carts.forEach((cart) => {
-        if (cart.selected) {
+        if (cart.checked) {
             const find = carts.value.find((c) => c.cart_id === cart.cart_id);
             if (find) {
                 total += find.product.product_price * cart.quantity;
