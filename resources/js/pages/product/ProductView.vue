@@ -257,7 +257,7 @@
                         mobile: 'w-full flex justify-center',
                         tablet: 'flex gap-2 ml-auto',
                         desktop: 'flex gap-2 ml-auto'
-                    })">
+                    })" style="position: relative; z-index: -1">
                         <Button
                             v-if="!isStaff()"
                             type="button"
