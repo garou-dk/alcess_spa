@@ -329,7 +329,7 @@ const handleSubmit = async () => {
         showUnverifiedNotice.value = false;
 
         await authService
-            .post(props.admin ? "admin/login" : "logn", data)
+            .post(props.admin ? "admin/login" : "login", data)
             .then(async () => {
                 if (
                     authService.request.status === 200 &&
