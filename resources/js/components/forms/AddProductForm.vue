@@ -21,7 +21,7 @@
                             v-model="form.product_name"
                             id="product_name"
                             type="text"
-                            placeholder="e.g. Organic Rice 1kg"
+                            placeholder="e.g. Product Items"
                             fluid
                             :invalid="errors.product_name.length > 0"
                             class="transition-all duration-200"
