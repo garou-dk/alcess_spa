@@ -672,13 +672,39 @@
                                     v-model="form.payment_method"
                                     :invalid="errors.payment_method.length > 0"
                                     class="w-full"
-                                    @change="form.installment_type = null"
+                                    @change="form.installment_type = null; form.ewallet_type = null"
                                 />
                                 <p v-if="errors.payment_method.length > 0" :class="getResponsiveClasses({
                                     mobile: 'text-xs text-red-600 mt-1',
                                     tablet: 'text-xs text-red-600 mt-1',
                                     desktop: 'text-xs text-red-600 mt-1'
                                 })">{{ errors.payment_method[0] }}</p>
+                            </div>
+
+                            <div v-if="form.payment_method === 'E-wallet'">
+                                <label :class="getResponsiveClasses({
+                                    mobile: 'block text-sm font-medium text-gray-700 mb-2',
+                                    tablet: 'block text-sm font-medium text-gray-700 mb-2',
+                                    desktop: 'block text-sm font-medium text-gray-700 mb-2'
+                                })">E-Wallet</label>
+                                <Select
+                                    :options="[
+                                        { label: 'GCash', value: 'Gcash' },
+                                        { label: 'Maya', value: 'Paymaya' },
+                                    ]"
+                                    placeholder="Select e-wallet"
+                                    id="ewallet-type"
+                                    option-label="label"
+                                    option-value="value"
+                                    v-model="form.ewallet_type"
+                                    :invalid="errors.ewallet_type.length > 0"
+                                    class="w-full"
+                                />
+                                <p v-if="errors.ewallet_type.length > 0" :class="getResponsiveClasses({
+                                    mobile: 'text-xs text-red-600 mt-1',
+                                    tablet: 'text-xs text-red-600 mt-1',
+                                    desktop: 'text-xs text-red-600 mt-1'
+                                })">{{ errors.ewallet_type[0] }}</p>
                             </div>
 
                             <div v-if="form.payment_method === 'Installment'">
@@ -858,10 +884,10 @@
                     <template #body="{ data }">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                             'bg-green-50 text-green-700': data.payment_method === 'Cash',
-                            'bg-blue-50 text-blue-700': data.payment_method === 'E-wallet',
-                            'bg-purple-50 text-purple-700': data.payment_method === 'Installment'
+                            'bg-blue-50 text-blue-700': data.payment_method && data.payment_method.startsWith('E-wallet'),
+                            'bg-purple-50 text-purple-700': data.payment_method && data.payment_method.startsWith('Installment')
                         }">
-                            <i :class="data.payment_method === 'Cash' ? 'pi pi-money-bill' : data.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
+                            <i :class="data.payment_method === 'Cash' ? 'pi pi-money-bill' : (data.payment_method && data.payment_method.startsWith('E-wallet')) ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                             {{ data.payment_method }}
                         </span>
                     </template>
@@ -955,13 +981,13 @@
                                 }),
                                 {
                                     'bg-green-50 text-green-700': sale.payment_method === 'Cash',
-                                    'bg-blue-50 text-blue-700': sale.payment_method === 'E-wallet',
-                                    'bg-purple-50 text-purple-700': sale.payment_method === 'Installment'
+                                    'bg-blue-50 text-blue-700': sale.payment_method && sale.payment_method.startsWith('E-wallet'),
+                                    'bg-purple-50 text-purple-700': sale.payment_method && sale.payment_method.startsWith('Installment')
                                 }
                             ]">
                                 <i :class="[
                                     sale.payment_method === 'Cash' ? 'pi pi-money-bill' : 
-                                    sale.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card',
+                                    (sale.payment_method && sale.payment_method.startsWith('E-wallet')) ? 'pi pi-wallet' : 'pi pi-credit-card',
                                     'mr-1'
                                 ]"></i>
                                 {{ sale.payment_method }}
@@ -1154,10 +1180,10 @@
                             })">Payment Method</p>
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
                                 'bg-green-50 text-green-700': selectedSale.payment_method === 'Cash',
-                                'bg-blue-50 text-blue-700': selectedSale.payment_method === 'E-wallet',
+                                'bg-blue-50 text-blue-700': selectedSale.payment_method && selectedSale.payment_method.startsWith('E-wallet'),
                                 'bg-purple-50 text-purple-700': selectedSale.payment_method && selectedSale.payment_method.startsWith('Installment')
                             }">
-                                <i :class="selectedSale.payment_method === 'Cash' ? 'pi pi-money-bill' : selectedSale.payment_method === 'E-wallet' ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
+                                <i :class="selectedSale.payment_method === 'Cash' ? 'pi pi-money-bill' : (selectedSale.payment_method && selectedSale.payment_method.startsWith('E-wallet')) ? 'pi pi-wallet' : 'pi pi-credit-card'" class="mr-1"></i>
                                 {{ selectedSale.payment_method }}
                             </span>
                         </div>
@@ -1435,6 +1461,7 @@ interface IForm {
     prepared_by: string | null;
     payment_method: string | null;
     installment_type: string | null;
+    ewallet_type: string | null;
 }
 
 interface IFormError {
@@ -1444,6 +1471,7 @@ interface IFormError {
     prepared_by: string[];
     payment_method: string[];
     installment_type: string[];
+    ewallet_type: string[];
 }
 
 const form : IForm = reactive({
@@ -1454,6 +1482,7 @@ const form : IForm = reactive({
     prepared_by: null,
     payment_method: null,
     installment_type: null,
+    ewallet_type: null,
 });
 
 const errors : IFormError = reactive({
@@ -1463,6 +1492,7 @@ const errors : IFormError = reactive({
     prepared_by: [],
     payment_method: [],
     installment_type: [],
+    ewallet_type: [],
 });
 
 const selectedProducts : {
@@ -1704,6 +1734,11 @@ const validate = () => {
         errors.installment_type.push("Installment type is required");
     }
 
+    if (form.payment_method === 'E-wallet' && !form.ewallet_type) {
+        noError = false;
+        errors.ewallet_type.push("E-wallet type is required");
+    }
+
     if (!noError) {
         toast.error("Please fill in all required fields");
         return false;
@@ -1732,7 +1767,10 @@ const handleSubmit = async () => {
         const payload = { ...validated };
         if (payload.payment_method === 'Installment') {
             payload.payment_method = `Installment - ${payload.installment_type}`;
+        } else if (payload.payment_method === 'E-wallet') {
+            payload.payment_method = `E-wallet - ${payload.ewallet_type}`;
         }
+        delete (payload as { ewallet_type?: string | null }).ewallet_type;
         await submitService.post("admin/sales", payload);
         
         if (submitService.request.status === 200 && submitService.request.data) {
@@ -1747,6 +1785,7 @@ const handleSubmit = async () => {
             form.prepared_by = null;
             form.payment_method = null;
             form.installment_type = null;
+            form.ewallet_type = null;
             
             // Refresh daily statistics after successful sale
             await fetchDailyStats();
