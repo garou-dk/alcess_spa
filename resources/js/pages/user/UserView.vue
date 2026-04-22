@@ -32,12 +32,12 @@
                             mobile: 'block text-xs font-medium text-gray-700 mb-2',
                             tablet: 'block text-sm font-medium text-gray-700 mb-2',
                             desktop: 'block text-sm font-medium text-gray-700 mb-2'
-                        })">Search User</label>
+                        })">Search</label>
                         <InputText
                             type="text"
                             v-model="form.search"
                             :invalid="errors.search.length > 0"
-                            placeholder="Search by name"
+                            placeholder="Search by name or email"
                             :class="[
                                 'w-full',
                                 responsive.getResponsiveClasses({
@@ -250,8 +250,12 @@
                                     size="large"
                                 />
                                 <div class="flex-1 min-w-0">
-                                    <div class="font-medium text-gray-900 truncate">
+                                    <div class="font-semibold text-gray-900 truncate leading-5">
                                         {{ data.full_name }}
+                                    </div>
+                                    <div class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 truncate">
+                                        <i class="pi pi-envelope text-[10px]"></i>
+                                        <span class="truncate">{{ data.email }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -370,9 +374,9 @@
                                 v-for="(user, index) in paginatedData" 
                                 :key="user.user_id"
                                 :class="responsive.getResponsiveClasses({
-                                    mobile: 'bg-white border border-gray-200 rounded-lg p-3 shadow-sm',
-                                    tablet: 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm',
-                                    desktop: 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm'
+                                    mobile: 'bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:border-gray-300 hover:shadow transition',
+                                    tablet: 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:border-gray-300 hover:shadow transition',
+                                    desktop: 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:border-gray-300 hover:shadow transition'
                                 })"
                             >
                                 <!-- User Header -->
@@ -406,6 +410,14 @@
                                             })">
                                                 {{ user.full_name }}
                                             </h3>
+                                            <div :class="responsive.getResponsiveClasses({
+                                                mobile: 'mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 truncate',
+                                                tablet: 'mt-1 flex items-center gap-1.5 text-sm text-gray-500 truncate',
+                                                desktop: 'mt-1 flex items-center gap-1.5 text-sm text-gray-500 truncate'
+                                            })">
+                                                <i class="pi pi-envelope text-[10px]"></i>
+                                                <span class="truncate">{{ user.email }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <Button
