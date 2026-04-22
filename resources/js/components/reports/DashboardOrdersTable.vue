@@ -252,7 +252,79 @@
             <ViewOrderForm 
                 v-if="selectedOrder" 
                 :data="selectedOrder"
-                @close="showOrderModal = false"
+                @approve="handleApprove"
+                @decline="handleDecline"
+                @viewPayment="handleViewPayment"
+                @markPaid="handleMarkPaid"
+                @generateInvoice="handleGenerateInvoice"
+                @viewInvoice="handleViewInvoice"
+                @setDelivery="handleSetDelivery"
+            />
+        </Dialog>
+
+        <Dialog
+            v-model:visible="approvalVisible.visible"
+            header="Change Status"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+            :dismissableMask="true"
+        >
+            <ApprovalForm
+                :data="selectedOrder"
+                :status="approvalVisible.status"
+                @cb="setNewOrder"
+                @close-popup="closePopup()"
+            />
+        </Dialog>
+
+        <Dialog
+            v-model:visible="setDeliveryModal.visible"
+            header="Set to Delivery - Upload Proof"
+            :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+            :dismissableMask="true"
+        >
+            <SetDeliveryProofForm
+                v-if="setDeliveryModal.order"
+                :order="setDeliveryModal.order"
+                @cb="setDeliveryConfirmCb"
+            />
+        </Dialog>
+
+        <Dialog
+            v-model:visible="viewPaymentModal.visible"
+            header="View Payment Details"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+            :dismissableMask="true"
+        >
+            <ViewPaymentForm
+                v-if="viewPaymentModal.order"
+                :data="viewPaymentModal.order"
+                @cb="markPaidCb"
+            />
+        </Dialog>
+
+        <Dialog
+            v-model:visible="markPaidModal.visible"
+            header="Mark as Paid"
+            :style="{ width: '28rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+            :dismissableMask="true"
+            :pt="{
+                header: { class: '!bg-green-600 !text-white' },
+                closeButton: { class: '!text-white hover:!bg-green-700 !border-white' },
+                closeButtonIcon: { class: '!text-white' }
+            }"
+        >
+            <MarkPaidForm
+                v-if="markPaidModal.order"
+                :data="markPaidModal.order"
+                @cb="markPaidConfirmCb"
             />
         </Dialog>
     </div>
@@ -267,6 +339,12 @@ import DateUtil from '@/utils/DateUtil';
 import { useToast } from 'vue-toastification';
 import { useResponsive } from '@/composables/useResponsive';
 import ViewOrderForm from '@/components/forms/ViewOrderForm.vue';
+import ApprovalForm from "@/components/forms/ApprovalForm.vue";
+import ViewPaymentForm from "@/components/forms/ViewPaymentForm.vue";
+import MarkPaidForm from "@/components/forms/MarkPaidForm.vue";
+import SetDeliveryProofForm from "@/components/forms/SetDeliveryProofForm.vue";
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
 const responsive = useResponsive();
@@ -276,6 +354,130 @@ const isLoading = ref(false);
 const selectedOrderType = ref('');
 const showOrderModal = ref(false);
 const selectedOrder = ref<IOrder | null>(null);
+const router = useRouter();
+
+const approvalVisible = ref<{ visible: boolean; status: string | null }>({
+    visible: false,
+    status: null,
+});
+
+const closePopup = () => {
+    approvalVisible.value.visible = false;
+};
+
+const setDeliveryModal = reactive({
+    visible: false,
+    order: null as IOrder | null,
+});
+
+const viewPaymentModal = reactive({
+    visible: false,
+    order: null as IOrder | null,
+});
+
+const markPaidModal = reactive({
+    visible: false,
+    order: null as IOrder | null,
+});
+
+const setNewOrder = (order: IOrder) => {
+    selectedOrder.value = order;
+    approvalVisible.value.status = null;
+    approvalVisible.value.visible = false;
+    showOrderModal.value = false;
+    loadOrders();
+};
+
+const handleApprove = (order: IOrder) => {
+    selectedOrder.value = order;
+    approvalVisible.value.status = "Confirmed";
+    approvalVisible.value.visible = true;
+};
+
+const handleDecline = (order: IOrder) => {
+    selectedOrder.value = order;
+    approvalVisible.value.status = "Rejected";
+    approvalVisible.value.visible = true;
+};
+
+const handleViewPayment = (order: IOrder) => {
+    viewPaymentModal.order = order;
+    viewPaymentModal.visible = true;
+};
+
+const handleMarkPaid = (order: IOrder) => {
+    markPaidModal.order = order;
+    markPaidModal.visible = true;
+};
+
+const markPaidConfirmCb = () => {
+    loadOrders();
+    markPaidModal.visible = false;
+    showOrderModal.value = false;
+};
+
+const markPaidCb = () => {
+    loadOrders();
+    viewPaymentModal.visible = false;
+    showOrderModal.value = false;
+};
+
+const setDeliveryConfirmCb = () => {
+    loadOrders();
+    setDeliveryModal.visible = false;
+    showOrderModal.value = false;
+};
+
+const generateInvoiceService = useAxiosUtil<null, any>();
+
+const handleGenerateInvoice = async (order: IOrder) => {
+    try {
+        await generateInvoiceService.post(
+            `admin/orders/generate-invoice/${order.order_id}`,
+            null,
+        );
+
+        if (generateInvoiceService.request.status === 200 && generateInvoiceService.request.data) {
+            const sale = generateInvoiceService.request.data;
+            toast.success("Sales invoice generated successfully");
+
+            showOrderModal.value = false;
+
+            router.push({
+                name: "admin.order.invoice",
+                params: {
+                    orderId: order.order_id,
+                    saleId: sale.sale_id,
+                },
+                query: {
+                    returnToOrder: "true",
+                    orderId: order.order_id.toString(),
+                },
+            });
+        } else {
+            toast.error(generateInvoiceService.request.message ?? "Failed to generate invoice");
+        }
+    } catch {
+        toast.error("An error occurred while generating invoice");
+    }
+};
+
+const handleViewInvoice = (order: IOrder) => {
+    if (order.sale_id) {
+        router.push({
+            name: "admin.order.invoice",
+            params: {
+                orderId: order.order_id,
+                saleId: order.sale_id,
+            },
+        });
+    }
+};
+
+const handleSetDelivery = (order: IOrder) => {
+    setDeliveryModal.order = order;
+    setDeliveryModal.visible = true;
+};
 
 const orderTypes = ref([
     { label: 'All Types', value: '' },
