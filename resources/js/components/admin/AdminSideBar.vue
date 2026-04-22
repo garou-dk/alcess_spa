@@ -144,10 +144,16 @@
                     label="Users"
                 />
                 <SideBarAccordion
-                    v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
+                    v-if="Page.user && [RoleEnum.ADMIN, RoleEnum.STAFF].includes(Page.user.role.role_name as RoleEnum)"
                     icon="pi pi-cog"
                     label="Settings"
-                    :active="['admin.unit.index', 'admin.category.index', 'admin.setting.index'].includes(route.name as string)"
+                    :active="[
+                        'admin.unit.index',
+                        'admin.category.index',
+                        ...(Page.user && Page.user.role.role_name === RoleEnum.ADMIN
+                            ? ['admin.setting.index']
+                            : [])
+                    ].includes(route.name as string)"
                 >
                     <SideBarButton
                         to="admin.unit.index"
@@ -162,6 +168,7 @@
                         :isSubItem="true"
                     />
                     <SideBarButton
+                        v-if="Page.user && Page.user.role.role_name === RoleEnum.ADMIN"
                         to="admin.setting.index"
                         icon="pi pi-cog"
                         label="Settings"

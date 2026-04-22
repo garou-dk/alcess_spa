@@ -259,7 +259,6 @@
                         desktop: 'flex gap-2 ml-auto'
                     })">
                         <Button
-                            v-if="!isStaff()"
                             type="button"
                             icon="pi pi-plus"
                             :label="responsive.getResponsiveClasses({
@@ -419,7 +418,6 @@
                     <template #body="{ data }">
                         <div class="flex gap-2 justify-center">
                             <Button
-                                v-if="!isStaff()"
                                 icon="pi pi-pencil"
                                 rounded
                                 class="!bg-blue-600 hover:!bg-blue-700 !text-white !border-blue-600"
@@ -435,7 +433,6 @@
                                 v-tooltip.top="'View Barcode'"
                             />
                             <Button
-                                v-if="!isStaff()"
                                 icon="pi pi-plus-circle"
                                 rounded
                                 class="!bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
@@ -469,7 +466,6 @@
                                 @click="clearFilters()"
                             />
                             <Button
-                                v-if="!isStaff()"
                                 type="button"
                                 label="Add Product"
                                 icon="pi pi-plus"
@@ -577,7 +573,6 @@
                                 @click="clearFilters()"
                             />
                             <Button
-                                v-if="!isStaff()"
                                 type="button"
                                 label="Add Product"
                                 icon="pi pi-plus"
@@ -717,7 +712,6 @@
                                     desktop: 'flex gap-3 pt-3 border-t border-gray-100'
                                 })">
                                     <Button
-                                        v-if="!isStaff()"
                                         icon="pi pi-pencil"
                                         label="Edit"
                                         :class="[
@@ -749,7 +743,6 @@
                                         @click="showSku(product.sku)"
                                     />
                                     <Button
-                                        v-if="!isStaff()"
                                         icon="pi pi-plus-circle"
                                         :label="responsive.getResponsiveClasses({
                                             mobile: '',
@@ -1201,11 +1194,6 @@ const checkUserRole = async () => {
             currentUserRole.value = authService.request.data.role?.role_name || null;
         }
     });
-};
-
-// Check if user is staff (read-only access)
-const isStaff = () => {
-    return currentUserRole.value === 'Staff';
 };
 
 // Non-blocking onMounted - page renders immediately with skeletons

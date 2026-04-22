@@ -1,4 +1,4 @@
-import { getStoreRoles } from "@/enums/RoleEnum";
+import { RoleEnum } from "@/enums/RoleEnum";
 import { RouteRecordRaw } from "vue-router";
 import SettingPage from "@/pages/settings/SettingPage.vue";
 
@@ -12,7 +12,7 @@ const route: RouteRecordRaw = {
             name: "admin.setting.index",
             component: SettingPage,
             meta: {
-                access: getStoreRoles(),
+                access: [RoleEnum.ADMIN],
                 pageName: "Settings",
                 pageSubName: "Your Website Setting",
             },
