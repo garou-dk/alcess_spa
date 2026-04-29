@@ -20,13 +20,18 @@ class DashboardService
     {
     }
 
-    public function getMonthlyRevenue(): array
+    public function getMonthlyRevenue(?int $month = null, ?int $year = null): array
     {
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
+        // Use provided month/year or default to current
+        $selectedDate = ($month && $year)
+            ? Carbon::create($year, $month, 1)
+            : Carbon::now();
 
-        $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
-        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+        $currentMonthStart = $selectedDate->copy()->startOfMonth();
+        $currentMonthEnd = $selectedDate->copy()->endOfMonth();
+
+        $lastMonthStart = $selectedDate->copy()->subMonth()->startOfMonth();
+        $lastMonthEnd = $selectedDate->copy()->subMonth()->endOfMonth();
 
         $currentMonthOrderRevenue = Order::whereNotNull('date_paid_confirmed')
             ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])

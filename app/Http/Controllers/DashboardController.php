@@ -10,9 +10,14 @@ class DashboardController extends Controller
 {
     public function __construct(public DashboardService $service) {}
 
-    public function getMonthlyRevenue() {
+    public function getMonthlyRevenue(Request $request) {
+        $data = $request->validate([
+            'month' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'year' => ['nullable', 'integer', 'min:2020', 'max:2099'],
+        ]);
+
         return ApiResponse::success()
-            ->data($this->service->getMonthlyRevenue())
+            ->data($this->service->getMonthlyRevenue($data['month'] ?? null, $data['year'] ?? null))
             ->response();
     }
 
