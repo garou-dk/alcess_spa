@@ -304,55 +304,86 @@ class DashboardService
 
     public function getStockInOutReport(?string $startDate = null, ?string $endDate = null): array
     {
-        // Use provided dates or default to current year
+        // Use provided dates or default to current year (monthly grouping)
         if ($startDate && $endDate) {
+            // Custom date range: show daily data
             $start = Carbon::parse($startDate)->startOfDay();
             $end = Carbon::parse($endDate)->endOfDay();
 
-            // Calculate the number of days in the range
-            $daysDiff = $start->diffInDays($end) + 1; // +1 to include both start and end dates
-
-            // Limit to reasonable range (max 365 days for yearly view)
-            $daysDiff = min($daysDiff, 365);
-        } else {
-            // Default: current year
-            $start = Carbon::now()->startOfYear();
-            $end = Carbon::now()->endOfDay();
             $daysDiff = $start->diffInDays($end) + 1;
+            $daysDiff = min($daysDiff, 365);
+
+            $stockOut = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
+                ->whereIn('orders.status', [OrderStatusEnum::SHIPPED->value, OrderStatusEnum::COMPLETED->value])
+                ->whereBetween('product_orders.created_at', [$start, $end])
+                ->selectRaw('DATE(product_orders.created_at) as date, SUM(product_orders.quantity) as quantity')
+                ->groupBy('date')
+                ->orderBy('date', 'asc')
+                ->pluck('quantity', 'date');
+
+            $stockIn = BatchProduct::whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, SUM(quantity) as quantity')
+                ->groupBy('date')
+                ->orderBy('date', 'asc')
+                ->pluck('quantity', 'date');
+
+            $result = [];
+            $currentDate = $start->copy();
+
+            for ($i = 0; $i < $daysDiff; $i++) {
+                $dateKey = $currentDate->format('Y-m-d');
+
+                $stockInQty = $stockIn->get($dateKey, 0);
+                $stockOutQty = $stockOut->get($dateKey, 0);
+
+                $result[] = [
+                    'date' => $dateKey,
+                    'day' => $currentDate->format('l'),
+                    'stock_in' => (int) $stockInQty,
+                    'stock_out' => (int) $stockOutQty,
+                    'net_change' => (int) ($stockInQty - $stockOutQty),
+                ];
+
+                $currentDate->addDay();
+            }
+
+            return $result;
         }
+
+        // Default: current year grouped by month
+        $year = Carbon::now()->year;
+        $start = Carbon::create($year, 1, 1)->startOfDay();
+        $end = Carbon::now()->endOfDay();
 
         $stockOut = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')
             ->whereIn('orders.status', [OrderStatusEnum::SHIPPED->value, OrderStatusEnum::COMPLETED->value])
             ->whereBetween('product_orders.created_at', [$start, $end])
-            ->selectRaw('DATE(product_orders.created_at) as date, SUM(product_orders.quantity) as quantity')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->pluck('quantity', 'date');
+            ->selectRaw('MONTH(product_orders.created_at) as month, SUM(product_orders.quantity) as quantity')
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->pluck('quantity', 'month');
 
         $stockIn = BatchProduct::whereBetween('created_at', [$start, $end])
-            ->selectRaw('DATE(created_at) as date, SUM(quantity) as quantity')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->pluck('quantity', 'date');
+            ->selectRaw('MONTH(created_at) as month, SUM(quantity) as quantity')
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->pluck('quantity', 'month');
 
         $result = [];
-        $currentDate = $start->copy();
+        $currentMonth = Carbon::now()->month;
 
-        for ($i = 0; $i < $daysDiff; $i++) {
-            $dateKey = $currentDate->format('Y-m-d');
-
-            $stockInQty = $stockIn->get($dateKey, 0);
-            $stockOutQty = $stockOut->get($dateKey, 0);
+        for ($m = 1; $m <= $currentMonth; $m++) {
+            $monthDate = Carbon::create($year, $m, 1);
+            $stockInQty = $stockIn->get($m, 0);
+            $stockOutQty = $stockOut->get($m, 0);
 
             $result[] = [
-                'date' => $dateKey,
-                'day' => $currentDate->format('l'),
+                'date' => $monthDate->format('Y-m-01'),
+                'day' => $monthDate->format('F'),
                 'stock_in' => (int) $stockInQty,
                 'stock_out' => (int) $stockOutQty,
                 'net_change' => (int) ($stockInQty - $stockOutQty),
             ];
-
-            $currentDate->addDay();
         }
 
         return $result;
