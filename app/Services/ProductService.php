@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Enums\FileDirectoryEnum;
+use App\Events\OrderNotificationEvent;
 use App\Events\ProductActiveCountEvent;
 use App\Events\ProductCountEvent;
 use App\Events\ProductEvent;
 use App\Events\ProductLowStockCountEvent;
 use App\Events\ProductOutStockCountEvent;
 use App\Models\Category;
+use App\Models\OrderNotification;
 use App\Models\Product;
 use App\Models\Rate;
 use Illuminate\Support\Facades\DB;
@@ -182,6 +184,28 @@ class ProductService
         $product->sku = $data['sku'] ?? null;
         $product->available_online = $data['available_online'];
         $product->save();
+
+        // Check stock levels after update and notify staff if needed
+        $authService = new AuthService;
+        $user = $authService->getAuth();
+
+        if ($product->product_quantity <= 0) {
+            $notification = OrderNotification::create([
+                'user_id' => $user->user_id,
+                'notification_type' => 'Out of Stock',
+                'notification_to' => 'Store',
+                'message' => "{$product->product_name} is out of stock (0 remaining).",
+            ]);
+            OrderNotificationEvent::dispatch($notification->toArray());
+        } elseif ($product->low_stock_threshold && $product->product_quantity <= $product->low_stock_threshold) {
+            $notification = OrderNotification::create([
+                'user_id' => $user->user_id,
+                'notification_type' => 'Low Stock',
+                'notification_to' => 'Store',
+                'message' => "{$product->product_name} is nearly out of stock ({$product->product_quantity} remaining).",
+            ]);
+            OrderNotificationEvent::dispatch($notification->toArray());
+        }
 
         $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
 
