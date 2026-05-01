@@ -620,16 +620,16 @@ class ProductService
         return \DB::transaction(function () use ($data) {
             // Create the product first
             $product = new Product;
-            $product->product_name = $productData['product_name'];
-            $product->description = $productData['description'];
-            $product->category_id = $productData['category_id'];
-            $product->unit_id = $productData['unit_id'];
-            $product->product_price = $productData['product_price'];
-            $product->product_quantity = $productData['product_quantity'];
-            $product->low_stock_threshold = $productData['low_stock_threshold'];
-            $product->is_active = $productData['is_active'];
-            $product->sku = $productData['sku'] ?? null;
-            $product->available_online = $productData['available_online'];
+            $product->product_name = $data['product_name'];
+            $product->description = $data['description'];
+            $product->category_id = $data['category_id'];
+            $product->unit_id = $data['unit_id'];
+            $product->product_price = $data['product_price'];
+            $product->product_quantity = $data['product_quantity'];
+            $product->low_stock_threshold = $data['low_stock_threshold'];
+            $product->is_active = $data['is_active'];
+            $product->sku = $data['sku'] ?? null;
+            $product->available_online = $data['available_online'];
             $product->save();
 
             // Create batch with generated batch number if product has quantity
