@@ -493,12 +493,18 @@ const navigateFromNotification = (item: IOrderNotification | null, isAdmin: bool
         if (item) {
             const type = item.notification_type;
             const targetByType: Record<string, any> = {
-                'Pending Order':   { name: 'admin.order.index', query: { status: 'Processing' } },
-                'Confirmed Order': { name: 'admin.order.index', query: { status: 'Confirmed' } },
-                'To Ship':         { name: 'admin.order.index', query: { status: 'Shipped' } },
-                'Cancelled Order': { name: 'admin.order.index', query: { status: 'Cancelled' } },
-                'Paid':            { name: 'admin.order.index' },
-                'Rejected Order':  { name: 'admin.order.index', query: { status: 'Cancelled' } },
+                'Pending Order':      { name: 'admin.order.index', query: { status: 'Processing' } },
+                'Confirmed Order':    { name: 'admin.order.index', query: { status: 'Confirmed' } },
+                'To Ship':            { name: 'admin.order.index', query: { status: 'Shipped' } },
+                'Cancelled Order':    { name: 'admin.order.index', query: { status: 'Cancelled' } },
+                'Paid':               { name: 'admin.order.index' },
+                'Rejected Order':     { name: 'admin.order.index', query: { status: 'Cancelled' } },
+                'New Order':          { name: 'admin.order.index', query: { status: 'Processing' } },
+                'Payment Uploaded':   { name: 'admin.order.index', query: { status: 'Processing' } },
+                'Order Shipped':      { name: 'admin.order.index', query: { status: 'Shipped' } },
+                'Order Completed':    { name: 'admin.order.index', query: { status: 'Completed' } },
+                'Low Stock':          { name: 'admin.product.index' },
+                'Out of Stock':       { name: 'admin.product.index' },
             };
 
             const target = targetByType[type] || { name: 'admin.order.index' };
@@ -582,7 +588,16 @@ const getNotificationIcon = (type: string) => {
         'To Ship': 'pi pi-truck',
         'Paid': 'pi pi-wallet',
         'Cancelled Order': 'pi pi-times-circle',
-        'Rejected Order': 'pi pi-ban'
+        'Rejected Order': 'pi pi-ban',
+        'New Order': 'pi pi-shopping-cart',
+        'Order Accepted': 'pi pi-thumbs-up',
+        'Order Declined': 'pi pi-thumbs-down',
+        'Payment Confirmed': 'pi pi-check',
+        'Payment Uploaded': 'pi pi-upload',
+        'Order Shipped': 'pi pi-truck',
+        'Order Completed': 'pi pi-check-circle',
+        'Low Stock': 'pi pi-exclamation-triangle',
+        'Out of Stock': 'pi pi-exclamation-circle',
     };
     return icons[type] || 'pi pi-bell';
 };
@@ -594,7 +609,16 @@ const getNotificationColor = (type: string) => {
         'To Ship': 'bg-indigo-100 text-indigo-600',
         'Paid': 'bg-green-100 text-green-600',
         'Cancelled Order': 'bg-red-100 text-red-600',
-        'Rejected Order': 'bg-gray-100 text-gray-600'
+        'Rejected Order': 'bg-gray-100 text-gray-600',
+        'New Order': 'bg-sky-100 text-sky-600',
+        'Order Accepted': 'bg-teal-100 text-teal-600',
+        'Order Declined': 'bg-rose-100 text-rose-600',
+        'Payment Confirmed': 'bg-emerald-100 text-emerald-700',
+        'Payment Uploaded': 'bg-violet-100 text-violet-600',
+        'Order Shipped': 'bg-indigo-100 text-indigo-600',
+        'Order Completed': 'bg-green-100 text-green-700',
+        'Low Stock': 'bg-amber-100 text-amber-700',
+        'Out of Stock': 'bg-red-100 text-red-700',
     };
     return colors[type] || 'bg-blue-100 text-blue-600'; 
 };

@@ -606,13 +606,11 @@ const markAsRead = async (notification: IOrderNotification) => {
     notification.is_read = true;
     
     // Route based on notification type
-    // All current notifications are for online orders
-    const onlineOrderTypes = ['New Order', 'Pending Order', 'Order Accepted', 'Order Declined', 'Confirmed Order', 'To Ship', 'Paid', 'Cancelled Order', 'Rejected Order'];
+    const stockTypes = ['Low Stock', 'Out of Stock'];
     
-    if (onlineOrderTypes.includes(notification.notification_type)) {
-        router.push({ name: 'admin.order.index' });
+    if (stockTypes.includes(notification.notification_type)) {
+        router.push({ name: 'admin.product.index' });
     } else {
-        // Default fallback to orders page
         router.push({ name: 'admin.order.index' });
     }
     
@@ -623,10 +621,10 @@ const markAsRead = async (notification: IOrderNotification) => {
     });
 };
 
-const markAllAsRead = () => {
+const markAllAsRead = async () => {
     notifications.value.forEach(n => n.is_read = true);
+    await submitMarkReadService.patch('admin/order-notifications/mark-all-as-read', null);
     toast.success('All notifications marked as read successfully!');
-    // Add your API call here to mark all as read in backend
 };
 
 const viewAllNotifications = () => {
@@ -636,25 +634,43 @@ const viewAllNotifications = () => {
 };
 
 const getNotificationIcon = (type: string) => {
-    const icons = {
-        order: 'pi pi-shopping-cart',
-        delivery: 'pi pi-truck',
-        promotion: 'pi pi-tag',
-        info: 'pi pi-info-circle',
-        warning: 'pi pi-exclamation-triangle',
-        success: 'pi pi-check-circle'
+    const icons: Record<string, string> = {
+        'Pending Order': 'pi pi-clock',
+        'Confirmed Order': 'pi pi-check-circle',
+        'To Ship': 'pi pi-truck',
+        'Paid': 'pi pi-wallet',
+        'Cancelled Order': 'pi pi-times-circle',
+        'Rejected Order': 'pi pi-ban',
+        'New Order': 'pi pi-shopping-cart',
+        'Order Accepted': 'pi pi-thumbs-up',
+        'Order Declined': 'pi pi-thumbs-down',
+        'Payment Confirmed': 'pi pi-check',
+        'Payment Uploaded': 'pi pi-upload',
+        'Order Shipped': 'pi pi-truck',
+        'Order Completed': 'pi pi-check-circle',
+        'Low Stock': 'pi pi-exclamation-triangle',
+        'Out of Stock': 'pi pi-exclamation-circle',
     };
     return icons[type] || 'pi pi-bell';
 };
 
 const getNotificationColor = (type: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
         'Pending Order': 'bg-blue-100 text-blue-600',
         'Confirmed Order': 'bg-green-100 text-green-600',
         'To Ship': 'bg-orange-100 text-orange-600',
         'Paid': 'bg-emerald-100 text-emerald-600',
         'Cancelled Order': 'bg-red-100 text-red-600',
-        'Rejected Order': 'bg-red-200 text-red-800'
+        'Rejected Order': 'bg-red-200 text-red-800',
+        'New Order': 'bg-sky-100 text-sky-600',
+        'Order Accepted': 'bg-teal-100 text-teal-600',
+        'Order Declined': 'bg-rose-100 text-rose-600',
+        'Payment Confirmed': 'bg-emerald-100 text-emerald-700',
+        'Payment Uploaded': 'bg-violet-100 text-violet-600',
+        'Order Shipped': 'bg-indigo-100 text-indigo-600',
+        'Order Completed': 'bg-green-100 text-green-700',
+        'Low Stock': 'bg-amber-100 text-amber-600',
+        'Out of Stock': 'bg-red-100 text-red-700',
     };
     return colors[type] || 'bg-gray-100 text-gray-600';
 };

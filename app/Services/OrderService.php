@@ -108,19 +108,21 @@ class OrderService
                 $product = Product::find($value['product_id']);
                 if ($product) {
                     if ($product->product_quantity <= 0) {
-                        OrderNotification::create([
+                        $notification = OrderNotification::create([
                             'user_id' => $data['user_id'],
                             'notification_type' => 'Out of Stock',
                             'notification_to' => 'Store',
                             'message' => "{$product->product_name} is now out of stock (0 remaining).",
                         ]);
+                        OrderNotificationEvent::dispatch($notification->toArray());
                     } elseif ($product->low_stock_threshold && $product->product_quantity <= $product->low_stock_threshold) {
-                        OrderNotification::create([
+                        $notification = OrderNotification::create([
                             'user_id' => $data['user_id'],
                             'notification_type' => 'Low Stock',
                             'notification_to' => 'Store',
                             'message' => "{$product->product_name} is nearly out of stock ({$product->product_quantity} remaining).",
                         ]);
+                        OrderNotificationEvent::dispatch($notification->toArray());
                     }
                 }
             }
