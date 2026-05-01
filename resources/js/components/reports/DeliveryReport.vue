@@ -114,18 +114,6 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Payment Method
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
                             Status
                         </th>
                         <th
@@ -156,9 +144,6 @@
                             </td>
                             <td style="border: 1px solid #ccc; padding: 8px; text-align: center">
                                 {{ product.quantity }}
-                            </td>
-                            <td style="border: 1px solid #ccc; padding: 8px">
-                                {{ order.payment_method }}
                             </td>
                             <td style="border: 1px solid #ccc; padding: 8px">
                                 <span :style="{
