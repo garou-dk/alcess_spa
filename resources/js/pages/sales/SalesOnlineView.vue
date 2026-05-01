@@ -507,6 +507,7 @@
                 :data="selectedOrder"
                 @viewPayment="handleViewPayment"
                 @viewInvoice="handleViewInvoice"
+                @setDelivery="handleSetDelivery"
             />
         </Dialog>
 
@@ -524,11 +525,23 @@
                 :data="paymentOrder"
             />
         </Dialog>
+
+        <!-- Set Delivery Modal -->
+        <Dialog
+            v-model:visible="setDeliveryModal.visible"
+            header="Set to Delivery - Upload Proof"
+            :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            modal
+            :dismissableMask="true"
+        >
+            <SetDeliveryProofForm :order="setDeliveryModal.order" @cb="setDeliveryConfirmCb" />
+        </Dialog>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from "vue";
+import { onMounted, ref, reactive, computed, watch } from "vue";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { IOrder } from "@/interfaces/IOrder";
 import { useToast } from "vue-toastification";
@@ -541,6 +554,7 @@ import { useResponsive } from "@/composables/useResponsive";
 import { useRouter } from "vue-router";
 import ViewOrderForm from "@/components/forms/ViewOrderForm.vue";
 import ViewPaymentForm from "@/components/forms/ViewPaymentForm.vue";
+import SetDeliveryProofForm from "@/components/forms/SetDeliveryProofForm.vue";
 
 // Use responsive composable
 const { getResponsiveClasses, isDesktop } = useResponsive();
@@ -678,6 +692,10 @@ const getStatusClass = (order: IOrder) => {
 const selectedOrder = ref<IOrder | null>(null);
 const viewOrderModal = ref(false);
 const viewPaymentModal = ref(false);
+const setDeliveryModal = reactive({
+    visible: false,
+    order: null as IOrder | null
+});
 const paymentOrder = ref<IOrder | null>(null);
 
 const onRowClick = (event: any) => {
@@ -688,6 +706,17 @@ const onRowClick = (event: any) => {
 const handleViewPayment = (order: IOrder) => {
     paymentOrder.value = order;
     viewPaymentModal.value = true;
+}
+
+const handleSetDelivery = (order: IOrder) => {
+    setDeliveryModal.order = order;
+    setDeliveryModal.visible = true;
+}
+
+const setDeliveryConfirmCb = () => {
+    load();
+    setDeliveryModal.visible = false;
+    viewOrderModal.value = false;
 }
 
 const handleViewInvoice = (order: IOrder) => {
