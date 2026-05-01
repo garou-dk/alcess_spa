@@ -22,74 +22,82 @@ class DashboardService
 
     public function getMonthlyRevenue(?int $month = null, ?int $year = null): array
     {
-        // Use provided month/year or default to current
-        $selectedDate = ($month && $year)
-            ? Carbon::create($year, $month, 1)
-            : Carbon::now();
+        // If month is provided, calculate for that specific month (used by month filter)
+        if ($month && $year) {
+            $selectedDate = Carbon::create($year, $month, 1);
+            $currentStart = $selectedDate->copy()->startOfMonth();
+            $currentEnd = $selectedDate->copy()->endOfMonth();
+            $previousStart = $selectedDate->copy()->subMonth()->startOfMonth();
+            $previousEnd = $selectedDate->copy()->subMonth()->endOfMonth();
+            $currentLabel = $currentStart->format('F Y');
+            $previousLabel = $previousStart->format('F Y');
+        } else {
+            // Default: show full current year revenue
+            $currentStart = Carbon::now()->startOfYear();
+            $currentEnd = Carbon::now()->endOfYear();
+            $previousStart = Carbon::now()->subYear()->startOfYear();
+            $previousEnd = Carbon::now()->subYear()->endOfYear();
+            $currentLabel = Carbon::now()->format('Y');
+            $previousLabel = Carbon::now()->subYear()->format('Y');
+        }
 
-        $currentMonthStart = $selectedDate->copy()->startOfMonth();
-        $currentMonthEnd = $selectedDate->copy()->endOfMonth();
-
-        $lastMonthStart = $selectedDate->copy()->subMonth()->startOfMonth();
-        $lastMonthEnd = $selectedDate->copy()->subMonth()->endOfMonth();
-
-        $currentMonthOrderRevenue = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
+        $currentOrderRevenue = Order::whereNotNull('date_paid_confirmed')
+            ->whereBetween('date_paid_confirmed', [$currentStart, $currentEnd])
             ->sum('total_amount');
 
-        $currentMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+        $currentSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
             ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
             ->whereNull('orders.sale_id') // Only sales without linked orders
-            ->whereBetween('sale_items.created_at', [$currentMonthStart, $currentMonthEnd])
+            ->whereBetween('sale_items.created_at', [$currentStart, $currentEnd])
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
 
-        $currentMonthRevenue = $currentMonthOrderRevenue + $currentMonthSaleRevenue;
+        $currentRevenue = $currentOrderRevenue + $currentSaleRevenue;
 
-        $lastMonthOrderRevenue = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$lastMonthStart, $lastMonthEnd])
+        $previousOrderRevenue = Order::whereNotNull('date_paid_confirmed')
+            ->whereBetween('date_paid_confirmed', [$previousStart, $previousEnd])
             ->sum('total_amount');
 
-        $lastMonthSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+        $previousSaleRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
             ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
             ->whereNull('orders.sale_id') // Only sales without linked orders
-            ->whereBetween('sale_items.created_at', [$lastMonthStart, $lastMonthEnd])
+            ->whereBetween('sale_items.created_at', [$previousStart, $previousEnd])
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
 
-        $lastMonthRevenue = $lastMonthOrderRevenue + $lastMonthSaleRevenue;
+        $previousRevenue = $previousOrderRevenue + $previousSaleRevenue;
 
         $percentageChange = 0;
-        if ($lastMonthRevenue > 0) {
-            $percentageChange = (($currentMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100;
-        } elseif ($currentMonthRevenue > 0) {
+        if ($previousRevenue > 0) {
+            $percentageChange = (($currentRevenue - $previousRevenue) / $previousRevenue) * 100;
+        } elseif ($currentRevenue > 0) {
             $percentageChange = 100;
         }
 
         return [
             'current_month' => [
-                'period' => $currentMonthStart->format('F Y'),
-                'revenue' => round($currentMonthRevenue, 2),
-                'formatted_revenue' => '₱' . number_format($currentMonthRevenue, 2),
+                'period' => $currentLabel,
+                'revenue' => round($currentRevenue, 2),
+                'formatted_revenue' => '₱' . number_format($currentRevenue, 2),
                 'breakdown' => [
-                    'orders' => round($currentMonthOrderRevenue, 2),
-                    'sales' => round($currentMonthSaleRevenue, 2)
+                    'orders' => round($currentOrderRevenue, 2),
+                    'sales' => round($currentSaleRevenue, 2)
                 ]
             ],
             'last_month' => [
-                'period' => $lastMonthStart->format('F Y'),
-                'revenue' => round($lastMonthRevenue, 2),
-                'formatted_revenue' => '₱' . number_format($lastMonthRevenue, 2),
+                'period' => $previousLabel,
+                'revenue' => round($previousRevenue, 2),
+                'formatted_revenue' => '₱' . number_format($previousRevenue, 2),
                 'breakdown' => [
-                    'orders' => round($lastMonthOrderRevenue, 2),
-                    'sales' => round($lastMonthSaleRevenue, 2)
+                    'orders' => round($previousOrderRevenue, 2),
+                    'sales' => round($previousSaleRevenue, 2)
                 ]
             ],
             'comparison' => [
                 'percentage_change' => round($percentageChange, 2),
                 'trend' => $percentageChange > 0 ? 'increase' : ($percentageChange < 0 ? 'decrease' : 'no change'),
-                'difference' => round($currentMonthRevenue - $lastMonthRevenue, 2),
-                'formatted_difference' => '₱' . number_format(abs($currentMonthRevenue - $lastMonthRevenue), 2)
+                'difference' => round($currentRevenue - $previousRevenue, 2),
+                'formatted_difference' => '₱' . number_format(abs($currentRevenue - $previousRevenue), 2)
             ]
         ];
     }
@@ -296,7 +304,7 @@ class DashboardService
 
     public function getStockInOutReport(?string $startDate = null, ?string $endDate = null): array
     {
-        // Use provided dates or default to last 7 days
+        // Use provided dates or default to current year
         if ($startDate && $endDate) {
             $start = Carbon::parse($startDate)->startOfDay();
             $end = Carbon::parse($endDate)->endOfDay();
@@ -304,13 +312,13 @@ class DashboardService
             // Calculate the number of days in the range
             $daysDiff = $start->diffInDays($end) + 1; // +1 to include both start and end dates
 
-            // Limit to reasonable range (max 30 days for performance)
-            $daysDiff = min($daysDiff, 30);
+            // Limit to reasonable range (max 365 days for yearly view)
+            $daysDiff = min($daysDiff, 365);
         } else {
-            // Default: last 7 days
+            // Default: current year
+            $start = Carbon::now()->startOfYear();
             $end = Carbon::now()->endOfDay();
-            $start = Carbon::now()->subDays(6)->startOfDay();
-            $daysDiff = 7;
+            $daysDiff = $start->diffInDays($end) + 1;
         }
 
         $stockOut = ProductOrder::join('orders', 'product_orders.order_id', '=', 'orders.order_id')

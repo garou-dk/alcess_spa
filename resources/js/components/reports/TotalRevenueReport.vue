@@ -70,13 +70,20 @@ interface RevenueResponse {
 
 const revenueData = ref<RevenueResponse | null>(null);
 const isLoadingRevenue = ref(false);
-const selectedMonth = ref('current');
+const selectedMonth = ref('yearly');
 
-// Generate month options: current month + previous 11 months
+// Generate month options: Full Year + current month + previous 11 months
 const monthOptions = computed(() => {
     const options = [];
     const now = new Date();
 
+    // Full year option (default)
+    options.push({
+        value: 'yearly',
+        label: `Full Year ${now.getFullYear()}`
+    });
+
+    // Current month
     options.push({
         value: 'current',
         label: `${now.toLocaleString('en-US', { month: 'long' })} ${now.getFullYear()} (Current)`
@@ -130,9 +137,31 @@ const getValueFontSize = (value: string) => {
 };
 
 const fetchRevenueForMonth = async () => {
-    if (selectedMonth.value === 'current') {
-        // Reset to dashboard data
+    if (selectedMonth.value === 'yearly') {
+        // Reset to dashboard data (which now returns yearly by default)
         revenueData.value = dashboardData.revenue;
+        return;
+    }
+
+    if (selectedMonth.value === 'current') {
+        // Fetch current month specifically
+        isLoadingRevenue.value = true;
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        try {
+            const service = useAxiosUtil<null, RevenueResponse>();
+            await service.get(`admin/dashboard/monthly-revenue?month=${month}&year=${year}`);
+
+            if (service.request.status === 200 && service.request.data) {
+                revenueData.value = service.request.data;
+            }
+        } catch (err) {
+            console.error('Failed to fetch revenue data:', err);
+        } finally {
+            isLoadingRevenue.value = false;
+        }
         return;
     }
 
