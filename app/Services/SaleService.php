@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Events\OrderNotificationEvent;
+use App\Models\OrderNotification;
 use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Support\Facades\DB;
@@ -101,6 +103,30 @@ class SaleService
                     ->decrement("product_quantity", $item["quantity"]);
             }
             $sale->saleItems()->createMany($products);
+
+            // Check stock levels after deduction and notify admin/staff
+            foreach ($data["products"] as $item) {
+                $product = Product::find($item["product_id"]);
+                if ($product) {
+                    if ($product->product_quantity <= 0) {
+                        $notification = OrderNotification::create([
+                            'user_id' => $user->user_id,
+                            'notification_type' => 'Out of Stock',
+                            'notification_to' => 'Store',
+                            'message' => "{$product->product_name} is now out of stock (0 remaining).",
+                        ]);
+                        OrderNotificationEvent::dispatch($notification->toArray());
+                    } elseif ($product->low_stock_threshold && $product->product_quantity <= $product->low_stock_threshold) {
+                        $notification = OrderNotification::create([
+                            'user_id' => $user->user_id,
+                            'notification_type' => 'Low Stock',
+                            'notification_to' => 'Store',
+                            'message' => "{$product->product_name} is nearly out of stock ({$product->product_quantity} remaining).",
+                        ]);
+                        OrderNotificationEvent::dispatch($notification->toArray());
+                    }
+                }
+            }
 
             $sale->refresh();
 

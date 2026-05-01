@@ -103,6 +103,28 @@ class OrderService
                     ->decrement('product_quantity', $value['quantity']);
             }
 
+            // Check stock levels after deduction and notify admin/staff
+            foreach ($data['products'] as $value) {
+                $product = Product::find($value['product_id']);
+                if ($product) {
+                    if ($product->product_quantity <= 0) {
+                        OrderNotification::create([
+                            'user_id' => $data['user_id'],
+                            'notification_type' => 'Out of Stock',
+                            'notification_to' => 'Store',
+                            'message' => "{$product->product_name} is now out of stock (0 remaining).",
+                        ]);
+                    } elseif ($product->low_stock_threshold && $product->product_quantity <= $product->low_stock_threshold) {
+                        OrderNotification::create([
+                            'user_id' => $data['user_id'],
+                            'notification_type' => 'Low Stock',
+                            'notification_to' => 'Store',
+                            'message' => "{$product->product_name} is nearly out of stock ({$product->product_quantity} remaining).",
+                        ]);
+                    }
+                }
+            }
+
             $orderInsert = [
                 'user_id' => $data['user_id'],
                 'order_type' => $data['order_type'],
@@ -129,6 +151,7 @@ class OrderService
 
             $fullName = $order->user->full_name;
 
+            // Notify admin/store about new order
             $notification = OrderNotification::create([
                 'user_id' => $data['user_id'],
                 'notification_type' => 'New Order',
@@ -137,6 +160,16 @@ class OrderService
             ]);
 
             OrderNotificationEvent::dispatch($notification->toArray());
+
+            // Notify customer that order was placed successfully
+            $customerNotification = OrderNotification::create([
+                'user_id' => $data['user_id'],
+                'notification_type' => 'New Order',
+                'notification_to' => 'Customer',
+                'message' => "Your order has been placed successfully. Please wait for store confirmation.",
+            ]);
+
+            CustomerOrderEvent::dispatch($customerNotification->toArray(), $data['user_id']);
 
             // Cart Cleanup
             $productIds = collect($products)->pluck('product_id')->toArray();
@@ -634,8 +667,31 @@ class OrderService
                 $query->with('images');
             },
             'barangay.municity.province.region.islandGroup',
-            'sale.saleItems.product'
+            'sale.saleItems.product',
+            'user'
         ]);
+
+        $fullName = $order->user->full_name;
+
+        // Notify admin/store that order is completed
+        $storeNotification = OrderNotification::create([
+            'user_id' => $order->user_id,
+            'notification_type' => 'Order Completed',
+            'notification_to' => 'Store',
+            'message' => "{$fullName} has confirmed receiving their order.",
+        ]);
+
+        OrderNotificationEvent::dispatch($storeNotification->toArray());
+
+        // Notify customer that order is completed
+        $customerNotification = OrderNotification::create([
+            'user_id' => $order->user_id,
+            'notification_type' => 'Order Completed',
+            'notification_to' => 'Customer',
+            'message' => "Your order has been completed. Thank you for your purchase!",
+        ]);
+
+        CustomerOrderEvent::dispatch($customerNotification->toArray(), $order->user_id);
 
         // Dispatch event to notify via WebSocket
         DetectOrderChangeEvent::dispatch($order->toArray(), $order->user_id);
@@ -730,6 +786,18 @@ class OrderService
                 'delivery_proof_images_after_refresh' => $order->delivery_proof_images,
                 'delivery_proof_video_after_refresh' => $order->delivery_proof_video
             ]);
+
+            // Notify customer that order has been shipped
+            $deliveryDates = $data['estimated_delivery_date_start'] . ' to ' . $data['estimated_delivery_date_end'];
+            $notification = OrderNotification::create([
+                'user_id' => $order->user_id,
+                'notification_type' => 'Order Shipped',
+                'notification_to' => 'Customer',
+                'message' => "Your order has been shipped! Estimated delivery: {$deliveryDates}.",
+            ]);
+
+            CustomerOrderEvent::dispatch($notification->toArray(), $order->user_id);
+            DetectOrderChangeEvent::dispatch($notification->toArray(), $order->user_id);
 
             return $order;
         });
