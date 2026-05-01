@@ -498,6 +498,7 @@ class DashboardService
                 'shipping_fee' => round($order->shipping_fee ?? 0, 2),
                 'total_amount' => round($order->total_amount, 2),
                 'payment_method' => $order->payment_method,
+                'status' => $order->status,
                 'date_paid_confirmed' => $order->date_paid_confirmed?->format('Y-m-d H:i:s'),
                 'products' => $products->toArray(),
                 'created_at' => $order->created_at->format('Y-m-d H:i:s'),

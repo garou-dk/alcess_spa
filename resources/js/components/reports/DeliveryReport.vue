@@ -126,6 +126,18 @@
                                 print-color-adjust: exact;
                             "
                         >
+                            Status
+                        </th>
+                        <th
+                            style="
+                                border: 1px solid #ccc;
+                                background-color: #00598a;
+                                color: white;
+                                padding: 8px;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            "
+                        >
                             Time of Purchase
                         </th>
                     </tr>
@@ -147,6 +159,20 @@
                             </td>
                             <td style="border: 1px solid #ccc; padding: 8px">
                                 {{ order.payment_method }}
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 8px">
+                                <span :style="{
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    backgroundColor: order.status === 'Completed' ? '#dcfce7' : order.status === 'Confirmed' ? '#dbeafe' : order.status === 'Shipped' ? '#f3e8ff' : order.status === 'Processing' ? '#fef3c7' : '#fef2f2',
+                                    color: order.status === 'Completed' ? '#166534' : order.status === 'Confirmed' ? '#1e40af' : order.status === 'Shipped' ? '#6b21a8' : order.status === 'Processing' ? '#92400e' : '#991b1b',
+                                    WebkitPrintColorAdjust: 'exact',
+                                    printColorAdjust: 'exact'
+                                }">
+                                    {{ order.status }}
+                                </span>
                             </td>
                             <td style="border: 1px solid #ccc; padding: 8px">
                                 {{ DateUtil.formatToMonthDayYear(order.created_at) }}
@@ -221,6 +247,7 @@ interface IDeliveryReportData {
     shipping_fee: number;
     total_amount: number;
     payment_method: string;
+    status: string;
     date_paid_confirmed?: string;
     products: Array<{
         product_name: string;

@@ -140,7 +140,7 @@
                             {{ val.customer_name }}
                             <br />
                             <span style="font-size: 10px; color: #6b7280; font-style: italic">
-                                Walk-In · {{ val.payment_method }}
+                                {{ val.payment_method }}
                             </span>
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">

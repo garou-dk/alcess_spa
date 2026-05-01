@@ -115,30 +115,6 @@
                                 print-color-adjust: exact;
                             "
                         >
-                            Payment Method
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
-                            Status
-                        </th>
-                        <th
-                            style="
-                                border: 1px solid #ccc;
-                                background-color: #00598a;
-                                color: white;
-                                padding: 8px;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            "
-                        >
                             Delivery Fee
                         </th>
                         <th
@@ -172,23 +148,6 @@
                         <td style="border: 1px solid #ccc; padding: 8px; text-align: center">
                             {{ val.quantity }}
                         </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            {{ val.payment_method }}
-                        </td>
-                        <td style="border: 1px solid #ccc; padding: 8px">
-                            <span :style="{
-                                padding: '2px 8px',
-                                borderRadius: '4px',
-                                fontSize: '11px',
-                                fontWeight: '600',
-                                backgroundColor: val.status === 'Completed' ? '#dcfce7' : val.status === 'Confirmed' ? '#dbeafe' : val.status === 'Shipped' ? '#f3e8ff' : '#fef2f2',
-                                color: val.status === 'Completed' ? '#166534' : val.status === 'Confirmed' ? '#1e40af' : val.status === 'Shipped' ? '#6b21a8' : '#991b1b',
-                                WebkitPrintColorAdjust: 'exact',
-                                printColorAdjust: 'exact'
-                            }">
-                                {{ val.status }}
-                            </span>
-                        </td>
                         <td style="border: 1px solid #ccc; padding: 8px; text-align: right">
                             {{ CurrencyUtil.formatCurrency(val.delivery_fee || 0) }}
                         </td>
@@ -199,7 +158,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="8" style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6">
+                        <td colspan="6" style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6">
                             GRAND TOTAL:
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-weight: bold; background-color: #f3f4f6; color: #000">

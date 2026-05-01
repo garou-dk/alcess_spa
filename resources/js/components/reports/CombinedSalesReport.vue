@@ -84,6 +84,10 @@
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
                             {{ val.type }}
+                            <br v-if="val.type === 'Walk-In' && val.payment_method" />
+                            <span v-if="val.type === 'Walk-In' && val.payment_method" style="font-size: 10px; color: #6b7280; font-style: italic;">
+                                {{ val.payment_method }}
+                            </span>
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
                             {{ val.product_name }}
@@ -170,6 +174,7 @@ interface ICombinedSalesData {
     quantity: number;
     delivery_fee: number;
     total_amount: number;
+    payment_method: string;
 }
 
 const toast = useToast();
@@ -191,7 +196,8 @@ const combinedData = computed<ICombinedSalesData[]>(() => {
                 product_name: sale.product_name,
                 quantity: sale.quantity,
                 delivery_fee: 0,
-                total_amount: sale.total_amount
+                total_amount: sale.total_amount,
+                payment_method: sale.payment_method || '',
             });
         });
     }
@@ -206,7 +212,8 @@ const combinedData = computed<ICombinedSalesData[]>(() => {
                 product_name: order.product_name,
                 quantity: order.quantity,
                 delivery_fee: order.delivery_fee || 0,
-                total_amount: order.total_amount
+                total_amount: order.total_amount,
+                payment_method: order.payment_method || '',
             });
         });
     }
