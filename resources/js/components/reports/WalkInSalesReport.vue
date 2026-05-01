@@ -76,6 +76,18 @@
                                 print-color-adjust: exact;
                             "
                         >
+                            Customer
+                        </th>
+                        <th
+                            style="
+                                border: 1px solid #ccc;
+                                background-color: #00598a;
+                                color: white;
+                                padding: 8px;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            "
+                        >
                             Product Name
                         </th>
                         <th
@@ -123,6 +135,13 @@
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
                             {{ val.transaction_id }}
+                        </td>
+                        <td style="border: 1px solid #ccc; padding: 8px">
+                            {{ val.customer_name }}
+                            <br />
+                            <span style="font-size: 10px; color: #6b7280; font-style: italic">
+                                Walk-In · {{ val.payment_method }}
+                            </span>
                         </td>
                         <td style="border: 1px solid #ccc; padding: 8px">
                             {{ val.product_name }}
@@ -199,10 +218,12 @@ interface IForm {
 interface IWalkInSalesData {
     transaction_date: string;     // ISO date string
     transaction_id: string;       // Sale code
+    customer_name: string;        // Customer name
     product_name: string;         // Product name
     quantity: number;             // Quantity sold
     unit_price: number;           // Price per unit
     total_amount: number;         // Total for this line item
+    payment_method: string;       // Payment method (Cash, E-wallet - Gcash, etc.)
 }
 
 const props = defineProps<Props>();

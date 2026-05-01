@@ -59,6 +59,8 @@ class ReportService
                     'quantity' => (int) $productOrder->quantity,
                     'delivery_fee' => round($deliveryFee, 2),
                     'total_amount' => round($itemSubtotal + $deliveryFee, 2),
+                    'status' => $order->status,
+                    'payment_method' => $order->payment_method,
                 ];
             }
         }
@@ -103,6 +105,7 @@ class ReportService
                     'quantity' => (int) $saleItem->quantity,
                     'unit_price' => round($saleItem->price, 2),
                     'total_amount' => round($saleItem->quantity * $saleItem->price, 2),
+                    'payment_method' => $sale->payment_method,
                 ];
             }
         }
