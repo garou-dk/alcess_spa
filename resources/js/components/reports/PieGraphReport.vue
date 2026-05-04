@@ -24,7 +24,7 @@
                         })"
                     />
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Revenue breakdown by channel</p>
+                <p class="text-xs text-gray-500 mt-1">All-time revenue breakdown by channel</p>
                 
                 <!-- Date Range Filter -->
                 <div v-if="showDateFilter" :class="responsive.getResponsiveClasses({

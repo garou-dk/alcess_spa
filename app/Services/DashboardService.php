@@ -193,30 +193,29 @@ class DashboardService
 
     public function getCurrentMonthReport(?string $startDate = null, ?string $endDate = null): array
     {
-        // Use provided dates or default to current month
+        // Build base queries
+        $ordersQuery = Order::whereNotNull('date_paid_confirmed');
+        $salesCountQuery = Sale::query();
+        $ordersRevenueQuery = Order::whereNotNull('date_paid_confirmed');
+        $saleItemsQuery = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id');
+
+        // Apply date range only if both dates are provided
         if ($startDate && $endDate) {
-            $currentMonthStart = Carbon::parse($startDate)->startOfDay();
-            $currentMonthEnd = Carbon::parse($endDate)->endOfDay();
-        } else {
-            $currentMonthStart = Carbon::now()->startOfMonth();
-            $currentMonthEnd = Carbon::now()->endOfMonth();
+            $rangeStart = Carbon::parse($startDate)->startOfDay();
+            $rangeEnd = Carbon::parse($endDate)->endOfDay();
+
+            $ordersQuery->whereBetween('date_paid_confirmed', [$rangeStart, $rangeEnd]);
+            $salesCountQuery->whereBetween('created_at', [$rangeStart, $rangeEnd]);
+            $ordersRevenueQuery->whereBetween('date_paid_confirmed', [$rangeStart, $rangeEnd]);
+            $saleItemsQuery->whereBetween('sales.created_at', [$rangeStart, $rangeEnd]);
         }
 
-        $ordersCount = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
-            ->count();
-
-        $salesCount = Sale::whereBetween('created_at', [$currentMonthStart, $currentMonthEnd])
-            ->count();
-
-        $productOrdersRevenue = Order::whereNotNull('date_paid_confirmed')
-            ->whereBetween('date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
-            ->sum('total_amount');
-
-        $saleItemsRevenue = SaleItem::join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
-            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
-            ->whereNull('orders.sale_id') // Only sales without linked orders
-            ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
+        $ordersCount = $ordersQuery->count();
+        $salesCount = $salesCountQuery->count();
+        $productOrdersRevenue = $ordersRevenueQuery->sum('total_amount');
+        $saleItemsRevenue = $saleItemsQuery
             ->selectRaw('SUM(sale_items.price * sale_items.quantity) as total')
             ->value('total') ?? 0;
 
@@ -231,35 +230,37 @@ class DashboardService
 
     public function getRevenueByCategories(?string $startDate = null, ?string $endDate = null): array
     {
-        // Use provided dates or default to current month
-        if ($startDate && $endDate) {
-            $currentMonthStart = Carbon::parse($startDate)->startOfDay();
-            $currentMonthEnd = Carbon::parse($endDate)->endOfDay();
-        } else {
-            $currentMonthStart = Carbon::now()->startOfMonth();
-            $currentMonthEnd = Carbon::now()->endOfMonth();
-        }
-
-        // Orders Revenue - all paid orders (online transactions)
-        $orderRevenue = DB::table('product_orders')
+        // Build base queries — scope by date only when filter is applied
+        $orderRevenueQuery = DB::table('product_orders')
             ->join('orders', 'product_orders.order_id', '=', 'orders.order_id')
             ->join('products', 'product_orders.product_id', '=', 'products.product_id')
             ->join('categories', 'products.category_id', '=', 'categories.category_id')
-            ->whereNotNull('orders.date_paid_confirmed')
-            ->whereBetween('orders.date_paid_confirmed', [$currentMonthStart, $currentMonthEnd])
+            ->whereNotNull('orders.date_paid_confirmed');
+
+        $saleRevenueQuery = DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
+            ->join('products', 'sale_items.product_id', '=', 'products.product_id')
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
+            ->whereNull('orders.sale_id');
+
+        if ($startDate && $endDate) {
+            $rangeStart = Carbon::parse($startDate)->startOfDay();
+            $rangeEnd = Carbon::parse($endDate)->endOfDay();
+
+            $orderRevenueQuery->whereBetween('orders.date_paid_confirmed', [$rangeStart, $rangeEnd]);
+            $saleRevenueQuery->whereBetween('sales.created_at', [$rangeStart, $rangeEnd]);
+        }
+
+        // Orders Revenue - all paid orders (online transactions)
+        $orderRevenue = $orderRevenueQuery
             ->selectRaw('categories.category_id, categories.category_name, SUM(product_orders.price * product_orders.quantity) as revenue')
             ->groupBy('categories.category_id', 'categories.category_name')
             ->get()
             ->keyBy('category_id');
 
         // Sales Revenue - only sales that are NOT linked to orders (pure POS/walk-in transactions)
-        $saleRevenue = DB::table('sale_items')
-            ->join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
-            ->join('products', 'sale_items.product_id', '=', 'products.product_id')
-            ->join('categories', 'products.category_id', '=', 'categories.category_id')
-            ->leftJoin('orders', 'sales.sale_id', '=', 'orders.sale_id')
-            ->whereNull('orders.sale_id') // Only sales without linked orders
-            ->whereBetween('sales.created_at', [$currentMonthStart, $currentMonthEnd])
+        $saleRevenue = $saleRevenueQuery
             ->selectRaw('categories.category_id, categories.category_name, SUM(sale_items.price * sale_items.quantity) as revenue')
             ->groupBy('categories.category_id', 'categories.category_name')
             ->get()

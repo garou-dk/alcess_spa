@@ -54,18 +54,6 @@
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
-                    icon="pi pi-star"
-                    label="Best Selling Product"
-                    :hash="'#best-selling-products-section'"
-                />
-                <SideBarButton
-                    to="admin.dashboard.index"
-                    icon="pi pi-chart-pie"
-                    label="Sales / Revenue"
-                    :hash="'#sales-distribution-section'"
-                />
-                <SideBarButton
-                    to="admin.dashboard.index"
                     icon="pi pi-exclamation-triangle"
                     label="Nearly out of stock"
                     :hash="'#nearly-out-of-stock-section'"
@@ -73,9 +61,21 @@
                 />
                 <SideBarButton
                     to="admin.dashboard.index"
+                    icon="pi pi-star"
+                    label="Best Selling Product"
+                    :hash="'#best-selling-products-section'"
+                />
+                <SideBarButton
+                    to="admin.dashboard.index"
                     icon="pi pi-arrows-h"
                     label="Inventory movement"
                     :hash="'#inventory-movement-section'"
+                />
+                <SideBarButton
+                    to="admin.dashboard.index"
+                    icon="pi pi-chart-pie"
+                    label="Sales Distribution"
+                    :hash="'#sales-distribution-section'"
                 />
     
                 <!-- Divider -->

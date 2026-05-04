@@ -55,26 +55,25 @@
                 <DashboardOrdersTable />
             </div>
 
-            <!-- Best Selling Products -->
-            <div id="best-selling-products-section" class="scroll-mt-28">
-                <TopSoldProducts />
-            </div>
-
-
-            <!-- Charts Section - Side by Side -->
-            <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
-                <PieGraphReport />
-                <CategorySales />
-            </div>
-
             <!-- Inventory Alerts - Low Stock -->
             <div id="nearly-out-of-stock-section" class="scroll-mt-28">
                 <BatchForm />
             </div>
 
+            <!-- Best Selling Products -->
+            <div id="best-selling-products-section" class="scroll-mt-28">
+                <TopSoldProducts />
+            </div>
+
             <!-- Product Performance / Movement Section -->
             <div id="inventory-movement-section" class="scroll-mt-28">
                 <StockInOut />
+            </div>
+
+            <!-- Charts Section - Side by Side -->
+            <div id="sales-distribution-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-28">
+                <PieGraphReport />
+                <CategorySales />
             </div>
 
             <!-- Quick Help / Summary Card (Bottom) -->
