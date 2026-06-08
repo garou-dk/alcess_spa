@@ -27,3 +27,4 @@ yarn-error.log
 /soketi.json
 /database/*.sqlite
 /database/*.sqlite-journal
+/backups
