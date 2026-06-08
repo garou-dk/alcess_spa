@@ -353,7 +353,7 @@ const toast = useToast();
 const props = defineProps<Props>();
 const locationSelected = ref<IAddress | null>(null);
 const loadAddressService = useAxiosUtil<null, IAddress>();
-const companyAddress = 'Door 1 Yong Building A, Pitchon Street, Magallanes, Davao City, Davao Del Sur, Region XI, Mindanao, 8105';
+const companyAddress = 'Door 13, Fred-Cion Building, J. Catolico Avenue, Lagao, General Santos City, South Cotabato, Region XII, Mindanao, 9500';
 
 const fullAddress = computed(() => {
     // If Pickup is selected, show company address

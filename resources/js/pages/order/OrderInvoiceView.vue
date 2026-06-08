@@ -85,7 +85,7 @@
                                         mobile: 'text-sm',
                                         tablet: 'text-base',
                                         desktop: 'text-base'
-                                    })">Blademier S. Canalita</p>
+                                    })">Albert Von Daligdigan</p>
                                 </div>
                                 <div :class="getResponsiveClasses({
                                     mobile: 'flex justify-center pt-2 border-t border-gray-200',
@@ -333,10 +333,10 @@
                             Alcess Laptop and Computer Accessories
                         </h1>
                         <p style="margin: 0; line-height: 1.6; font-size: 14px;">
-                            DOOR 1, Yong BLDG PICHON MAGALLANES STREET<br />
-                            DAVAO CITY<br />
+                            DOOR 13, FRED-CION BUILDING, J. CATOLICO AVENUE<br />
+                            LAGAO, GENERAL SANTOS CITY<br />
                             Tel. 09531852360 / 09651934705<br />
-                            Email: tiny.wenie1234@gmail.com
+                            Email: alcessdavao@gmail.com
                         </p>
                     </div>
                 </div>
@@ -431,20 +431,11 @@
                     </tfoot>
                 </table>
 
-                <div style="position: relative; margin-top: 30px;">
-                    <div style="float: left; width: 45%;">
-                        <h2 style="font-size: 16px;">Prepared by:</h2>
-                        <div style="text-align: center;">
-                            <span style="display: block; margin-top: 5px;">Blademier S. Canalita</span>
-                        </div>
+                <div style="margin-top: 30px; text-align: center;">
+                    <h2 style="font-size: 16px;">Prepared and Approved by:</h2>
+                    <div style="text-align: center;">
+                        <span style="display: block; margin-top: 5px;">Albert Von Daligdigan</span>
                     </div>
-                    <div style="float: right; width: 45%;">
-                        <h2 style="font-size: 16px;">Approved by:</h2>
-                        <div style="text-align: center;">
-                            <span style="display: block; margin-top: 5px;">Albert Von Daligdigan</span>
-                        </div>
-                    </div>
-                    <div style="clear: both;"></div>
                 </div>
 
                 <div style="margin-top: 40px; text-align: center; font-size: 12px; line-height: 1.6;">

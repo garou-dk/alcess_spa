@@ -117,22 +117,12 @@
             </div>
 
             <!-- Approval -->
-            <div style="position: relative; margin-top: 30px">
-                <div style="float: left; width: 45%">
-                    <h2 style="font-size: 16px">Prepared by:</h2>
-                    <div style="text-align: center">
-                        <span style="display: block; margin-top: 5px">Blademier S. Canalita</span>
-                        <small>{{ DateUtil.formatToMonthDayYear(DateUtil.formatYYYYMMDD(new Date())) }}</small>
-                    </div>
+            <div style="margin-top: 30px; text-align: center">
+                <h2 style="font-size: 16px">Prepared and Approved by:</h2>
+                <div style="text-align: center">
+                    <span style="display: block; margin-top: 5px">Albert Von Daligdigan</span>
+                    <small>{{ DateUtil.formatToMonthDayYear(DateUtil.formatYYYYMMDD(new Date())) }}</small>
                 </div>
-                <div style="float: right; width: 45%">
-                    <h2 style="font-size: 16px">Approved by:</h2>
-                    <div style="text-align: center">
-                        <span style="display: block; margin-top: 5px">Albert Von Daligdigan</span>
-                        <small>{{ DateUtil.formatToMonthDayYear(DateUtil.formatYYYYMMDD(new Date())) }}</small>
-                    </div>
-                </div>
-                <div style="clear: both"></div>
             </div>
         </div>
         <div v-else :class="responsive.getResponsiveClasses({
