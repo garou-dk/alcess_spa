@@ -8,17 +8,13 @@
                 <div class="hero-wave wave-3"></div>
                 <div class="hero-orb orb-1"></div>
                 <div class="hero-orb orb-2"></div>
-                <!-- Circle Gradient Shapes -->
-                <div class="hero-circle circle-1"></div>
-                <div class="hero-circle circle-2"></div>
-                <div class="hero-circle circle-3"></div>
             </div>
             <div class="hero-content">
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
                         <div class="hero-text">
-                            <!-- Davao Branch Watermark -->
-                            <div class="hero-watermark">DAVAO BRANCH</div>
+                            <!-- Gensan Branch Watermark -->
+                            <div class="hero-watermark">GENSAN BRANCH</div>
                             <span class="hero-badge">Featured Product</span>
                             <h2 class="hero-title">{{ products[currentSlide]?.product_name }}</h2>
                             <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
@@ -132,11 +128,11 @@
                         <div class="testimonial-card">
                             <div class="testimonial-rating"><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i></div>
                             <p class="testimonial-text">"Excellent service! Got my laptop delivered in just 2 days. The product is 100% genuine and works perfectly!"</p>
-                            <div class="testimonial-author"><div class="author-avatar">JD</div><div><span class="author-name">Juan Dela Cruz</span><span class="author-location">Davao City</span></div></div>
+                            <div class="testimonial-author"><div class="author-avatar">JD</div><div><span class="author-name">Juan Dela Cruz</span><span class="author-location">Gensan City</span></div></div>
                         </div>
                         <div class="testimonial-card">
                             <div class="testimonial-rating"><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i><i class="pi pi-star-fill"></i></div>
-                            <p class="testimonial-text">"Best prices in Davao! I compared with other stores and Alcess has the most competitive rates."</p>
+                            <p class="testimonial-text">"Best prices in Gensan! I compared with other stores and Alcess has the most competitive rates."</p>
                             <div class="testimonial-author"><div class="author-avatar">MR</div><div><span class="author-name">Maria Reyes</span><span class="author-location">Tagum City</span></div></div>
                         </div>
                         <div class="testimonial-card">
@@ -288,11 +284,7 @@ onUnmounted(() => stopCarousel());
 .orb-2 { width: 320px; height: 320px; bottom: 10%; left: -5%; background: radial-gradient(circle, rgba(253, 121, 168, 0.8) 0%, transparent 70%); animation: orbPulse 12s ease-in-out infinite reverse; }
 @keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 1; } }
 
-/* Circle Gradient Shapes - Soft */
-.hero-circle { position: absolute; border-radius: 50%; border: 2.5px solid rgba(0, 0, 0, 0.08); }
-.circle-1 { width: 450px; height: 450px; top: -180px; left: -120px; background: radial-gradient(circle at 30% 30%, rgba(162, 155, 254, 0.1) 0%, transparent 50%); border-color: rgba(162, 155, 254, 0.15); animation: circleFloat 20s ease-in-out infinite; }
-.circle-2 { width: 280px; height: 280px; bottom: 5%; right: 3%; background: radial-gradient(circle at 70% 70%, rgba(251, 177, 160, 0.1) 0%, transparent 50%); border-color: rgba(251, 177, 160, 0.15); animation: circleFloat 25s ease-in-out infinite reverse; }
-.circle-3 { width: 200px; height: 200px; top: 35%; left: 55%; background: radial-gradient(circle at 50% 50%, rgba(253, 121, 168, 0.1) 0%, transparent 50%); border-color: rgba(253, 121, 168, 0.15); animation: circleFloat 18s ease-in-out infinite; animation-delay: -5s; }
+
 @keyframes circleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -30px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
 
 

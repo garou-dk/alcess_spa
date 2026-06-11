@@ -3,12 +3,7 @@
         <!-- Welcome Hero Section -->
         <section class="welcome-hero">
             <div class="hero-bg-container">
-                <!-- Gradient Filled Circles -->
-                <div class="gradient-circle circle-1"></div>
-                <div class="gradient-circle circle-2"></div>
-                <div class="gradient-circle circle-3"></div>
-                <div class="gradient-circle circle-4"></div>
-                <div class="gradient-circle circle-5"></div>
+                <div class="hero-bg-image"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
@@ -27,11 +22,11 @@
                         </button>
                     </div>
                     
-                    <!-- Davao Branch Info -->
+                    <!-- Gensan Branch Info -->
                     <div class="branch-footer-info">
                         <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
                             <img :src="Logo" alt="logo" class="w-5 h-5 opacity-80" />
-                            Alcess Tech Davao Branch
+                            Alcess Tech Gensan Branch
                         </div>
                     </div>
                 </div>
@@ -371,61 +366,19 @@ onUnmounted(() => stopCarousel())
 .mb-8 { margin-bottom: 2rem; }
 
 /* Welcome Hero */
-/* Clean White Background with Gradient-Filled Circles */
+/* Clean White Background with Blurry Background Image */
 .welcome-hero { position: relative; background: #ffffff; min-height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 0; }
-.hero-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.hero-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; background: #ffffff; }
 
-/* Gradient Filled Circles - Sharp & Highlighted (pairs with gradient text) */
-.gradient-circle { 
-    position: absolute; 
-    border-radius: 50%; 
-    z-index: 1; 
-    /* No blur - crisp edges */
-}
-.gradient-circle.circle-1 { 
-    width: 380px; height: 380px; 
-    top: -120px; right: -80px; 
-    background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); 
-    opacity: 0.25; 
-    animation: floatCircle 20s ease-in-out infinite; 
-}
-.gradient-circle.circle-2 { 
-    width: 300px; height: 300px; 
-    bottom: -100px; left: -70px; 
-    background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); 
-    opacity: 0.22; 
-    animation: floatCircle 25s ease-in-out infinite reverse; 
-}
-.gradient-circle.circle-3 { 
-    width: 160px; height: 160px; 
-    top: 30%; left: 4%; 
-    background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%); 
-    opacity: 0.28; 
-    animation: floatCircle 18s ease-in-out infinite; 
-    animation-delay: -5s; 
-}
-.gradient-circle.circle-4 { 
-    width: 120px; height: 120px; 
-    top: 12%; right: 10%; 
-    background: linear-gradient(135deg, #7928ca 0%, #0070f3 100%); 
-    opacity: 0.3; 
-    animation: floatCircle 22s ease-in-out infinite; 
-    animation-delay: -10s; 
-}
-.gradient-circle.circle-5 { 
-    width: 90px; height: 90px; 
-    bottom: 20%; right: 6%; 
-    background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); 
-    opacity: 0.35; 
-    animation: floatCircle 16s ease-in-out infinite reverse; 
-    animation-delay: -3s; 
-}
-
-@keyframes floatCircle { 
-    0%, 100% { transform: translate(0, 0) scale(1); } 
-    25% { transform: translate(10px, -15px) scale(1.02); } 
-    50% { transform: translate(0, -20px) scale(1.03); } 
-    75% { transform: translate(-10px, -10px) scale(1.01); } 
+.hero-bg-image {
+    position: absolute;
+    inset: -20px;
+    background-image: url('/bg.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(15px);
+    opacity: 0.15;
+    z-index: 0;
 }
 
 .welcome-container { position: relative; z-index: 10; padding: 4rem 1.5rem; width: 100%; }

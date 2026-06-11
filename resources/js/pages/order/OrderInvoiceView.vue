@@ -336,7 +336,7 @@
                             DOOR 13, FRED-CION BUILDING, J. CATOLICO AVENUE<br />
                             LAGAO, GENERAL SANTOS CITY<br />
                             Tel. 09531852360 / 09651934705<br />
-                            Email: alcessdavao@gmail.com
+                            Email: alcessgensan@gmail.com
                         </p>
                     </div>
                 </div>

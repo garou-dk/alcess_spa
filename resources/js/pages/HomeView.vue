@@ -10,12 +10,7 @@
         <!-- Welcome Hero Section -->
         <section class="welcome-hero" id="home">
             <div class="hero-bg-container">
-                <!-- Gradient Filled Circles -->
-                <div class="gradient-circle circle-1"></div>
-                <div class="gradient-circle circle-2"></div>
-                <div class="gradient-circle circle-3"></div>
-                <div class="gradient-circle circle-4"></div>
-                <div class="gradient-circle circle-5"></div>
+                <div class="hero-bg-image"></div>
             </div>
             <div class="welcome-container">
                 <div class="welcome-content">
@@ -30,11 +25,11 @@
                             </button>
                         </div>
                         
-                    <!-- Davao Branch Info -->
+                    <!-- Gensan Branch Info -->
                     <div class="branch-footer-info">
                         <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
                             <img :src="Icon" alt="logo" class="w-5 h-5 opacity-80" />
-                            Alcess Tech Davao Branch
+                            Alcess Tech Gensan Branch
                         </div>
                     </div>
                 </div>
@@ -199,7 +194,7 @@
                                 <div class="author-avatar">JD</div>
                                 <div class="author-info">
                                     <span class="author-name">Juan Dela Cruz</span>
-                                    <span class="author-location">Davao City</span>
+                                    <span class="author-location">Gensan City</span>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +206,7 @@
                                 <i class="pi pi-star-fill"></i>
                                 <i class="pi pi-star-fill"></i>
                             </div>
-                            <p class="testimonial-text">"Best prices in Davao! I compared with other stores and Alcess has the most competitive rates. Great customer support too."</p>
+                            <p class="testimonial-text">"Best prices in Gensan! I compared with other stores and Alcess has the most competitive rates. Great customer support too."</p>
                             <div class="testimonial-author">
                                 <div class="author-avatar">MR</div>
                                 <div class="author-info">
@@ -466,61 +461,19 @@ onUnmounted(() => stopCarousel());
 .btn-view:hover { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
 
 /* Welcome Hero */
-/* Clean White Background with Gradient-Filled Circles */
+/* Clean White Background with Blurry Background Image */
 .welcome-hero { position: relative; background: #ffffff; min-height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding-top: 80px; }
-.hero-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.hero-bg-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; background: #ffffff; }
 
-/* Gradient Filled Circles - Sharp & Highlighted (pairs with gradient text) */
-.gradient-circle { 
-    position: absolute; 
-    border-radius: 50%; 
-    z-index: 1; 
-    /* No blur - crisp edges */
-}
-.gradient-circle.circle-1 { 
-    width: 420px; height: 420px; 
-    top: -140px; right: -100px; 
-    background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); 
-    opacity: 0.25; 
-    animation: floatCircle 20s ease-in-out infinite; 
-}
-.gradient-circle.circle-2 { 
-    width: 320px; height: 320px; 
-    bottom: -120px; left: -80px; 
-    background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); 
-    opacity: 0.22; 
-    animation: floatCircle 25s ease-in-out infinite reverse; 
-}
-.gradient-circle.circle-3 { 
-    width: 180px; height: 180px; 
-    top: 35%; left: 3%; 
-    background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%); 
-    opacity: 0.28; 
-    animation: floatCircle 18s ease-in-out infinite; 
-    animation-delay: -5s; 
-}
-.gradient-circle.circle-4 { 
-    width: 140px; height: 140px; 
-    top: 18%; right: 12%; 
-    background: linear-gradient(135deg, #7928ca 0%, #0070f3 100%); 
-    opacity: 0.3; 
-    animation: floatCircle 22s ease-in-out infinite; 
-    animation-delay: -10s; 
-}
-.gradient-circle.circle-5 { 
-    width: 100px; height: 100px; 
-    bottom: 25%; right: 8%; 
-    background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); 
-    opacity: 0.35; 
-    animation: floatCircle 16s ease-in-out infinite reverse; 
-    animation-delay: -3s; 
-}
-
-@keyframes floatCircle { 
-    0%, 100% { transform: translate(0, 0) scale(1); } 
-    25% { transform: translate(10px, -15px) scale(1.02); } 
-    50% { transform: translate(0, -20px) scale(1.03); } 
-    75% { transform: translate(-10px, -10px) scale(1.01); } 
+.hero-bg-image {
+    position: absolute;
+    inset: -20px;
+    background-image: url('/bg.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(15px);
+    opacity: 0.15;
+    z-index: 0;
 }
 
 .welcome-container { position: relative; z-index: 10; padding: 0 1.5rem; width: 100%; }
