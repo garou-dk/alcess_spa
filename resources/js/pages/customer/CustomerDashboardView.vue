@@ -376,8 +376,8 @@ onUnmounted(() => stopCarousel())
     background-image: url('/bg.png');
     background-size: cover;
     background-position: center;
-    filter: blur(15px);
-    opacity: 0.15;
+    filter: blur(4px);
+    opacity: 0.2;
     z-index: 0;
 }
 
