@@ -419,7 +419,7 @@ mysql -u root -p alcess_db -e "SELECT user_id, name, email, created_at FROM user
 | `sale_items` | Products inside each sale | `sale_item_id` |
 | `order_notifications` | Order status notifications | `order_notification_id` |
 | `products` | Product catalog | `product_id` |
-| `categories` | Product categories | `category_id` |
+| `categories` | Products categories | `category_id` |
 | `rates` | Product reviews/ratings | `rate_id` |
 | `rate_likes` | Likes on reviews | `rate_like_id` |
 | `rate_images` | Images on reviews | `rate_image_id` |
