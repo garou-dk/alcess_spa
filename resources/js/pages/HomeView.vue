@@ -40,40 +40,126 @@
         <!-- Sticky Menu -->
         <FloatingActionMenu />
 
-        <!-- Featured Products Section -->
-        <section v-if="showCarousel && products.length > 0" class="featured-products" id="products">
+        <!-- Featured & Pinned Products Section -->
+        <section v-if="products.length > 0" class="featured-showcase-section" id="products" @mouseenter="stopCarousel" @mouseleave="startCarousel">
             <div class="container">
-                <div class="section-header">
-                    <p class="section-label">Top Picks</p>
-                    <h2 class="section-title">Featured Products</h2>
+                <!-- Section Header with Controls -->
+                <div class="showcase-header">
+                    <div>
+                        <div class="showcase-badge">
+                            <i class="pi pi-sparkles"></i>
+                            <span>Spotlight Selection</span>
+                        </div>
+                        <h2 class="showcase-title">Featured & Pinned Tech</h2>
+                        <p class="showcase-subtitle">Hand-picked gear, trending bestsellers, and top staff recommendations.</p>
+                    </div>
+                    <div class="showcase-controls" v-if="products.length > 1">
+                        <button @click="prevSlide" class="control-btn" title="Previous Item" aria-label="Previous">
+                            <i class="pi pi-chevron-left"></i>
+                        </button>
+                        <span class="slide-indicator">{{ String(currentSlide + 1).padStart(2, '0') }} / {{ String(products.length).padStart(2, '0') }}</span>
+                        <button @click="nextSlide" class="control-btn" title="Next Item" aria-label="Next">
+                            <i class="pi pi-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="featured-carousel-wrapper">
-                    <div class="hero-carousel">
-                        <div class="hero-grid">
-                            <div class="hero-text">
-                                <span class="hero-badge">BEST SELLER</span>
-                                <h2 class="hero-product-name">{{ products[currentSlide]?.product_name }}</h2>
-                                <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
-                                <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
-                                <div class="hero-buttons">
-                                    <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-primary">
-                                        <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
-                                        Add to Cart
-                                    </button>
-                                    <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-secondary">
-                                        View Details
-                                    </button>
-                                </div>
+
+                <!-- Showcase Main Stage -->
+                <div class="showcase-stage">
+                    <div class="stage-mesh-glow"></div>
+                    <div class="stage-content">
+                        <!-- Left Info Panel -->
+                        <div class="stage-info">
+                            <div class="stage-tags">
+                                <span v-if="products[currentSlide]?.is_pinned" class="pill-pinned">
+                                    <i class="pi pi-bookmark-fill"></i> Staff Pinned
+                                </span>
+                                <span v-else-if="products[currentSlide]?.is_best_selling" class="pill-bestseller">
+                                    <i class="pi pi-bolt"></i> Best Seller
+                                </span>
+                                <span class="pill-category">
+                                    <i class="pi pi-tag"></i> {{ products[currentSlide]?.category?.category_name || 'Electronics' }}
+                                </span>
+                                <span v-if="products[currentSlide]?.product_quantity && products[currentSlide]?.product_quantity > 0" class="pill-stock in-stock">
+                                    <span class="stock-dot"></span> In Stock
+                                </span>
                             </div>
-                            <div class="hero-image-container">
-                                <div class="hero-image-wrapper">
-                                    <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
-                                    <div v-else class="hero-image-placeholder"><i class="pi pi-image"></i></div>
+
+                            <h3 class="stage-product-title" :title="products[currentSlide]?.product_name">
+                                {{ products[currentSlide]?.product_name }}
+                            </h3>
+
+                            <div class="stage-rating-row">
+                                <div class="rating-stars">
+                                    <i v-for="i in 5" :key="i" :class="i <= Math.round(Number(products[currentSlide]?.rates_avg_rate) || 0) ? 'pi pi-star-fill active' : 'pi pi-star'"></i>
+                                </div>
+                                <span class="rating-value">{{ products[currentSlide]?.rates_avg_rate ? Number(products[currentSlide]?.rates_avg_rate).toFixed(1) : '5.0' }}</span>
+                                <span class="rating-count">({{ products[currentSlide]?.rates_count || 0 }} reviews)</span>
+                            </div>
+
+                            <p class="stage-description" v-if="products[currentSlide]?.product_description">
+                                {{ products[currentSlide]?.product_description.slice(0, 140) }}...
+                            </p>
+
+                            <div class="stage-price-box">
+                                <span class="price-label">Current Price</span>
+                                <div class="price-value">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
+                            </div>
+
+                            <div class="stage-actions">
+                                <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-spotlight-cart">
+                                    <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
+                                    <span>Add to Cart</span>
+                                </button>
+                                <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-spotlight-details">
+                                    <span>View Specs</span>
+                                    <i class="pi pi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Visual Stage -->
+                        <div class="stage-visual" @click="goToProductDetails(products[currentSlide]?.product_id)">
+                            <div class="visual-halo"></div>
+                            <div class="visual-podium"></div>
+                            <div class="visual-img-container">
+                                <img 
+                                    v-if="products[currentSlide]?.product_image" 
+                                    :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" 
+                                    :alt="products[currentSlide]?.product_name" 
+                                    class="stage-main-img" 
+                                    @error="handleImageError" 
+                                />
+                                <div v-else class="stage-placeholder-img">
+                                    <i class="pi pi-image"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="hero-dots">
-                            <button v-for="(_, index) in products.slice(0, 3)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
+                    </div>
+
+                    <!-- Bottom Thumbnail Track (For Multi-Pinned / Multi-Featured) -->
+                    <div class="stage-thumbnails-track" v-if="products.length > 1">
+                        <div class="thumbnails-header">
+                            <span>Featured Showcase Items ({{ products.length }})</span>
+                            <div class="track-hint">Click item to switch</div>
+                        </div>
+                        <div class="thumbnails-list">
+                            <button 
+                                v-for="(prod, idx) in products" 
+                                :key="prod.product_id"
+                                @click="setSlide(idx)"
+                                :class="['thumb-card', { active: currentSlide === idx }]"
+                            >
+                                <div class="thumb-img-box">
+                                    <img v-if="prod.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${prod.product_image}`)" :alt="prod.product_name" />
+                                    <i v-else class="pi pi-image"></i>
+                                </div>
+                                <div class="thumb-details">
+                                    <span v-if="prod.is_pinned" class="thumb-pinned-tag">Pinned</span>
+                                    <p class="thumb-title">{{ prod.product_name }}</p>
+                                    <p class="thumb-price">{{ CurrencyUtil.formatCurrency(prod.product_price) }}</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -373,11 +459,37 @@ const loadBestSellingProducts = async () => {
 };
 
 const startCarousel = () => {
-    const count = Math.min(products.value.length, 3);
-    if (count > 1) carouselInterval = window.setInterval(() => { currentSlide.value = (currentSlide.value + 1) % count; }, 5000);
+    const count = products.value.length;
+    if (count > 1) {
+        stopCarousel();
+        carouselInterval = window.setInterval(() => {
+            currentSlide.value = (currentSlide.value + 1) % count;
+        }, 6000);
+    }
 };
 
-const stopCarousel = () => { if (carouselInterval) { clearInterval(carouselInterval); carouselInterval = null; } };
+const stopCarousel = () => {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+};
+
+const nextSlide = () => {
+    if (products.value.length > 0) {
+        currentSlide.value = (currentSlide.value + 1) % products.value.length;
+    }
+};
+
+const prevSlide = () => {
+    if (products.value.length > 0) {
+        currentSlide.value = (currentSlide.value - 1 + products.value.length) % products.value.length;
+    }
+};
+
+const setSlide = (idx: number) => {
+    currentSlide.value = idx;
+};
 const goRoute = (route: string, params: Record<string, string> = {}) => router.push({ name: route, params });
 const handleImageError = (event: Event) => { (event.target as HTMLImageElement).style.display = 'none'; };
 
@@ -512,15 +624,91 @@ onUnmounted(() => stopCarousel());
 .newsletter-form input:focus { border-color: #2563eb; background: rgba(255,255,255,0.15); }
 .newsletter-form button { width: 100%; justify-content: center; }
 
-/* Featured Products Section */
-.featured-products { padding: 4rem 0; background: #fff; }
-.featured-carousel-wrapper { background: #1e293b; border-radius: 2rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-.hero-carousel { padding: 3rem; position: relative; }
+/* Featured & Pinned Showcase Section */
+.featured-showcase-section { padding: 5rem 0; background: #f8fafc; position: relative; }
 
-/* Hero Typography Refinements */
-.hero-text { position: relative; z-index: 5; }
-.hero-product-name { font-size: 2.5rem; color: #fff; margin-bottom: 1rem; }
-.hero-price { color: #00f2ff; font-size: 2rem; }
+.showcase-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; gap: 1.5rem; flex-wrap: wrap; }
+.showcase-badge { display: inline-flex; align-items: center; gap: 0.375rem; background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.35rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem; }
+.showcase-badge i { font-size: 0.75rem; color: #3b82f6; }
+.showcase-title { font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: #0f172a; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.showcase-subtitle { font-size: 0.95rem; color: #64748b; max-width: 600px; }
+
+.showcase-controls { display: flex; align-items: center; gap: 0.75rem; background: #fff; padding: 0.375rem 0.5rem; border-radius: 9999px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.control-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; color: #334155; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.control-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; transform: scale(1.05); }
+.slide-indicator { font-size: 0.8125rem; font-weight: 700; color: #475569; font-variant-numeric: tabular-nums; padding: 0 0.5rem; }
+
+/* Showcase Main Stage */
+.showcase-stage { background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 60%, #0f172a 100%); border-radius: 2rem; overflow: hidden; position: relative; box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35); border: 1px solid rgba(255,255,255,0.08); }
+.stage-mesh-glow { position: absolute; top: -20%; right: 10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(139, 92, 246, 0.15) 50%, transparent 70%); filter: blur(50px); pointer-events: none; }
+
+.stage-content { display: grid; grid-template-columns: 1.15fr 0.85fr; min-height: 480px; align-items: center; padding: 3.5rem; gap: 3rem; position: relative; z-index: 2; }
+
+/* Stage Info */
+.stage-info { display: flex; flex-direction: column; gap: 1.25rem; }
+.stage-tags { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.pill-pinned { display: inline-flex; align-items: center; gap: 0.35rem; background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.75rem; border-radius: 9999px; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3); }
+.pill-pinned i { font-size: 0.6875rem; }
+.pill-bestseller { display: inline-flex; align-items: center; gap: 0.35rem; background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.75rem; border-radius: 9999px; }
+.pill-category { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); color: #cbd5e1; font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 9999px; backdrop-filter: blur(8px); }
+.pill-stock { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 9999px; }
+.pill-stock.in-stock { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
+.stock-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; animation: pulseGlow 2s infinite; }
+@keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.stage-product-title { font-size: clamp(1.5rem, 3vw, 2.35rem); font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.stage-rating-row { display: flex; align-items: center; gap: 0.5rem; }
+.rating-stars { display: flex; gap: 2px; color: #475569; font-size: 0.8125rem; }
+.rating-stars .active { color: #facc15; }
+.rating-value { color: #fff; font-weight: 700; font-size: 0.875rem; }
+.rating-count { color: #94a3b8; font-size: 0.8125rem; }
+
+.stage-description { color: #94a3b8; font-size: 0.9375rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 550px; }
+
+.stage-price-box { display: flex; flex-direction: column; gap: 0.125rem; }
+.price-label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
+.price-value { font-size: clamp(1.85rem, 3.5vw, 2.75rem); font-weight: 900; background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
+
+.stage-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.btn-spotlight-cart { display: inline-flex; align-items: center; justify-content: center; gap: 0.625rem; background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; font-size: 0.9375rem; font-weight: 700; padding: 0.875rem 1.75rem; border-radius: 0.875rem; border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35); }
+.btn-spotlight-cart:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45); background: linear-gradient(135deg, #1d4ed8, #2563eb); }
+.btn-spotlight-cart:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-spotlight-details { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; font-size: 0.9375rem; font-weight: 600; padding: 0.875rem 1.5rem; border-radius: 0.875rem; cursor: pointer; transition: all 0.3s; backdrop-filter: blur(10px); }
+.btn-spotlight-details:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.3); transform: translateX(3px); }
+
+/* Right Visual Stage */
+.stage-visual { position: relative; display: flex; align-items: center; justify-content: center; height: 380px; cursor: pointer; }
+.visual-halo { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(99, 102, 241, 0.1) 60%, transparent 80%); filter: blur(30px); }
+.visual-podium { position: absolute; bottom: 20px; width: 260px; height: 40px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%); filter: blur(6px); }
+.visual-img-container { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 1.5rem; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.stage-visual:hover .visual-img-container { transform: scale(1.06) translateY(-8px); }
+.stage-main-img { max-width: 100%; max-height: 320px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.4)); }
+.stage-placeholder-img { width: 150px; height: 150px; border-radius: 1.5rem; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: #475569; font-size: 3rem; }
+
+/* Bottom Thumbnail Track */
+.stage-thumbnails-track { border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); padding: 1.25rem 2rem; backdrop-filter: blur(10px); }
+.thumbnails-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.track-hint { font-size: 0.6875rem; color: #64748b; font-weight: 400; text-transform: none; }
+.thumbnails-list { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; padding-bottom: 0.25rem; }
+.thumb-card { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 0.5rem 0.75rem; min-width: 210px; max-width: 240px; text-align: left; cursor: pointer; transition: all 0.25s ease; flex-shrink: 0; color: inherit; }
+.thumb-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.thumb-card.active { background: rgba(37, 99, 235, 0.18); border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+.thumb-img-box { width: 44px; height: 44px; border-radius: 0.5rem; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
+.thumb-img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.thumb-img-box i { font-size: 1rem; color: #64748b; }
+.thumb-details { flex: 1; min-width: 0; }
+.thumb-pinned-tag { display: inline-block; background: #d97706; color: #fff; font-size: 0.5625rem; font-weight: 700; text-transform: uppercase; padding: 0.05rem 0.35rem; border-radius: 4px; margin-bottom: 0.125rem; }
+.thumb-title { font-size: 0.75rem; font-weight: 600; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.125rem; }
+.thumb-price { font-size: 0.75rem; font-weight: 700; color: #38bdf8; }
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+    .stage-content { grid-template-columns: 1fr; padding: 2rem; gap: 2rem; min-height: auto; }
+    .stage-visual { order: -1; height: 260px; }
+    .stage-main-img { max-height: 220px; }
+    .stage-thumbnails-track { padding: 1rem; }
+}
 
 /* Shine Effect for Primary Button */
 .shine-effect { position: relative; overflow: hidden; }

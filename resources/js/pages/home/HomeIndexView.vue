@@ -10,35 +10,78 @@
                 <div class="hero-orb orb-2"></div>
             </div>
             <div class="hero-content">
-                <div v-if="showCarousel && products.length > 0" class="hero-carousel">
+                <div v-if="products.length > 0" class="hero-showcase-wrapper" @mouseenter="stopCarousel" @mouseleave="startCarousel">
+                    <!-- Top Controls Bar -->
+                    <div class="showcase-top-bar" v-if="products.length > 1">
+                        <div class="showcase-counter">
+                            <span class="pulse-dot"></span>
+                            <span>Featured Spotlight ({{ String(currentSlide + 1).padStart(2, '0') }}/{{ String(products.length).padStart(2, '0') }})</span>
+                        </div>
+                        <div class="showcase-nav-btns">
+                            <button @click="prevSlide" class="nav-arrow-btn" title="Previous"><i class="pi pi-chevron-left"></i></button>
+                            <button @click="nextSlide" class="nav-arrow-btn" title="Next"><i class="pi pi-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Main Showcase Grid -->
                     <div class="hero-grid">
                         <div class="hero-text">
                             <!-- Branch Watermark -->
                             <div class="hero-watermark">{{ BranchUtil.getBranchShortName() }}</div>
-                            <span class="hero-badge">Featured Product</span>
-                            <h2 class="hero-title">{{ products[currentSlide]?.product_name }}</h2>
-                            <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
-                            <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
-                            <div class="hero-rating">
-                                <i v-for="i in 5" :key="i" :class="i <= Math.round(Number(products[currentSlide]?.rates_avg_rate) || 0) ? 'pi pi-star-fill' : 'pi pi-star'"></i>
-                                <span>{{ products[currentSlide]?.rates_avg_rate ? Number(products[currentSlide]?.rates_avg_rate).toFixed(1) : '0' }}/5</span>
+                            
+                            <div class="hero-tag-row">
+                                <span v-if="products[currentSlide]?.is_pinned" class="pill-pinned">
+                                    <i class="pi pi-bookmark-fill"></i> Pinned
+                                </span>
+                                <span v-else-if="products[currentSlide]?.is_best_selling" class="pill-bestseller">
+                                    <i class="pi pi-bolt"></i> Best Seller
+                                </span>
+                                <span class="pill-category">
+                                    <i class="pi pi-tag"></i> {{ products[currentSlide]?.category?.category_name || 'Tech' }}
+                                </span>
                             </div>
+
+                            <h2 class="hero-title">{{ products[currentSlide]?.product_name }}</h2>
+                            
+                            <div class="hero-rating">
+                                <div class="stars-box">
+                                    <i v-for="i in 5" :key="i" :class="i <= Math.round(Number(products[currentSlide]?.rates_avg_rate) || 0) ? 'pi pi-star-fill active' : 'pi pi-star'"></i>
+                                </div>
+                                <span class="rating-num">{{ products[currentSlide]?.rates_avg_rate ? Number(products[currentSlide]?.rates_avg_rate).toFixed(1) : '5.0' }}</span>
+                                <span class="rating-sub">({{ products[currentSlide]?.rates_count || 0 }} reviews)</span>
+                            </div>
+
+                            <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
+
                             <div class="hero-buttons">
                                 <button @click="openCartModal(products[currentSlide])" class="btn-primary">
                                     <i class="pi pi-shopping-cart"></i> Add to Cart
                                 </button>
                                 <button @click="viewDetails(products[currentSlide]?.product_id)" class="btn-secondary">
-                                    View Details
+                                    View Details <i class="pi pi-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="hero-image-container">
+
+                        <div class="hero-image-container" @click="viewDetails(products[currentSlide]?.product_id)">
+                            <div class="image-stage-glow"></div>
                             <img v-if="products[currentSlide]?.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${products[currentSlide]?.product_image}`)" :alt="products[currentSlide]?.product_name" class="hero-image" @error="handleImageError" />
                             <div v-else class="hero-placeholder"><i class="pi pi-image"></i></div>
                         </div>
                     </div>
-                    <div class="hero-dots">
-                        <button v-for="(_, index) in products.slice(0, 3)" :key="index" @click="currentSlide = index" :class="['dot', { active: currentSlide === index }]"></button>
+
+                    <!-- Bottom Thumbnail Strip -->
+                    <div class="hero-thumbs-strip" v-if="products.length > 1">
+                        <button 
+                            v-for="(prod, idx) in products" 
+                            :key="prod.product_id"
+                            @click="setSlide(idx)"
+                            :class="['strip-thumb-btn', { active: currentSlide === idx }]"
+                        >
+                            <img v-if="prod.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${prod.product_image}`)" :alt="prod.product_name" />
+                            <i v-else class="pi pi-image"></i>
+                            <span v-if="prod.is_pinned" class="strip-pinned-dot" title="Pinned"></span>
+                        </button>
                     </div>
                 </div>
                 <div v-else class="hero-static">
@@ -240,9 +283,38 @@ const loadBestSellingProducts = async () => {
     });
 };
 
-const goRoute = (route: string, params: Record<string, string>) => router.push({ name: route, params });
-const startCarousel = () => { const count = Math.min(products.value.length, 3); if (count > 1) carouselInterval = window.setInterval(() => { currentSlide.value = (currentSlide.value + 1) % count; }, 5000); };
-const stopCarousel = () => { if (carouselInterval) { clearInterval(carouselInterval); carouselInterval = null; } };
+const startCarousel = () => {
+    const count = products.value.length;
+    if (count > 1) {
+        stopCarousel();
+        carouselInterval = window.setInterval(() => {
+            currentSlide.value = (currentSlide.value + 1) % count;
+        }, 6000);
+    }
+};
+
+const stopCarousel = () => {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+};
+
+const nextSlide = () => {
+    if (products.value.length > 0) {
+        currentSlide.value = (currentSlide.value + 1) % products.value.length;
+    }
+};
+
+const prevSlide = () => {
+    if (products.value.length > 0) {
+        currentSlide.value = (currentSlide.value - 1 + products.value.length) % products.value.length;
+    }
+};
+
+const setSlide = (idx: number) => {
+    currentSlide.value = idx;
+};
 const handleImageError = (event: Event) => { (event.target as HTMLImageElement).style.display = 'none'; };
 
 const openCartModal = (product: ProductInterface) => {
@@ -271,49 +343,68 @@ onUnmounted(() => stopCarousel());
 .customer-home { min-height: 100vh; background: #f8fafc; font-family: 'Inter', 'Poppins', sans-serif; }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
 
-/* Hero */
-.hero { position: relative; background: #fafbff; min-height: 480px; overflow: hidden; }
+/* Hero Section */
+.hero { position: relative; background: #0f172a; min-height: 460px; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; overflow: hidden; }
 
-/* Wavy Gradient Layers - Soft Pastel */
-.hero-wave { position: absolute; width: 300%; height: 120%; left: -100%; opacity: 0.2; }
-.wave-1 { bottom: -10%; background: radial-gradient(ellipse 90% 70% at 50% 100%, rgba(253, 121, 168, 0.7) 0%, transparent 65%); animation: waveFloat 15s ease-in-out infinite; }
-.wave-2 { bottom: 0%; background: radial-gradient(ellipse 80% 60% at 25% 100%, rgba(250, 177, 160, 0.7) 0%, transparent 60%); animation: waveFloat 18s ease-in-out infinite reverse; }
-.wave-3 { bottom: 10%; background: radial-gradient(ellipse 70% 55% at 75% 100%, rgba(162, 155, 254, 0.7) 0%, transparent 55%); animation: waveFloat 20s ease-in-out infinite; animation-delay: -5s; }
-@keyframes waveFloat { 0%, 100% { transform: translateX(-8%) translateY(0) scale(1); } 50% { transform: translateX(8%) translateY(-25px) scale(1.04); } }
+.hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2rem 1rem; }
 
-/* Decorative Orbs - Soft Light */
-.hero-orb { position: absolute; border-radius: 50%; filter: blur(50px); opacity: 0.18; }
-.orb-1 { width: 400px; height: 400px; top: -100px; right: -50px; background: radial-gradient(circle, rgba(250, 177, 160, 0.8) 0%, transparent 70%); animation: orbPulse 10s ease-in-out infinite; }
-.orb-2 { width: 320px; height: 320px; bottom: 10%; left: -5%; background: radial-gradient(circle, rgba(253, 121, 168, 0.8) 0%, transparent 70%); animation: orbPulse 12s ease-in-out infinite reverse; }
-@keyframes orbPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: 1; } }
+/* Showcase Wrapper */
+.hero-showcase-wrapper { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; padding: 1.75rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px); }
 
+.showcase-top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 0.75rem; }
+.showcase-counter { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; animation: pulseGlow 2s infinite; }
 
-@keyframes circleFloat { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(15px, -15px) rotate(8deg); } 50% { transform: translate(0, -30px) rotate(0deg); } 75% { transform: translate(-15px, -10px) rotate(-8deg); } }
+.showcase-nav-btns { display: flex; gap: 0.5rem; }
+.nav-arrow-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.6875rem; }
+.nav-arrow-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; transform: scale(1.08); }
 
+.hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; align-items: center; min-height: 280px; }
+.hero-text { text-align: left; position: relative; z-index: 5; display: flex; flex-direction: column; gap: 0.625rem; }
+.hero-watermark { position: absolute; top: 40%; left: 0; transform: translateY(-50%); font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; color: rgba(255,255,255,0.03); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; pointer-events: none; user-select: none; }
 
-.hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 2.5rem 1rem; }
-.hero-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
-.hero-text { text-align: center; position: relative; z-index: 5; }
-.hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 5rem); font-weight: 900; color: rgba(255,255,255,0.04); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; z-index: -1; filter: blur(1px); pointer-events: none; user-select: none; width: 100%; display: flex; align-items: center; justify-content: center; }
-.hero-badge { display: inline-block; background: #fff; border: 1px solid #e2e8f0; color: #635bff; font-size: 0.75rem; font-weight: 600; padding: 0.4rem 0.875rem; border-radius: 9999px; margin-bottom: 0.75rem; position: relative; z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.hero-title { font-size: 1.5rem; font-weight: 700; color: #1a1f36; line-height: 1.2; margin-bottom: 0.5rem; position: relative; z-index: 2; }
-.hero-category { color: #94a3b8; font-size: 0.8125rem; margin-bottom: 0.75rem; position: relative; z-index: 2; }
-.hero-price { font-size: 1.375rem; font-weight: 700; background: linear-gradient(135deg, #0070f3 0%, #7928ca 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.75rem; position: relative; z-index: 2; }
-.hero-rating { display: flex; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; position: relative; z-index: 2; }
-.hero-rating i { font-size: 0.75rem; }
-.hero-rating i.pi-star-fill { color: #fbbf24; }
-.hero-rating i.pi-star { color: #475569; }
-.hero-rating span { font-size: 0.75rem; color: #94a3b8; margin-left: 0.5rem; }
-.hero-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
-.hero-image-container { display: flex; justify-content: center; }
-.hero-image { max-height: 220px; width: auto; object-fit: contain; filter: drop-shadow(0 25px 50px rgba(59,130,246,0.25)); }
-.hero-placeholder { width: 180px; height: 180px; background: rgba(255,255,255,0.05); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 2.5rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-.hero-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.25rem; }
-.dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.25); border: none; cursor: pointer; transition: all 0.3s; }
-.dot.active { width: 24px; background: linear-gradient(90deg, #090979 0%, #00D4FF 100%); }
+.hero-tag-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.pill-pinned { display: inline-flex; align-items: center; gap: 0.25rem; background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; }
+.pill-bestseller { display: inline-flex; align-items: center; gap: 0.25rem; background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 9999px; }
+.pill-category { display: inline-flex; align-items: center; gap: 0.25rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 0.6875rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 9999px; }
+
+.hero-title { font-size: clamp(1.25rem, 2.5vw, 1.85rem); font-weight: 800; color: #fff; line-height: 1.25; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.hero-rating { display: flex; align-items: center; gap: 0.375rem; }
+.stars-box { display: flex; gap: 2px; color: #475569; font-size: 0.75rem; }
+.stars-box .active { color: #fbbf24; }
+.rating-num { font-size: 0.8125rem; color: #fff; font-weight: 700; }
+.rating-sub { font-size: 0.75rem; color: #94a3b8; }
+
+.hero-price { font-size: clamp(1.5rem, 3vw, 2.15rem); font-weight: 900; background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.hero-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem; }
+
+.hero-image-container { position: relative; display: flex; justify-content: center; align-items: center; height: 240px; cursor: pointer; }
+.image-stage-glow { position: absolute; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%); filter: blur(20px); }
+.hero-image { max-height: 200px; width: auto; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.hero-image-container:hover .hero-image { transform: scale(1.08) translateY(-4px); }
+.hero-placeholder { width: 160px; height: 160px; background: rgba(255,255,255,0.04); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 2.5rem; }
+
+/* Bottom Thumbnail Strip */
+.hero-thumbs-strip { display: flex; gap: 0.5rem; overflow-x: auto; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 1rem; scrollbar-width: none; }
+.strip-thumb-btn { position: relative; width: 44px; height: 44px; border-radius: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 2px; flex-shrink: 0; transition: all 0.2s; }
+.strip-thumb-btn img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.strip-thumb-btn i { font-size: 0.875rem; color: #64748b; }
+.strip-thumb-btn.active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.15); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); transform: scale(1.08); }
+.strip-pinned-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; border: 1px solid #0f172a; }
+
 .hero-static { text-align: center; padding: 2rem 0; }
 .hero-subtitle { color: #94a3b8; font-size: 0.9375rem; max-width: 400px; margin: 0 auto; }
+
+@media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 1.25rem; }
+    .hero-text { text-align: center; align-items: center; }
+    .hero-buttons { justify-content: center; }
+    .hero-image-container { order: -1; height: 180px; }
+    .hero-image { max-height: 160px; }
+}
 
 /* Buttons */
 .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 0.8125rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); }
