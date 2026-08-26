@@ -30,7 +30,7 @@
                                     </div>
                                     <div class="p-2 grow">
                                         <p class="font-semibold text-gray-600">Prepared By</p>
-                                        <p>Albert Von Daligdigan</p>
+                                        <p>{{ data.prepared_by || 'N/A' }}</p>
                                     </div>
                                     <div class="flex items-center justify-center">
                                         <Button type="button" label="Print" icon="pi pi-print" class="!bg-blue-600 hover:!bg-blue-700 !text-white"
@@ -157,7 +157,7 @@
                                             mobile: 'text-sm text-gray-900',
                                             tablet: 'text-base text-gray-900',
                                             desktop: 'text-base text-gray-900'
-                                        })">Albert Von Daligdigan</p>
+                                        })">{{ data.prepared_by || 'N/A' }}</p>
                                     </div>
                                 </div>
                                 <!-- Print Button for Mobile/Tablet -->
