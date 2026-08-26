@@ -262,6 +262,12 @@
                                     :class="getResponsiveClasses({ mobile: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-36', tablet: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-44', desktop: 'relative bg-gray-50 flex items-center justify-center overflow-hidden h-52' })"
                                 >
                                     <!-- Status Badges -->
+                                    <div v-if="product.is_pinned" class="absolute top-2.5 right-2.5 z-10">
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
+                                            <i class="pi pi-bookmark-fill text-[8px]" />
+                                            Pinned
+                                        </span>
+                                    </div>
                                     <div v-if="product.product_quantity <= product.low_stock_threshold || !product.is_active" class="absolute top-2.5 left-2.5 z-10">
                                         <span
                                             v-if="product.product_quantity <= product.low_stock_threshold && product.product_quantity > 0"

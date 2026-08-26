@@ -391,13 +391,29 @@
                             />
                             <Avatar v-else shape="circle" icon="pi pi-camera" />
                             <div class="ml-2 shrink">
-                                {{ data.product_name }}
+                                <div class="flex items-center gap-1.5">
+                                    <span>{{ data.product_name }}</span>
+                                    <span 
+                                        v-if="data.is_pinned" 
+                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-300"
+                                        title="Pinned Product"
+                                    >
+                                        <i class="pi pi-bookmark-fill text-[9px]"></i> Pinned
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </template>
                 </Column>
                 <Column field="category.category_name" header="Category" />
                 <Column field="product_quantity" header="Stock" />
+                <Column field="units_sold" header="Units Sold" :sortable="true">
+                    <template #body="{ data }">
+                        <span class="font-semibold text-gray-800">
+                            {{ data.units_sold ?? data.total_units_sold ?? 0 }}
+                        </span>
+                    </template>
+                </Column>
                 <Column field="product_price" header="Price">
                     <template #body="{ data }">
                         {{ CurrencyUtil.formatCurrency(data.product_price) }}
@@ -417,6 +433,14 @@
                 >
                     <template #body="{ data }">
                         <div class="flex gap-2 justify-center">
+                            <Button
+                                :icon="data.is_pinned ? 'pi pi-bookmark-fill' : 'pi pi-bookmark'"
+                                rounded
+                                :class="data.is_pinned ? '!bg-amber-500 hover:!bg-amber-600 !text-white !border-amber-500' : '!bg-gray-100 hover:!bg-gray-200 !text-gray-700 !border-gray-200'"
+                                :loading="isPinning && pinningProductId === data.product_id"
+                                @click="handleTogglePin(data)"
+                                v-tooltip.top="data.is_pinned ? 'Unpin Product' : 'Pin Product to Top'"
+                            />
                             <Button
                                 icon="pi pi-pencil"
                                 rounded
@@ -628,13 +652,21 @@
                                             })"
                                         />
                                         <div class="flex-1 min-w-0">
-                                            <h3 :class="responsive.getResponsiveClasses({
-                                                mobile: 'font-semibold text-gray-900 truncate text-sm',
-                                                tablet: 'font-semibold text-gray-900 truncate text-base',
-                                                desktop: 'font-semibold text-gray-900 truncate text-base'
-                                            })">
-                                                {{ product.product_name }}
-                                            </h3>
+                                            <div class="flex items-center gap-1.5">
+                                                <h3 :class="responsive.getResponsiveClasses({
+                                                    mobile: 'font-semibold text-gray-900 truncate text-sm',
+                                                    tablet: 'font-semibold text-gray-900 truncate text-base',
+                                                    desktop: 'font-semibold text-gray-900 truncate text-base'
+                                                })">
+                                                    {{ product.product_name }}
+                                                </h3>
+                                                <span 
+                                                    v-if="product.is_pinned" 
+                                                    class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-300 flex-shrink-0"
+                                                >
+                                                    <i class="pi pi-bookmark-fill text-[9px]"></i> Pinned
+                                                </span>
+                                            </div>
                                             <p :class="responsive.getResponsiveClasses({
                                                 mobile: 'text-xs text-gray-500 truncate',
                                                 tablet: 'text-sm text-gray-500 truncate',
@@ -649,8 +681,8 @@
                                 <!-- Product Details -->
                                 <div :class="responsive.getResponsiveClasses({
                                     mobile: 'grid grid-cols-2 gap-3 mb-3',
-                                    tablet: 'grid grid-cols-3 gap-4 mb-4',
-                                    desktop: 'grid grid-cols-3 gap-4 mb-4'
+                                    tablet: 'grid grid-cols-4 gap-4 mb-4',
+                                    desktop: 'grid grid-cols-4 gap-4 mb-4'
                                 })">
                                     <div>
                                         <p :class="responsive.getResponsiveClasses({
@@ -685,11 +717,21 @@
                                             {{ CurrencyUtil.formatCurrency(product.product_price) }}
                                         </span>
                                     </div>
-                                    <div :class="responsive.getResponsiveClasses({
-                                        mobile: 'col-span-2',
-                                        tablet: 'col-span-1',
-                                        desktop: 'col-span-1'
-                                    })">
+                                    <div>
+                                        <p :class="responsive.getResponsiveClasses({
+                                            mobile: 'text-xs text-gray-600 mb-1',
+                                            tablet: 'text-sm text-gray-600 mb-1',
+                                            desktop: 'text-sm text-gray-600 mb-1'
+                                        })">Units Sold:</p>
+                                        <span :class="responsive.getResponsiveClasses({
+                                            mobile: 'font-semibold text-gray-800 text-sm',
+                                            tablet: 'font-semibold text-gray-800 text-base',
+                                            desktop: 'font-semibold text-gray-800 text-base'
+                                        })">
+                                            {{ product.units_sold ?? product.total_units_sold ?? 0 }}
+                                        </span>
+                                    </div>
+                                    <div>
                                         <p :class="responsive.getResponsiveClasses({
                                             mobile: 'text-xs text-gray-600 mb-1',
                                             tablet: 'text-sm text-gray-600 mb-1',
@@ -707,10 +749,28 @@
 
                                 <!-- Actions -->
                                 <div :class="responsive.getResponsiveClasses({
-                                    mobile: 'flex gap-2 pt-3 border-t border-gray-100',
+                                    mobile: 'flex flex-wrap gap-2 pt-3 border-t border-gray-100',
                                     tablet: 'flex gap-3 pt-3 border-t border-gray-100',
                                     desktop: 'flex gap-3 pt-3 border-t border-gray-100'
                                 })">
+                                    <Button
+                                        :icon="product.is_pinned ? 'pi pi-bookmark-fill' : 'pi pi-bookmark'"
+                                        :label="responsive.getResponsiveClasses({
+                                            mobile: product.is_pinned ? 'Pinned' : 'Pin',
+                                            tablet: product.is_pinned ? 'Pinned' : 'Pin',
+                                            desktop: product.is_pinned ? 'Pinned' : 'Pin'
+                                        })"
+                                        :class="[
+                                            product.is_pinned ? '!bg-amber-500 hover:!bg-amber-600 !text-white !border-amber-500' : '!bg-gray-100 hover:!bg-gray-200 !text-gray-700 !border-gray-200',
+                                            responsive.getResponsiveClasses({
+                                                mobile: 'text-xs',
+                                                tablet: 'text-sm',
+                                                desktop: 'text-sm'
+                                            })
+                                        ]"
+                                        :loading="isPinning && pinningProductId === product.product_id"
+                                        @click="handleTogglePin(product)"
+                                    />
                                     <Button
                                         icon="pi pi-pencil"
                                         label="Edit"
@@ -1027,6 +1087,28 @@ const openAddStockModal = (product: ProductInterface) => {
 
 const handleStockAdded = () => {
     load();
+};
+
+const togglePinService = useAxiosUtil<null, ProductInterface>();
+const isPinning = ref<boolean>(false);
+const pinningProductId = ref<number | null>(null);
+
+const handleTogglePin = async (product: ProductInterface) => {
+    isPinning.value = true;
+    pinningProductId.value = product.product_id;
+
+    await togglePinService.patch(`admin/products/toggle-pin/${product.product_id}`).then(() => {
+        if (togglePinService.request.status === 200 && togglePinService.request.data) {
+            product.is_pinned = togglePinService.request.data.is_pinned;
+            product.pinned_at = togglePinService.request.data.pinned_at;
+            toast.success(togglePinService.request.message ?? (product.is_pinned ? 'Product pinned successfully' : 'Product unpinned successfully'));
+        } else {
+            toast.error(togglePinService.request.message ?? 'Failed to update pin status');
+        }
+    }).finally(() => {
+        isPinning.value = false;
+        pinningProductId.value = null;
+    });
 };
 
 const clearFilters = () => {

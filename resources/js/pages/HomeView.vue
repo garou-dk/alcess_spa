@@ -136,6 +136,9 @@
                     <div v-if="products?.length" class="product-grid">
                         <div v-for="product in products" :key="product.product_id" class="product-card">
                             <div class="product-image-box">
+                                <div v-if="product.is_pinned" class="pinned-badge">
+                                    <i class="pi pi-bookmark-fill"></i> Pinned
+                                </div>
                                 <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name" />
                                 <i v-else class="pi pi-image"></i>
                             </div>
@@ -559,6 +562,8 @@ onUnmounted(() => stopCarousel());
 .product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 .product-card:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(0,0,0,0.08); transform: translateY(-4px); }
 .product-image-box { position: relative; height: 200px; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.pinned-badge { position: absolute; top: 0.75rem; right: 0.75rem; background: #2563eb; color: #fff; font-size: 0.625rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.25rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.pinned-badge i { font-size: 0.5rem !important; color: #fff !important; }
 .product-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
 .product-card:hover .product-image-box img { transform: scale(1.05); }
 .product-image-box i { font-size: 3rem; color: #cbd5e1; }

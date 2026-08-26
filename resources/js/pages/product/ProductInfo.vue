@@ -113,11 +113,13 @@
                         tablet: 'p-5',
                         desktop: 'p-6 flex flex-col'
                     })">
-                        <!-- Category Badge -->
-                        <div class="mb-3">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                                <i class="pi pi-tag text-[10px]" />
+                        <!-- Category -->
+                        <div class="flex items-center gap-2 mb-3 flex-wrap">
+                            <span class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
                                 {{ product.category?.category_name || 'Uncategorized' }}
+                            </span>
+                            <span v-if="product.is_pinned" class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold border border-amber-200">
+                                <i class="pi pi-bookmark-fill text-[10px]"></i> Pinned Product
                             </span>
                         </div>
 

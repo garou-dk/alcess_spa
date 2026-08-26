@@ -112,7 +112,28 @@ class ProductService
 
         $products->orderBy('created_at', 'desc');
 
-        return $products->paginate($data['limit'] ?? 5);
+        $paginatedProducts = $products->paginate($data['limit'] ?? 5);
+
+        // Add units_sold / total_units_sold to each product in the paginated result
+        $paginatedProducts->getCollection()->transform(function ($product) {
+            $onlineSales = \DB::table('product_orders as po')
+                ->join('orders as o', 'po.order_id', '=', 'o.order_id')
+                ->where('po.product_id', $product->product_id)
+                ->where('o.status', \App\Enums\OrderStatusEnum::COMPLETED->value)
+                ->sum('po.quantity');
+
+            $walkinSales = \DB::table('sale_items')
+                ->where('product_id', $product->product_id)
+                ->sum('quantity');
+
+            $totalSold = (int) ($onlineSales + $walkinSales);
+            $product->units_sold = $totalSold;
+            $product->total_units_sold = $totalSold;
+            $product->total_sales = $totalSold;
+            return $product;
+        });
+
+        return $paginatedProducts;
     }
 
     public function store(array $data)
@@ -427,6 +448,10 @@ class ProductService
             $products->whereLike('product_name', "%{$data['search']}%");
         }
 
+        // Pinned products always come first
+        $products->orderBy('is_pinned', 'desc')
+            ->orderBy('pinned_at', 'desc');
+
         if (!empty($data['sort_by'])) {
             match ($data['sort_by']) {
                 'price_asc' => $products->orderBy('product_price', 'asc'),
@@ -543,6 +568,8 @@ class ProductService
             ->where('category_id', $category->category_id)
             ->where('is_active', true)
             ->where('available_online', true)
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('pinned_at', 'desc')
             ->get()
             ->map(function ($product) {
                 // Calculate total sales for each product
@@ -574,6 +601,8 @@ class ProductService
                     ->orWhereLike('description', '%' . $data['search'] . '%')
                     ->orWhereLike('sku', '%' . $data['search'] . '%');
             })
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('pinned_at', 'desc')
             ->get()
             ->map(function ($product) {
                 // Calculate total sales for each product
@@ -592,6 +621,25 @@ class ProductService
             });
 
         return $products;
+    }
+
+    public function togglePin(array $data)
+    {
+        $product = Product::query()
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        abort_if(empty($product), 404, 'Product not found');
+
+        $product->is_pinned = !$product->is_pinned;
+        $product->pinned_at = $product->is_pinned ? now() : null;
+        $product->save();
+
+        $product->load(['specifications', 'featuredImages', 'category', 'unit', 'batch']);
+
+        ProductEvent::dispatch($product->toArray());
+
+        return $product;
     }
 
     public function addStock(array $data)

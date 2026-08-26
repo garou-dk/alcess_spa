@@ -156,6 +156,17 @@ class ProductController extends Controller
             ->response();
     }
 
+    public function togglePin(string $id)
+    {
+        $result = $this->service->togglePin(['product_id' => $id]);
+        $message = $result->is_pinned ? 'Product pinned successfully' : 'Product unpinned successfully';
+
+        return ApiResponse::success()
+            ->data($result)
+            ->message($message)
+            ->response();
+    }
+
     public function countLowStock()
     {
         return ApiResponse::success()

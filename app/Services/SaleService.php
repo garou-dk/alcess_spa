@@ -168,4 +168,19 @@ class SaleService
             ->orderBy('created_at', 'desc')
             ->get();
     }
+
+    public function updatePreparedBy(array $data) {
+        $sale = Sale::query()
+            ->where('sale_id', $data['sale_id'])
+            ->first();
+
+        abort_if(empty($sale), 404, 'Sale not found');
+
+        $sale->prepared_by = $data['prepared_by'];
+        $sale->save();
+
+        $sale->load(['saleItems.product', 'user']);
+
+        return $sale;
+    }
 }

@@ -44,4 +44,20 @@ class SaleController extends Controller
             ->data($this->service->getAllSales())
             ->response();
     }
+
+    public function updatePreparedBy(string $id, Request $request) {
+        $validated = $request->validate([
+            'prepared_by' => ['required', 'string', 'max:255'],
+        ]);
+
+        $result = $this->service->updatePreparedBy([
+            'sale_id' => $id,
+            'prepared_by' => $validated['prepared_by'],
+        ]);
+
+        return ApiResponse::success()
+            ->data($result)
+            ->message("Prepared by updated successfully")
+            ->response();
+    }
 }

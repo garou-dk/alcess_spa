@@ -25,10 +25,14 @@ class Product extends Model
         'is_active',
         'sku',
         'available_online',
+        'is_pinned',
+        'pinned_at',
     ];
 
     protected $casts = [
         'rates_avg_rate' => 'decimal:1',
+        'is_pinned' => 'boolean',
+        'pinned_at' => 'datetime',
     ];
 
     protected $appends = [

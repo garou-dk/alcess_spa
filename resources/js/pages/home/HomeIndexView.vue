@@ -93,6 +93,9 @@
                     <div v-if="products?.length" class="product-grid">
                         <div v-for="product in products" :key="product.product_id" class="product-card">
                             <div class="product-img">
+                                <div v-if="product.is_pinned" class="pinned-badge">
+                                    <i class="pi pi-bookmark-fill"></i> Pinned
+                                </div>
                                 <img v-if="product.product_image" :src="UrlUtil.getBaseAppUrl(`storage/images/product/${product.product_image}`)" :alt="product.product_name" />
                                 <i v-else class="pi pi-image"></i>
                             </div>
@@ -354,7 +357,9 @@ onUnmounted(() => stopCarousel());
 .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
 .product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.625rem; overflow: hidden; transition: all 0.2s; }
 .product-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.product-img { height: 100px; background: #f8fafc; display: flex; align-items: center; justify-content: center; }
+.product-img { position: relative; height: 100px; background: #f8fafc; display: flex; align-items: center; justify-content: center; }
+.pinned-badge { position: absolute; top: 0.375rem; right: 0.375rem; background: #2563eb; color: #fff; font-size: 0.5625rem; font-weight: 600; padding: 0.125rem 0.375rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.1875rem; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.pinned-badge i { font-size: 0.5rem !important; color: #fff !important; }
 .product-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .product-img i { font-size: 1.75rem; color: #cbd5e1; }
 .product-info { padding: 0.625rem; }

@@ -56,6 +56,10 @@ interface ProductInterface {
     batch_number?: string;
     is_best_selling?: boolean | number;
     total_sales?: number;
+    units_sold?: number;
+    total_units_sold?: number;
+    is_pinned?: boolean | number;
+    pinned_at?: string | null;
     user_has_purchased?: boolean;
     user_has_reviewed?: boolean;
     product_order_id?: number | null;

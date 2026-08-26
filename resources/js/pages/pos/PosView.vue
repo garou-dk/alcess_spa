@@ -877,7 +877,40 @@
                 </Column>
                 <Column field="prepared_by" header="Prepared By" :sortable="true">
                     <template #body="{ data }">
-                        <span class="text-sm text-gray-700">{{ data.prepared_by }}</span>
+                        <div v-if="editingSaleId === data.sale_id" class="flex items-center gap-1.5" @click.stop>
+                            <InputText 
+                                v-model="editingPreparedByValue" 
+                                size="small" 
+                                class="!py-1 !px-2 text-sm w-36" 
+                                placeholder="Prepared by"
+                                @keyup.enter="savePreparedBy(data)"
+                                @keyup.esc="cancelEditPreparedBy"
+                                autofocus
+                            />
+                            <Button 
+                                icon="pi pi-check" 
+                                size="small" 
+                                rounded 
+                                text 
+                                class="!w-7 !h-7 !p-0 !text-green-600 hover:!bg-green-50"
+                                :loading="isSavingPreparedBy && savingSaleId === data.sale_id"
+                                @click="savePreparedBy(data)"
+                                v-tooltip.top="'Save'"
+                            />
+                            <Button 
+                                icon="pi pi-times" 
+                                size="small" 
+                                rounded 
+                                text 
+                                class="!w-7 !h-7 !p-0 !text-gray-500 hover:!bg-gray-100"
+                                @click="cancelEditPreparedBy"
+                                v-tooltip.top="'Cancel'"
+                            />
+                        </div>
+                        <div v-else class="flex items-center justify-between group cursor-pointer hover:text-blue-600 py-1" @click.stop="startEditPreparedBy(data)">
+                            <span class="text-sm text-gray-700 group-hover:text-blue-600 font-medium">{{ data.prepared_by }}</span>
+                            <i class="pi pi-pencil text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1.5" title="Click to edit"></i>
+                        </div>
                     </template>
                 </Column>
                 <Column field="payment_method" header="Payment Method" :sortable="true">
@@ -1046,11 +1079,42 @@
 
                         <!-- Footer -->
                         <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-                            <p :class="getResponsiveClasses({
-                                mobile: 'text-xs text-gray-600',
-                                tablet: 'text-sm text-gray-600',
-                                desktop: 'text-sm text-gray-600'
-                            })">Prepared by: {{ sale.prepared_by }}</p>
+                            <div v-if="editingSaleId === sale.sale_id" class="flex items-center gap-1.5" @click.stop>
+                                <span class="text-xs text-gray-600">By:</span>
+                                <InputText 
+                                    v-model="editingPreparedByValue" 
+                                    size="small" 
+                                    class="!py-1 !px-2 text-xs w-28" 
+                                    @keyup.enter="savePreparedBy(sale)"
+                                    @keyup.esc="cancelEditPreparedBy"
+                                    autofocus
+                                />
+                                <Button 
+                                    icon="pi pi-check" 
+                                    size="small" 
+                                    rounded 
+                                    text 
+                                    class="!w-6 !h-6 !p-0 !text-green-600"
+                                    :loading="isSavingPreparedBy && savingSaleId === sale.sale_id"
+                                    @click="savePreparedBy(sale)"
+                                />
+                                <Button 
+                                    icon="pi pi-times" 
+                                    size="small" 
+                                    rounded 
+                                    text 
+                                    class="!w-6 !h-6 !p-0 !text-gray-500"
+                                    @click="cancelEditPreparedBy"
+                                />
+                            </div>
+                            <p v-else :class="getResponsiveClasses({
+                                mobile: 'text-xs text-gray-600 flex items-center gap-1 cursor-pointer',
+                                tablet: 'text-sm text-gray-600 flex items-center gap-1 cursor-pointer',
+                                desktop: 'text-sm text-gray-600 flex items-center gap-1 cursor-pointer'
+                            })" @click.stop="startEditPreparedBy(sale)">
+                                Prepared by: <span class="font-medium text-gray-800">{{ sale.prepared_by }}</span>
+                                <i class="pi pi-pencil text-[10px] text-blue-500 ml-1"></i>
+                            </p>
                             <p :class="getResponsiveClasses({
                                 mobile: 'text-sm font-bold text-blue-600',
                                 tablet: 'text-base font-bold text-blue-600',
@@ -1162,11 +1226,49 @@
                                 tablet: 'text-xs font-medium text-gray-700 mb-1',
                                 desktop: 'text-xs font-medium text-gray-700 mb-1'
                             })">Prepared By</p>
-                            <p :class="getResponsiveClasses({
-                                mobile: 'text-sm text-gray-900',
-                                tablet: 'text-sm text-gray-900',
-                                desktop: 'text-sm text-gray-900'
-                            })">{{ selectedSale.prepared_by }}</p>
+                            <div v-if="editingSaleId === selectedSale.sale_id" class="flex items-center gap-1.5 mt-1" @click.stop>
+                                <InputText 
+                                    v-model="editingPreparedByValue" 
+                                    size="small" 
+                                    class="!py-1 !px-2 text-sm w-full" 
+                                    @keyup.enter="savePreparedBy(selectedSale)"
+                                    @keyup.esc="cancelEditPreparedBy"
+                                    autofocus
+                                />
+                                <Button 
+                                    icon="pi pi-check" 
+                                    size="small" 
+                                    rounded 
+                                    text 
+                                    class="!w-7 !h-7 !p-0 !text-green-600 hover:!bg-green-50"
+                                    :loading="isSavingPreparedBy && savingSaleId === selectedSale.sale_id"
+                                    @click="savePreparedBy(selectedSale)"
+                                />
+                                <Button 
+                                    icon="pi pi-times" 
+                                    size="small" 
+                                    rounded 
+                                    text 
+                                    class="!w-7 !h-7 !p-0 !text-gray-500 hover:!bg-gray-100"
+                                    @click="cancelEditPreparedBy"
+                                />
+                            </div>
+                            <div v-else class="flex items-center gap-2">
+                                <p :class="getResponsiveClasses({
+                                    mobile: 'text-sm text-gray-900',
+                                    tablet: 'text-sm text-gray-900',
+                                    desktop: 'text-sm text-gray-900'
+                                })">{{ selectedSale.prepared_by }}</p>
+                                <button 
+                                    type="button"
+                                    class="text-blue-600 hover:text-blue-700 p-1 text-xs rounded hover:bg-blue-50 cursor-pointer inline-flex items-center gap-1"
+                                    @click.stop="startEditPreparedBy(selectedSale)"
+                                    title="Edit Prepared By"
+                                >
+                                    <i class="pi pi-pencil text-xs"></i>
+                                    <span class="text-xs">Edit</span>
+                                </button>
+                            </div>
                         </div>
                         <div :class="getResponsiveClasses({
                             mobile: 'w-full',
@@ -1853,6 +1955,51 @@ const handleViewInvoice = (sale: ISale) => {
             }
         });
     }
+};
+
+// Editing prepared_by state & methods
+const editingSaleId = ref<number | null>(null);
+const editingPreparedByValue = ref<string>('');
+const isSavingPreparedBy = ref<boolean>(false);
+const savingSaleId = ref<number | null>(null);
+const updatePreparedByService = useAxiosUtil<{ prepared_by: string }, ISale>();
+
+const startEditPreparedBy = (sale: ISale) => {
+    editingSaleId.value = sale.sale_id;
+    editingPreparedByValue.value = sale.prepared_by || '';
+};
+
+const cancelEditPreparedBy = () => {
+    editingSaleId.value = null;
+    editingPreparedByValue.value = '';
+};
+
+const savePreparedBy = async (sale: ISale) => {
+    if (!editingPreparedByValue.value.trim()) {
+        toast.error('Prepared by cannot be empty');
+        return;
+    }
+    
+    isSavingPreparedBy.value = true;
+    savingSaleId.value = sale.sale_id;
+
+    await updatePreparedByService.patch(`admin/sales/${sale.sale_id}/prepared-by`, {
+        prepared_by: editingPreparedByValue.value.trim()
+    }).then(() => {
+        if (updatePreparedByService.request.status === 200 && updatePreparedByService.request.data) {
+            sale.prepared_by = updatePreparedByService.request.data.prepared_by;
+            if (selectedSale.value && selectedSale.value.sale_id === sale.sale_id) {
+                selectedSale.value.prepared_by = updatePreparedByService.request.data.prepared_by;
+            }
+            toast.success('Prepared by updated successfully');
+            cancelEditPreparedBy();
+        } else {
+            toast.error(updatePreparedByService.request.message ?? 'Failed to update prepared by');
+        }
+    }).finally(() => {
+        isSavingPreparedBy.value = false;
+        savingSaleId.value = null;
+    });
 };
 
 // Load daily statistics and sales history when component mounts

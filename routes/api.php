@@ -150,6 +150,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                     Route::patch('/{id}', 'update');
                     Route::patch('/update-image/{id}', 'changeImage');
                     Route::patch('/change-status/{id}', 'changeStatus');
+                    Route::patch('/toggle-pin/{id}', 'togglePin');
                     Route::patch('/{id}/add-stock', 'addStock');
                     Route::get('/sku-search/{id}', 'searchBySku');
                 });
@@ -206,6 +207,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
                     Route::post('/', 'recordSale');
                     Route::get('/today-stats', 'getTodayStats');
                     Route::get('/{id}', 'getSale');
+                    Route::patch('/{id}/prepared-by', 'updatePreparedBy');
                 });
 
             Route::controller(BatchController::class)
