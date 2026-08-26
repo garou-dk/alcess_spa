@@ -54,11 +54,8 @@
                             <div class="hero-price">{{ CurrencyUtil.formatCurrency(products[currentSlide]?.product_price) }}</div>
 
                             <div class="hero-buttons">
-                                <button @click="openCartModal(products[currentSlide])" class="btn-primary">
-                                    <i class="pi pi-shopping-cart"></i> Add to Cart
-                                </button>
-                                <button @click="viewDetails(products[currentSlide]?.product_id)" class="btn-secondary">
-                                    View Details <i class="pi pi-arrow-right"></i>
+                                <button @click="viewDetails(products[currentSlide]?.product_id)" class="btn-primary">
+                                    <i class="pi pi-eye"></i> View Product <i class="pi pi-arrow-right ml-1"></i>
                                 </button>
                             </div>
                         </div>

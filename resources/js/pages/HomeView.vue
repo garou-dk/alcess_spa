@@ -72,7 +72,7 @@
                         <div class="stage-info">
                             <div class="stage-tags">
                                 <span v-if="products[currentSlide]?.is_pinned" class="pill-pinned">
-                                    <i class="pi pi-bookmark-fill"></i> Staff Pinned
+                                    <i class="pi pi-bookmark-fill"></i> Pinned
                                 </span>
                                 <span v-else-if="products[currentSlide]?.is_best_selling" class="pill-bestseller">
                                     <i class="pi pi-bolt"></i> Best Seller
@@ -107,13 +107,10 @@
                             </div>
 
                             <div class="stage-actions">
-                                <button @click="addToCart(products[currentSlide]?.product_id)" :disabled="addToCartService.request.loading" class="btn-spotlight-cart">
-                                    <i :class="addToCartService.request.loading ? 'pi pi-spin pi-spinner' : 'pi pi-shopping-cart'"></i>
-                                    <span>Add to Cart</span>
-                                </button>
-                                <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-spotlight-details">
-                                    <span>View Specs</span>
-                                    <i class="pi pi-arrow-right"></i>
+                                <button @click="goToProductDetails(products[currentSlide]?.product_id)" class="btn-spotlight-cart">
+                                    <i class="pi pi-eye"></i>
+                                    <span>View Product</span>
+                                    <i class="pi pi-arrow-right ml-1"></i>
                                 </button>
                             </div>
                         </div>
