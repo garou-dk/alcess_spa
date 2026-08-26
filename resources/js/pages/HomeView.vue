@@ -25,11 +25,11 @@
                             </button>
                         </div>
                         
-                    <!-- Gensan Branch Info -->
+                    <!-- Branch Info -->
                     <div class="branch-footer-info">
                         <div class="flex items-center justify-center gap-2 text-slate-500 font-bold text-sm uppercase tracking-widest">
                             <img :src="Icon" alt="logo" class="w-5 h-5 opacity-80" />
-                            Alcess Tech Gensan Branch
+                            {{ BranchUtil.getBranchName() }}
                         </div>
                     </div>
                 </div>
@@ -277,6 +277,7 @@ import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import BranchUtil from "@/utils/BranchUtil";
 import { useRouter } from "vue-router";
 import { CartFormInterface } from "@/interfaces/CartInterface";
 

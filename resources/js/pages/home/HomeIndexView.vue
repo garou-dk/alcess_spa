@@ -13,8 +13,8 @@
                 <div v-if="showCarousel && products.length > 0" class="hero-carousel">
                     <div class="hero-grid">
                         <div class="hero-text">
-                            <!-- Gensan Branch Watermark -->
-                            <div class="hero-watermark">GENSAN BRANCH</div>
+                            <!-- Branch Watermark -->
+                            <div class="hero-watermark">{{ BranchUtil.getBranchShortName() }}</div>
                             <span class="hero-badge">Featured Product</span>
                             <h2 class="hero-title">{{ products[currentSlide]?.product_name }}</h2>
                             <p class="hero-category">{{ products[currentSlide]?.category?.category_name || 'Premium Electronics' }}</p>
@@ -206,6 +206,7 @@ import UrlUtil from "@/utils/UrlUtil";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import BranchUtil from "@/utils/BranchUtil";
 import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
 import Page from '@/stores/Page';

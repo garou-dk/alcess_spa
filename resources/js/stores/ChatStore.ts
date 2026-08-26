@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import { ProductInterface } from "@/interfaces/ProductInterface";
 import CurrencyUtil from "@/utils/CurrencyUtil";
+import BranchUtil from "@/utils/BranchUtil";
 import router from "@/router";
 
 export interface ChatOption {
@@ -211,14 +212,14 @@ export const useChatStore = defineStore("chat", {
                     ]
                 },
                 claim_warranty: {
-                    text: "To claim warranty, simply bring the item and your receipt to our Gensan branch, or contact our support team via Facebook.",
+                    text: `To claim warranty, simply bring the item and your receipt to our ${BranchUtil.getBranchCity()} branch, or contact our support team via Facebook.`,
                     options: [
                         { label: "Store Location", value: "location", action: 'flow', icon: 'pi pi-map-marker' },
                         { label: "Message Support", value: "facebook_link", action: 'link', payload: 'https://www.facebook.com/alcesslaptopstore', icon: 'pi pi-facebook' }
                     ]
                 },
                 location: {
-                    text: "We are located at <b>Alcess Tech, Gensan City</b>. Open Mon-Sat, 9AM to 6PM.",
+                    text: `We are located at <b>${BranchUtil.getBranchLocation()}</b>. Open Mon-Sat, 9AM to 6PM.`,
                     options: [
                         { label: "Back to Menu", value: "root", action: 'flow', icon: 'pi pi-arrow-left' }
                     ]

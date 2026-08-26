@@ -19,16 +19,31 @@ class ProductService
 {
     public function bestSelling()
     {
-        // First, try to get products with sales AND ratings (truly "best selling")
+        // First get pinned products (if any)
+        $pinnedProducts = Product::query()
+            ->with(['category', 'batch', 'specifications', 'featuredImages'])
+            ->withAvg('rates', 'rate')
+            ->withCount('rates')
+            ->where('is_active', true)
+            ->where('available_online', true)
+            ->where('is_pinned', true)
+            ->orderBy('pinned_at', 'desc')
+            ->get()
+            ->map(function ($product) {
+                $product->total_sales = 0;
+                $product->is_best_selling = true;
+                return $product;
+            });
+
+        // Next, get products with sales AND ratings (best selling)
         $bestSellingProducts = Product::query()
             ->with(['category', 'batch', 'specifications', 'featuredImages'])
             ->withAvg('rates', 'rate')
             ->withCount('rates')
             ->where('is_active', true)
             ->where('available_online', true)
-            // Removed stock check - show best sellers even if out of stock
+            ->where('is_pinned', false)
             ->where(function ($query) {
-                // Must have at least one delivered order OR one walk-in sale
                 $query->whereExists(function ($subQuery) {
                     $subQuery->select(\DB::raw(1))
                         ->from('product_orders as po')
@@ -41,10 +56,9 @@ class ProductService
                         ->whereColumn('si.product_id', 'products.product_id');
                 });
             })
-            ->has('rates', '>', 0) // Must have at least one rating
+            ->has('rates', '>', 0)
             ->get()
             ->map(function ($product) {
-                // Calculate total sales for sorting
                 $onlineSales = \DB::table('product_orders as po')
                     ->join('orders as o', 'po.order_id', '=', 'o.order_id')
                     ->where('po.product_id', $product->product_id)
@@ -61,26 +75,28 @@ class ProductService
             })
             ->sortByDesc('total_sales')
             ->sortByDesc('rates_avg_rate')
-            ->take(5) // Limit best selling to top 5
+            ->take(5)
             ->values();
 
-        // If we have best selling products, return them
-        if ($bestSellingProducts->isNotEmpty()) {
-            return $bestSellingProducts;
+        $combined = $pinnedProducts->concat($bestSellingProducts);
+
+        if ($combined->isNotEmpty()) {
+            return $combined->values();
         }
 
-        // Otherwise, fall back to ALL available products (no limit)
+        // Otherwise, fall back to ALL available products (pinned first)
         return Product::query()
             ->with(['category', 'batch', 'specifications', 'featuredImages'])
             ->withAvg('rates', 'rate')
             ->where('is_active', true)
             ->where('available_online', true)
-            // Removed stock check - show all products including out of stock
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('pinned_at', 'desc')
             ->orderBy('product_name', 'asc')
             ->get()
             ->map(function ($product) {
                 $product->total_sales = 0;
-                $product->is_best_selling = false;
+                $product->is_best_selling = (bool)$product->is_pinned;
                 return $product;
             });
     }
