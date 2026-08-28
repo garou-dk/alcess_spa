@@ -436,7 +436,7 @@ supervisorctl restart all
 |---|---|
 | **Business Name** | Alcess Laptop and Computer Accessories |
 | **Address** | Door 13, Fred-Cion Building, J. Catolico Avenue, Lagao, General Santos City |
-| **Reports Signatory** | Albert Von Daligdigan (Prepared and Approved) |
+| **Reports Signatory** | Dynamic (Configurable field / Logged-in Staff or Admin) |
 | **Contact** | 09531852360 / 09651934705 |
 | **Email** | alcessdavao@gmail.com |
 

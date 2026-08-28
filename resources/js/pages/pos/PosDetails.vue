@@ -444,7 +444,7 @@
                 <div style="margin-top: 30px; text-align: center;">
                     <h2 style="font-size: 16px;">Prepared and Approved by:</h2>
                     <div style="text-align: center;">
-                        <span style="display: block; margin-top: 5px;">Albert Von Daligdigan</span>
+                        <span style="display: block; margin-top: 5px;">{{ data.prepared_by || 'N/A' }}</span>
                     </div>
                 </div>
 

@@ -85,7 +85,7 @@
                                         mobile: 'text-sm',
                                         tablet: 'text-base',
                                         desktop: 'text-base'
-                                    })">Albert Von Daligdigan</p>
+                                    })">{{ data?.prepared_by || 'N/A' }}</p>
                                 </div>
                                 <div :class="getResponsiveClasses({
                                     mobile: 'flex justify-center pt-2 border-t border-gray-200',
@@ -434,7 +434,7 @@
                 <div style="margin-top: 30px; text-align: center;">
                     <h2 style="font-size: 16px;">Prepared and Approved by:</h2>
                     <div style="text-align: center;">
-                        <span style="display: block; margin-top: 5px;">Albert Von Daligdigan</span>
+                        <span style="display: block; margin-top: 5px;">{{ data?.prepared_by || 'N/A' }}</span>
                     </div>
                 </div>
 

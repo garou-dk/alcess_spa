@@ -135,7 +135,7 @@
             <div style="margin-top: 30px; text-align: center">
                 <h2 style="font-size: 16px">Prepared and Approved by:</h2>
                 <div style="text-align: center">
-                    <span style="display: block; margin-top: 5px">Albert Von Daligdigan</span>
+                    <span style="display: block; margin-top: 5px">{{ preparedByName }}</span>
                     <small>{{
                         DateUtil.formatToMonthDayYear(
                             DateUtil.formatYYYYMMDD(new Date()),
@@ -162,15 +162,17 @@ import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import DateUtil from "@/utils/DateUtil";
 import { useResponsive } from "@/composables/useResponsive";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 
 interface Props {
     startDate: string | null;
     endDate: string | null;
+    preparedBy?: string;
 }
 
 const props = defineProps<Props>();
+const preparedByName = computed(() => props.preparedBy || Page.user?.full_name || 'Staff');
 const responsive = useResponsive();
 
 const data = ref<UserInterface[]>([]);

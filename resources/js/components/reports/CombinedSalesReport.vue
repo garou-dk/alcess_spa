@@ -120,7 +120,7 @@
             <div style="margin-top: 30px; text-align: center">
                 <h2 style="font-size: 16px">Prepared and Approved by:</h2>
                 <div style="text-align: center">
-                    <span style="display: block; margin-top: 5px">Albert Von Daligdigan</span>
+                    <span style="display: block; margin-top: 5px">{{ preparedByName }}</span>
                     <small>{{ DateUtil.formatToMonthDayYear(DateUtil.formatYYYYMMDD(new Date())) }}</small>
                 </div>
             </div>
@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
 import Logo from "@/../img/logo.jpg";
+import Page from "@/stores/Page";
 import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
@@ -148,11 +149,14 @@ interface Props {
     startDate: string | null;
     endDate: string | null;
     salesType?: string;
+    preparedBy?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
     salesType: 'all'
 });
+
+const preparedByName = computed(() => props.preparedBy || Page.user?.full_name || 'Staff');
 
 const responsive = useResponsive();
 

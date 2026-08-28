@@ -171,7 +171,7 @@
             <div style="margin-top: 30px; text-align: center">
                 <h2 style="font-size: 16px">Prepared and Approved by:</h2>
                 <div style="text-align: center">
-                    <span style="display: block; margin-top: 5px">Albert Von Daligdigan</span>
+                    <span style="display: block; margin-top: 5px">{{ preparedByName }}</span>
                     <small>{{
                         DateUtil.formatToMonthDayYear(
                             DateUtil.formatYYYYMMDD(new Date()),
@@ -196,7 +196,7 @@ import useAxiosUtil from "@/utils/AxiosUtil";
 import CurrencyUtil from "@/utils/CurrencyUtil";
 import DateUtil from "@/utils/DateUtil";
 import { useResponsive } from "@/composables/useResponsive";
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useToast } from "vue-toastification";
 
 interface IDeliveryReportData {
@@ -226,6 +226,14 @@ interface IDeliveryReportData {
     days_in_delivery: number;
     customer_received_date: string | null;
     address: string;
+    delivery_status: string;
+    order_items: Array<{
+        product_id: number;
+        product_name: string;
+        quantity: number;
+        price: number;
+        subtotal: number;
+    }>;
 }
 
 interface IForm {
@@ -236,10 +244,12 @@ interface IForm {
 interface Props {
     startDate: string | null;
     endDate: string | null;
+    preparedBy?: string;
 }
 
 
 const props = defineProps<Props>();
+const preparedByName = computed(() => props.preparedBy || Page.user?.full_name || 'Staff');
 const responsive = useResponsive();
 
 const data = ref<IDeliveryReportData[]>([]);

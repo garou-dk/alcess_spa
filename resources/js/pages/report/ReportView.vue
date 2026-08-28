@@ -113,6 +113,29 @@
                             ]"
                         />
                     </div>
+                    <div :class="responsive.getResponsiveClasses({
+                        mobile: 'w-full',
+                        tablet: 'flex-1 min-w-[150px]',
+                        desktop: 'flex-1 min-w-[200px]'
+                    })">
+                        <label :class="responsive.getResponsiveClasses({
+                            mobile: 'block text-xs font-medium text-gray-700 mb-2',
+                            tablet: 'block text-sm font-medium text-gray-700 mb-2',
+                            desktop: 'block text-sm font-medium text-gray-700 mb-2'
+                        })">Prepared By</label>
+                        <InputText
+                            v-model="preparedBy"
+                            placeholder="Prepared by name"
+                            :class="[
+                                'w-full',
+                                responsive.getResponsiveClasses({
+                                    mobile: 'text-sm',
+                                    tablet: 'text-base',
+                                    desktop: 'text-base'
+                                })
+                            ]"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -162,11 +185,11 @@
                 tablet: 'w-full p-4',
                 desktop: 'w-full p-5'
             })">
-                <InventoryReport :startDate="startDate" :endDate="endDate" v-if="selectedReport === 'inventory'" :key="`inventory-${startDate}-${endDate}`" />
-                <DeliveryReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'delivery'" :key="`delivery-${startDate}-${endDate}`" />
-                <CustomerListReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'order'" :key="`customers-${startDate}-${endDate}`" />
-                <CombinedSalesReport :startDate="startDate" :endDate="endDate" :salesType="salesType" v-else-if="selectedReport === 'combined-sales'" :key="`combined-${startDate}-${endDate}-${salesType}`" />
-                <CustomerReviewReport :startDate="startDate" :endDate="endDate" v-else-if="selectedReport === 'customer-review'" :key="`review-${startDate}-${endDate}`" />
+                <InventoryReport :startDate="startDate" :endDate="endDate" :preparedBy="preparedBy" v-if="selectedReport === 'inventory'" :key="`inventory-${startDate}-${endDate}-${preparedBy}`" />
+                <DeliveryReport :startDate="startDate" :endDate="endDate" :preparedBy="preparedBy" v-else-if="selectedReport === 'delivery'" :key="`delivery-${startDate}-${endDate}-${preparedBy}`" />
+                <CustomerListReport :startDate="startDate" :endDate="endDate" :preparedBy="preparedBy" v-else-if="selectedReport === 'order'" :key="`customers-${startDate}-${endDate}-${preparedBy}`" />
+                <CombinedSalesReport :startDate="startDate" :endDate="endDate" :salesType="salesType" :preparedBy="preparedBy" v-else-if="selectedReport === 'combined-sales'" :key="`combined-${startDate}-${endDate}-${salesType}-${preparedBy}`" />
+                <CustomerReviewReport :startDate="startDate" :endDate="endDate" :preparedBy="preparedBy" v-else-if="selectedReport === 'customer-review'" :key="`review-${startDate}-${endDate}-${preparedBy}`" />
             </div>
         </div>
 
@@ -209,14 +232,16 @@ import CombinedSalesReport from "@/components/reports/CombinedSalesReport.vue";
 import CustomerReviewReport from "@/components/reports/CustomerReviewReport.vue";
 import DateTimeDisplay from "@/components/DateTimeDisplay.vue";
 import DateUtil from "@/utils/DateUtil";
+import Page from "@/stores/Page";
+import InputText from "primevue/inputtext";
 import { useResponsive } from "@/composables/useResponsive";
 import { ref, watch } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 
 const responsive = useResponsive();
 
-
 const selectedReport = ref<string>("combined-sales");
+const preparedBy = ref<string>(Page.user?.full_name || 'Staff');
 
 const dateRange = ref<Date[]>([]);
 
