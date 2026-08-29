@@ -13,9 +13,13 @@
         .header{background:#1e293b;border-bottom:1px solid rgba(255,255,255,0.08);padding:0 24px;display:flex;align-items:center;height:64px;position:sticky;top:0;z-index:100}
         .logo-box{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#38bdf8;letter-spacing:-0.02em}
         .logo-box svg{width:24px;height:24px;fill:#38bdf8}
-        .header-right{margin-left:auto;display:flex;align-items:center;gap:18px}
-        .user-tag{font-size:13px;color:#94a3b8;font-weight:500}
-        .logout-btn{font-size:12px;color:#f87171;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600;transition:all .2s}
+        .header-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+        
+        .profile-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+        .profile-btn:hover{background:rgba(56,189,248,0.15);border-color:#38bdf8;color:#38bdf8}
+        .profile-btn svg{width:16px;height:16px;fill:currentColor}
+
+        .logout-btn{font-size:12px;color:#f87171;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600;transition:all .2s}
         .logout-btn:hover{background:rgba(239,68,68,0.2);color:#ef4444}
 
         /* Main Container */
@@ -94,6 +98,33 @@
         /* Category Collapsible/Headers */
         .category-group-header{background:#131c2e;padding:10px 16px;font-size:12px;font-weight:800;color:#38bdf8;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
 
+        /* Profile Modal */
+        .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+        .modal-backdrop.show{display:flex}
+        .modal-dialog{background:#1e293b;border:1px solid rgba(255,255,255,0.12);border-radius:18px;max-width:550px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.5);overflow:hidden;animation:modalFadeIn .25s ease-out}
+        @keyframes modalFadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+        .modal-header{background:rgba(255,255,255,0.03);padding:18px 24px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between}
+        .modal-title{font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}
+        .modal-close-btn{background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+        .modal-close-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+        .modal-body{padding:24px;display:flex;flex-direction:column;gap:24px;max-height:80vh;overflow-y:auto}
+
+        .form-section{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px}
+        .section-heading{font-size:13px;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+        .form-group:last-child{margin-bottom:0}
+        .form-label{font-size:12px;font-weight:600;color:#cbd5e1}
+        .form-input{background:#0f172a;border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:8px;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;transition:border-color .2s}
+        .form-input:focus{border-color:#38bdf8}
+        
+        .btn-submit{background:linear-gradient(135deg, #2563eb, #3b82f6);color:#fff;font-weight:700;font-size:13px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+        .btn-submit:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb);transform:translateY(-1px)}
+
+        /* Alert Banners */
+        .alert-banner{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+        .alert-success{background:rgba(16,185,129,0.15);border:1px solid #10b981;color:#34d399}
+        .alert-error{background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:#f87171}
+
         @media(max-width:1100px){
             .top-cards-grid{grid-template-columns:repeat(3,1fr)}
             .day-branches-grid{grid-template-columns:repeat(2,1fr)}
@@ -114,7 +145,13 @@
     </div>
 
     <div class="header-right">
-        <span class="user-tag">{{ Auth::user()->name }}</span>
+        {{-- Profile Button --}}
+        <button type="button" onclick="openProfileModal()" class="profile-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>{{ Auth::user()->name }}</span>
+        </button>
+
+        {{-- Sign Out Button --}}
         <form method="POST" action="/logout" style="margin:0">
             @csrf
             <button type="submit" class="logout-btn">Sign out</button>
@@ -123,6 +160,32 @@
 </div>
 
 <div class="main">
+
+    {{-- Alert Messages --}}
+    @if (session('profile_success'))
+    <div class="alert-banner alert-success">
+        <span>✅ {{ session('profile_success') }}</span>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer">✕</button>
+    </div>
+    @endif
+
+    @if (session('password_success'))
+    <div class="alert-banner alert-success">
+        <span>🔒 {{ session('password_success') }}</span>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer">✕</button>
+    </div>
+    @endif
+
+    @if ($errors->any())
+    <div class="alert-banner alert-error">
+        <div>
+            @foreach ($errors->all() as $err)
+            <div>⚠️ {{ $err }}</div>
+            @endforeach
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer">✕</button>
+    </div>
+    @endif
 
     {{-- TOP NAVIGATION CARDS: Overall, GenSan, Davao, Cebu, CDO --}}
     <div class="top-cards-grid">
@@ -503,6 +566,84 @@
     @endif
 
 </div>
+
+{{-- PROFILE MODAL --}}
+<div id="profileModal" class="modal-backdrop">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">
+                <svg style="width:20px;height:20px;fill:#38bdf8" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Admin Profile & Settings
+            </span>
+            <button type="button" onclick="closeProfileModal()" class="modal-close-btn">✕</button>
+        </div>
+
+        <div class="modal-body">
+            {{-- Form 1: Update Name & Email --}}
+            <form method="POST" action="{{ route('profile.update') }}" class="form-section">
+                @csrf
+                <div class="section-heading">
+                    <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z"/></svg>
+                    Profile Information
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-input" value="{{ old('name', Auth::user()->name) }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-input" value="{{ old('email', Auth::user()->email) }}" required>
+                </div>
+
+                <div style="margin-top:14px;text-align:right">
+                    <button type="submit" class="btn-submit">Save Profile</button>
+                </div>
+            </form>
+
+            {{-- Form 2: Change Password --}}
+            <form method="POST" action="{{ route('profile.password') }}" class="form-section">
+                @csrf
+                <div class="section-heading">
+                    <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    Change Password
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" name="current_password" class="form-input" placeholder="Enter current password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" name="new_password" class="form-input" placeholder="Minimum 6 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" name="new_password_confirmation" class="form-input" placeholder="Re-enter new password" required>
+                </div>
+
+                <div style="margin-top:14px;text-align:right">
+                    <button type="submit" class="btn-submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfileModal() {
+    document.getElementById('profileModal').classList.add('show');
+}
+function closeProfileModal() {
+    document.getElementById('profileModal').classList.remove('show');
+}
+document.getElementById('profileModal').addEventListener('click', function(e) {
+    if (e.target === this) closeProfileModal();
+});
+</script>
 
 </body>
 </html>
