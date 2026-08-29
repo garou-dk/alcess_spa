@@ -80,37 +80,54 @@ class DashboardController extends Controller
     private function getTopMetrics()
     {
         $metrics = [
-            'overall' => ['sales_today' => 0, 'total_products' => 0, 'low_stock' => 0],
-            'gensan'  => ['sales_today' => 0, 'total_products' => 0, 'low_stock' => 0],
-            'davao'   => ['sales_today' => 0, 'total_products' => 0, 'low_stock' => 0],
-            'cebu'    => ['sales_today' => 0, 'total_products' => 0, 'low_stock' => 0],
-            'cdo'     => ['sales_today' => 0, 'total_products' => 0, 'low_stock' => 0],
+            'overall' => [
+                'sales_all_time' => 0,
+                'sales_today'    => 0,
+                'total_products' => 0,
+                'low_stock'      => 0,
+                'is_connected'   => true,
+            ],
+            'gensan'  => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
+            'davao'   => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
+            'cebu'    => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
+            'cdo'     => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
         ];
 
         foreach ($this->branches as $key => $name) {
             try {
-                $salesToday = (float) DB::connection($key)->table('sales')
-                    ->whereDate('created_at', Carbon::today())
-                    ->sum('total_amount');
+                // Test connection
+                DB::connection($key)->getPdo();
+                $metrics[$key]['is_connected'] = true;
 
-                $productsCount = DB::connection($key)->table('products')
+                // All time total revenue (POS sales)
+                $salesAllTime = (float) (DB::connection($key)->table('sales')->sum('total_amount') ?? 0);
+
+                // Today's revenue
+                $salesToday = (float) (DB::connection($key)->table('sales')
+                    ->whereDate('created_at', Carbon::today())
+                    ->sum('total_amount') ?? 0);
+
+                // Total active products count
+                $productsCount = (int) DB::connection($key)->table('products')
                     ->whereNull('deleted_at')->count();
 
-                $lowStock = DB::connection($key)->table('products')
+                // Low stock count
+                $lowStock = (int) DB::connection($key)->table('products')
                     ->whereNull('deleted_at')
                     ->whereRaw('product_quantity <= low_stock_threshold')
                     ->count();
 
-                $metrics[$key] = [
-                    'sales_today'    => $salesToday,
-                    'total_products' => $productsCount,
-                    'low_stock'      => $lowStock,
-                ];
+                $metrics[$key]['sales_all_time'] = $salesAllTime;
+                $metrics[$key]['sales_today']    = $salesToday;
+                $metrics[$key]['total_products'] = $productsCount;
+                $metrics[$key]['low_stock']      = $lowStock;
 
-                $metrics['overall']['sales_today'] += $salesToday;
+                $metrics['overall']['sales_all_time'] += $salesAllTime;
+                $metrics['overall']['sales_today']    += $salesToday;
                 $metrics['overall']['total_products'] += $productsCount;
-                $metrics['overall']['low_stock'] += $lowStock;
+                $metrics['overall']['low_stock']      += $lowStock;
             } catch (\Exception $e) {
+                $metrics[$key]['is_connected'] = false;
                 continue;
             }
         }

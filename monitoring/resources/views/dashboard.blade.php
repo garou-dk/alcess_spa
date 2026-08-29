@@ -27,13 +27,17 @@
 
         /* Top Branch Cards (5 Cards) */
         .top-cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
-        .top-card{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;text-decoration:none;color:inherit;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px}
+        .top-card{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;text-decoration:none;color:inherit;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:5px}
         .top-card:hover{transform:translateY(-3px);border-color:#38bdf8;box-shadow:0 10px 25px rgba(0,0,0,0.3)}
-        .top-card.active{background:linear-gradient(135deg, rgba(37,99,235,0.2) 0%, rgba(30,41,59,0.9) 100%);border-color:#38bdf8;box-shadow:0 0 20px rgba(56,189,248,0.25)}
-        .top-card .card-title{font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;display:flex;align-items:center;justify-content:space-between}
+        .top-card.active{background:linear-gradient(135deg, rgba(37,99,235,0.25) 0%, rgba(30,41,59,0.95) 100%);border-color:#38bdf8;box-shadow:0 0 20px rgba(56,189,248,0.25)}
+        .top-card .card-title{font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;display:flex;align-items:center;justify-content:space-between}
         .top-card.active .card-title{color:#38bdf8}
-        .top-card .card-stat{font-size:20px;font-weight:800;color:#fff}
-        .top-card .card-sub{font-size:11px;color:#64748b}
+        
+        .card-stat-box{display:flex;flex-direction:column;gap:2px;margin:4px 0}
+        .card-stat-label{font-size:10px;text-transform:uppercase;color:#64748b;font-weight:700;letter-spacing:.05em}
+        .card-stat{font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+        .card-sub-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#94a3b8;padding-top:4px;border-top:1px solid rgba(255,255,255,0.06)}
+        .card-today-badge{color:#38bdf8;font-weight:700}
 
         /* Sub-View Navigation Bar (4 Cards/Buttons) */
         .sub-nav-bar{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -195,8 +199,14 @@
                 <span>Overall Report</span>
                 <span class="panel-badge badge-blue">ALL</span>
             </div>
-            <div class="card-stat">₱{{ number_format($metrics['overall']['sales_today'], 2) }}</div>
-            <div class="card-sub">{{ $metrics['overall']['total_products'] }} items • {{ $metrics['overall']['low_stock'] }} low stock</div>
+            <div class="card-stat-box">
+                <span class="card-stat-label">Total Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['overall']['sales_all_time'], 2) }}</div>
+            </div>
+            <div class="card-sub-row">
+                <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['overall']['sales_today'], 2) }}</strong></span>
+                <span>{{ $metrics['overall']['total_products'] }} items</span>
+            </div>
         </a>
 
         {{-- GenSan Card --}}
@@ -205,8 +215,14 @@
                 <span>GenSan Branch</span>
                 <span class="panel-badge badge-blue">GS</span>
             </div>
-            <div class="card-stat">₱{{ number_format($metrics['gensan']['sales_today'], 2) }}</div>
-            <div class="card-sub">{{ $metrics['gensan']['total_products'] }} items • {{ $metrics['gensan']['low_stock'] }} low</div>
+            <div class="card-stat-box">
+                <span class="card-stat-label">Total Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['gensan']['sales_all_time'], 2) }}</div>
+            </div>
+            <div class="card-sub-row">
+                <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['gensan']['sales_today'], 2) }}</strong></span>
+                <span>{{ $metrics['gensan']['total_products'] }} items</span>
+            </div>
         </a>
 
         {{-- Davao Card --}}
@@ -215,8 +231,14 @@
                 <span>Davao Branch</span>
                 <span class="panel-badge badge-red">DVO</span>
             </div>
-            <div class="card-stat">₱{{ number_format($metrics['davao']['sales_today'], 2) }}</div>
-            <div class="card-sub">{{ $metrics['davao']['total_products'] }} items • {{ $metrics['davao']['low_stock'] }} low</div>
+            <div class="card-stat-box">
+                <span class="card-stat-label">Total Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['davao']['sales_all_time'], 2) }}</div>
+            </div>
+            <div class="card-sub-row">
+                <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['davao']['sales_today'], 2) }}</strong></span>
+                <span>{{ $metrics['davao']['total_products'] }} items</span>
+            </div>
         </a>
 
         {{-- Cebu Card --}}
@@ -225,8 +247,14 @@
                 <span>Cebu Branch</span>
                 <span class="panel-badge badge-green">CEB</span>
             </div>
-            <div class="card-stat">₱{{ number_format($metrics['cebu']['sales_today'], 2) }}</div>
-            <div class="card-sub">{{ $metrics['cebu']['total_products'] }} items • {{ $metrics['cebu']['low_stock'] }} low</div>
+            <div class="card-stat-box">
+                <span class="card-stat-label">Total Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['cebu']['sales_all_time'], 2) }}</div>
+            </div>
+            <div class="card-sub-row">
+                <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['cebu']['sales_today'], 2) }}</strong></span>
+                <span>{{ $metrics['cebu']['total_products'] }} items</span>
+            </div>
         </a>
 
         {{-- CDO Card --}}
@@ -235,8 +263,14 @@
                 <span>CDO Branch</span>
                 <span class="panel-badge badge-amber">CDO</span>
             </div>
-            <div class="card-stat">₱{{ number_format($metrics['cdo']['sales_today'], 2) }}</div>
-            <div class="card-sub">{{ $metrics['cdo']['total_products'] }} items • {{ $metrics['cdo']['low_stock'] }} low</div>
+            <div class="card-stat-box">
+                <span class="card-stat-label">Total Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['cdo']['sales_all_time'], 2) }}</div>
+            </div>
+            <div class="card-sub-row">
+                <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['cdo']['sales_today'], 2) }}</strong></span>
+                <span>{{ $metrics['cdo']['total_products'] }} items</span>
+            </div>
         </a>
     </div>
 
@@ -331,7 +365,7 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <span style="color:#94a3b8">Total Sales:</span>
+                    <span style="color:#94a3b8">Total Sales (Today):</span>
                     <span style="color:#38bdf8;font-size:16px">₱{{ number_format($b['total'], 2) }}</span>
                 </div>
             </div>
