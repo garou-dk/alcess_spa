@@ -25,6 +25,16 @@
         /* Main Container */
         .main{max-width:1400px;margin:0 auto;padding:24px 20px}
 
+        /* Date Filter Bar */
+        .filter-toolbar{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+        .filter-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .filter-title{font-size:13px;font-weight:700;color:#94a3b8;display:flex;align-items:center;gap:6px}
+        .filter-select, .filter-input{background:#0f172a;border:1px solid rgba(255,255,255,0.14);color:#fff;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;outline:none;font-family:inherit}
+        .filter-select:focus, .filter-input:focus{border-color:#38bdf8}
+        .filter-btn{background:linear-gradient(135deg, #2563eb, #3b82f6);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+        .filter-btn:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb)}
+        .filter-badge{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700}
+
         /* Top Branch Cards (5 Cards) */
         .top-cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
         .top-card{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;text-decoration:none;color:inherit;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:5px}
@@ -34,9 +44,9 @@
         .top-card.active .card-title{color:#38bdf8}
         
         .card-stat-box{display:flex;flex-direction:column;gap:2px;margin:4px 0}
-        .card-stat-label{font-size:10px;text-transform:uppercase;color:#64748b;font-weight:700;letter-spacing:.05em}
-        .card-stat{font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.02em}
-        .card-sub-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#94a3b8;padding-top:4px;border-top:1px solid rgba(255,255,255,0.06)}
+        .card-stat-label{font-size:10px;text-transform:uppercase;color:#94a3b8;font-weight:700;letter-spacing:.04em}
+        .card-stat{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+        .card-sub-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#94a3b8;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06)}
         .card-today-badge{color:#38bdf8;font-weight:700}
 
         /* Sub-View Navigation Bar (4 Cards/Buttons) */
@@ -191,17 +201,71 @@
     </div>
     @endif
 
+    {{-- DATE FILTER TOOLBAR --}}
+    <div class="filter-toolbar">
+        <form method="GET" action="/" id="filterForm" class="filter-left">
+            <input type="hidden" name="view" value="{{ $mainView }}">
+            <input type="hidden" name="sub" value="{{ $subView }}">
+
+            <span class="filter-title">
+                <svg style="width:16px;height:16px;fill:#38bdf8" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+                Date Filter:
+            </span>
+
+            {{-- Filter Type Dropdown --}}
+            <select name="filter_type" id="filterTypeSelect" class="filter-select" onchange="toggleFilterInputs()">
+                <option value="monthly" {{ $filterType === 'monthly' ? 'selected' : '' }}>Monthly (Default)</option>
+                <option value="daily" {{ $filterType === 'daily' ? 'selected' : '' }}>Specific Day</option>
+                <option value="range" {{ $filterType === 'range' ? 'selected' : '' }}>Custom Date Range</option>
+                <option value="yearly" {{ $filterType === 'yearly' ? 'selected' : '' }}>Yearly</option>
+                <option value="all_time" {{ $filterType === 'all_time' ? 'selected' : '' }}>All Time</option>
+            </select>
+
+            {{-- 1. Monthly Inputs --}}
+            <div id="monthlyGroup" style="display:flex;gap:6px;align-items:center">
+                <select name="month" class="filter-select">
+                    @for ($m = 1; $m <= 12; $m++)
+                    <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
+                        {{ date('F', mktime(0, 0, 0, $m, 1)) }}
+                    </option>
+                    @endfor
+                </select>
+                <input type="number" name="year" class="filter-input" value="{{ $year }}" style="width:85px" min="2020" max="2035">
+            </div>
+
+            {{-- 2. Daily Input --}}
+            <div id="dailyGroup" style="display:none;align-items:center">
+                <input type="date" name="date" class="filter-input" value="{{ $date }}">
+            </div>
+
+            {{-- 3. Range Inputs --}}
+            <div id="rangeGroup" style="display:none;align-items:center;gap:6px">
+                <input type="date" name="start_date" class="filter-input" value="{{ $startDate }}">
+                <span style="font-size:12px;color:#94a3b8">to</span>
+                <input type="date" name="end_date" class="filter-input" value="{{ $endDate }}">
+            </div>
+
+            {{-- Submit button --}}
+            <button type="submit" class="filter-btn">Apply Filter</button>
+            <a href="/?view={{ $mainView }}&sub={{ $subView }}&filter_type=monthly&month={{ date('n') }}&year={{ date('Y') }}" class="sub-nav-btn" style="padding:6px 12px;font-size:11px">Reset to This Month</a>
+        </form>
+
+        <div class="filter-badge">
+            📅 Active: {{ $dateFilter['label'] }}
+        </div>
+    </div>
+
     {{-- TOP NAVIGATION CARDS: Overall, GenSan, Davao, Cebu, CDO --}}
     <div class="top-cards-grid">
         {{-- Overall Report Card --}}
-        <a href="/?view=overall&sub={{ $subView }}&month={{ $currentMonth }}&year={{ $currentYear }}" class="top-card {{ $mainView === 'overall' ? 'active' : '' }}">
+        <a href="/?view=overall&sub={{ $subView }}&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="top-card {{ $mainView === 'overall' ? 'active' : '' }}">
             <div class="card-title">
                 <span>Overall Report</span>
                 <span class="panel-badge badge-blue">ALL</span>
             </div>
             <div class="card-stat-box">
-                <span class="card-stat-label">Total Revenue</span>
-                <div class="card-stat">₱{{ number_format($metrics['overall']['sales_all_time'], 2) }}</div>
+                <span class="card-stat-label">{{ $dateFilter['short_label'] }} Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['overall']['sales_filtered'], 2) }}</div>
             </div>
             <div class="card-sub-row">
                 <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['overall']['sales_today'], 2) }}</strong></span>
@@ -210,14 +274,14 @@
         </a>
 
         {{-- GenSan Card --}}
-        <a href="/?view=gensan&sub={{ $subView }}&month={{ $currentMonth }}&year={{ $currentYear }}" class="top-card {{ $mainView === 'gensan' ? 'active' : '' }}">
+        <a href="/?view=gensan&sub={{ $subView }}&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="top-card {{ $mainView === 'gensan' ? 'active' : '' }}">
             <div class="card-title">
                 <span>GenSan Branch</span>
                 <span class="panel-badge badge-blue">GS</span>
             </div>
             <div class="card-stat-box">
-                <span class="card-stat-label">Total Revenue</span>
-                <div class="card-stat">₱{{ number_format($metrics['gensan']['sales_all_time'], 2) }}</div>
+                <span class="card-stat-label">{{ $dateFilter['short_label'] }} Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['gensan']['sales_filtered'], 2) }}</div>
             </div>
             <div class="card-sub-row">
                 <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['gensan']['sales_today'], 2) }}</strong></span>
@@ -226,14 +290,14 @@
         </a>
 
         {{-- Davao Card --}}
-        <a href="/?view=davao&sub={{ $subView }}&month={{ $currentMonth }}&year={{ $currentYear }}" class="top-card {{ $mainView === 'davao' ? 'active' : '' }}">
+        <a href="/?view=davao&sub={{ $subView }}&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="top-card {{ $mainView === 'davao' ? 'active' : '' }}">
             <div class="card-title">
                 <span>Davao Branch</span>
                 <span class="panel-badge badge-red">DVO</span>
             </div>
             <div class="card-stat-box">
-                <span class="card-stat-label">Total Revenue</span>
-                <div class="card-stat">₱{{ number_format($metrics['davao']['sales_all_time'], 2) }}</div>
+                <span class="card-stat-label">{{ $dateFilter['short_label'] }} Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['davao']['sales_filtered'], 2) }}</div>
             </div>
             <div class="card-sub-row">
                 <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['davao']['sales_today'], 2) }}</strong></span>
@@ -242,14 +306,14 @@
         </a>
 
         {{-- Cebu Card --}}
-        <a href="/?view=cebu&sub={{ $subView }}&month={{ $currentMonth }}&year={{ $currentYear }}" class="top-card {{ $mainView === 'cebu' ? 'active' : '' }}">
+        <a href="/?view=cebu&sub={{ $subView }}&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="top-card {{ $mainView === 'cebu' ? 'active' : '' }}">
             <div class="card-title">
                 <span>Cebu Branch</span>
                 <span class="panel-badge badge-green">CEB</span>
             </div>
             <div class="card-stat-box">
-                <span class="card-stat-label">Total Revenue</span>
-                <div class="card-stat">₱{{ number_format($metrics['cebu']['sales_all_time'], 2) }}</div>
+                <span class="card-stat-label">{{ $dateFilter['short_label'] }} Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['cebu']['sales_filtered'], 2) }}</div>
             </div>
             <div class="card-sub-row">
                 <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['cebu']['sales_today'], 2) }}</strong></span>
@@ -258,14 +322,14 @@
         </a>
 
         {{-- CDO Card --}}
-        <a href="/?view=cdo&sub={{ $subView }}&month={{ $currentMonth }}&year={{ $currentYear }}" class="top-card {{ $mainView === 'cdo' ? 'active' : '' }}">
+        <a href="/?view=cdo&sub={{ $subView }}&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="top-card {{ $mainView === 'cdo' ? 'active' : '' }}">
             <div class="card-title">
                 <span>CDO Branch</span>
                 <span class="panel-badge badge-amber">CDO</span>
             </div>
             <div class="card-stat-box">
-                <span class="card-stat-label">Total Revenue</span>
-                <div class="card-stat">₱{{ number_format($metrics['cdo']['sales_all_time'], 2) }}</div>
+                <span class="card-stat-label">{{ $dateFilter['short_label'] }} Revenue</span>
+                <div class="card-stat">₱{{ number_format($metrics['cdo']['sales_filtered'], 2) }}</div>
             </div>
             <div class="card-sub-row">
                 <span>Today: <strong class="card-today-badge">₱{{ number_format($metrics['cdo']['sales_today'], 2) }}</strong></span>
@@ -277,26 +341,26 @@
     {{-- SUB NAVIGATION BAR (4 Sub-Buttons/Cards) --}}
     <div class="sub-nav-bar">
         <div class="sub-nav-group">
-            {{-- 1. Sales Today --}}
-            <a href="/?view={{ $mainView }}&sub=sales_today&month={{ $currentMonth }}&year={{ $currentYear }}" class="sub-nav-btn {{ $subView === 'sales_today' ? 'active' : '' }}">
+            {{-- 1. Sales --}}
+            <a href="/?view={{ $mainView }}&sub=sales_today&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="sub-nav-btn {{ $subView === 'sales_today' ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-                Sales Today
+                Sales ({{ $dateFilter['short_label'] }})
             </a>
 
             {{-- 2. Inventory --}}
-            <a href="/?view={{ $mainView }}&sub=inventory&month={{ $currentMonth }}&year={{ $currentYear }}" class="sub-nav-btn {{ $subView === 'inventory' ? 'active' : '' }}">
+            <a href="/?view={{ $mainView }}&sub=inventory&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="sub-nav-btn {{ $subView === 'inventory' ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-1 5H5v-3h14v3zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zm-1 5H5V5h14v3z"/></svg>
                 Inventory
             </a>
 
             {{-- 3. Added Stock --}}
-            <a href="/?view={{ $mainView }}&sub=added_stock&month={{ $currentMonth }}&year={{ $currentYear }}" class="sub-nav-btn {{ $subView === 'added_stock' ? 'active' : '' }}">
+            <a href="/?view={{ $mainView }}&sub=added_stock&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="sub-nav-btn {{ $subView === 'added_stock' ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
                 Added Stock
             </a>
 
             {{-- 4. Running Low --}}
-            <a href="/?view={{ $mainView }}&sub=running_low&month={{ $currentMonth }}&year={{ $currentYear }}" class="sub-nav-btn {{ $subView === 'running_low' ? 'active' : '' }}">
+            <a href="/?view={{ $mainView }}&sub=running_low&filter_type={{ $filterType }}&month={{ $month }}&year={{ $year }}&date={{ $date }}&start_date={{ $startDate }}&end_date={{ $endDate }}" class="sub-nav-btn {{ $subView === 'running_low' ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
                 Running Low
             </a>
@@ -316,27 +380,27 @@
 
 
     {{-- ========================================================================= --}}
-    {{-- SUB-VIEW 1: SALES TODAY                                                  --}}
+    {{-- SUB-VIEW 1: SALES REPORT (FILTERED)                                      --}}
     {{-- ========================================================================= --}}
     @if ($subView === 'sales_today')
 
         @if ($mainView === 'overall')
         <div class="grand-total-banner">
             <div>
-                <div style="font-size:12px;text-transform:uppercase;color:#93c5fd;font-weight:700">All Branches Grand Total (Today)</div>
-                <div style="font-size:26px;font-weight:900;color:#fff">₱{{ number_format($salesTodayData['grand_total'], 2) }}</div>
+                <div style="font-size:12px;text-transform:uppercase;color:#93c5fd;font-weight:700">All Branches Grand Total ({{ $dateFilter['label'] }})</div>
+                <div style="font-size:26px;font-weight:900;color:#fff">₱{{ number_format($salesData['grand_total'], 2) }}</div>
             </div>
             <span class="panel-badge badge-green">4 BRANCHES ACTIVE</span>
         </div>
         @endif
 
         <div class="{{ $mainView === 'overall' ? 'tables-grid-4' : 'single-table-container' }}">
-            @foreach ($salesTodayData['branches'] as $bKey => $b)
+            @foreach ($salesData['branches'] as $bKey => $b)
             <div class="panel-box">
                 <div class="panel-header">
                     <span class="panel-title">
                         <span class="status-dot online"></span>
-                        {{ $b['name'] }} — Sales Today
+                        {{ $b['name'] }} — Sales ({{ $dateFilter['label'] }})
                     </span>
                     <span class="panel-badge badge-blue">₱{{ number_format($b['total'], 2) }}</span>
                 </div>
@@ -359,13 +423,13 @@
                                 <td class="text-right"><strong>₱{{ number_format($item->total, 2) }}</strong></td>
                             </tr>
                             @empty
-                            <tr><td colspan="4" class="text-center" style="color:#64748b;padding:24px">No sales recorded today for this branch</td></tr>
+                            <tr><td colspan="4" class="text-center" style="color:#64748b;padding:24px">No sales recorded during {{ $dateFilter['label'] }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <span style="color:#94a3b8">Total Sales (Today):</span>
+                    <span style="color:#94a3b8">Branch Total:</span>
                     <span style="color:#38bdf8;font-size:16px">₱{{ number_format($b['total'], 2) }}</span>
                 </div>
             </div>
@@ -480,9 +544,9 @@
                     📅 Added Stock Calendar Stream
                 </span>
                 <div class="calendar-controls">
-                    <a href="/?view={{ $mainView }}&sub=added_stock&month={{ $addedStockData['prev_month']->month }}&year={{ $addedStockData['prev_month']->year }}" class="month-btn">← Prev Month</a>
+                    <a href="/?view={{ $mainView }}&sub=added_stock&filter_type=monthly&month={{ $addedStockData['prev_month']->month }}&year={{ $addedStockData['prev_month']->year }}" class="month-btn">← Prev Month</a>
                     <span class="current-month-title">{{ $addedStockData['month_name'] }}</span>
-                    <a href="/?view={{ $mainView }}&sub=added_stock&month={{ $addedStockData['next_month']->month }}&year={{ $addedStockData['next_month']->year }}" class="month-btn">Next Month →</a>
+                    <a href="/?view={{ $mainView }}&sub=added_stock&filter_type=monthly&month={{ $addedStockData['next_month']->month }}&year={{ $addedStockData['next_month']->year }}" class="month-btn">Next Month →</a>
                 </div>
             </div>
         </div>
@@ -668,6 +732,16 @@
 </div>
 
 <script>
+function toggleFilterInputs() {
+    const type = document.getElementById('filterTypeSelect').value;
+    document.getElementById('monthlyGroup').style.display = (type === 'monthly') ? 'flex' : 'none';
+    document.getElementById('dailyGroup').style.display = (type === 'daily') ? 'flex' : 'none';
+    document.getElementById('rangeGroup').style.display = (type === 'range') ? 'flex' : 'none';
+}
+
+// Initialize on page load
+toggleFilterInputs();
+
 function openProfileModal() {
     document.getElementById('profileModal').classList.add('show');
 }

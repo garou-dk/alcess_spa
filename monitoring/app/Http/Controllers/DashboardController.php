@@ -17,25 +17,33 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $mainView = $request->get('view', 'overall'); // overall, gensan, davao, cebu, cdo
-        $subView  = $request->get('sub', 'sales_today'); // sales_today, inventory, added_stock, running_low
-        $month    = (int) $request->get('month', Carbon::now()->month);
-        $year     = (int) $request->get('year', Carbon::now()->year);
+        $mainView   = $request->get('view', 'overall'); // overall, gensan, davao, cebu, cdo
+        $subView    = $request->get('sub', 'sales_today'); // sales_today, inventory, added_stock, running_low
+        $filterType = $request->get('filter_type', 'monthly'); // monthly, daily, range, yearly, all_time
+        
+        $month      = (int) $request->get('month', Carbon::now()->month);
+        $year       = (int) $request->get('year', Carbon::now()->year);
+        $date       = $request->get('date', Carbon::today()->format('Y-m-d'));
+        $startDate  = $request->get('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $endDate    = $request->get('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
 
-        // Determine which branch connections to query
+        // Resolve Date Filter Range & Labels
+        $dateFilter = $this->resolveDateFilter($filterType, $month, $year, $date, $startDate, $endDate);
+
+        // Determine active branch connections
         $activeBranches = ($mainView === 'overall' || !array_key_exists($mainView, $this->branches))
             ? $this->branches
             : [$mainView => $this->branches[$mainView]];
 
-        $salesTodayData       = [];
+        $salesData            = [];
         $inventoryData        = [];
         $categorizedInventory = [];
         $addedStockData       = [];
         $runningLowData       = [];
 
-        // 1. Sales Today
+        // 1. Sales Report (Filtered by Selected Date / Month / Range)
         if ($subView === 'sales_today') {
-            $salesTodayData = $this->getSalesToday($activeBranches);
+            $salesData = $this->getFilteredSales($activeBranches, $dateFilter['start'], $dateFilter['end']);
         }
 
         // 2. Inventory
@@ -49,7 +57,9 @@ class DashboardController extends Controller
 
         // 3. Added Stock Calendar
         if ($subView === 'added_stock') {
-            $addedStockData = $this->getAddedStockCalendar($activeBranches, $month, $year);
+            $calendarMonth = ($filterType === 'monthly') ? $month : Carbon::now()->month;
+            $calendarYear  = ($filterType === 'monthly') ? $year : Carbon::now()->year;
+            $addedStockData = $this->getAddedStockCalendar($activeBranches, $calendarMonth, $calendarYear);
         }
 
         // 4. Running Low Stock
@@ -57,19 +67,24 @@ class DashboardController extends Controller
             $runningLowData = $this->getRunningLow($activeBranches);
         }
 
-        // Quick Overview Metrics for Top Cards
-        $metrics = $this->getTopMetrics();
+        // Metrics for Top Cards (Monthly by default or matches date filter)
+        $metrics = $this->getTopMetrics($dateFilter['start'], $dateFilter['end']);
         $serverHealth = $this->checkBranchHealth();
 
         return view('dashboard', [
             'branches'             => $this->branches,
             'mainView'             => $mainView,
             'subView'              => $subView,
-            'currentMonth'         => $month,
-            'currentYear'          => $year,
+            'filterType'           => $filterType,
+            'month'                => $month,
+            'year'                 => $year,
+            'date'                 => $date,
+            'startDate'            => $startDate,
+            'endDate'              => $endDate,
+            'dateFilter'           => $dateFilter,
             'metrics'              => $metrics,
             'serverHealth'         => $serverHealth,
-            'salesTodayData'       => $salesTodayData,
+            'salesData'            => $salesData,
             'inventoryData'        => $inventoryData,
             'categorizedInventory' => $categorizedInventory,
             'addedStockData'       => $addedStockData,
@@ -77,37 +92,92 @@ class DashboardController extends Controller
         ]);
     }
 
-    private function getTopMetrics()
+    private function resolveDateFilter($type, $month, $year, $date, $start, $end)
+    {
+        switch ($type) {
+            case 'daily':
+                $cDate = Carbon::parse($date);
+                return [
+                    'type'       => 'daily',
+                    'label'      => $cDate->format('F j, Y'),
+                    'short_label'=> 'Day (' . $cDate->format('M j, Y') . ')',
+                    'start'      => $cDate->copy()->startOfDay(),
+                    'end'        => $cDate->copy()->endOfDay(),
+                ];
+            case 'range':
+                $cStart = Carbon::parse($start)->startOfDay();
+                $cEnd   = Carbon::parse($end)->endOfDay();
+                return [
+                    'type'       => 'range',
+                    'label'      => $cStart->format('M j, Y') . ' — ' . $cEnd->format('M j, Y'),
+                    'short_label'=> 'Range',
+                    'start'      => $cStart,
+                    'end'        => $cEnd,
+                ];
+            case 'yearly':
+                $cYear = Carbon::createFromDate($year, 1, 1);
+                return [
+                    'type'       => 'yearly',
+                    'label'      => 'Year ' . $year,
+                    'short_label'=> 'Year ' . $year,
+                    'start'      => $cYear->copy()->startOfYear(),
+                    'end'        => $cYear->copy()->endOfYear(),
+                ];
+            case 'all_time':
+                return [
+                    'type'       => 'all_time',
+                    'label'      => 'All-Time Total',
+                    'short_label'=> 'All-Time',
+                    'start'      => null,
+                    'end'        => null,
+                ];
+            case 'monthly':
+            default:
+                $cMonth = Carbon::createFromDate($year, $month, 1);
+                return [
+                    'type'       => 'monthly',
+                    'label'      => $cMonth->format('F Y'),
+                    'short_label'=> 'Monthly (' . $cMonth->format('M Y') . ')',
+                    'start'      => $cMonth->copy()->startOfMonth(),
+                    'end'        => $cMonth->copy()->endOfMonth(),
+                ];
+        }
+    }
+
+    private function getTopMetrics($rangeStart, $rangeEnd)
     {
         $metrics = [
             'overall' => [
-                'sales_all_time' => 0,
+                'sales_filtered' => 0,
                 'sales_today'    => 0,
+                'sales_all_time' => 0,
                 'total_products' => 0,
                 'low_stock'      => 0,
-                'is_connected'   => true,
             ],
-            'gensan'  => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
-            'davao'   => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
-            'cebu'    => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
-            'cdo'     => ['sales_all_time' => 0, 'sales_today' => 0, 'total_products' => 0, 'low_stock' => 0, 'is_connected' => false],
+            'gensan'  => ['sales_filtered' => 0, 'sales_today' => 0, 'sales_all_time' => 0, 'total_products' => 0, 'low_stock' => 0],
+            'davao'   => ['sales_filtered' => 0, 'sales_today' => 0, 'sales_all_time' => 0, 'total_products' => 0, 'low_stock' => 0],
+            'cebu'    => ['sales_filtered' => 0, 'sales_today' => 0, 'sales_all_time' => 0, 'total_products' => 0, 'low_stock' => 0],
+            'cdo'     => ['sales_filtered' => 0, 'sales_today' => 0, 'sales_all_time' => 0, 'total_products' => 0, 'low_stock' => 0],
         ];
 
         foreach ($this->branches as $key => $name) {
             try {
-                // Test connection
-                DB::connection($key)->getPdo();
-                $metrics[$key]['is_connected'] = true;
+                // Filtered period sales (Monthly by default)
+                $filteredQuery = DB::connection($key)->table('sales');
+                if ($rangeStart && $rangeEnd) {
+                    $filteredQuery->whereBetween('created_at', [$rangeStart, $rangeEnd]);
+                }
+                $salesFiltered = (float) ($filteredQuery->sum('total_amount') ?? 0);
 
-                // All time total revenue (POS sales)
-                $salesAllTime = (float) (DB::connection($key)->table('sales')->sum('total_amount') ?? 0);
-
-                // Today's revenue
+                // Today sales
                 $salesToday = (float) (DB::connection($key)->table('sales')
                     ->whereDate('created_at', Carbon::today())
                     ->sum('total_amount') ?? 0);
 
-                // Total active products count
+                // All time sales
+                $salesAllTime = (float) (DB::connection($key)->table('sales')->sum('total_amount') ?? 0);
+
+                // Products count
                 $productsCount = (int) DB::connection($key)->table('products')
                     ->whereNull('deleted_at')->count();
 
@@ -117,17 +187,20 @@ class DashboardController extends Controller
                     ->whereRaw('product_quantity <= low_stock_threshold')
                     ->count();
 
-                $metrics[$key]['sales_all_time'] = $salesAllTime;
-                $metrics[$key]['sales_today']    = $salesToday;
-                $metrics[$key]['total_products'] = $productsCount;
-                $metrics[$key]['low_stock']      = $lowStock;
+                $metrics[$key] = [
+                    'sales_filtered' => $salesFiltered,
+                    'sales_today'    => $salesToday,
+                    'sales_all_time' => $salesAllTime,
+                    'total_products' => $productsCount,
+                    'low_stock'      => $lowStock,
+                ];
 
-                $metrics['overall']['sales_all_time'] += $salesAllTime;
+                $metrics['overall']['sales_filtered'] += $salesFiltered;
                 $metrics['overall']['sales_today']    += $salesToday;
+                $metrics['overall']['sales_all_time'] += $salesAllTime;
                 $metrics['overall']['total_products'] += $productsCount;
                 $metrics['overall']['low_stock']      += $lowStock;
             } catch (\Exception $e) {
-                $metrics[$key]['is_connected'] = false;
                 continue;
             }
         }
@@ -135,26 +208,30 @@ class DashboardController extends Controller
         return $metrics;
     }
 
-    private function getSalesToday($branches)
+    private function getFilteredSales($branches, $rangeStart, $rangeEnd)
     {
         $data = [];
         $grandTotal = 0;
 
         foreach ($branches as $key => $name) {
             try {
-                $items = DB::connection($key)->table('sale_items')
+                $query = DB::connection($key)->table('sale_items')
                     ->join('sales', 'sale_items.sale_id', '=', 'sales.sale_id')
-                    ->join('products', 'sale_items.product_id', '=', 'products.product_id')
-                    ->whereDate('sales.created_at', Carbon::today())
-                    ->select(
-                        'products.product_name',
-                        'sale_items.price',
-                        DB::raw('SUM(sale_items.quantity) as quantity'),
-                        DB::raw('SUM(sale_items.quantity * sale_items.price) as total')
-                    )
-                    ->groupBy('products.product_id', 'products.product_name', 'sale_items.price')
-                    ->orderBy('total', 'desc')
-                    ->get();
+                    ->join('products', 'sale_items.product_id', '=', 'products.product_id');
+
+                if ($rangeStart && $rangeEnd) {
+                    $query->whereBetween('sales.created_at', [$rangeStart, $rangeEnd]);
+                }
+
+                $items = $query->select(
+                    'products.product_name',
+                    'sale_items.price',
+                    DB::raw('SUM(sale_items.quantity) as quantity'),
+                    DB::raw('SUM(sale_items.quantity * sale_items.price) as total')
+                )
+                ->groupBy('products.product_id', 'products.product_name', 'sale_items.price')
+                ->orderBy('total', 'desc')
+                ->get();
 
                 $branchTotal = (float) $items->sum('total');
                 $grandTotal += $branchTotal;
